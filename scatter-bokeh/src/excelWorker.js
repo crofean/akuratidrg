@@ -68,8 +68,10 @@ self.onmessage = async (e) => {
           String(r["idrg_code"] || ""),
           ptd,
           idrg_tarif,
-          label
-        ];
+          label,
+          String(r["faskes_kompetensi"] || "-"),
+          String(r["pemilik_faskes"] || "-")
+        ]
         rows.push(row);
       }
 

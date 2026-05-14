@@ -189,6 +189,8 @@ const IDRGChart = ({ title, data, statsData, logScale, chartRef, onDownload }) =
 export default function App() {
   const [fullData, setFullData] = useState([]);
   const [fileSourcesList, setFileSourcesList] = useState([{ label: 'Semua File', value: 'All' }]);
+  const [pemilikList, setPemilikList] = useState(['All']);
+  const [kompetensiList, setKompetensiList] = useState(['All']);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // ── Modal State ──
@@ -197,8 +199,8 @@ export default function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [filterReg, setFilterReg] = useState(0);
   const [filterVertikal, setFilterVertikal] = useState(0);
-  const [filterPemilik, setFilterPemilik] = useState(0);
-  const [filterKompetensi, setFilterKompetensi] = useState(0);
+  const [filterPemilik, setFilterPemilik] = useState('All');
+  const [filterKompetensi, setFilterKompetensi] = useState('All');
   const [filterKelompok, setFilterKelompok] = useState('All');
   const [filterRSSearch, setFilterRSSearch] = useState('');
   const [filterSource, setFilterSource] = useState('All');
@@ -224,20 +226,30 @@ export default function App() {
     initData();
   }, []);
 
-  // Update dynamic file sources when data changes
+  // Update dynamic file sources and lists when data changes
   useEffect(() => {
     if (fullData.length === 0) return;
     const sources = new Set();
+    const pemSet = new Set();
+    const komSet = new Set();
+    
     fullData.forEach(r => {
       if (r[8]) sources.add(r[8]);
+      if (r[10]) pemSet.add(r[10]);
+      if (r[9]) komSet.add(r[9]);
     });
+    
     const srcArray = [{ label: 'Semua File', value: 'All' }];
     Array.from(sources).sort().forEach(s => srcArray.push({ label: s, value: s }));
     setFileSourcesList(srcArray);
-    // Reset filter if active source was removed
-    if (!sources.has(filterSource) && filterSource !== 'All') {
-      setFilterSource('All');
-    }
+    
+    setPemilikList(['All', ...Array.from(pemSet).sort()]);
+    setKompetensiList(['All', ...Array.from(komSet).sort()]);
+
+    // Reset filters if active selection was removed
+    if (!sources.has(filterSource) && filterSource !== 'All') setFilterSource('All');
+    if (!pemSet.has(filterPemilik) && filterPemilik !== 'All') setFilterPemilik('All');
+    if (!komSet.has(filterKompetensi) && filterKompetensi !== 'All') setFilterKompetensi('All');
   }, [fullData]);
 
   // ── Aggregation Logic ──
@@ -296,6 +308,8 @@ export default function App() {
       
       const hasReg = filterReg !== 0;
       const hasVert = filterVertikal !== 0;
+      const hasPem = filterPemilik !== 'All';
+      const hasKomp = filterKompetensi !== 'All';
       const hasKel = filterKelompok !== 'All';
       const hasSrc = filterSource !== 'All';
       const term = filterRSSearch.trim().toLowerCase();
@@ -315,6 +329,8 @@ export default function App() {
           if (filterVertikal === 1 && !v) continue;
           if (filterVertikal === 2 && v) continue;
         }
+        if (hasPem && r[10] !== filterPemilik) continue;
+        if (hasKomp && r[9] !== filterKompetensi) continue;
         if (hasSrc && r[8] !== filterSource) continue;
         
         const idrgRaw = String(r[5]);
@@ -579,16 +595,24 @@ export default function App() {
           <div style={{ borderLeft: '1px solid #f1f5f9', height: 24, margin: '0 10px' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 800, color: '#cbd5e1' }}>KEPEMILIKAN</span>
-            <FilterPill label="All" active={filterPemilik === 0} onClick={() => setFilterPemilik(0)} />
-            <FilterPill label="Pem" active={filterPemilik === 1} onClick={() => setFilterPemilik(1)} />
-            <FilterPill label="Swa" active={filterPemilik === 2} onClick={() => setFilterPemilik(2)} />
+            <select 
+              value={filterPemilik} 
+              onChange={(e) => setFilterPemilik(e.target.value)}
+              style={{ padding: '6px 12px', borderRadius: 10, border: '1px solid #e2e8f0', fontSize: 11, fontWeight: 700, color: '#64748b', outline: 'none', maxWidth: 120 }}
+            >
+              {pemilikList.map(p => <option key={p} value={p}>{p === 'All' ? 'Semua Pemilik' : p}</option>)}
+            </select>
           </div>
           <div style={{ borderLeft: '1px solid #f1f5f9', height: 24, margin: '0 10px' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{ fontSize: 9, fontWeight: 800, color: '#cbd5e1' }}>KOMPETENSI</span>
-            <FilterPill label="All" active={filterKompetensi === 0} onClick={() => setFilterKompetensi(0)} />
-            <FilterPill label="Dasar" active={filterKompetensi === 1} onClick={() => setFilterKompetensi(1)} />
-            <FilterPill label="Standar" active={filterKompetensi === 2} onClick={() => setFilterKompetensi(2)} />
+            <select 
+              value={filterKompetensi} 
+              onChange={(e) => setFilterKompetensi(e.target.value)}
+              style={{ padding: '6px 12px', borderRadius: 10, border: '1px solid #e2e8f0', fontSize: 11, fontWeight: 700, color: '#64748b', outline: 'none', maxWidth: 120 }}
+            >
+              {kompetensiList.map(k => <option key={k} value={k}>{k === 'All' ? 'Semua Kompetensi' : k}</option>)}
+            </select>
           </div>
           <div style={{ borderLeft: '1px solid #f1f5f9', height: 24, margin: '0 10px' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>

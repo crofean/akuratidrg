@@ -82,7 +82,9 @@ def process_file(filepath, sheet_name, label):
             str(r.get("idrg_code", "") or ""),
             ptd,
             idrg_tarif,
-            label,   # ← NEW: source file label at index [8]
+            label,   # [8] source file label
+            str(r.get("faskes_kompetensi", "") or "-"), # [9] kompetensi
+            str(r.get("pemilik_faskes", "") or "-"),    # [10] kepemilikan
         ]
         rows.append(row)
 
