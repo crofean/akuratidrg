@@ -338,7 +338,7 @@ export default function App() {
         const idrgClean = idrgRaw.endsWith('.0') ? idrgRaw.slice(0, -2) : idrgRaw;
         
         if (hasKel && IDRG_TO_KELOMPOK[idrgClean] !== filterKelompok) continue;
-        if (hasSearch && !(String(r[4]).toLowerCase().includes(term) || String(r[1]).toLowerCase().includes(term))) continue;
+        if (hasSearch && !(String(r[4]).toLowerCase().includes(term) || String(r[5]).toLowerCase().includes(term))) continue;
 
         // Partition
         if (Number(r[6]) === 1) riRaw.push(r);
