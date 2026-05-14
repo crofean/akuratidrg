@@ -197,6 +197,7 @@ export default function App() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
   const [filterReg, setFilterReg] = useState(0);
   const [filterVertikal, setFilterVertikal] = useState(0);
   const [filterPemilik, setFilterPemilik] = useState('All');
@@ -488,10 +489,22 @@ export default function App() {
   };
 
   const handleResetData = async () => {
-    if (!window.confirm("Hapus semua data tambahan dan kembali ke data default?")) return;
+    if (!confirmReset) {
+      setConfirmReset(true);
+      // Auto cancel after 3 seconds
+      setTimeout(() => setConfirmReset(false), 3000);
+      return;
+    }
+    
+    // Proceed with reset
     await localforage.removeItem(DB_KEY);
     setFullData(fullDataJson);
-    alert("Data dikembalikan ke default.");
+    setConfirmReset(false);
+    setUploadStatus("Data berhasil dikembalikan ke default!");
+    setTimeout(() => {
+      setUploadStatus('');
+      setShowUploadModal(false);
+    }, 1500);
   };
 
   return (
@@ -513,9 +526,9 @@ export default function App() {
             </p>
 
             <div style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: 16, padding: '30px 20px', textAlign: 'center', marginBottom: 20 }}>
-              {isUploading ? (
+              {isUploading || uploadStatus ? (
                 <div>
-                  <div style={{ width: 30, height: 30, border: '3px solid #e2e8f0', borderTopColor: '#0ea5e9', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 10px' }} />
+                  {isUploading && <div style={{ width: 30, height: 30, border: '3px solid #e2e8f0', borderTopColor: '#0ea5e9', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 10px' }} />}
                   <p style={{ margin: 0, fontSize: 13, fontWeight: 800, color: '#0ea5e9' }}>{uploadStatus}</p>
                 </div>
               ) : (
@@ -527,8 +540,8 @@ export default function App() {
               )}
             </div>
 
-            <button onClick={handleResetData} disabled={isUploading} style={{ width: '100%', padding: 12, background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', borderRadius: 12, fontWeight: 800, cursor: isUploading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <Trash2 size={16} /> Reset ke Data Default
+            <button onClick={handleResetData} disabled={isUploading} style={{ width: '100%', padding: 12, background: confirmReset ? '#ef4444' : '#fef2f2', color: confirmReset ? '#fff' : '#ef4444', border: '1px solid #fecaca', borderRadius: 12, fontWeight: 800, cursor: isUploading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s' }}>
+              <Trash2 size={16} /> {confirmReset ? 'YAKIN HAPUS SEMUA DATA?' : 'Reset ke Data Default'}
             </button>
           </div>
         </div>
