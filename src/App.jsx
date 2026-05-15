@@ -4308,10 +4308,18 @@ export default function App() {
               </button>
               <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
                 <img
-                  src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
+                  src="https://lh3.googleusercontent.com/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
                   alt="Advertisement"
                   className="w-full h-auto object-contain max-h-[85vh]"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
+                  }}
                 />
+                <div style={{ display: 'none' }} className="w-full h-64 flex-col items-center justify-center gap-3 text-white/60">
+                  <span className="text-5xl">📢</span>
+                  <p className="text-sm font-semibold">Klik untuk melihat informasi lebih lanjut</p>
+                </div>
               </a>
               <p className="text-center text-white/50 text-xs mt-4 font-medium tracking-wider">
                 {initialAdDone ? 'Gerakkan mouse atau klik untuk menutup' : 'Iklan ini akan otomatis tertutup dalam 5 detik...'}
@@ -5119,10 +5127,18 @@ export default function App() {
               </button>
               <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
                 <img
-                  src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
+                  src="https://lh3.googleusercontent.com/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
                   alt="Advertisement"
                   className="w-full h-auto object-contain max-h-[85vh]"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
+                  }}
                 />
+                <div style={{ display: 'none' }} className="w-full h-64 flex-col items-center justify-center gap-3 text-white/60">
+                  <span className="text-5xl">📢</span>
+                  <p className="text-sm font-semibold">Klik untuk melihat informasi lebih lanjut</p>
+                </div>
               </a>
               <p className="text-center text-white/50 text-xs mt-4 font-medium tracking-wider">
                 Gerakkan mouse atau klik untuk menutup
