@@ -2413,16 +2413,16 @@ export default function App() {
                         {/* Positive Top Half */}
                         <div className="w-full flex items-end justify-center gap-[2px] relative" style={{ height: `${posRatio}%` }}>
                           <div className="w-1/4 bg-slate-300 rounded-t-sm transition-all group-hover:opacity-80 relative" style={{ height: `${hRs}%` }}>
-                             <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[8px] font-black text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">{formatRp(m.tarifRs, true)}</span>
+                             <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[8px] font-black text-slate-400">{formatRp(m.tarifRs, true)}</span>
                           </div>
                           <div className="w-1/4 bg-teal-500 rounded-t-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(20,184,166,0.3)] relative" style={{ height: `${hIna}%` }}>
-                             <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-[8px] font-black text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity">{formatRp(m.inacbg, true)}</span>
+                             <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-[8px] font-black text-teal-600">{formatRp(m.inacbg, true)}</span>
                           </div>
                           <div className="w-1/4 bg-rose-600 rounded-t-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(225,29,72,0.3)] relative" style={{ height: `${hIdrg}%` }}>
-                             <span className="absolute -top-10 left-1/2 -translate-x-1/2 text-[8px] font-black text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity">{formatRp(m.idrg, true)}</span>
+                             <span className="absolute -top-10 left-1/2 -translate-x-1/2 text-[8px] font-black text-rose-600">{formatRp(m.idrg, true)}</span>
                           </div>
                           <div className={`w-1/4 rounded-t-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(16,185,129,0.3)] relative ${!isDef ? 'bg-emerald-500' : 'bg-transparent'}`} style={{ height: `${hSelPos}%` }}>
-                             {!isDef && <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-[8px] font-black text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">{formatRp(m.selisih, true)}</span>}
+                             {!isDef && <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-[8px] font-black text-emerald-600">{formatRp(m.selisih, true)}</span>}
                           </div>
                         </div>
                         {/* Negative Bottom Half */}
@@ -2431,7 +2431,7 @@ export default function App() {
                           <div className="w-1/4 bg-transparent"></div>
                           <div className="w-1/4 bg-transparent"></div>
                           <div className={`w-1/4 rounded-b-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(244,63,94,0.3)] relative ${isDef ? 'bg-rose-500' : 'bg-transparent'}`} style={{ height: `${hSelNeg}%` }}>
-                             {isDef && <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-black text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity">{formatRp(m.selisih, true)}</span>}
+                             {isDef && <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-black text-rose-600">{formatRp(m.selisih, true)}</span>}
                           </div>
                         </div>
                       </div>
