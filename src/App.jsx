@@ -4295,30 +4295,56 @@ export default function App() {
 
     return (
       <>
-        <div className="min-h-screen bg-gradient-to-br from-teal-700 via-teal-600 to-emerald-800 flex items-center justify-center p-4 relative overflow-hidden">
-          {/* Background elements */}
+        {/* Advertisement Overlay (shows on login page too) */}
+        {showAdOverlay && (
+          <div className="fixed inset-0 z-[9999] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-6"
+            style={{ animation: 'fadeIn 0.5s ease' }}>
+            <div className="relative max-w-4xl w-full mx-auto" style={{ animation: 'zoomIn 0.6s ease' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowAdOverlay(false); }}
+                className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-xl text-slate-500 hover:text-rose-600 hover:scale-110 transition-all z-10"
+              >
+                <X size={20} />
+              </button>
+              <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
+                <img
+                  src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
+                  alt="Advertisement"
+                  className="w-full h-auto object-contain max-h-[85vh]"
+                />
+              </a>
+              <p className="text-center text-white/50 text-xs mt-4 font-medium tracking-wider">
+                {initialAdDone ? 'Gerakkan mouse atau klik untuk menutup' : 'Iklan ini akan otomatis tertutup dalam 5 detik...'}
+              </p>
+            </div>
+          </div>
+        )}
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 30%, #f0fdf9 60%, #f8fafc 100%)' }}>
+          {/* Soft mesh background blobs */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-70"></div>
-            <div className="absolute top-[20%] right-[-10%] w-[40%] h-[40%] bg-emerald-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-70"></div>
-            <div className="absolute bottom-[-20%] left-[20%] w-[40%] h-[40%] bg-teal-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-70"></div>
+            <div className="absolute top-[-15%] left-[-10%] w-[50%] h-[50%] rounded-full" style={{ background: 'radial-gradient(circle, rgba(94,234,212,0.25) 0%, transparent 70%)', filter: 'blur(60px)' }}></div>
+            <div className="absolute top-[10%] right-[-10%] w-[45%] h-[50%] rounded-full" style={{ background: 'radial-gradient(circle, rgba(167,243,208,0.2) 0%, transparent 70%)', filter: 'blur(70px)' }}></div>
+            <div className="absolute bottom-[-10%] left-[15%] w-[55%] h-[45%] rounded-full" style={{ background: 'radial-gradient(circle, rgba(186,230,253,0.3) 0%, transparent 70%)', filter: 'blur(80px)' }}></div>
+            <div className="absolute top-[40%] left-[40%] w-[30%] h-[30%] rounded-full" style={{ background: 'radial-gradient(circle, rgba(165,243,252,0.2) 0%, transparent 70%)', filter: 'blur(50px)' }}></div>
           </div>
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
             {loginParticles.map((p, i) => (
-              <div key={i} className="absolute rounded-full bg-white/20 animate-pulse" style={{ width: `${p.size}px`, height: `${p.size}px`, left: `${p.x}%`, top: `${p.y}%`, animationDuration: `${p.duration}s`, animationDelay: `${p.delay}s` }} />
+              <div key={i} className="absolute rounded-full" style={{ width: `${p.size}px`, height: `${p.size}px`, left: `${p.x}%`, top: `${p.y}%`, background: 'rgba(20,184,166,0.15)', animationDuration: `${p.duration}s`, animationDelay: `${p.delay}s`, animation: `pulse ${p.duration}s ease-in-out ${p.delay}s infinite` }} />
             ))}
           </div>
 
           <div className="w-full max-w-md relative z-10 animate-in zoom-in-95 duration-700">
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white shadow-2xl shadow-teal-900/30 mb-6 overflow-hidden p-3 border border-white/20">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white shadow-2xl shadow-sky-900/10 mb-6 overflow-hidden p-3 border border-white/20">
                 <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" className="w-full h-full object-contain" alt="Logo" />
               </div>
               <div className="flex flex-col items-center justify-center">
-                <h1 className="text-4xl font-black tracking-tight leading-none mb-1 text-white drop-shadow-lg">
-                  AKURAT - <span className="text-teal-200">iD</span><span className="text-white">RG</span>
+                <h1 className="text-4xl font-black tracking-tight leading-none mb-1" style={{ color: '#0f4c75', textShadow: '0 2px 20px rgba(14,165,233,0.15)' }}>
+                  AKURAT - <span style={{ color: '#0ea5e9' }}>iD</span><span style={{ color: '#0f4c75' }}>RG</span>
                 </h1>
-                <p className="text-teal-50 text-[9px] font-black uppercase tracking-[0.2em] opacity-90 text-center px-4 mt-3 leading-relaxed">Analisis Klaim & Utilisasi Review Terpadu<br />Indonesian Diagnosis Related Group</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-center px-4 mt-3 leading-relaxed" style={{ color: '#64748b' }}>Analisis Klaim & Utilisasi Review Terpadu<br />Indonesian Diagnosis Related Group</p>
               </div>
             </div>
 
@@ -5080,25 +5106,26 @@ export default function App() {
           <div className="absolute -inset-2 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
         </a>
 
-        {/* Advertisement Overlay (Login / Screensaver) */}
-        {showAdOverlay && (
-          <div className="fixed inset-0 z-[9999] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-500">
-            <div className="relative max-w-4xl w-full mx-auto animate-in zoom-in-95 duration-700">
-              <button 
+        {/* Advertisement Overlay (Screensaver - logged in) */}
+        {showAdOverlay && initialAdDone && (
+          <div className="fixed inset-0 z-[9999] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-6"
+            style={{ animation: 'fadeIn 0.5s ease' }}>
+            <div className="relative max-w-4xl w-full mx-auto" style={{ animation: 'zoomIn 0.6s ease' }}>
+              <button
                 onClick={(e) => { e.stopPropagation(); setShowAdOverlay(false); }}
                 className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-xl text-slate-500 hover:text-rose-600 hover:scale-110 transition-all z-10"
               >
                 <X size={20} />
               </button>
               <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
-                <img 
-                  src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a" 
-                  alt="Advertisement" 
+                <img
+                  src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
+                  alt="Advertisement"
                   className="w-full h-auto object-contain max-h-[85vh]"
                 />
               </a>
               <p className="text-center text-white/50 text-xs mt-4 font-medium tracking-wider">
-                {initialAdDone ? 'Gerakkan mouse atau klik untuk menutup' : 'Iklan ini akan otomatis tertutup dalam 5 detik...'}
+                Gerakkan mouse atau klik untuk menutup
               </p>
             </div>
           </div>
