@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
-import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard } from 'lucide-react';
+import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles } from 'lucide-react';
 
 export const saveAsPng = async (elementId, fileName) => {
   const el = document.getElementById(elementId);
@@ -636,14 +636,14 @@ const DEFAULT_AUDIT_RULES = [
 
 const TOP_UP_RULES = [
   { item: "Streptokinase", layanan: 1, cbgs: ["I-4-10-I", "I-4-10-II", "I-4-10-III"], diags: ["I21.0", "I21.1", "I21.2", "I21.3", "I21.4", "I21.9", "I23.3"], procs: ["99.10"], tarif: 4850700, category: "sp" },
-  { item: "Deferiprone (IP)", layanan: 1, cbgs: ["D-4-13-I", "D-4-13-II", "D-4-13-III"], diags: ["D56.1"], tarif: 0, category: "sp" },
-  { item: "Deferoksamin (IP)", layanan: 1, cbgs: ["D-4-13-I", "D-4-13-II", "D-4-13-III"], diags: ["D56.1"], tarif: 0, category: "sp" },
-  { item: "Deferasirox (IP)", layanan: 1, cbgs: ["D-4-13-I", "D-4-13-II", "D-4-13-III"], diags: ["D56.1"], tarif: 0, category: "sp" },
+  { item: "Deferiprone (IP)", layanan: 1, cbgs: ["D-4-13-I", "D-4-13-II", "D-4-13-III"], diags: ["D56.1"], tarif: 4392000, category: "sp" },
+  { item: "Deferoksamin (IP)", layanan: 1, cbgs: ["D-4-13-I", "D-4-13-II", "D-4-13-III"], diags: ["D56.1"], tarif: 7182000, category: "sp" },
+  { item: "Deferasirox (IP)", layanan: 1, cbgs: ["D-4-13-I", "D-4-13-II", "D-4-13-III"], diags: ["D56.1"], tarif: 6312000, category: "sp" },
   { item: "Human Albumin for Septicaemia", layanan: 1, cbgs: ["A-4-10-I", "A-4-10-II", "A-4-10-III", "P-8-16-I", "P-8-16-II", "P-8-16-III", "W-4-17-I", "W-4-17-II", "W-4-17-III", "O-6-11-I", "O-6-11-II", "O-6-11-III", "O-6-12-I", "O-6-12-II", "O-6-12-III", "O-6-13-I", "O-6-13-II", "O-6-13-III"], diags: ["A02.1", "A20.7", "A22.7", "A39.1", "A39.2", "A39.3", "A39.4", "A39.8", "A39.9", "A40.0", "A40.1", "A40.2", "A40.3", "A40.8", "A40.9", "A41.0", "A41.1", "A41.2", "A41.3", "A41.4", "A41.5", "A41.8", "A41.9", "A42.7", "B37.7", "R57.1", "O85", "P36.9", "P36.0", "P36.1", "P36.2", "P36.3", "P36.4", "P36.5", "P36.6", "P36.7", "P36.8"], tarif: 2144600, category: "sp", primaryOnly: true },
   { item: "Anti Hemofilia Factor (IP)", layanan: 1, cbgs: ["D-4-11-I", "D-4-11-II", "D-4-11-III"], diags: ["D66", "D67"], tarif: 12637400, category: "sp" },
-  { item: "Deferiprone (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D56.1"], tarif: 0, category: "sp" },
-  { item: "Deferoksamin (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D56.1"], tarif: 0, category: "sp" },
-  { item: "Deferasirox (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D56.1"], tarif: 0, category: "sp" },
+  { item: "Deferiprone (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D56.1"], tarif: 4392000, category: "sp" },
+  { item: "Deferoksamin (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D56.1"], tarif: 7182000, category: "sp" },
+  { item: "Deferasirox (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D56.1"], tarif: 6312000, category: "sp" },
   { item: "Anti Hemofilia Factor (OP)", layanan: 2, cbgs: ["Q-5-44-0"], diags: ["D66", "D67"], tarif: 12637400, category: "sp" },
   { item: "Human Albumin for Burn", layanan: 1, cbgs: ["S-4-16-I", "S-4-16-II", "S-4-16-III", "L-1-20-I", "L-1-20-II", "L-1-20-III"], diags: ["T20.3", "T20.7", "T21.3", "T21.7", "T22.3", "T22.7", "T23.3", "T23.7", "T24.3", "T24.7", "T25.3", "T25.7", "T29.3", "T29.7", "T31.4", "T31.5", "T31.6", "T31.7", "T31.8", "T31.9", "T32.4", "T32.5", "T32.6", "T32.7", "T32.8", "T32.9"], tarif: 15673000, category: "sp", primaryOnly: true },
   { item: "Nuclear Medicine", layanan: 1, cbgs: ["Z-3-17-0"], procs: ["92.05", "92.15"], tarif: 2231300, category: "si" },
@@ -1011,16 +1011,19 @@ const parseDate = (dateStr) => {
 };
 
 // --- REUSABLE UI COMPONENTS ---
-const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => (
-  <div id={id} className={`bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 relative group ${className}`}>
-    {downloadTitle && id && (
-      <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} className="absolute top-4 right-4 text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1 z-[60] print:hidden">
-        <Download size={14} /> Simpan PNG
-      </button>
-    )}
-    {children}
-  </div>
-));
+const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => {
+  const hasBg = className.split(' ').some(c => c.startsWith('bg-'));
+  return (
+    <div id={id} className={`${hasBg ? '' : 'bg-white'} rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 relative group ${className}`}>
+      {downloadTitle && id && (
+        <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} className="absolute top-4 right-4 text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1 z-[60] print:hidden">
+          <Download size={14} /> Simpan PNG
+        </button>
+      )}
+      {children}
+    </div>
+  );
+});
 
 const SectionHeader = React.memo(({ icon: Icon, title, desc, exportAction, exportText, printAction, colorClass, highlightClass }) => (
   <Card className="flex flex-col md:flex-row items-center justify-between gap-6 relative p-6">
@@ -1212,15 +1215,30 @@ const ScatterChart = React.memo(({ data, xKey, yKey, rKey, color, xLabel, yLabel
         <text x={width / 2} y={height - 15} fontSize="12" fontWeight="bold" fill="#475569" textAnchor="middle">{xLabel}</text>
         <text x={15} y={height / 2} fontSize="12" fontWeight="bold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>{yLabel}</text>
 
-        {processedData.map((d, i) => (
-          <circle
-            key={i} cx={scaleX(d[xKey])} cy={scaleY(d[yKey])} r={scaleR(d[rKey])}
-            fill={color} fillOpacity="0.6" stroke={color} strokeWidth="1.5"
-            onMouseEnter={() => setHovered(d)} onMouseLeave={() => setHovered(null)}
-            onClick={() => onDotClick && onDotClick(d)}
-            className="transition-all hover:fill-opacity-100 hover:stroke-width-3 cursor-pointer"
-          />
-        ))}
+        {processedData.map((d, i) => {
+          const valX = d[xKey] || 0;
+          const valY = d[yKey] || 0;
+
+          // Determine quadrant color
+          let qColor = color;
+          if (valX >= 0) {
+            // Right Side (Surplus)
+            qColor = valY >= yAvg ? "#10b981" : "#3b82f6"; // Top-Right (Green) : Bottom-Right (Blue)
+          } else {
+            // Left Side (Defisit)
+            qColor = valY >= yAvg ? "#ef4444" : "#f59e0b"; // Top-Left (Red) : Bottom-Left (Amber)
+          }
+
+          return (
+            <circle
+              key={i} cx={scaleX(valX)} cy={scaleY(valY)} r={scaleR(d[rKey])}
+              fill={qColor} fillOpacity="0.6" stroke={qColor} strokeWidth="1.5"
+              onMouseEnter={() => setHovered(d)} onMouseLeave={() => setHovered(null)}
+              onClick={() => onDotClick && onDotClick(d)}
+              className="transition-all hover:fill-opacity-100 hover:stroke-width-3 cursor-pointer"
+            />
+          );
+        })}
       </svg>
 
       {hovered && (
@@ -1301,25 +1319,25 @@ const SliderCaptcha = ({ onVerified, verified }) => {
       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Verifikasi Keamanan</label>
       <div className={`rounded-2xl border-2 p-1 transition-all duration-500 overflow-hidden relative ${verified ? 'border-emerald-500/30 bg-emerald-50/50 shadow-inner shadow-emerald-500/10' : failed ? 'border-rose-500/30 bg-rose-50/50 shadow-inner shadow-rose-500/10' : 'border-slate-100 bg-slate-50/50 shadow-inner shadow-slate-900/5'}`}>
         <div ref={trackRef} className="relative h-16 rounded-xl select-none overflow-hidden bg-white/20">
-          
+
           {/* Status Text Overlay */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-             <span className={`text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-500 ${verified ? 'text-emerald-600' : failed ? 'text-rose-600' : 'text-slate-400 opacity-60'}`}>
-               {verified ? 'Verifikasi Berhasil' : failed ? 'Gagal, Coba Lagi' : 'GESER KE KANAN'}
-             </span>
+            <span className={`text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-500 ${verified ? 'text-emerald-600' : failed ? 'text-rose-600' : 'text-slate-400 opacity-60'}`}>
+              {verified ? 'Verifikasi Berhasil' : failed ? 'Gagal, Coba Lagi' : 'GESER KE KANAN'}
+            </span>
           </div>
 
           {/* Background Shimmer (only when not verified) */}
           {!verified && !failed && (
-             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-500/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" style={{ width: '50%' }}></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-teal-500/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" style={{ width: '50%' }}></div>
           )}
 
           {/* Target Slot (The "Hole") */}
-          <div 
+          <div
             className="absolute top-1 bottom-1 rounded-lg border-2 border-dashed border-teal-200/50 flex items-center justify-center bg-teal-900/5 shadow-inner"
             style={{ left: `${TARGET_START}%`, width: `${TARGET_W}%` }}
           >
-             <div className="w-6 h-6 rounded-lg bg-teal-500/10 border border-teal-500/20 animate-pulse"></div>
+            <div className="w-6 h-6 rounded-lg bg-teal-500/10 border border-teal-500/20 animate-pulse"></div>
           </div>
 
           {/* Slider Thumb (The "Puzzle Piece") */}
@@ -1327,10 +1345,10 @@ const SliderCaptcha = ({ onVerified, verified }) => {
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
             className={`absolute top-1 bottom-1 flex items-center justify-center rounded-lg shadow-2xl cursor-grab active:cursor-grabbing transition-all duration-200 ${isDragging ? 'scale-110 z-20' : 'scale-100 z-10'} ${verified ? 'bg-emerald-600 text-white shadow-emerald-600/40 cursor-default' : failed ? 'bg-rose-600 text-white shadow-rose-600/40' : 'bg-white text-teal-600 hover:shadow-teal-600/20 border border-teal-50'}`}
-            style={{ 
-              width: `${THUMB_W}px`, 
-              left: `${sliderVal}%`, 
-              transition: isDragging ? 'none' : 'left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)' 
+            style={{
+              width: `${THUMB_W}px`,
+              left: `${sliderVal}%`,
+              transition: isDragging ? 'none' : 'left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}
           >
             <div className="flex gap-0.5 items-center justify-center">
@@ -1502,7 +1520,7 @@ export default function App() {
     const sid = Math.random().toString(36).substring(2, 15);
     setCurrentSessionId(sid);
     localStorage.setItem('sak_session_id', sid);
-    
+
     // Daftarkan Sesi ke Server (Google Apps Script)
     if (SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
       try {
@@ -1536,7 +1554,7 @@ export default function App() {
           const res = await fetch(`${SESSION_API_URL}?username=${username}`);
           const data = await res.json();
           const localSid = localStorage.getItem('sak_session_id');
-          
+
           if (data.activeSessionId && data.activeSessionId !== localSid) {
             alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
             handleLogout();
@@ -1690,17 +1708,17 @@ export default function App() {
       avgRS: sumRS / count, avgIna: sumIna / count, avgIdrg: sumIdrg / count, avgSel: sumSel / count, avgSelVsRs: sumSelVsRs / count,
       avgLos: sumLos / count, maxLos,
       avgComps: Object.fromEntries(compKeys.map(c => [
-        c.key, 
-        { 
-          val: compsSum[c.key] / count, 
-          pct: (compsSum[c.key] / (sumRS || 1)) * 100 
+        c.key,
+        {
+          val: compsSum[c.key] / count,
+          pct: (compsSum[c.key] / (sumRS || 1)) * 100
         }
       ]))
     };
   }, [drilldown.isOpen, drilldown.data]);
 
-  const openDrilldown = (title, filterFn, type = 'patient') => {
-    const source = dashData?.rawRows || [];
+  const openDrilldown = (title, filterFn, type = 'patient', customData = null) => {
+    const source = customData || dashData?.rawRows || [];
     const filtered = source.filter(filterFn);
     setDrilldown({ isOpen: true, title, data: filtered, type });
   };
@@ -1778,7 +1796,7 @@ export default function App() {
       }
 
       if (drgCode && drgCode !== '-') {
-        if (!maps.drg[drgCode]) maps.drg[drgCode] = { 
+        if (!maps.drg[drgCode]) maps.drg[drgCode] = {
           desc: String(r['IDRG_DRG_DESCRIPTION'] || '-'),
           ranap: { count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, sumCW: 0, sumNBR: 0, sumAF: 0 },
           rajal: { count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, sumCW: 0, sumNBR: 0, sumAF: 0 }
@@ -1920,7 +1938,7 @@ export default function App() {
         if (dList[0]) maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] = (maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] || 0) + 1;
         for (let i = 1; i < dList.length; i++) maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] = (maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] || 0) + 1;
         for (let p of pList) if (p) maps.inaToIdrg[inaCode].targets[tK].procs[p] = (maps.inaToIdrg[inaCode].targets[tK].procs[p] || 0) + 1;
-        // Reverse map: iDRG -’ INA
+        // Reverse map: iDRG → INA
         if (!maps.idrgToIna[drgCode]) maps.idrgToIna[drgCode] = { desc: String(r['IDRG_DRG_DESCRIPTION'] || '-'), totalCases: 0, sumLos: 0, maxLos: 0, sumIna: 0, sumIdrg: 0, sources: {} };
         maps.idrgToIna[drgCode].totalCases++;
         maps.idrgToIna[drgCode].sumLos += curLos;
@@ -1958,14 +1976,14 @@ export default function App() {
         else if (ru.condition?.codes) matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
 
         if (matched) {
-          maps.audit.push({ 
-            ruleId: String(ru.id || 'N/A'), 
-            case: String(ru.case || 'Spesifik'), 
-            warning: String(ru.validation_action?.warning_message || ""), 
-            mrn: String(r['MRN'] || '-'), 
-            sep: String(r['SEP'] || '-'), 
-            diaglist: dList.join(', '), 
-            proclist: pList.join(', '), 
+          maps.audit.push({
+            ruleId: String(ru.id || 'N/A'),
+            case: String(ru.case || 'Spesifik'),
+            warning: String(ru.validation_action?.warning_message || ""),
+            mrn: String(r['MRN'] || '-'),
+            sep: String(r['SEP'] || '-'),
+            diaglist: dList.join(', '),
+            proclist: pList.join(', '),
             coderId: cId,
             totalTarif: parseFloat(r['TOTAL_TARIF'] || 0)
           });
@@ -2026,7 +2044,7 @@ export default function App() {
       reportArray: Object.values(maps.report).sort((a, b) => a.sortVal - b.sortVal),
       severityReportArray: Object.values(maps.severity).sort((a, b) => a.sortVal - b.sortVal).map(item => ({ ...item, total_kasus: item.sl0_kasus + item.sl1_kasus + item.sl2_kasus + item.sl3_kasus, total_rp: item.sl0_rp + item.sl1_rp + item.sl2_rp + item.sl3_rp })),
       clReportArray: Object.values(maps.clReport).sort((a, b) => a.sortVal - b.sortVal).map(item => ({ ...item, total_kasus: item.rj_kasus + item.cl9_kasus + item.cl0_kasus + item.cl1_kasus + item.cl2_kasus + item.cl3_kasus + item.cl4_kasus, total_rp: item.rj_rp + item.cl9_rp + item.cl0_rp + item.cl1_rp + item.cl2_rp + item.cl3_rp + item.cl4_rp })),
-      drgSummary: drgArr.sort((a, b) => b.count - a.count), drgSummaryRanap: drgArrRanap.sort((a, b) => b.count - a.count), drgSummaryRajal: drgArrRajal.sort((a, b) => b.count - a.count), 
+      drgSummary: drgArr.sort((a, b) => b.count - a.count), drgSummaryRanap: drgArrRanap.sort((a, b) => b.count - a.count), drgSummaryRajal: drgArrRajal.sort((a, b) => b.count - a.count),
       inaSummary: inaArr.sort((a, b) => b.count - a.count),
       topDefisit: drgArr.filter(x => x.selisihVsRs < 0).sort((a, b) => a.selisihVsRs - b.selisihVsRs).slice(0, 10), topSurplus: drgArr.filter(x => x.selisihVsRs > 0).sort((a, b) => b.selisihVsRs - a.selisihVsRs).slice(0, 10),
       topDefisitIna: inaArr.filter(x => x.totalSelisih < 0).sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 10), topSurplusIna: inaArr.filter(x => x.totalSelisih > 0).sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 10),
@@ -2070,6 +2088,12 @@ export default function App() {
 
 
   const dlDrilldownCSV = () => {
+    if (drilldown.type === 'audit_kpi') {
+      const headers = ['No', 'SEP', 'Rule ID', 'Temuan', 'Warning', 'Verdict'];
+      const rows = drilldown.data.map((f, i) => [i + 1, f.sep, f.ruleId, f.case, f.warning, auditVerdicts[`${f.sep}|${f.ruleId}`] || 'belum']);
+      exportToXlsx(`Audit_Findings_${drilldown.title}`, headers, rows);
+      return;
+    }
     const headers = ['No', 'Nama Pasien', 'MRN', 'SEP', 'Tgl Pulang', 'SL INA', 'CL iDRG', 'INA Code', 'Deskripsi INA', 'Diag INA', 'Proc INA', 'iDRG Code', 'Deskripsi iDRG', 'Diag iDRG', 'Proc iDRG', 'Tarif RS', 'Tarif INA', 'Tarif iDRG', 'Selisih', ...compKeys.map(c => c.label)];
     const rows = drilldown.data.map((row, i) => {
       const rs = parseFloat(row.TARIF_RS || row.BIAYA_RS || row.TOTAL_TARIF_RS || 0) || 0;
@@ -2120,166 +2144,166 @@ export default function App() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-      <div className="lg:col-span-2 space-y-6">
-        {uploadProgress ? (
-          <Card className="p-8 text-center transition-all duration-300 relative group overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-50 transition-opacity"></div>
-            <div className="relative z-10 py-4">
-              <div className="relative w-20 h-20 mx-auto mb-5">
-                <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-                  <circle cx="40" cy="40" r="34" fill="none" stroke="#e2e8f0" strokeWidth="6" />
-                  <circle cx="40" cy="40" r="34" fill="none" stroke={uploadProgress.status === 'error' ? '#ef4444' : (uploadProgress.status === 'complete' || uploadProgress.status === 'done') ? '#10b981' : '#14b8a6'} strokeWidth="6"
-                    strokeDasharray={`${2 * Math.PI * 34}`}
-                    strokeDashoffset={`${2 * Math.PI * 34 * (1 - uploadProgress.pct / 100)}`}
-                    strokeLinecap="round" style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className={`text-lg font-black ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-600'}`}>{uploadProgress.pct}%</span>
-                </div>
-              </div>
-              <p className={`text-base font-black mb-1 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-700'}`}>
-                {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '-... Selesai!' : uploadProgress.status === 'error' ? '- Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '๐“ Membaca...' : uploadProgress.status === 'parsing' ? '-๏ธ Memproses...' : '-ณ Menghubungkan...'}
-              </p>
-              <p className="text-xs text-slate-500 font-medium truncate max-w-[220px] mx-auto mb-4" title={uploadProgress.fileName}>{uploadProgress.fileName || 'Menyelesaikan...'}</p>
-              <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden max-w-[200px] mx-auto">
-                <div className={`h-full rounded-full transition-all duration-500 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'bg-emerald-500' : uploadProgress.status === 'error' ? 'bg-rose-500' : 'bg-teal-500 animate-pulse'}`}
-                  style={{ width: `${uploadProgress.pct}%` }} />
-              </div>
-              
-              {(uploadProgress.status === 'error' || uploadProgress.status === 'complete' || uploadProgress.status === 'done') && (
-                <button 
-                  onClick={() => { setUploadProgress(null); setError(''); }}
-                  className="mt-8 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-100 px-6 py-2.5 rounded-xl text-xs font-black transition-all hover:shadow-md uppercase tracking-wider"
-                >
-                  {uploadProgress.status === 'error' ? 'Coba Lagi' : 'Kembali'}
-                </button>
-              )}
-            </div>
-          </Card>
-        ) : (
-          <>
-            {uploadSubTab === 'manual' ? (
-              <Card className="p-8 text-center transition-all duration-300 relative group">
-                <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className={`relative z-10 border-2 border-dashed rounded-xl p-8 transition-colors ${isDragging ? 'border-teal-500 bg-teal-50/50' : 'border-slate-200 hover:border-teal-300'}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
-                  <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition-transform"><UploadCloud className="text-teal-600" size={32} /></div>
-                  <h3 className="text-xl font-extrabold text-slate-800 tracking-tight">Unggah Data TXT</h3>
-                  <p className="text-sm text-slate-500 mb-8 mt-2">Tarik dan letakkan file format TXT klaim RS ke area ini.</p>
-                  <div className="flex flex-col gap-3">
-                    <button onClick={() => fileInputRef.current?.click()} className="bg-teal-600 hover:bg-teal-700 text-white py-4 px-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm transition-all shadow-lg shadow-teal-600/20 hover:-translate-y-1"><FileText size={18} /> PILIH FILE TXT</button>
-                    <button onClick={() => folderInputRef.current?.click()} className="bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-100 py-4 px-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm transition-all hover:shadow-md"><Folder size={18} className="text-slate-400" /> PILIH FOLDER</button>
+        <div className="lg:col-span-2 space-y-6">
+          {uploadProgress ? (
+            <Card className="p-8 text-center transition-all duration-300 relative group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-50 transition-opacity"></div>
+              <div className="relative z-10 py-4">
+                <div className="relative w-20 h-20 mx-auto mb-5">
+                  <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="34" fill="none" stroke="#e2e8f0" strokeWidth="6" />
+                    <circle cx="40" cy="40" r="34" fill="none" stroke={uploadProgress.status === 'error' ? '#ef4444' : (uploadProgress.status === 'complete' || uploadProgress.status === 'done') ? '#10b981' : '#14b8a6'} strokeWidth="6"
+                      strokeDasharray={`${2 * Math.PI * 34}`}
+                      strokeDashoffset={`${2 * Math.PI * 34 * (1 - uploadProgress.pct / 100)}`}
+                      strokeLinecap="round" style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className={`text-lg font-black ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-600'}`}>{uploadProgress.pct}%</span>
                   </div>
-                  <input type="file" multiple accept=".txt" ref={fileInputRef} className="hidden" onChange={(e) => { if (e.target.files) processFiles(e.target.files); }} />
-                  <input type="file" webkitdirectory="true" directory="true" multiple ref={folderInputRef} className="hidden" onChange={(e) => { if (e.target.files) processFiles(e.target.files); }} />
                 </div>
-              </Card>
-            ) : (
-        <Card className="p-8 space-y-6 relative group overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><GitMerge size={80} className="text-teal-600" /></div>
-          <div className="relative z-10">
-            <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm"><GitMerge className="text-teal-600" size={32} /></div>
-            <h3 className="text-xl font-extrabold text-slate-800 tracking-tight">Koneksi Cloud (G-Drive)</h3>
-            <p className="text-sm text-slate-500 mt-2 mb-6 leading-relaxed">Masukkan link "Shareable" file TXT dari Google Drive untuk memproses data secara langsung tanpa upload manual.</p>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Google Drive Share Link</label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" />
-                    <input 
-                      type="text" 
-                      value={driveUrl} 
-                      onChange={(e) => setDriveUrl(e.target.value)}
-                      placeholder="https://drive.google.com/file/d/..." 
-                      className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm bg-slate-50/50"
-                    />
-                  </div>
-                  <button 
-                    onClick={() => {
-                      if (!driveUrl) return;
-                      let id = '';
-                      if (driveUrl.includes('folders/')) {
-                        alert('Link yang Anda masukkan adalah folder. Mohon masukkan link file .txt hasil ekspor data klaim secara spesifik.');
-                        return;
-                      }
-                      if (driveUrl.includes('id=')) id = driveUrl.split('id=')[1].split('&')[0];
-                      else if (driveUrl.includes('/d/')) id = driveUrl.split('/d/')[1].split('/')[0];
-                      
-                      if (!id) { alert('URL tidak valid. Mohon periksa kembali link Google Drive Anda.'); return; }
-                      
-                      const dlUrl = `https://docs.google.com/uc?export=download&id=${id}`;
-                      setUploadProgress({ pct: 10, status: 'reading', current: 1, total: 1, fileName: 'Menghubungkan ke Drive...' });
-                      
-                      fetch(dlUrl)
-                        .then(res => {
-                          if (!res.ok) throw new Error('Gagal mengakses file. Pastikan file di-share dengan opsi \"Anyone with the link can view\".');
-                          const contentType = res.headers.get('content-type');
-                          if (contentType && contentType.includes('text/html')) {
-                             throw new Error('File tidak dapat diunduh secara otomatis (mungkin folder atau butuh login). Silakan upload file secara manual.');
-                          }
-                          return res.text();
-                        })
-                        .then(txt => {
-                          if (txt.includes('<!DOCTYPE html>') || txt.includes('<html')) {
-                             throw new Error('Menerima halaman HTML, bukan data teks. Pastikan link adalah Share Link FILE yang bersifat Publik.');
-                          }
-                          const file = new File([txt], "data_from_drive.txt", { type: "text/plain" });
-                          processFiles([file]);
-                        })
-                        .catch(err => {
-                          console.error(err);
-                          const isCorsError = err.message.includes('fetch') || err.name === 'TypeError';
-                          const msg = isCorsError ? 
-                            'Gagal menarik data (Kemungkinan CORS). Browser memblokir koneksi langsung ke Google Drive. Solusi: Silakan unduh file .txt tersebut ke komputer Anda, lalu gunakan tab "Upload Manual".' : 
-                            err.message;
-                          setUploadProgress({ pct: 0, status: 'error', current: 0, total: 0, fileName: msg });
-                          alert(`Error Drive: ${msg}`);
-                        });
-                    }}
-                    disabled={!driveUrl || (uploadProgress && uploadProgress.status !== 'complete')}
-                    className="px-6 py-3 bg-teal-600 text-white rounded-xl text-sm font-black shadow-lg shadow-teal-600/20 hover:bg-teal-700 active:scale-95 transition-all disabled:bg-slate-300 disabled:shadow-none"
-                  >
-                    Tarik Data
-                  </button>
+                <p className={`text-base font-black mb-1 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-700'}`}>
+                  {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '✔ Selesai!' : uploadProgress.status === 'error' ? '❌ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '📂 Membaca...' : uploadProgress.status === 'parsing' ? '⚙️ Memproses...' : '🔗 Menghubungkan...'}
+                </p>
+                <p className="text-xs text-slate-500 font-medium truncate max-w-[220px] mx-auto mb-4" title={uploadProgress.fileName}>{uploadProgress.fileName || 'Menyelesaikan...'}</p>
+                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden max-w-[200px] mx-auto">
+                  <div className={`h-full rounded-full transition-all duration-500 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'bg-emerald-500' : uploadProgress.status === 'error' ? 'bg-rose-500' : 'bg-teal-500 animate-pulse'}`}
+                    style={{ width: `${uploadProgress.pct}%` }} />
                 </div>
-              </div>
 
-              <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl flex gap-3 items-start">
-                <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
-                <div className="text-xs text-amber-700 font-medium leading-relaxed">
-                  <span className="font-black">PENTING:</span> Pastikan setelan berbagi file di Google Drive adalah <span className="underline">"Anyone with the link" (Siapa saja dengan link)</span> agar aplikasi dapat mengakses data.
-                </div>
+                {(uploadProgress.status === 'error' || uploadProgress.status === 'complete' || uploadProgress.status === 'done') && (
+                  <button
+                    onClick={() => { setUploadProgress(null); setError(''); }}
+                    className="mt-8 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-100 px-6 py-2.5 rounded-xl text-xs font-black transition-all hover:shadow-md uppercase tracking-wider"
+                  >
+                    {uploadProgress.status === 'error' ? 'Coba Lagi' : 'Kembali'}
+                  </button>
+                )}
               </div>
-            </div>
-          </div>
-        </Card>
-            )}
-          </>
-        )}
-        {error && <div className="bg-rose-50 border border-rose-100 text-rose-700 p-4 rounded-2xl flex items-start gap-3 text-sm font-bold shadow-sm animate-in zoom-in-95"><AlertCircle size={20} className="shrink-0 text-rose-500" /><p>{String(error)}</p></div>}
-      </div>
-      <div className="lg:col-span-3">
-        <Card className="p-8 h-full flex flex-col shadow-xl border-0">
-          <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
-            <div><h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2"><Layers className="text-teal-600" size={24} /> Dataset Aktif</h3><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{uploadedFiles.length} file terintegrasi ke sistem.</p></div>
-            {uploadedFiles.length > 0 && <button onClick={clearData} className="text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition-all border border-transparent hover:border-rose-100 uppercase tracking-wider"><Trash2 size={16} /> Kosongkan</button>}
-          </div>
-          {uploadedFiles.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 min-h-[300px]"><Layers size={64} className="opacity-10 mb-6 text-teal-900" /><p className="font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">Dataset Kosong</p><p className="text-xs mt-2 font-medium opacity-60">Silakan upload file .txt klaim untuk memulai analisis.</p></div>
+            </Card>
           ) : (
-            <ul className="space-y-4 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
-              {uploadedFiles.map((f) => (
-                <li key={f.id} className="flex items-center gap-5 text-sm bg-white border border-slate-100 shadow-sm p-5 rounded-[1.5rem] group hover:border-teal-200 transition-all hover:shadow-xl hover:-translate-y-1">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm shadow-emerald-100"><CheckCircle size={24} className="text-emerald-500" /></div>
-                  <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} -€ข <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
-                  <button onClick={() => removeFile(f.id)} className="text-slate-300 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 transition-all hover:rotate-90"><X size={20} /></button>
-                </li>
-              ))}
-            </ul>
+            <>
+              {uploadSubTab === 'manual' ? (
+                <Card className="p-8 text-center transition-all duration-300 relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className={`relative z-10 border-2 border-dashed rounded-xl p-8 transition-colors ${isDragging ? 'border-teal-500 bg-teal-50/50' : 'border-slate-200 hover:border-teal-300'}`} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+                    <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm group-hover:scale-110 transition-transform"><UploadCloud className="text-teal-600" size={32} /></div>
+                    <h3 className="text-xl font-extrabold text-slate-800 tracking-tight">Unggah Data TXT</h3>
+                    <p className="text-sm text-slate-500 mb-8 mt-2">Tarik dan letakkan file format TXT klaim RS ke area ini.</p>
+                    <div className="flex flex-col gap-3">
+                      <button onClick={() => fileInputRef.current?.click()} className="bg-teal-600 hover:bg-teal-700 text-white py-4 px-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm transition-all shadow-lg shadow-teal-600/20 hover:-translate-y-1"><FileText size={18} /> PILIH FILE TXT</button>
+                      <button onClick={() => folderInputRef.current?.click()} className="bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-100 py-4 px-4 rounded-2xl flex items-center justify-center gap-2 font-black text-sm transition-all hover:shadow-md"><Folder size={18} className="text-slate-400" /> PILIH FOLDER</button>
+                    </div>
+                    <input type="file" multiple accept=".txt" ref={fileInputRef} className="hidden" onChange={(e) => { if (e.target.files) processFiles(e.target.files); }} />
+                    <input type="file" webkitdirectory="true" directory="true" multiple ref={folderInputRef} className="hidden" onChange={(e) => { if (e.target.files) processFiles(e.target.files); }} />
+                  </div>
+                </Card>
+              ) : (
+                <Card className="p-8 space-y-6 relative group overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><GitMerge size={80} className="text-teal-600" /></div>
+                  <div className="relative z-10">
+                    <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 shadow-sm"><GitMerge className="text-teal-600" size={32} /></div>
+                    <h3 className="text-xl font-extrabold text-slate-800 tracking-tight">Koneksi Cloud (G-Drive)</h3>
+                    <p className="text-sm text-slate-500 mt-2 mb-6 leading-relaxed">Masukkan link "Shareable" file TXT dari Google Drive untuk memproses data secara langsung tanpa upload manual.</p>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Google Drive Share Link</label>
+                        <div className="flex gap-2">
+                          <div className="relative flex-1">
+                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" />
+                            <input
+                              type="text"
+                              value={driveUrl}
+                              onChange={(e) => setDriveUrl(e.target.value)}
+                              placeholder="https://drive.google.com/file/d/..."
+                              className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 outline-none transition-all shadow-sm bg-slate-50/50"
+                            />
+                          </div>
+                          <button
+                            onClick={() => {
+                              if (!driveUrl) return;
+                              let id = '';
+                              if (driveUrl.includes('folders/')) {
+                                alert('Link yang Anda masukkan adalah folder. Mohon masukkan link file .txt hasil ekspor data klaim secara spesifik.');
+                                return;
+                              }
+                              if (driveUrl.includes('id=')) id = driveUrl.split('id=')[1].split('&')[0];
+                              else if (driveUrl.includes('/d/')) id = driveUrl.split('/d/')[1].split('/')[0];
+
+                              if (!id) { alert('URL tidak valid. Mohon periksa kembali link Google Drive Anda.'); return; }
+
+                              const dlUrl = `https://docs.google.com/uc?export=download&id=${id}`;
+                              setUploadProgress({ pct: 10, status: 'reading', current: 1, total: 1, fileName: 'Menghubungkan ke Drive...' });
+
+                              fetch(dlUrl)
+                                .then(res => {
+                                  if (!res.ok) throw new Error('Gagal mengakses file. Pastikan file di-share dengan opsi \"Anyone with the link can view\".');
+                                  const contentType = res.headers.get('content-type');
+                                  if (contentType && contentType.includes('text/html')) {
+                                    throw new Error('File tidak dapat diunduh secara otomatis (mungkin folder atau butuh login). Silakan upload file secara manual.');
+                                  }
+                                  return res.text();
+                                })
+                                .then(txt => {
+                                  if (txt.includes('<!DOCTYPE html>') || txt.includes('<html')) {
+                                    throw new Error('Menerima halaman HTML, bukan data teks. Pastikan link adalah Share Link FILE yang bersifat Publik.');
+                                  }
+                                  const file = new File([txt], "data_from_drive.txt", { type: "text/plain" });
+                                  processFiles([file]);
+                                })
+                                .catch(err => {
+                                  console.error(err);
+                                  const isCorsError = err.message.includes('fetch') || err.name === 'TypeError';
+                                  const msg = isCorsError ?
+                                    'Gagal menarik data (Kemungkinan CORS). Browser memblokir koneksi langsung ke Google Drive. Solusi: Silakan unduh file .txt tersebut ke komputer Anda, lalu gunakan tab "Upload Manual".' :
+                                    err.message;
+                                  setUploadProgress({ pct: 0, status: 'error', current: 0, total: 0, fileName: msg });
+                                  alert(`Error Drive: ${msg}`);
+                                });
+                            }}
+                            disabled={!driveUrl || (uploadProgress && uploadProgress.status !== 'complete')}
+                            className="px-6 py-3 bg-teal-600 text-white rounded-xl text-sm font-black shadow-lg shadow-teal-600/20 hover:bg-teal-700 active:scale-95 transition-all disabled:bg-slate-300 disabled:shadow-none"
+                          >
+                            Tarik Data
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl flex gap-3 items-start">
+                        <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+                        <div className="text-xs text-amber-700 font-medium leading-relaxed">
+                          <span className="font-black">PENTING:</span> Pastikan setelan berbagi file di Google Drive adalah <span className="underline">"Anyone with the link" (Siapa saja dengan link)</span> agar aplikasi dapat mengakses data.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </>
           )}
-        </Card>
-      </div>
+          {error && <div className="bg-rose-50 border border-rose-100 text-rose-700 p-4 rounded-2xl flex items-start gap-3 text-sm font-bold shadow-sm animate-in zoom-in-95"><AlertCircle size={20} className="shrink-0 text-rose-500" /><p>{String(error)}</p></div>}
+        </div>
+        <div className="lg:col-span-3">
+          <Card className="p-8 h-full flex flex-col shadow-xl border-0">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+              <div><h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2"><Layers className="text-teal-600" size={24} /> Dataset Aktif</h3><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{uploadedFiles.length} file terintegrasi ke sistem.</p></div>
+              {uploadedFiles.length > 0 && <button onClick={clearData} className="text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-2 transition-all border border-transparent hover:border-rose-100 uppercase tracking-wider"><Trash2 size={16} /> Kosongkan</button>}
+            </div>
+            {uploadedFiles.length === 0 ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 rounded-3xl border-2 border-dashed border-slate-200 min-h-[300px]"><Layers size={64} className="opacity-10 mb-6 text-teal-900" /><p className="font-black text-slate-400 uppercase tracking-[0.2em] text-[10px]">Dataset Kosong</p><p className="text-xs mt-2 font-medium opacity-60">Silakan upload file .txt klaim untuk memulai analisis.</p></div>
+            ) : (
+              <ul className="space-y-4 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
+                {uploadedFiles.map((f) => (
+                  <li key={f.id} className="flex items-center gap-5 text-sm bg-white border border-slate-100 shadow-sm p-5 rounded-[1.5rem] group hover:border-teal-200 transition-all hover:shadow-xl hover:-translate-y-1">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm shadow-emerald-100"><CheckCircle size={24} className="text-emerald-500" /></div>
+                    <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} • <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
+                    <button onClick={() => removeFile(f.id)} className="text-slate-300 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 transition-all hover:rotate-90"><X size={20} /></button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );
@@ -2298,15 +2322,15 @@ export default function App() {
 
     const insights = [
       selInaRS < 0
-        ? { t: 'w', icon: '- ๏ธ', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} -€” potensi defisit klaim.` }
-        : { t: 's', icon: '-...', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} -€” klaim dalam posisi surplus.` },
+        ? { t: 'w', icon: '⚠️', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} — potensi defisit klaim.` }
+        : { t: 's', icon: '✔', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} — klaim dalam posisi surplus.` },
       selIdrgRS < 0
-        ? { t: 'w', icon: '- ๏ธ', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} -€” evaluasi koding CL diperlukan.` }
-        : { t: 's', icon: '-...', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} -€” koding complexity level sudah optimal.` },
-      { t: 'i', icon: '๐“', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
-      { t: 'i', icon: '๐ฅ', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
-      ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '๐’ก', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
-      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '๐”', txt: `${dashData.auditFindings.length} temuan audit koding -€” segera tinjau di modul Audit.` }] : []),
+        ? { t: 'w', icon: '⚠️', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} — evaluasi koding CL diperlukan.` }
+        : { t: 's', icon: '✔', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} — koding complexity level sudah optimal.` },
+      { t: 'i', icon: '📊', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
+      { t: 'i', icon: '🏥', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
+      ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '💡', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
+      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '🔎', txt: `${dashData.auditFindings.length} temuan audit koding — segera tinjau di modul Audit.` }] : []),
     ];
 
     return (
@@ -2386,11 +2410,11 @@ export default function App() {
         <div className="grid grid-cols-1">
           <Card id="chart-komprehensif-bulan" downloadTitle="Perkembangan Finansial Per Bulan" className="p-8 flex flex-col border-0 shadow-xl">
             <div className="flex justify-between items-center mb-10"><h3 className="text-xs font-black text-slate-800 uppercase tracking-[0.2em] flex items-center gap-2"><BarChart3 size={20} className="text-teal-600" /> Komparasi & Tren Bulanan</h3><button onClick={() => exportToXlsx('Bulan', ['Bulan', 'RS', 'INA', 'IDRG', 'Selisih'], dashData.monthlyArray.map(m => [m.label, m.tarifRs, m.inacbg, m.idrg, m.selisih]))} className="text-teal-600 hover:text-white hover:bg-teal-600 bg-teal-50 px-4 py-2 rounded-xl text-xs font-black transition-all border border-teal-100 uppercase tracking-wider shadow-sm">UNDUH CSV</button></div>
-            <div className="w-full h-80 flex flex-col relative px-2">
+            <div className="w-full h-[22rem] mt-6 flex flex-col relative px-2">
               <div className="absolute left-0 right-0 border-b border-slate-300 border-dashed z-0" style={{ top: '65%' }}></div>
               <div className="w-full flex items-center justify-between h-full z-10 gap-2">
                 {dashData.monthlyArray.map((m, i) => {
-                  const isDef = m.selisih < 0; 
+                  const isDef = m.selisih < 0;
                   const posRatio = 65; const negRatio = 35;
                   const maxV = dashData.maxPosVal || 1; const maxN = dashData.absMaxSelisih || 1;
                   const hRs = Math.max((m.tarifRs / maxV) * 100, 1);
@@ -2398,31 +2422,31 @@ export default function App() {
                   const hIdrg = Math.max((m.idrg / maxV) * 100, 1);
                   const hSelPos = !isDef ? Math.max((m.selisih / maxV) * 100, 1) : 0;
                   const hSelNeg = isDef ? Math.max((Math.abs(m.selisih) / maxN) * 100, 1) : 0;
-                  
+
                   return (
                     <div key={`pos-${i}`} className="flex-1 flex flex-col items-center justify-center h-full group relative cursor-pointer">
                       <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur text-white text-xs p-3 rounded-xl shadow-xl z-30 pointer-events-none whitespace-nowrap border border-slate-700">
-                         <p className="font-extrabold border-b border-slate-700 pb-1.5 mb-1.5 text-slate-100">{String(m.label)}</p>
-                         <p className="text-slate-400 font-medium">RS: <span className="text-white">{formatRp(m.tarifRs, true)}</span></p>
-                         <p className="text-teal-400 font-medium">INA: <span className="text-white">{formatRp(m.inacbg, true)}</span></p>
-                         <p className="text-rose-400 font-medium">iDRG: <span className="text-white">{formatRp(m.idrg, true)}</span></p>
-                         <p className={`font-bold mt-1 pt-1 border-t border-slate-700 ${isDef ? 'text-rose-400' : 'text-emerald-400'}`}>{isDef ? 'Defisit' : 'Surplus'}: <span className="text-white">{formatRp(m.selisih, true)}</span></p>
+                        <p className="font-extrabold border-b border-slate-700 pb-1.5 mb-1.5 text-slate-100">{String(m.label)}</p>
+                        <p className="text-slate-400 font-medium">RS: <span className="text-white">{formatRp(m.tarifRs, true)}</span></p>
+                        <p className="text-teal-400 font-medium">INA: <span className="text-white">{formatRp(m.inacbg, true)}</span></p>
+                        <p className="text-rose-400 font-medium">iDRG: <span className="text-white">{formatRp(m.idrg, true)}</span></p>
+                        <p className={`font-bold mt-1 pt-1 border-t border-slate-700 ${isDef ? 'text-rose-400' : 'text-emerald-400'}`}>{isDef ? 'Defisit' : 'Surplus'}: <span className="text-white">{formatRp(m.selisih, true)}</span></p>
                       </div>
-                      
+
                       <div className="w-full flex flex-col h-full relative">
                         {/* Positive Top Half */}
                         <div className="w-full flex items-end justify-center gap-[2px] relative" style={{ height: `${posRatio}%` }}>
                           <div className="w-1/4 bg-slate-300 rounded-t-sm transition-all group-hover:opacity-80 relative" style={{ height: `${hRs}%` }}>
-                             <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[8px] font-black text-slate-400">{formatRp(m.tarifRs, true)}</span>
+                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-500 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.tarifRs, true)}</span>
                           </div>
                           <div className="w-1/4 bg-teal-500 rounded-t-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(20,184,166,0.3)] relative" style={{ height: `${hIna}%` }}>
-                             <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-[8px] font-black text-teal-600">{formatRp(m.inacbg, true)}</span>
+                            <span className="absolute -top-10 left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-teal-200 text-teal-600 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.inacbg, true)}</span>
                           </div>
                           <div className="w-1/4 bg-rose-600 rounded-t-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(225,29,72,0.3)] relative" style={{ height: `${hIdrg}%` }}>
-                             <span className="absolute -top-10 left-1/2 -translate-x-1/2 text-[8px] font-black text-rose-600">{formatRp(m.idrg, true)}</span>
+                            <span className="absolute -top-[3.5rem] left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-rose-200 text-rose-600 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.idrg, true)}</span>
                           </div>
                           <div className={`w-1/4 rounded-t-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(16,185,129,0.3)] relative ${!isDef ? 'bg-emerald-500' : 'bg-transparent'}`} style={{ height: `${hSelPos}%` }}>
-                             {!isDef && <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-[8px] font-black text-emerald-600">{formatRp(m.selisih, true)}</span>}
+                            {!isDef && <span className="absolute -top-[4.5rem] left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-emerald-200 text-emerald-600 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.selisih, true)}</span>}
                           </div>
                         </div>
                         {/* Negative Bottom Half */}
@@ -2431,7 +2455,7 @@ export default function App() {
                           <div className="w-1/4 bg-transparent"></div>
                           <div className="w-1/4 bg-transparent"></div>
                           <div className={`w-1/4 rounded-b-sm transition-all group-hover:opacity-80 shadow-[0_0_8px_rgba(244,63,94,0.3)] relative ${isDef ? 'bg-rose-500' : 'bg-transparent'}`} style={{ height: `${hSelNeg}%` }}>
-                             {isDef && <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-black text-rose-600">{formatRp(m.selisih, true)}</span>}
+                            {isDef && <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-rose-200 text-rose-600 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.selisih, true)}</span>}
                           </div>
                         </div>
                       </div>
@@ -2516,7 +2540,7 @@ export default function App() {
   const renderReport = () => {
     const slKeys = ['sl0', 'sl1', 'sl2', 'sl3'];
     const clKeys = ['rj', 'cl9', 'cl0', 'cl1', 'cl2', 'cl3', 'cl4'];
-    
+
     const tabs = [
       { id: 'summary', label: 'Ringkasan Bulanan', icon: Calendar, color: 'teal' },
       { id: 'severity', label: 'Severity Level', icon: Layers, color: 'emerald' },
@@ -2549,7 +2573,7 @@ export default function App() {
             <SectionHeader icon={Table2} title="Laporan Tabel Klaim" desc="Rekapitulasi komprehensif jumlah kasus dan nominal klaim INA-CBG vs iDRG per bulan layanan." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => exportToXlsx('Laporan_Ringkasan', ['Bulan', 'Tarif RS', 'Kasus Rajal (INA)', 'Kasus Ranap (INA)', 'Total Kasus (INA)', 'Tarif Rajal (INA)', 'Tarif Ranap (INA)', 'Total Tarif (INA)', 'Kasus Rajal (iDRG)', 'Kasus Ranap (iDRG)', 'Total Kasus (iDRG)', 'Tarif Rajal (iDRG)', 'Tarif Ranap (iDRG)', 'Total Tarif (iDRG)'], dashData.reportArray.map(m => [m.label, m.tarifRsTotal, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap, m.inaRajal, m.inaRanap, m.inaRajal + m.inaRanap, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap, m.idrgRajal, m.idrgRanap, m.idrgRajal + m.idrgRanap]))} exportText="Ekspor CSV" />
             <Card className="overflow-x-auto p-2 custom-scrollbar max-h-[600px] border-0 shadow-xl">
               <table className="w-full text-xs text-center border-collapse whitespace-nowrap">
-                <thead className="text-[10px] uppercase font-black tracking-wider sticky top-0 z-10">
+                <thead className="text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
                   <tr>
                     <th rowSpan={3} className="bg-slate-900 text-white border-b border-r border-white/10 p-3">NO</th><th rowSpan={3} className="bg-slate-900 text-white border-b border-r border-white/10 p-3">BULAN LAYANAN</th><th rowSpan={3} className="bg-slate-900 text-white border-b border-r border-white/10 p-3">Tarif RS (Cost)</th>
                     <th colSpan={6} className="bg-teal-800 text-white border-b border-r border-white/10 p-3">Klaim INA CBG</th><th colSpan={6} className="bg-emerald-800 text-white border-b border-white/10 p-3">Klaim iDRG</th>
@@ -2588,7 +2612,7 @@ export default function App() {
             <SectionHeader icon={Layers} title="Laporan Severity Level (INA-CBG)" desc="Sebaran volume dan nominal tarif berdasarkan tingkat keparahan (Severity Level 0 - 3)." colorClass="bg-emerald-50 text-emerald-600" highlightClass="bg-emerald-500/5" exportAction={() => exportToXlsx('Severity_Level', ['Bulan', 'SL 0 (Kasus)', 'SL 1 (Kasus)', 'SL 2 (Kasus)', 'SL 3 (Kasus)', 'SL 0 (Tarif)', 'SL 1 (Tarif)', 'SL 2 (Tarif)', 'SL 3 (Tarif)', 'Total Kasus', 'Total Klaim'], dashData.severityReportArray.map(m => [m.label, m.sl0_kasus, m.sl1_kasus, m.sl2_kasus, m.sl3_kasus, m.sl0_rp, m.sl1_rp, m.sl2_rp, m.sl3_rp, m.total_kasus, m.total_rp]))} />
             <Card className="overflow-x-auto p-2 custom-scrollbar">
               <table className="w-full text-xs text-center border-collapse whitespace-nowrap">
-                <thead className="text-[10px] uppercase font-bold tracking-wider sticky top-0 z-10 bg-slate-50">
+                <thead className="text-[10px] uppercase font-bold tracking-wider sticky top-0 z-40 bg-slate-50">
                   <tr>
                     <th rowSpan={3} className="border-b border-r border-slate-200 p-3 text-slate-500">NO</th>
                     <th rowSpan={3} className="border-b border-r border-slate-200 p-3 text-slate-500">BULAN LAYANAN</th>
@@ -2627,7 +2651,7 @@ export default function App() {
             <SectionHeader icon={Activity} title="Laporan Complexity Level (iDRG)" desc="Rekapitulasi volume dan klaim berdasarkan Complexity Level iDRG (Rajal & CL 0 - 4)." colorClass="bg-sky-50 text-sky-600" highlightClass="bg-sky-500/5" exportAction={() => exportToXlsx('Complexity_Level', ['Bulan', 'Rajal (Kasus)', 'CL 9 (Kasus)', 'CL 0 (Kasus)', 'CL 1 (Kasus)', 'CL 2 (Kasus)', 'CL 3 (Kasus)', 'CL 4 (Kasus)', 'Rajal (Tarif)', 'CL 9 (Tarif)', 'CL 0 (Tarif)', 'CL 1 (Tarif)', 'CL 2 (Tarif)', 'CL 3 (Tarif)', 'CL 4 (Tarif)', 'Total Kasus', 'Total Klaim'], dashData.clReportArray.map(m => [m.label, m.rj_kasus, m.cl9_kasus, m.cl0_kasus, m.cl1_kasus, m.cl2_kasus, m.cl3_kasus, m.cl4_kasus, m.rj_rp, m.cl9_rp, m.cl0_rp, m.cl1_rp, m.cl2_rp, m.cl3_rp, m.cl4_rp, m.total_kasus, m.total_rp]))} />
             <Card className="overflow-x-auto p-2 custom-scrollbar border-0 shadow-xl">
               <table className="w-full text-xs text-center border-collapse whitespace-nowrap">
-                <thead className="text-[10px] uppercase font-bold tracking-wider sticky top-0 z-10 bg-slate-50">
+                <thead className="text-[10px] uppercase font-bold tracking-wider sticky top-0 z-40 bg-slate-50">
                   <tr>
                     <th rowSpan={3} className="border-b border-r border-slate-200 p-3 text-slate-500">NO</th>
                     <th rowSpan={3} className="border-b border-r border-slate-200 p-3 text-slate-500">BULAN LAYANAN</th>
@@ -2666,7 +2690,7 @@ export default function App() {
             <SectionHeader icon={GitMerge} title="Analisis Detail - RAWAT INAP" desc="Perbandingan parameter iDRG (Cost Weight, NBR, AF) vs INA-CBG pada kasus Rawat Inap." colorClass="bg-blue-50 text-blue-600" highlightClass="bg-blue-500/5" exportAction={() => exportToXlsx('Detail_Ranap', ['Code', 'Deskripsi', 'Jumlah', 'ALOS', 'Subtotal RS', 'Subtotal INA', 'Perpasien iDRG', 'Cost Weight', 'NBR', 'Adj Factor', 'Avg RS', 'Subtotal iDRG', 'Selisih'], dashData.drgSummaryRanap.map(r => [r.code, r.desc, r.count, r.avgLos, r.sumRS, r.sumIna, r.avgIdrg, r.avgCW, r.avgNBR, r.avgAF, r.avgRS, r.sumIdrg, r.selisih]))} />
             <Card className="overflow-x-auto p-2 custom-scrollbar border-0 shadow-xl max-h-[700px]">
               <table className="w-full text-xs text-center border-collapse whitespace-nowrap">
-                <thead className="text-[9px] uppercase font-black tracking-wider sticky top-0 z-10">
+                <thead className="text-[9px] uppercase font-black tracking-wider sticky top-0 z-40">
                   <tr className="bg-slate-900 text-white">
                     <th rowSpan={2} className="p-3 border-b border-r border-white/10">No</th>
                     <th rowSpan={2} className="p-3 border-b border-r border-white/10">Code</th>
@@ -2720,7 +2744,7 @@ export default function App() {
             <SectionHeader icon={GitMerge} title="Analisis Detail - RAWAT JALAN" desc="Perbandingan parameter iDRG vs INA-CBG pada kasus Rawat Jalan." colorClass="bg-sky-50 text-sky-600" highlightClass="bg-sky-500/5" exportAction={() => exportToXlsx('Detail_Rajal', ['Code', 'Deskripsi', 'Jumlah', 'ALOS', 'Subtotal RS', 'Subtotal INA', 'Perpasien iDRG', 'Cost Weight', 'NBR', 'Adj Factor', 'Avg RS', 'Subtotal iDRG', 'Selisih'], dashData.drgSummaryRajal.map(r => [r.code, r.desc, r.count, r.avgLos, r.sumRS, r.sumIna, r.avgIdrg, r.avgCW, r.avgNBR, r.avgAF, r.avgRS, r.sumIdrg, r.selisih]))} />
             <Card className="overflow-x-auto p-2 custom-scrollbar border-0 shadow-xl max-h-[700px]">
               <table className="w-full text-xs text-center border-collapse whitespace-nowrap">
-                <thead className="text-[9px] uppercase font-black tracking-wider sticky top-0 z-10">
+                <thead className="text-[9px] uppercase font-black tracking-wider sticky top-0 z-40">
                   <tr className="bg-slate-900 text-white">
                     <th rowSpan={2} className="p-3 border-b border-r border-white/10">No</th>
                     <th rowSpan={2} className="p-3 border-b border-r border-white/10">Code</th>
@@ -2852,9 +2876,9 @@ export default function App() {
     const q = mapFilter.trim().toLowerCase();
     const filteredKeys = q
       ? allKeys.filter(key =>
-          key.toLowerCase().includes(q) ||
-          String(sourceData[key].desc).toLowerCase().includes(q)
-        )
+        key.toLowerCase().includes(q) ||
+        String(sourceData[key].desc).toLowerCase().includes(q)
+      )
       : allKeys;
 
     return (
@@ -2866,17 +2890,17 @@ export default function App() {
           colorClass={isReverse ? "bg-orange-50 text-orange-600" : "bg-sky-50 text-sky-600"}
           highlightClass={isReverse ? "bg-orange-500/5" : "bg-sky-500/5"}
           exportAction={() => {
-             const headers = isReverse ? ['Kode iDRG', 'Deskripsi iDRG', 'INA-CBG Terkait', 'Jumlah Kasus', 'Avg LOS', 'Max LOS', 'Avg iDRG Tarif'] : ['Kode INA', 'Deskripsi INA', 'iDRG Terpetakan', 'Jumlah Kasus', 'Avg LOS', 'Max LOS', 'Avg INA Tarif'];
-             const rows = allKeys.flatMap(key => Object.entries(sourceData[key][isReverse ? 'sources' : 'targets']).map(([targetKey, data]) => [
-               key,
-               sourceData[key].desc,
-               targetKey,
-               data.count,
-               (data.sumLos / data.count).toFixed(1),
-               data.maxLos,
-               data.sumIdrg / data.count
-             ]));
-             exportToXlsx(isReverse ? 'Peta_iDRG_to_INA' : 'Peta_INA_to_iDRG', headers, rows);
+            const headers = isReverse ? ['Kode iDRG', 'Deskripsi iDRG', 'INA-CBG Terkait', 'Jumlah Kasus', 'Avg LOS', 'Max LOS', 'Avg iDRG Tarif'] : ['Kode INA', 'Deskripsi INA', 'iDRG Terpetakan', 'Jumlah Kasus', 'Avg LOS', 'Max LOS', 'Avg INA Tarif'];
+            const rows = allKeys.flatMap(key => Object.entries(sourceData[key][isReverse ? 'sources' : 'targets']).map(([targetKey, data]) => [
+              key,
+              sourceData[key].desc,
+              targetKey,
+              data.count,
+              (data.sumLos / data.count).toFixed(1),
+              data.maxLos,
+              data.sumIdrg / data.count
+            ]));
+            exportToXlsx(isReverse ? 'Peta_iDRG_to_INA' : 'Peta_INA_to_iDRG', headers, rows);
           }}
         />
 
@@ -2886,13 +2910,13 @@ export default function App() {
             onClick={() => setPemetaanTab('inaToIdrg')}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${!isReverse ? 'bg-white text-sky-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
           >
-            <GitMerge size={14} /> INA-CBG -’ iDRG
+            <GitMerge size={14} /> INA-CBG → iDRG
           </button>
           <button
             onClick={() => setPemetaanTab('idrgToIna')}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${isReverse ? 'bg-white text-orange-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
           >
-            <GitMerge size={14} className="rotate-180" /> iDRG -’ INA-CBG
+            <GitMerge size={14} className="rotate-180" /> iDRG → INA-CBG
           </button>
         </div>
 
@@ -2905,7 +2929,7 @@ export default function App() {
               type="text"
               value={mapFilter}
               onChange={e => setMapFilter(e.target.value)}
-              placeholder={isReverse ? "Cari kode iDRG atau deskripsi-€ฆ" : "Cari kode INACBG atau deskripsi-€ฆ"}
+              placeholder={isReverse ? "Cari kode iDRG atau deskripsi…" : "Cari kode INACBG atau deskripsi…"}
               className="w-full pl-9 pr-9 py-2 text-sm border border-slate-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition placeholder-slate-400"
             />
             {mapFilter && (
@@ -2926,55 +2950,55 @@ export default function App() {
               <p className="font-semibold text-sm">Tidak ada data yang cocok dengan pencarian <span className="text-sky-500">"{mapFilter}"</span></p>
             </div>
           ) : (
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-bold tracking-wider text-slate-500">
-              <tr>
-                <th className="p-5 w-1/3 border-r border-slate-200">{isReverse ? "Kode iDRG Dasar" : "Kode INA-CBG Asal"}</th>
-                <th className="p-5">{isReverse ? "Distribusi Hasil ke INA-CBG" : "Distribusi Pemetaan iDRG & Diagnosa Sekunder"}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {(q ? filteredKeys : filteredKeys.slice(0, 100)).map((key, idx) => (
-                <tr key={`map-${idx}`} className="hover:bg-slate-50 cursor-pointer transition-colors group" onClick={() => openDrilldown(`Kasus ${isReverse ? 'iDRG' : 'INA-CBG'}: ${key}`, r => String(isReverse ? r.IDRG_DRG_CODE : r.INACBG).trim() === key)}>
-                  <td className="p-5 align-top border-r border-slate-50">
-                    <span className={`font-black block text-base ${isReverse ? 'text-orange-600' : 'text-sky-600'}`}>{String(key)}</span>
-                    <span className="text-xs font-medium text-slate-500 mt-1 block leading-relaxed">{String(sourceData[key].desc)}</span>
-                    <div className="flex flex-wrap gap-1.5 mt-3">
-                      <span className={`inline-block text-[10px] font-black uppercase text-white px-2 py-0.5 rounded-lg ${isReverse ? 'bg-orange-500' : 'bg-sky-500'}`}>{sourceData[key].totalCases || 0} Kasus</span>
-                      <span className="inline-block text-[10px] font-black uppercase text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-100">Avg LOS: {(sourceData[key].sumLos / (sourceData[key].totalCases || 1)).toFixed(1)}</span>
-                      <span className="inline-block text-[10px] font-black uppercase text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100">Max LOS: {sourceData[key].maxLos}</span>
-                      <span className={`inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-lg border ${isReverse ? 'text-orange-700 bg-orange-50 border-orange-100' : 'text-sky-700 bg-sky-50 border-sky-100'}`}>Avg {isReverse ? 'iDRG' : 'INA'}: {formatRp(sourceData[key][isReverse ? 'sumIdrg' : 'sumIna'] / (sourceData[key].totalCases || 1))}</span>
-                    </div>
-                  </td>
-                  <td className="p-5">
-                    <div className="flex flex-col gap-3">
-                      {Object.entries(sourceData[key][isReverse ? 'sources' : 'targets']).sort((a, b) => b[1].count - a[1].count).map(([targetKey, data], j) => (
-                        <div key={`target-${j}`} className={`bg-white border p-3 rounded-xl shadow-sm transition-all hover:shadow-md ${isReverse ? 'hover:border-orange-300' : 'hover:border-sky-300'}`}>
-                          <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <span className={`${isReverse ? 'bg-sky-600' : 'bg-orange-500'} text-white px-2.5 py-1 rounded-lg text-xs font-black shadow-sm`}>{targetKey.split(' ')[0]}</span>
-                            <span className="text-xs font-bold text-slate-700 flex-1">{isReverse ? (data.desc || '-') : targetKey.substring(targetKey.indexOf(' ') + 1)}</span>
-                            <div className="flex items-center gap-1.5">
-                              <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md ${isReverse ? 'text-orange-700 bg-orange-100' : 'text-sky-700 bg-sky-100'}`}>{data.count} Kasus</span>
-                              <span className="text-[10px] font-black uppercase text-teal-700 bg-teal-50 px-2 py-1 rounded-md">ALOS: {(data.sumLos / data.count).toFixed(1)}</span>
-                              <span className="text-[10px] font-black uppercase text-rose-700 bg-rose-50 px-2 py-1 rounded-md">Max LOS: {data.maxLos}</span>
-                              <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md border ${isReverse ? 'text-sky-700 bg-sky-50 border-sky-100' : 'text-orange-700 bg-orange-50 border-orange-100'}`}>Avg {isReverse ? 'INA' : 'iDRG'}: {formatRp(data[isReverse ? 'sumIna' : 'sumIdrg'] / data.count)}</span>
-                            </div>
-                          </div>
-                          {!isReverse && (
-                             <div className="space-y-3 mt-2">
-                               <div className="bg-sky-50 p-2 rounded-lg border border-sky-100"><p className="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Layers size={10} /> Diagnosa Utama</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.priDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.priDiags).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pd, k) => (<span key={`pd-${k}`} className="text-[10px] font-black text-sky-800 bg-white border border-sky-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-sky-50">{pd[0]} <span className="text-sky-400 font-bold ml-0.5">({pd[1]})</span></span>))}</div></div>
-                               <div className="bg-slate-50 p-2 rounded-lg border border-slate-100"><p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Stethoscope size={10} /> Diagnosa Sekunder Penyerta</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.secDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.secDiags).sort((a, b) => b[1] - a[1]).slice(0, 15).map((sd, k) => (<span key={`sd-${k}`} className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-slate-100">{sd[0]} <span className="text-slate-400 font-semibold ml-0.5">({sd[1]})</span></span>))}</div></div>
-                               <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100"><p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><FileCode size={10} /> Prosedur Terkait</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{!data.procs || Object.entries(data.procs).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.procs).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pr, k) => (<span key={`pr-${k}`} className="text-[10px] font-black text-indigo-800 bg-white border border-indigo-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-indigo-50">{pr[0]} <span className="text-indigo-400 font-bold ml-0.5">({pr[1]})</span></span>))}</div></div>
-                             </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </td>
+            <table className="w-full text-sm text-left">
+              <thead className="bg-slate-50 border-b border-slate-200 text-[10px] uppercase font-bold tracking-wider text-slate-500">
+                <tr>
+                  <th className="p-5 w-1/3 border-r border-slate-200">{isReverse ? "Kode iDRG Dasar" : "Kode INA-CBG Asal"}</th>
+                  <th className="p-5">{isReverse ? "Distribusi Hasil ke INA-CBG" : "Distribusi Pemetaan iDRG & Diagnosa Sekunder"}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {(q ? filteredKeys : filteredKeys.slice(0, 100)).map((key, idx) => (
+                  <tr key={`map-${idx}`} className="hover:bg-slate-50 cursor-pointer transition-colors group" onClick={() => openDrilldown(`Kasus ${isReverse ? 'iDRG' : 'INA-CBG'}: ${key}`, r => String(isReverse ? r.IDRG_DRG_CODE : r.INACBG).trim() === key)}>
+                    <td className="p-5 align-top border-r border-slate-50">
+                      <span className={`font-black block text-base ${isReverse ? 'text-orange-600' : 'text-sky-600'}`}>{String(key)}</span>
+                      <span className="text-xs font-medium text-slate-500 mt-1 block leading-relaxed">{String(sourceData[key].desc)}</span>
+                      <div className="flex flex-wrap gap-1.5 mt-3">
+                        <span className={`inline-block text-[10px] font-black uppercase text-white px-2 py-0.5 rounded-lg ${isReverse ? 'bg-orange-500' : 'bg-sky-500'}`}>{sourceData[key].totalCases || 0} Kasus</span>
+                        <span className="inline-block text-[10px] font-black uppercase text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-100">Avg LOS: {(sourceData[key].sumLos / (sourceData[key].totalCases || 1)).toFixed(1)}</span>
+                        <span className="inline-block text-[10px] font-black uppercase text-rose-600 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-100">Max LOS: {sourceData[key].maxLos}</span>
+                        <span className={`inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-lg border ${isReverse ? 'text-orange-700 bg-orange-50 border-orange-100' : 'text-sky-700 bg-sky-50 border-sky-100'}`}>Avg {isReverse ? 'iDRG' : 'INA'}: {formatRp(sourceData[key][isReverse ? 'sumIdrg' : 'sumIna'] / (sourceData[key].totalCases || 1))}</span>
+                      </div>
+                    </td>
+                    <td className="p-5">
+                      <div className="flex flex-col gap-3">
+                        {Object.entries(sourceData[key][isReverse ? 'sources' : 'targets']).sort((a, b) => b[1].count - a[1].count).map(([targetKey, data], j) => (
+                          <div key={`target-${j}`} className={`bg-white border p-3 rounded-xl shadow-sm transition-all hover:shadow-md ${isReverse ? 'hover:border-orange-300' : 'hover:border-sky-300'}`}>
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <span className={`${isReverse ? 'bg-sky-600' : 'bg-orange-500'} text-white px-2.5 py-1 rounded-lg text-xs font-black shadow-sm`}>{targetKey.split(' ')[0]}</span>
+                              <span className="text-xs font-bold text-slate-700 flex-1">{isReverse ? (data.desc || '-') : targetKey.substring(targetKey.indexOf(' ') + 1)}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md ${isReverse ? 'text-orange-700 bg-orange-100' : 'text-sky-700 bg-sky-100'}`}>{data.count} Kasus</span>
+                                <span className="text-[10px] font-black uppercase text-teal-700 bg-teal-50 px-2 py-1 rounded-md">ALOS: {(data.sumLos / data.count).toFixed(1)}</span>
+                                <span className="text-[10px] font-black uppercase text-rose-700 bg-rose-50 px-2 py-1 rounded-md">Max LOS: {data.maxLos}</span>
+                                <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md border ${isReverse ? 'text-sky-700 bg-sky-50 border-sky-100' : 'text-orange-700 bg-orange-50 border-orange-100'}`}>Avg {isReverse ? 'INA' : 'iDRG'}: {formatRp(data[isReverse ? 'sumIna' : 'sumIdrg'] / data.count)}</span>
+                              </div>
+                            </div>
+                            {!isReverse && (
+                              <div className="space-y-3 mt-2">
+                                <div className="bg-sky-50 p-2 rounded-lg border border-sky-100"><p className="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Layers size={10} /> Diagnosa Utama</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.priDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.priDiags).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pd, k) => (<span key={`pd-${k}`} className="text-[10px] font-black text-sky-800 bg-white border border-sky-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-sky-50">{pd[0]} <span className="text-sky-400 font-bold ml-0.5">({pd[1]})</span></span>))}</div></div>
+                                <div className="bg-slate-50 p-2 rounded-lg border border-slate-100"><p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Stethoscope size={10} /> Diagnosa Sekunder Penyerta</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.secDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.secDiags).sort((a, b) => b[1] - a[1]).slice(0, 15).map((sd, k) => (<span key={`sd-${k}`} className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-slate-100">{sd[0]} <span className="text-slate-400 font-semibold ml-0.5">({sd[1]})</span></span>))}</div></div>
+                                <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100"><p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><FileCode size={10} /> Prosedur Terkait</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{!data.procs || Object.entries(data.procs).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.procs).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pr, k) => (<span key={`pr-${k}`} className="text-[10px] font-black text-indigo-800 bg-white border border-indigo-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-indigo-50">{pr[0]} <span className="text-indigo-400 font-bold ml-0.5">({pr[1]})</span></span>))}</div></div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </Card>
       </div>
@@ -2998,7 +3022,7 @@ export default function App() {
         <div className="p-6 bg-slate-50/50 border-b border-slate-200"><h3 className="text-base font-extrabold text-slate-800 tracking-tight">Log Ketidaksesuaian Koding ({dashData.scorecard.discrepancies.length} Kasus)</h3></div>
         <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
           <table className="w-full text-sm text-left">
-            <thead className="bg-white border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider text-slate-400 sticky top-0 z-10"><tr><th className="p-4 border-r border-slate-100 w-48">Pasien (MRN / SEP)</th><th className="p-4 border-r border-slate-100 w-[35%]">Komparasi Diagnosa</th><th className="p-4 w-[35%]">Komparasi Prosedur</th></tr></thead>
+            <thead className="bg-white border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider text-slate-400 sticky top-0 z-40"><tr><th className="p-4 border-r border-slate-100 w-48">Pasien (MRN / SEP)</th><th className="p-4 border-r border-slate-100 w-[35%]">Komparasi Diagnosa</th><th className="p-4 w-[35%]">Komparasi Prosedur</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {dashData.scorecard.discrepancies.slice(0, 100).map((d, i) => (
                 <tr key={`disc-${i}`} className="hover:bg-slate-50/50 transition-colors">
@@ -3067,7 +3091,7 @@ export default function App() {
             <div className="p-2 bg-teal-100 rounded-xl text-teal-700"><Activity size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus INA-CBG</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus -€” klik titik untuk drill-down</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus — klik titik untuk drill-down</p>
             </div>
           </div>
           <div className="p-4">
@@ -3078,10 +3102,10 @@ export default function App() {
             const data = dashData.inaSummary || [];
             if (data.length === 0) return null;
             const avgVol = data.reduce((s, d) => s + d.count, 0) / data.length;
-            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi -€” KRITIS
-            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi -€” OPTIMAL
-            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah -€” WASPADA
-            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah -€” MONITOR
+            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi — KRITIS
+            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi — OPTIMAL
+            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah — WASPADA
+            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah — MONITOR
             const topQ1 = [...q1].sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 3);
             const topQ2 = [...q2].sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 3);
             const totalDefisit = data.filter(d => d.totalSelisih < 0).reduce((s, d) => s + d.totalSelisih, 0);
@@ -3090,16 +3114,16 @@ export default function App() {
               <div className="px-5 pb-5 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'Prioritas perbaikan koding' },
-                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'Kode unggulan, pertahankan' },
-                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau efisiensi koding' },
-                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '๐”ต', note: 'Potensi pengembangan layanan' },
+                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '🔴', note: 'Prioritas perbaikan Dokumentasi Klinis Diagnosa Sekunder & koding' },
+                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '🟢', note: 'Kode unggulan, pertahankan' },
+                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '🟡', note: 'Pantau efisiensi Dokumentasi Klinis Diagnosa Sekunder & koding' },
+                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '🔵', note: 'Potensi pengembangan layanan' },
                   ].map((item, i) => {
                     const qData = [q1, q2, q3, q4][i];
                     const codes = new Set(qData.map(d => d.code));
                     return (
-                      <div 
-                        key={i} 
+                      <div
+                        key={i}
                         className={`p-3 rounded-xl border ${item.color} flex flex-col gap-1 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all group`}
                         onClick={() => openDrilldown(`INA-CBG Summary: ${item.label}`, r => codes.has(String(r.INACBG).trim()), 'summary_ina')}
                       >
@@ -3119,7 +3143,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topQ1.length > 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">- ๏ธ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
+                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">⚠️ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
                       <div className="space-y-1.5">
                         {topQ1.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
@@ -3133,7 +3157,7 @@ export default function App() {
                   )}
                   {topQ2.length > 0 && (
                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-... Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
+                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">✔ Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
                       <div className="space-y-1.5">
                         {topQ2.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
@@ -3163,7 +3187,7 @@ export default function App() {
             <div className="p-2 bg-rose-100 rounded-xl text-rose-700"><Activity size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus iDRG</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus -€” klik titik untuk drill-down</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus — klik titik untuk drill-down</p>
             </div>
           </div>
           <div className="p-4">
@@ -3186,16 +3210,16 @@ export default function App() {
               <div className="px-5 pb-5 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'CL terlalu rendah, review koding' },
-                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'CL optimal, pertahankan' },
-                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau & evaluasi per kasus' },
-                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '๐”ต', note: 'Efisien, kembangkan layanan' },
+                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '🔴', note: 'CL terlalu rendah, review Dokumentasi Klinis Diagnosa Sekunder & koding' },
+                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '🟢', note: 'CL optimal, pertahankan' },
+                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '🟡', note: 'Pantau & evaluasi per kasus' },
+                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '🔵', note: 'Efisien, kembangkan layanan' },
                   ].map((item, i) => {
                     const qData = [q1, q2, q3, q4][i];
                     const codes = new Set(qData.map(d => d.code));
                     return (
-                      <div 
-                        key={i} 
+                      <div
+                        key={i}
                         className={`p-3 rounded-xl border ${item.color} flex flex-col gap-1 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all group`}
                         onClick={() => openDrilldown(`iDRG Summary: ${item.label}`, r => codes.has(String(r.IDRG_DRG_CODE).trim()), 'summary_idrg')}
                       >
@@ -3215,7 +3239,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topQ1.length > 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">- ๏ธ Kode iDRG Berdefisit Tinggi (Review CL)</p>
+                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">⚠️ Kode iDRG Berdefisit Tinggi (Review CL)</p>
                       <div className="space-y-1.5">
                         {topQ1.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
@@ -3229,7 +3253,7 @@ export default function App() {
                   )}
                   {topQ2.length > 0 && (
                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-... Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
+                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">✔ Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
                       <div className="space-y-1.5">
                         {topQ2.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
@@ -3291,14 +3315,14 @@ export default function App() {
           </div>
           <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
             <table className="w-full text-xs text-left whitespace-nowrap">
-              <thead className="sticky top-0 z-10">
+              <thead className="sticky top-0 z-40">
                 <tr>
                   <th colSpan={13} className="px-3 py-2 bg-sky-700 text-white text-[10px] font-extrabold uppercase tracking-widest border-b border-sky-600">Data Pasien & Tarif</th>
                   <th colSpan={18} className="px-3 py-2 bg-slate-800 text-white text-[10px] font-extrabold uppercase tracking-widest text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
                 </tr>
                 <tr className="bg-sky-50 text-[9px] uppercase font-extrabold tracking-wider text-sky-700">
-                  <th className="px-2 py-2 border-r border-sky-100 sticky left-0 bg-sky-50 z-20 w-8">No</th>
-                  <th className="px-2 py-2 border-r border-sky-100 min-w-[130px]">Nama Pasien</th>
+                  <th className="px-2 py-2 border-r border-sky-100 sticky left-0 bg-sky-50 z-20 w-8 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">No</th>
+                  <th className="px-2 py-2 border-r border-sky-100 min-w-[130px] sticky left-8 bg-sky-50 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">Nama Pasien</th>
                   <th className="px-2 py-2 border-r border-sky-100 w-20">MRN</th>
                   <th className="px-2 py-2 border-r border-sky-100 w-20">SEP</th>
                   <th className="px-2 py-2 border-r border-sky-100 w-20">Tgl Masuk</th>
@@ -3329,8 +3353,8 @@ export default function App() {
                       style={{ animationDelay: `${Math.min(i * 15, 500)}ms`, animationFillMode: 'both' }}
                       onClick={() => openDrilldown(`Pasien: ${patientName}`, row => String(row.SEP) === String(r.SEP))}
                     >
-                      <td className="px-2 py-1.5 border-r border-slate-50 text-center text-slate-400 sticky left-0 bg-white z-[5]">{i + 1}</td>
-                      <td className="px-2 py-1.5 border-r border-slate-50 font-semibold text-slate-800 truncate max-w-[150px]">{displayName}</td>
+                      <td className="px-2 py-1.5 border-r border-slate-50 text-center text-slate-400 sticky left-0 bg-white z-[5] shadow-[2px_0_5px_rgba(0,0,0,0.05)]">{i + 1}</td>
+                      <td className="px-2 py-1.5 border-r border-slate-50 font-semibold text-slate-800 truncate max-w-[150px] sticky left-8 bg-white z-[5] shadow-[2px_0_5px_rgba(0,0,0,0.02)]">{displayName}</td>
                       <td className="px-2 py-1.5 border-r border-slate-50 text-slate-600">{r.MRN || '-'}</td>
                       <td className="px-2 py-1.5 border-r border-slate-50 font-mono text-[10px] text-slate-500">{r.SEP || '-'}</td>
                       <td className="px-2 py-1.5 border-r border-slate-50 text-slate-500">{r._tglMasuk || '-'}</td>
@@ -3388,8 +3412,8 @@ export default function App() {
         {/* DEPT BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 Departemen -€” Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
-            { title: 'Top 10 Departemen -€” Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
+            { title: 'Top 10 Departemen — Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
+            { title: 'Top 10 Departemen — Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.data.map(d => Math.abs(d[chart.key])), 1);
             return (
@@ -3418,26 +3442,24 @@ export default function App() {
         <Card className="overflow-hidden border border-slate-200 mt-6">
           <div className="overflow-x-auto max-h-[800px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
-              <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-wider sticky top-0 z-10">
+              <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
                 <tr>
-                   <th colSpan={6} className="px-4 py-3 bg-slate-900 text-white border-b border-slate-700">Ringkasan Finansial</th>
-                   <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
+                  <th colSpan={6} className="px-4 py-3 bg-slate-900 text-white border-b border-slate-700">Ringkasan Finansial</th>
+                  <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
                 </tr>
-                 <tr>
-                   <th className="p-4 min-w-[280px] bg-slate-900 sticky left-0 z-20">Hierarki Departemen / KSM / DPJP</th>
-                   <th className="p-4 text-right bg-slate-900 w-20">Kasus</th>
-                   <th className="p-4 text-center bg-teal-900 text-teal-300 w-20 text-[9px]">ALOS</th>
-                   <th className="p-4 text-center bg-rose-900 text-rose-300 w-20 text-[9px]">MAX LOS</th>
-                   <th className="p-4 text-right bg-slate-900 min-w-[120px]">Avg RS</th>
-                   <th className="p-4 text-right bg-sky-900/50 min-w-[120px]">Sel. INA</th>
-                   <th className="p-4 text-right bg-indigo-900/50 min-w-[120px]">Sel. iDRG</th>
-                   <th className="p-4 text-right bg-purple-900/50 min-w-[120px]">iDRG vs INA</th>
-                   {compKeys.map(c => <th key={c.key} className="p-4 text-right bg-slate-800 text-slate-400 min-w-[100px]">{c.label}</th>)}
-                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {/* RATA-RATA RS SUMMARY ROW */}
-                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 sticky top-[72px] z-[15] shadow-sm">
+                <tr>
+                  <th className="p-4 min-w-[280px] bg-slate-900 sticky left-0 z-50">Hierarki Departemen / KSM / DPJP</th>
+                  <th className="p-4 text-right bg-slate-900 w-20">Kasus</th>
+                  <th className="p-4 text-center bg-teal-900 text-teal-300 w-20 text-[9px]">ALOS</th>
+                  <th className="p-4 text-center bg-rose-900 text-rose-300 w-20 text-[9px]">MAX LOS</th>
+                  <th className="p-4 text-right bg-slate-900 min-w-[120px]">Avg RS</th>
+                  <th className="p-4 text-right bg-sky-900/50 min-w-[120px]">Sel. INA</th>
+                  <th className="p-4 text-right bg-indigo-900/50 min-w-[120px]">Sel. iDRG</th>
+                  <th className="p-4 text-right bg-purple-900/50 min-w-[120px]">iDRG vs INA</th>
+                  {compKeys.map(c => <th key={c.key} className="p-4 text-right bg-slate-800 text-slate-400 min-w-[100px]">{c.label}</th>)}
+                </tr>
+                {/* RATA-RATA RS SUMMARY ROW (Now in thead for perfect sticky behavior) */}
+                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm">
                   <td className="p-4 bg-amber-50 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center"><Zap size={12} /></div>
@@ -3453,11 +3475,13 @@ export default function App() {
                   <td className="p-4 text-right font-black text-xs text-purple-700">{formatRp(hAvgIdrgIna)}</td>
                   {compKeys.map(c => <td key={c.key} className="p-4 text-right text-[10px] font-black text-amber-600 bg-amber-100/30">{formatRpEx(hAvgComps[c.key])}</td>)}
                 </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
 
                 {deptData.map((dept, di) => {
                   const deptKsms = ksmData.filter(k => k.dept === dept.name);
                   const isDeptOpen = openKsm === `dept-${di}`;
-                  
+
                   // Calculate Department Averages
                   const dAvgRS = dept.sumRS / (dept.count || 1);
                   const dAvgSelIna = (dept.sumIna - dept.sumRS) / (dept.count || 1);
@@ -3474,7 +3498,7 @@ export default function App() {
                       <tr className="bg-slate-100/80 font-black border-y border-slate-200">
                         <td className="p-4 sticky left-0 z-20 bg-slate-100/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setOpenKsm(isDeptOpen ? null : `dept-${di}`)}>
-                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>-–ถ</span>
+                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>▶</span>
                             <span className="uppercase text-slate-800 tracking-tight">{dept.name}</span>
                           </div>
                         </td>
@@ -3496,21 +3520,21 @@ export default function App() {
                               style={{ animationDelay: `${ki * 40}ms`, animationFillMode: 'both' }}
                               onClick={() => setExpandedKsms(prev => ({ ...prev, [ksm.name]: !isKsmOpen }))}
                             >
-                              <td className="p-4 pl-10 border-l-4 border-indigo-500">
+                              <td className="p-4 pl-10 border-l-4 border-indigo-500 sticky left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                                 <div className="flex items-center gap-2">
-                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>-–ถ</span>
+                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>▶</span>
                                   <span className="font-bold text-indigo-700">{ksm.name}</span>
                                 </div>
                               </td>
-                               <td className="p-4 text-right font-bold text-slate-700">{ksm.count.toLocaleString()}</td>
-                               <td className="p-4 text-center text-teal-600 font-bold text-xs bg-teal-50/20">{(ksm.sumLos / ksm.count).toFixed(1)}</td>
-                               <td className="p-4 text-center text-rose-600 font-bold text-xs bg-rose-50/20">{ksm.maxLos}</td>
-                               <td className="p-4 text-right text-slate-500 text-xs">{formatRp(ksm.sumRS / ksm.count)}</td>
-                               <td className={`p-4 text-right font-bold ${ksm.selisihIna >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp(ksm.selisihIna / ksm.count)}</td>
-                               <td className={`p-4 text-right font-bold ${ksm.selisihIdrg >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp(ksm.selisihIdrg / ksm.count)}</td>
-                               <td className="p-4 text-right font-bold text-purple-600">{formatRp((ksm.sumIdrg - ksm.sumIna) / ksm.count)}</td>
-                               {compKeys.map(c => <td key={c.key} className="p-4 text-right text-[11px] font-semibold text-indigo-400 bg-indigo-50/30">{formatRpEx((ksm.comps?.[c.key] || 0) / ksm.count)}</td>)}
-                             </tr>
+                              <td className="p-4 text-right font-bold text-slate-700">{ksm.count.toLocaleString()}</td>
+                              <td className="p-4 text-center text-teal-600 font-bold text-xs bg-teal-50/20">{(ksm.sumLos / ksm.count).toFixed(1)}</td>
+                              <td className="p-4 text-center text-rose-600 font-bold text-xs bg-rose-50/20">{ksm.maxLos}</td>
+                              <td className="p-4 text-right text-slate-500 text-xs">{formatRp(ksm.sumRS / ksm.count)}</td>
+                              <td className={`p-4 text-right font-bold ${ksm.selisihIna >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp(ksm.selisihIna / ksm.count)}</td>
+                              <td className={`p-4 text-right font-bold ${ksm.selisihIdrg >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp(ksm.selisihIdrg / ksm.count)}</td>
+                              <td className="p-4 text-right font-bold text-purple-600">{formatRp((ksm.sumIdrg - ksm.sumIna) / ksm.count)}</td>
+                              {compKeys.map(c => <td key={c.key} className="p-4 text-right text-[11px] font-semibold text-indigo-400 bg-indigo-50/30">{formatRpEx((ksm.comps?.[c.key] || 0) / ksm.count)}</td>)}
+                            </tr>
                             {isKsmOpen && ksm.dpjps.map((dpjp, pi) => (
                               <tr
                                 key={`dpjp-${di}-${ki}-${pi}`}
@@ -3518,18 +3542,18 @@ export default function App() {
                                 style={{ animationDelay: `${pi * 30}ms`, animationFillMode: 'both' }}
                                 onClick={() => openDrilldown(`Kasus DPJP: ${dpjp.name}`, row => normDpjp(row['DPJP']) === dpjp.normName)}
                               >
-                                <td className="p-3 pl-20 italic flex items-center gap-2">
+                                <td className="p-3 pl-20 italic flex items-center gap-2 sticky left-0 z-20 bg-slate-50 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                                   <User size={12} className="text-slate-400" /> {dpjp.name}
                                 </td>
-                                 <td className="p-3 text-right">{dpjp.count.toLocaleString()}</td>
-                                 <td className="p-3 text-center text-teal-600 text-[10px]">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
-                                 <td className="p-3 text-center text-rose-600 text-[10px]">{dpjp.maxLos}</td>
-                                 <td className="p-3 text-right opacity-60 text-[10px]">{formatRp(dpjp.sumRS / dpjp.count)}</td>
-                                 <td className={`p-3 text-right font-medium text-[10px] ${dpjp.sumIna - dpjp.sumRS >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIna - dpjp.sumRS) / dpjp.count)}</td>
-                                 <td className={`p-3 text-right font-medium text-[10px] ${dpjp.sumIdrg - dpjp.sumRS >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIdrg - dpjp.sumRS) / dpjp.count)}</td>
-                                 <td className="p-3 text-right font-medium text-purple-600 text-[10px]">{formatRp((dpjp.sumIdrg - dpjp.sumIna) / dpjp.count)}</td>
-                                 {compKeys.map(c => <td key={c.key} className="p-3 text-right text-[10px] text-slate-400">{formatRpEx((dpjp.comps?.[c.key] || 0) / dpjp.count)}</td>)}
-                               </tr>
+                                <td className="p-3 text-right">{dpjp.count.toLocaleString()}</td>
+                                <td className="p-3 text-center text-teal-600 text-[10px]">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
+                                <td className="p-3 text-center text-rose-600 text-[10px]">{dpjp.maxLos}</td>
+                                <td className="p-3 text-right opacity-60 text-[10px]">{formatRp(dpjp.sumRS / dpjp.count)}</td>
+                                <td className={`p-3 text-right font-medium text-[10px] ${dpjp.sumIna - dpjp.sumRS >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIna - dpjp.sumRS) / dpjp.count)}</td>
+                                <td className={`p-3 text-right font-medium text-[10px] ${dpjp.sumIdrg - dpjp.sumRS >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIdrg - dpjp.sumRS) / dpjp.count)}</td>
+                                <td className="p-3 text-right font-medium text-purple-600 text-[10px]">{formatRp((dpjp.sumIdrg - dpjp.sumIna) / dpjp.count)}</td>
+                                {compKeys.map(c => <td key={c.key} className="p-3 text-right text-[10px] text-slate-400">{formatRpEx((dpjp.comps?.[c.key] || 0) / dpjp.count)}</td>)}
+                              </tr>
                             ))}
                           </React.Fragment>
                         );
@@ -3547,7 +3571,7 @@ export default function App() {
 
   const renderDpjp = () => {
     const data = dashData?.dpjpSummaryArray || [];
-    
+
     // Calculate Hospital Averages for Comparison
     const totalK = data.reduce((s, d) => s + d.count, 0) || 1;
     const hSumRS = data.reduce((s, d) => s + d.sumRS, 0);
@@ -3555,7 +3579,7 @@ export default function App() {
     const hSumIdrg = data.reduce((s, d) => s + d.sumIdrg, 0);
     const hSumLos = data.reduce((s, d) => s + d.sumLos, 0);
     const hMaxLos = Math.max(...data.map(d => d.maxLos), 0);
-    
+
     const hAvgRS = hSumRS / totalK;
     const hAvgIna = hSumIna / totalK;
     const hAvgIdrg = hSumIdrg / totalK;
@@ -3563,7 +3587,7 @@ export default function App() {
     const hAvgSelIdrg = (hSumIdrg - hSumRS) / totalK;
     const hAvgIdrgIna = (hSumIdrg - hSumIna) / totalK;
     const hAvgLos = hSumLos / totalK;
-    
+
     const hAvgComps = compKeys.reduce((acc, c) => {
       acc[c.key] = data.reduce((s, d) => s + (d.comps?.[c.key] || 0), 0) / totalK;
       return acc;
@@ -3605,8 +3629,8 @@ export default function App() {
         {/* DPJP BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 DPJP -€” Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
-            { title: 'Top 10 DPJP -€” Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
+            { title: 'Top 10 DPJP — Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
+            { title: 'Top 10 DPJP — Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.items.map(d => Math.abs(chart.getVal(d))), 1);
             return (
@@ -3638,13 +3662,13 @@ export default function App() {
         <Card className="overflow-hidden">
           <div className="overflow-x-auto max-h-[700px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
-              <thead className="sticky top-0 z-10">
+              <thead className="sticky top-0 z-40">
                 <tr>
                   <th colSpan={10} className="px-4 py-3 bg-teal-600 text-white font-extrabold text-xs uppercase tracking-widest border-b border-teal-500">Ringkasan Finansial DPJP</th>
                   <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white font-extrabold text-xs uppercase tracking-widest text-center border-b border-slate-700">Rincian 18 Komponen Biaya RS</th>
                 </tr>
                 <tr className="bg-teal-50 text-[10px] uppercase font-extrabold tracking-wider text-teal-700">
-                  <th className="px-3 py-2.5 border-r border-teal-100 sticky left-0 bg-teal-50 z-20 min-w-[180px]">Nama DPJP</th>
+                  <th className="px-3 py-2.5 border-r border-teal-100 sticky left-0 bg-teal-50 z-50 min-w-[180px]">Nama DPJP</th>
                   <th className="px-3 py-2.5 border-r border-teal-100 text-right w-16">Kasus</th>
                   <th className="px-3 py-2.5 border-r border-teal-100 text-center">Avg LOS</th>
                   <th className="px-3 py-2.5 border-r border-teal-100 text-center">Max LOS</th>
@@ -3656,11 +3680,9 @@ export default function App() {
                   <th className="px-3 py-2.5 border-r border-slate-300 text-right bg-purple-50 text-purple-700">Sel. iDRG-INA</th>
                   {compKeys.map(c => <th key={c.key} className="px-3 py-2.5 border-r border-slate-200 text-right bg-slate-100 text-slate-600 min-w-[90px]">{c.label}</th>)}
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
                 {/* RATA-RATA RS SUMMARY ROW */}
-                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 sticky top-[72px] z-[15] shadow-sm">
-                  <td className="px-3 py-3 border-r border-amber-200 font-extrabold text-amber-800 sticky left-0 bg-amber-50 z-[10] text-[10px] flex items-center gap-2">
+                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm">
+                  <td className="px-3 py-3 border-r border-amber-200 font-extrabold text-amber-800 sticky left-0 bg-amber-50 z-20 text-[10px] flex items-center gap-2">
                     <Zap size={14} className="text-amber-500" /> RATA-RATA RS
                   </td>
                   <td className="px-3 py-3 border-r border-amber-100 text-right text-amber-700 text-xs font-black">1</td>
@@ -3682,7 +3704,8 @@ export default function App() {
                     <td key={`h-tot-${c.key}`} className="px-3 py-3 border-r border-amber-50 text-right text-[11px] font-black text-amber-600 bg-amber-100/30">{formatRpEx(hAvgComps[c.key])}</td>
                   ))}
                 </tr>
-
+              </thead>
+              <tbody className="divide-y divide-slate-100">
                 {data.map((dpjp, i) => {
                   const selIna = dpjp.sumIna - dpjp.sumRS;
                   const selIdrg = dpjp.sumIdrg - dpjp.sumRS;
@@ -3763,7 +3786,7 @@ export default function App() {
     const totalVerified = totalReviewed;
     const totalCases = data.reduce((s, c) => s + c.cases, 0);
     const overallAccuracy = totalCases > 0 ? 100 - (totalTidak / totalCases) * 100 : 100;
-    
+
     return (
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <SectionHeader icon={Award} title="KPI Coder (Kinerja Petugas Koding)" desc="Analisis produktivitas, akurasi input, dan efektivitas koding per individu petugas." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => {
@@ -3773,36 +3796,36 @@ export default function App() {
 
         {/* Coder Performance Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           <Card className="p-6 bg-white border-0 shadow-lg relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-teal-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
-              <div className="relative z-10">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Kasus Direview</p>
-                <h3 className="text-4xl font-black text-slate-800 tracking-tight">{totalVerified.toLocaleString()}</h3>
-                <div className="mt-4 flex items-center gap-2 text-teal-600 font-bold text-xs bg-teal-50 w-fit px-3 py-1 rounded-full">
-                  <CheckSquare size={14} /> Audit Progress
-                </div>
+          <Card className="p-6 bg-white border-0 shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-teal-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
+            <div className="relative z-10">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Kasus Direview</p>
+              <h3 className="text-4xl font-black text-slate-800 tracking-tight">{totalVerified.toLocaleString()}</h3>
+              <div className="mt-4 flex items-center gap-2 text-teal-600 font-bold text-xs bg-teal-50 w-fit px-3 py-1 rounded-full">
+                <CheckSquare size={14} /> Audit Progress
               </div>
-           </Card>
-           <Card className="p-6 bg-white border-0 shadow-lg relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
-              <div className="relative z-10">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Akurasi Rata-rata (Verified)</p>
-                <h3 className="text-4xl font-black text-emerald-600 tracking-tight">{formatPct(overallAccuracy)}%</h3>
-                <div className="mt-4 flex items-center gap-2 text-emerald-600 font-bold text-xs bg-emerald-50 w-fit px-3 py-1 rounded-full">
-                  <TrendingUp size={14} /> Clinical Accuracy
-                </div>
+            </div>
+          </Card>
+          <Card className="p-6 bg-white border-0 shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
+            <div className="relative z-10">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Akurasi Rata-rata (Verified)</p>
+              <h3 className="text-4xl font-black text-emerald-600 tracking-tight">{formatPct(overallAccuracy)}%</h3>
+              <div className="mt-4 flex items-center gap-2 text-emerald-600 font-bold text-xs bg-emerald-50 w-fit px-3 py-1 rounded-full">
+                <TrendingUp size={14} /> Clinical Accuracy
               </div>
-           </Card>
-           <Card className="p-6 bg-white border-0 shadow-lg relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
-              <div className="relative z-10">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Discrepancy Terdeteksi</p>
-                <h3 className="text-4xl font-black text-rose-600 tracking-tight">{totalTidak.toLocaleString()}</h3>
-                <div className="mt-4 flex items-center gap-2 text-rose-600 font-bold text-xs bg-rose-50 w-fit px-3 py-1 rounded-full">
-                  <AlertCircle size={14} /> Coding Improvement
-                </div>
+            </div>
+          </Card>
+          <Card className="p-6 bg-white border-0 shadow-lg relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-500"></div>
+            <div className="relative z-10">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Discrepancy Terdeteksi</p>
+              <h3 className="text-4xl font-black text-rose-600 tracking-tight">{totalTidak.toLocaleString()}</h3>
+              <div className="mt-4 flex items-center gap-2 text-rose-600 font-bold text-xs bg-rose-50 w-fit px-3 py-1 rounded-full">
+                <AlertCircle size={14} /> Coding Improvement
               </div>
-           </Card>
+            </div>
+          </Card>
         </div>
 
         <Card className="overflow-hidden border-0 shadow-xl bg-white rounded-[2rem]">
@@ -3836,10 +3859,78 @@ export default function App() {
                       </td>
                       <td className="px-6 py-4 text-right font-bold text-slate-600">{r.cases.toLocaleString()}</td>
                       <td className="px-6 py-4 text-right">
-                        <span className={`px-2 py-1 rounded-lg text-[10px] font-black ${r.discrepancyCount > 0 ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-400'}`}>{r.discrepancyCount}</span>
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (r.discrepancyCount > 0) {
+                              const discRows = (dashData?.rawRows || []).filter(row => {
+                                const raw = String(row['CODER_ID'] || row['USER_CODER'] || row['CODER'] || '').trim().toUpperCase();
+                                const c = raw.includes(';') ? raw.split(';')[0].trim() : raw;
+                                if (c !== r.id) return false;
+                                const d1 = String(row['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
+                                const p1 = String(row['PROCLIST'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+                                const d2 = String(row['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
+                                const p2 = String(row['IDRG_PROC_LISTS'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+                                return checkMatchList(d1, d2, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']) < 100 || checkMatchList(p1, p2, ['99.290']) < 100;
+                              });
+
+                              const generatedFindings = discRows.map(row => {
+                                const d1 = String(row['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
+                                const d2 = String(row['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
+                                const p1 = String(row['PROCLIST'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+                                const p2 = String(row['IDRG_PROC_LISTS'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+
+                                // Calculate specific differences, excluding certain medical codes
+                                const EXCLUDED_DIAGS = ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84'];
+                                const EXCLUDED_PROCS = ['99.290'];
+
+                                const dOnlyInIna = d1.filter(c => !d2.includes(c) && !EXCLUDED_DIAGS.includes(c));
+                                const dOnlyInIdrg = d2.filter(c => !d1.includes(c) && !EXCLUDED_DIAGS.includes(c));
+                                const pOnlyInIna = p1.filter(c => !p2.includes(c) && !EXCLUDED_PROCS.includes(c));
+                                const pOnlyInIdrg = p2.filter(c => !p1.includes(c) && !EXCLUDED_PROCS.includes(c));
+
+                                const hasAnyDiff = dOnlyInIna.length > 0 || dOnlyInIdrg.length > 0 || pOnlyInIna.length > 0 || pOnlyInIdrg.length > 0;
+
+                                return {
+                                  ruleId: 'KODING_DISC',
+                                  case: `Mismatch INA vs iDRG`,
+                                  warning: (
+                                    <div className="flex flex-col gap-1.5 py-1">
+                                      {dOnlyInIna.length > 0 && <div className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-[9px] font-black shrink-0">INA ONLY</span> <span className="text-orange-700 font-bold">Diag: [{dOnlyInIna.join(', ')}]</span></div>}
+                                      {dOnlyInIdrg.length > 0 && <div className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-sky-100 text-sky-700 rounded text-[9px] font-black shrink-0">iDRG ONLY</span> <span className="text-sky-700 font-bold">Diag: [{dOnlyInIdrg.join(', ')}]</span></div>}
+                                      {pOnlyInIna.length > 0 && <div className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded text-[9px] font-black shrink-0">INA ONLY</span> <span className="text-orange-700 font-bold">Proc: [{pOnlyInIna.join(', ')}]</span></div>}
+                                      {pOnlyInIdrg.length > 0 && <div className="flex items-center gap-1.5"><span className="px-1.5 py-0.5 bg-sky-100 text-sky-700 rounded text-[9px] font-black shrink-0">iDRG ONLY</span> <span className="text-sky-700 font-bold">Proc: [{pOnlyInIdrg.join(', ')}]</span></div>}
+                                      {!hasAnyDiff && <div className="text-slate-400 italic text-[10px]">Perbedaan urutan atau karakter koding</div>}
+                                    </div>
+                                  ),
+                                  sep: String(row['SEP'] || '-'),
+                                  mrn: String(row['MRN'] || '-'),
+                                  coderId: r.id
+                                };
+                              });
+
+                              openDrilldown(`Review Discrepancy: ${r.id}`, () => true, 'audit_kpi', generatedFindings);
+                            }
+                          }}
+                          title="Klik untuk meninjau perbedaan koding"
+                          className={`px-2 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all hover:scale-110 active:scale-95 ${r.discrepancyCount > 0 ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' : 'bg-slate-100 text-slate-400'}`}
+                        >
+                          {r.discrepancyCount}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className={`px-2 py-1 rounded-lg text-[10px] font-black ${r.adjAuditHits > 0 ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-400'}`}>{r.adjAuditHits}</span>
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (r.auditHits > 0) {
+                              openDrilldown(`Temuan Audit: ${r.id}`, f => String(f.coderId || '').toUpperCase() === r.id, 'audit_kpi', findings);
+                            }
+                          }}
+                          title="Klik untuk melihat detail temuan audit"
+                          className={`px-2 py-1 rounded-lg text-[10px] font-black cursor-pointer transition-all hover:scale-110 active:scale-95 ${r.adjAuditHits > 0 ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-slate-100 text-slate-400'}`}
+                        >
+                          {r.adjAuditHits}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-right font-black text-emerald-600">{r.sesuai > 0 ? r.sesuai.toLocaleString() : '-'}</td>
                       <td className="px-6 py-4 text-right font-black text-rose-600">{r.tidakSesuai > 0 ? r.tidakSesuai.toLocaleString() : '-'}</td>
@@ -3885,7 +3976,7 @@ export default function App() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card className="p-5 text-center border-b-4 border-b-teal-500"><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Temuan</p><p className="text-3xl font-black text-slate-800">{findings.length}</p></Card>
           <Card className="p-5 text-center bg-slate-50/50"><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Sudah Direview</p><p className="text-3xl font-black text-slate-600">{totalReviewed}</p></Card>
-          <Card className="p-5 text-center bg-teal-50/50 border border-teal-100"><p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Total Klaim Audit</p><p className="text-2xl font-black text-teal-700">{formatRp(filtered.reduce((s,f) => s + (f.totalTarif || 0), 0))}</p></Card>
+          <Card className="p-5 text-center bg-teal-50/50 border border-teal-100"><p className="text-[10px] font-black text-teal-600 uppercase tracking-widest mb-1">Total Klaim Audit</p><p className="text-2xl font-black text-teal-700">{formatRp(filtered.reduce((s, f) => s + (f.totalTarif || 0), 0))}</p></Card>
           <Card className="p-5 text-center bg-emerald-50/50 border border-emerald-100"><p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Sesuai</p><p className="text-3xl font-black text-emerald-600">{totalSesuai}</p></Card>
           <Card className="p-5 text-center bg-rose-50/50 border border-rose-100"><p className="text-[10px] font-black text-rose-600 uppercase tracking-widest mb-1">Tidak Sesuai</p><p className="text-3xl font-black text-rose-600">{totalTidak}</p></Card>
         </div>
@@ -3948,7 +4039,7 @@ export default function App() {
         <Card className="overflow-hidden border-0 shadow-xl">
           <div className="overflow-x-auto max-h-[700px] custom-scrollbar">
             <table className="w-full text-sm text-left border-collapse">
-              <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-[0.1em] sticky top-0 z-10">
+              <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-[0.1em] sticky top-0 z-40">
                 <tr>
                   <th className="p-4 border-r border-white/10 w-24">Rule ID</th>
                   <th className="p-4 border-r border-white/10">Temuan Audit</th>
@@ -3974,12 +4065,12 @@ export default function App() {
                       <td className="p-4 border-r border-slate-100 align-top text-slate-700 font-bold text-xs">{f.case}</td>
                       <td className="p-4 border-r border-slate-100 align-top text-rose-700 font-bold text-[11px] leading-relaxed max-w-[250px]">{f.warning}</td>
                       <td className="p-4 border-r border-slate-100 align-top">
-                         <p className="font-black text-slate-800 text-[11px]">{f.mrn}</p>
-                         <p className="text-[10px] text-slate-400 font-mono mt-0.5">{f.sep}</p>
+                        <p className="font-black text-slate-800 text-[11px]">{f.mrn}</p>
+                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">{f.sep}</p>
                       </td>
                       <td className="p-4 border-r border-slate-100 align-top">
-                         <p className="font-bold text-teal-700 text-[11px]">{f.coderId || '-'}</p>
-                         <p className="text-[10px] text-slate-400 font-bold">{formatRp(f.totalTarif || 0)}</p>
+                        <p className="font-bold text-teal-700 text-[11px]">{f.coderId || '-'}</p>
+                        <p className="text-[10px] text-slate-400 font-bold">{formatRp(f.totalTarif || 0)}</p>
                       </td>
                       <td className="p-4 border-r border-slate-100 align-top font-mono text-[10px] text-slate-600 max-w-[176px] break-words leading-relaxed" title={f.diaglist}>{f.diaglist || '-'}</td>
                       <td className="p-4 border-r border-slate-100 align-top font-mono text-[10px] text-slate-600 max-w-[176px] break-words leading-relaxed" title={f.proclist}>{f.proclist || '-'}</td>
@@ -3987,10 +4078,10 @@ export default function App() {
                         <div className="flex gap-2 justify-center">
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'sesuai' ? undefined : 'sesuai'); }}
                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'sesuai' ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-emerald-200 hover:text-emerald-600'}`}
-                          >-“ SESUAI</button>
+                          >✔ SESUAI</button>
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'tidak' ? undefined : 'tidak'); }}
                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'tidak' ? 'bg-rose-600 border-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-rose-200 hover:text-rose-600'}`}
-                          >-- TIDAK</button>
+                          >✖ TIDAK</button>
                         </div>
                       </td>
                     </tr>
@@ -4014,14 +4105,14 @@ export default function App() {
         }} />
         <Card className="overflow-x-auto">
           <MiniTable data={data} columns={[
-            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} -’ ${r.akhir}` },
+            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} → ${r.akhir}` },
             { header: 'Pembayar', className: 'text-xs font-semibold', render: r => r.pembayar },
             { header: 'Jumlah', className: 'text-right font-bold', render: r => r.count },
             { header: 'Total Nilai', className: 'text-right font-black text-cyan-600', render: r => formatRp(r.totalNilai) },
             { header: 'SL1', className: 'text-right', render: r => r.sev1 },
             { header: 'SL2', className: 'text-right', render: r => r.sev2 },
             { header: 'SL3', className: 'text-right', render: r => r.sev3 }
-          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}-’${r.akhir}`, row => {
+          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}→${r.akhir}`, row => {
             const kAw = String(row['KELAS_RAWAT'] || row['KELAS'] || row['HAK_KELAS'] || '').trim();
             const matchC2 = String(row['C2'] || '').match(/"selisih_biaya":\s*\{\s*"nilai":\s*"(\d+)"\s*,\s*"pembayar":\s*"([^"]+)"\s*,\s*"naik_kelas":\s*"([^"]+)"/);
             const kAk = matchC2 ? matchC2[3].toUpperCase() : '';
@@ -4040,58 +4131,58 @@ export default function App() {
           const csv = data.map(d => [d.item, d.category, d.count, d.totalPotensi]);
           exportToXlsx('Potensi_TopUp', ['Item', 'Category', 'Kasus', 'Total Potensi'], csv);
         }} />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-           <Card className="p-5 border-0 shadow-lg bg-emerald-600 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-3 opacity-20"><ArrowUpCircle size={60} /></div>
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Total Potensi Revenue</p>
-              <h3 className="text-2xl font-black">{formatRp(dashData?.topUpStats?.topUpNilai || 0)}</h3>
-           </Card>
-           <Card className="p-5 border-0 shadow-lg bg-white">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Kasus Potensial</p>
-              <h3 className="text-2xl font-black text-slate-800">{dashData?.topUpStats?.topUpKasus || 0} <span className="text-xs font-bold text-slate-400">Record</span></h3>
-           </Card>
-           <Card className="p-5 border-0 shadow-lg bg-white">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Avg Top-Up per Kasus</p>
-              <h3 className="text-2xl font-black text-teal-600">{formatRp((dashData?.topUpStats?.topUpNilai || 0) / (dashData?.topUpStats?.topUpKasus || 1))}</h3>
-           </Card>
-           <Card className="p-5 border-0 shadow-lg bg-white">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Items Terdeteksi</p>
-              <h3 className="text-2xl font-black text-slate-800">{data.length} <span className="text-xs font-bold text-slate-400">Kriteria</span></h3>
-           </Card>
+          <Card className="p-5 border-0 shadow-lg bg-emerald-600 text-white relative overflow-hidden !bg-emerald-600">
+            <div className="absolute top-0 right-0 p-3 opacity-20"><ArrowUpCircle size={60} /></div>
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Total Potensi Revenue</p>
+            <h3 className="text-2xl font-black">{formatRp(dashData?.topUpStats?.topUpNilai || 0)}</h3>
+          </Card>
+          <Card className="p-5 border-0 shadow-lg bg-white">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Kasus Potensial</p>
+            <h3 className="text-2xl font-black text-slate-800">{dashData?.topUpStats?.topUpKasus || 0} <span className="text-xs font-bold text-slate-400">Record</span></h3>
+          </Card>
+          <Card className="p-5 border-0 shadow-lg bg-white">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Avg Top-Up per Kasus</p>
+            <h3 className="text-2xl font-black text-teal-600">{formatRp((dashData?.topUpStats?.topUpNilai || 0) / (dashData?.topUpStats?.topUpKasus || 1))}</h3>
+          </Card>
+          <Card className="p-5 border-0 shadow-lg bg-white">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Items Terdeteksi</p>
+            <h3 className="text-2xl font-black text-slate-800">{data.length} <span className="text-xs font-bold text-slate-400">Kriteria</span></h3>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-           {data.slice(0, 6).map((item, i) => (
-             <Card key={i} className="p-6 border-0 shadow-xl hover:-translate-y-1 transition-all group cursor-pointer" onClick={() => openDrilldown(`Potensi TopUp: ${item.item}`, r => {
-                const ina_norm = normalize_c(String(r['INACBG'] || '').trim());
-                const diag_norm = normalize_c(r['DIAGNOSA'] || '');
-                const all_codes = (String(r['DIAGLIST'] || '') + " " + String(r['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
-                const cbg_ok = item.n_cbgs.length === 0 || item.n_cbgs.some(c => ina_norm === c);
-                const diag_ok = item.n_diags.length === 0 || (item.primaryOnly ? item.n_diags.some(c => diag_norm === c) : item.n_diags.some(c => all_codes.includes(c)));
-                const proc_ok = item.n_procs.length === 0 || item.n_procs.some(c => all_codes.includes(c));
-                return cbg_ok && diag_ok && proc_ok;
-             })}>
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`p-2 rounded-xl font-black text-[10px] uppercase tracking-wider ${item.category === 'sp' ? 'bg-indigo-50 text-indigo-600' : item.category === 'si' ? 'bg-sky-50 text-sky-600' : item.category === 'sr' ? 'bg-purple-50 text-purple-600' : 'bg-emerald-50 text-emerald-600'}`}>{item.category}</div>
-                  <div className="text-right">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Est. Revenue</p>
-                    <p className="text-sm font-black text-emerald-600">+{formatRp(item.totalPotensi)}</p>
-                  </div>
+          {data.slice(0, 6).map((item, i) => (
+            <Card key={i} className="p-6 border-0 shadow-xl hover:-translate-y-1 transition-all group cursor-pointer" onClick={() => openDrilldown(`Potensi TopUp: ${item.item}`, r => {
+              const ina_norm = normalize_c(String(r['INACBG'] || '').trim());
+              const diag_norm = normalize_c(r['DIAGNOSA'] || '');
+              const all_codes = (String(r['DIAGLIST'] || '') + " " + String(r['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
+              const cbg_ok = item.n_cbgs.length === 0 || item.n_cbgs.some(c => ina_norm === c);
+              const diag_ok = item.n_diags.length === 0 || (item.primaryOnly ? item.n_diags.some(c => diag_norm === c) : item.n_diags.some(c => all_codes.includes(c)));
+              const proc_ok = item.n_procs.length === 0 || item.n_procs.some(c => all_codes.includes(c));
+              return cbg_ok && diag_ok && proc_ok;
+            })}>
+              <div className="flex justify-between items-start mb-4">
+                <div className={`p-2 rounded-xl font-black text-[10px] uppercase tracking-wider ${item.category === 'sp' ? 'bg-indigo-50 text-indigo-600' : item.category === 'si' ? 'bg-sky-50 text-sky-600' : item.category === 'sr' ? 'bg-purple-50 text-purple-600' : 'bg-emerald-50 text-emerald-600'}`}>{item.category}</div>
+                <div className="text-right">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Est. Revenue</p>
+                  <p className="text-sm font-black text-emerald-600">+{formatRp(item.totalPotensi)}</p>
                 </div>
-                <h4 className="text-base font-black text-slate-800 mb-1 leading-tight group-hover:text-teal-600 transition-colors">{item.item}</h4>
-                <p className="text-xs font-bold text-slate-400 mb-4">{item.count} Kasus Terdeteksi</p>
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lihat Rincian</span>
-                   <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-transform" />
-                </div>
-             </Card>
-           ))}
+              </div>
+              <h4 className="text-base font-black text-slate-800 mb-1 leading-tight group-hover:text-teal-600 transition-colors">{item.item}</h4>
+              <p className="text-xs font-bold text-slate-400 mb-4">{item.count} Kasus Terdeteksi</p>
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lihat Rincian</span>
+                <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Card>
+          ))}
         </div>
 
         <Card className="overflow-hidden border-0 shadow-xl bg-white rounded-[2rem]">
           <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-             <h3 className="font-black text-slate-800 text-sm uppercase tracking-widest">Daftar Lengkap Peluang Top-Up</h3>
+            <h3 className="font-black text-slate-800 text-sm uppercase tracking-widest">Daftar Lengkap Peluang Top-Up</h3>
           </div>
           <MiniTable data={data} columns={[
             { header: 'Kriteria Item', className: 'font-extrabold text-slate-700', render: r => r.item },
@@ -4100,13 +4191,13 @@ export default function App() {
             { header: 'Nilai Satuan', className: 'text-right text-slate-400', render: r => formatRp(r.tarif) },
             { header: 'Total Potensi', className: 'text-right font-black text-emerald-600', render: r => formatRp(r.totalPotensi) }
           ]} onRowClick={r => openDrilldown(`Potensi TopUp: ${r.item}`, row => {
-              const ina_norm = normalize_c(String(row['INACBG'] || '').trim());
-              const diag_norm = normalize_c(row['DIAGNOSA'] || '');
-              const all_codes = (String(row['DIAGLIST'] || '') + " " + String(row['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
-              const cbg_ok = r.n_cbgs.length === 0 || r.n_cbgs.some(c => ina_norm === c);
-              const diag_ok = r.n_diags.length === 0 || (r.primaryOnly ? r.n_diags.some(c => diag_norm === c) : r.n_diags.some(c => all_codes.includes(c)));
-              const proc_ok = r.n_procs.length === 0 || r.n_procs.some(c => all_codes.includes(c));
-              return cbg_ok && diag_ok && proc_ok;
+            const ina_norm = normalize_c(String(row['INACBG'] || '').trim());
+            const diag_norm = normalize_c(row['DIAGNOSA'] || '');
+            const all_codes = (String(row['DIAGLIST'] || '') + " " + String(row['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
+            const cbg_ok = r.n_cbgs.length === 0 || r.n_cbgs.some(c => ina_norm === c);
+            const diag_ok = r.n_diags.length === 0 || (r.primaryOnly ? r.n_diags.some(c => diag_norm === c) : r.n_diags.some(c => all_codes.includes(c)));
+            const proc_ok = r.n_procs.length === 0 || r.n_procs.some(c => all_codes.includes(c));
+            return cbg_ok && diag_ok && proc_ok;
           })} />
         </Card>
       </div>
@@ -4147,11 +4238,11 @@ export default function App() {
 
   // === ANALYSIS OVERLAY ===
   const analysisSteps = [
-    { icon: '๐“', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
-    { icon: '๐”ฌ', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
-    { icon: '๐’ฐ', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
-    { icon: '๐ฉบ', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
-    { icon: '๐“', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
+    { icon: '📊', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
+    { icon: '🔬', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
+    { icon: '💰', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
+    { icon: '🩺', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
+    { icon: '📈', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
   ];
   useEffect(() => {
     if (!isAnalyzing) { setAnalysisStep(0); return; }
@@ -4243,7 +4334,7 @@ export default function App() {
 
               <div className="mt-8 text-center">
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">ยฉ 2026 iDRG Analytics Platform -€ข Kemenkes Edition</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Kemenkes Edition</p>
               </div>
             </div>
           </div>
@@ -4336,20 +4427,24 @@ export default function App() {
         <div className="fixed inset-0 z-[170] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-[98vw] h-full max-h-[95vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-white shrink-0">
-              <div>
-                <h3 className="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><Table2 size={24} className="text-teal-600" /> Rincian Data Analitik</h3>
-                <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} -€” {drilldown.data.length.toLocaleString()} Record Terfilter</p>
-              </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-4">
                 {drilldown.prev && (
                   <button
                     onClick={() => setDrilldown(drilldown.prev)}
-                    className="flex items-center gap-2 bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border border-slate-200 hover:border-teal-200"
+                    className="p-2 bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white rounded-xl transition-all shadow-sm border border-teal-100 group mt-0.5"
+                    title="Kembali ke Daftar INACBG / iDRG"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-                    Kembali ke Ringkasan
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform"><path d="M15 18l-6-6 6-6" /></svg>
                   </button>
                 )}
+                <div>
+                  <h3 className="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
+                    {!drilldown.prev && <Table2 size={24} className="text-teal-600" />} Rincian Data Analitik
+                  </h3>
+                  <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} — {drilldown.data.length.toLocaleString()} Record Terfilter</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
                 <button onClick={dlDrilldownCSV} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 transition-all uppercase tracking-wider"><Download size={16} /> Unduh CSV</button>
                 <button onClick={() => setDrilldown({ isOpen: false, title: '', data: [] })} className="p-2.5 hover:bg-rose-50 rounded-full transition-all ml-2 border border-transparent hover:border-rose-100 text-slate-400 hover:text-rose-600"><X size={24} /></button>
               </div>
@@ -4363,33 +4458,69 @@ export default function App() {
                   {/* SCORECARD 18 KOMPONEN */}
                   {drilldownStats && (
                     <div className="p-6 bg-white border-b border-slate-100 shadow-sm">
-                       <div className="flex items-center justify-between mb-4">
-                          <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2"><LayoutDashboard size={14} className="text-teal-600" /> Insight Rata-rata 18 Komponen Biaya per Kasus</h4>
-                          <span className="text-[10px] bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full font-black uppercase">Efisiensi Insight</span>
-                       </div>
-                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-9 gap-3">
-                          {compKeys.map(c => {
-                             const stat = drilldownStats.avgComps[c.key];
-                             if (!stat || stat.val === 0) return null;
-                             return (
-                                <div key={c.key} className="bg-slate-50 hover:bg-teal-50 p-2.5 rounded-xl border border-slate-100 hover:border-teal-200 transition-all group">
-                                   <p className="text-[8px] font-black text-slate-400 uppercase truncate mb-1" title={c.label}>{c.label}</p>
-                                   <p className="text-[11px] font-black text-slate-800">{formatRp(stat.val)}</p>
-                                   <div className="mt-1.5 flex items-center gap-1.5">
-                                      <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
-                                         <div className="h-full bg-teal-500 rounded-full transition-all duration-1000" style={{ width: `${Math.min(stat.pct * 2, 100)}%` }}></div>
-                                      </div>
-                                      <span className="text-[9px] font-bold text-teal-600 shrink-0">{stat.pct.toFixed(1)}%</span>
-                                   </div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                          <LayoutDashboard size={14} className="text-teal-600" /> 
+                          {drilldown.type === 'audit_kpi' ? 'Ringkasan Akurasi Input Koding & Temuan Audit' : 'Insight Rata-rata 18 Komponen Biaya per Kasus'}
+                        </h4>
+                        <span className="text-[10px] bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full font-black uppercase">
+                          {drilldown.type === 'audit_kpi' ? 'Audit Insight' : 'Efisiensi Insight'}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {drilldown.type === 'audit_kpi' ? (() => {
+                          const total = drilldown.data.length;
+                          const sesuai = drilldown.data.filter(f => auditVerdicts[`${f.sep}|${f.ruleId}`] === 'sesuai').length;
+                          const tidak = drilldown.data.filter(f => auditVerdicts[`${f.sep}|${f.ruleId}`] === 'tidak').length;
+                          const accuracy = (sesuai + tidak) > 0 ? (sesuai / (sesuai + tidak)) * 100 : 100;
+                          
+                          return (
+                            <>
+                              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Temuan</span>
+                                <span className="text-xl font-black text-slate-800">{total}</span>
+                              </div>
+                              <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 flex flex-col gap-1">
+                                <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Verified Sesuai</span>
+                                <span className="text-xl font-black text-emerald-700">{sesuai}</span>
+                              </div>
+                              <div className="bg-rose-50 p-4 rounded-2xl border border-rose-100 flex flex-col gap-1">
+                                <span className="text-[9px] font-black text-rose-600 uppercase tracking-widest">Verified Tidak</span>
+                                <span className="text-xl font-black text-rose-700">{tidak}</span>
+                              </div>
+                              <div className="bg-teal-900 p-4 rounded-2xl border border-teal-800 flex flex-col gap-1 shadow-lg shadow-teal-900/20 col-span-2">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[9px] font-black text-teal-300 uppercase tracking-widest">Skor Akurasi Koder</span>
+                                  <span className="text-xs font-black text-white">{accuracy.toFixed(1)}%</span>
                                 </div>
-                             )
-                          })}
-                       </div>
+                                <div className="w-full h-2 bg-teal-800 rounded-full mt-1 overflow-hidden">
+                                  <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${accuracy}%` }}></div>
+                                </div>
+                              </div>
+                            </>
+                          );
+                        })() : compKeys.map(c => {
+                          const stat = drilldownStats.avgComps[c.key];
+                          if (!stat || stat.val === 0) return null;
+                          return (
+                            <div key={c.key} className="bg-slate-50 hover:bg-teal-50 p-2.5 rounded-xl border border-slate-100 hover:border-teal-200 transition-all group">
+                              <p className="text-[8px] font-black text-slate-400 uppercase truncate mb-1" title={c.label}>{c.label}</p>
+                              <p className="text-[11px] font-black text-slate-800">{formatRp(stat.val)}</p>
+                              <div className="mt-1.5 flex items-center gap-1.5">
+                                <div className="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden">
+                                  <div className="h-full bg-teal-500 rounded-full transition-all duration-1000" style={{ width: `${Math.min(stat.pct * 2, 100)}%` }}></div>
+                                </div>
+                                <span className="text-[9px] font-bold text-teal-600 shrink-0">{stat.pct.toFixed(1)}%</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
 
-                  {/* Color legend */}
-                  {drilldownStats && (
+                  {/* Color legend - Hide if it is Audit Findings */}
+                  {drilldownStats && drilldown.type === 'patient' && (
                     <div className="px-6 py-3 bg-rose-50/60 border-b border-rose-100 flex flex-wrap items-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">
                       <span className="text-rose-700 flex items-center gap-1.5"><span className="inline-block w-3.5 h-3.5 rounded bg-rose-200 border border-rose-400 mr-0.5" />Baris Merah = Tarif RS di atas rata-rata (~ {formatRp(drilldownStats.avgRS)})</span>
                       <span className="text-rose-500 flex items-center gap-1.5">^ = Nilai sel melebihi rata-rata (hover untuk detail)</span>
@@ -4399,151 +4530,186 @@ export default function App() {
                   )}
 
                   <div className="p-0">
-                <table className="w-full text-sm text-left whitespace-nowrap">
-                   <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
-                      <tr>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 w-12 text-center">No</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[120px]">{drilldown.type === 'summary_ina' ? 'Kode INA-CBG' : 'Kode iDRG'}</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[300px]">Deskripsi</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-white text-center">Jumlah Kasus</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-teal-50 text-center text-teal-700">ALOS</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-rose-50 text-center text-rose-700">Max LOS</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 text-right">Tarif RS</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-white text-right">{drilldown.type === 'summary_ina' ? 'Total Tarif INA' : 'Total Tarif iDRG'}</th>
-                         <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 text-right">Selisih Tarif</th>
-                         <th className="px-5 py-4 bg-white text-center">Aksi</th>
-                      </tr>
-                   </thead>
-                   <tbody className="divide-y divide-slate-100 bg-white">
-                      {(() => {
-                         const codeKey = drilldown.type === 'summary_ina' ? 'INACBG' : 'IDRG_DRG_CODE';
-                         const descKey = drilldown.type === 'summary_ina' ? 'DESKRIPSI_INACBG' : 'IDRG_DRG_DESCRIPTION';
-                         const tarifKey = drilldown.type === 'summary_ina' ? 'TOTAL_TARIF' : 'IDRG_TOTAL_TARIF';
-                         const map = {};
-                         drilldown.data.forEach(r => {
-                            const code = String(r[codeKey] || '').trim();
-                            if (!code) return;
-                            if (!map[code]) map[code] = { code, desc: String(r[descKey] || '-'), count: 0, sumRS: 0, sumTarif: 0, sumLos: 0, maxLos: 0 };
-                            map[code].count++;
-                            const curLos = parseFloat(r.LOS || 0);
-                            map[code].sumLos += curLos;
-                            map[code].maxLos = Math.max(map[code].maxLos, curLos);
-                            map[code].sumRS += parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
-                            map[code].sumTarif += parseFloat(r[tarifKey] || 0) || 0;
-                         });
-                         return Object.values(map).sort((a, b) => b.count - a.count).map((item, idx) => (
-                            <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
-                               <td className="px-5 py-3 border-r border-slate-50 text-center text-slate-400 font-semibold">{idx+1}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 font-black text-slate-700">{item.code}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 font-bold text-slate-600 truncate max-w-[400px]" title={item.desc}>{item.desc}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 text-center font-black text-teal-600">{item.count.toLocaleString()}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 text-center font-bold text-teal-700 bg-teal-50/30">{item.count > 0 ? (item.sumLos / item.count).toFixed(1) : 0}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 text-center font-bold text-rose-700 bg-rose-50/30">{item.maxLos || 0}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 text-right font-semibold text-slate-600">{formatRp(item.sumRS)}</td>
-                               <td className="px-5 py-3 border-r border-slate-50 text-right font-black text-slate-700">{formatRp(item.sumTarif)}</td>
-                               <td className={`px-5 py-3 border-r border-slate-50 text-right font-black ${item.sumTarif - item.sumRS >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{item.sumTarif - item.sumRS >= 0 ? '+' : ''}{formatRp(item.sumTarif - item.sumRS)}</td>
-                               <td className="px-5 py-3 text-center">
-                                  <button 
-                                     onClick={() => setDrilldown({ ...drilldown, title: `Data Pasien: ${item.code}`, data: drilldown.data.filter(r => String(r[codeKey]).trim() === item.code), type: 'patient', prev: { ...drilldown, prev: null } })}
-                                     className="bg-teal-50 hover:bg-teal-600 text-teal-600 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border border-teal-100"
-                                  >Tampilkan Data Pasien</button>
-                               </td>
-                            </tr>
-                         ));
-                      })()}
-                   </tbody>
-                </table>
-              ) : (
-                <table className="w-full text-sm text-left whitespace-nowrap">
-                  <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
-                    <tr>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle text-center bg-slate-50">No</th>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle sticky left-0 bg-white z-40 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-slate-800">Nama Pasien</th>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">MRN</th>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">No SEP</th>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">Tgl Masuk</th>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">Tgl Pulang</th>
-                      <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle text-center bg-slate-50">LOS</th>
-                      <th rowSpan={2} className="px-4 py-4 text-center border-r border-teal-100 align-middle bg-teal-50/50 text-teal-700">SL INA</th>
-                      <th rowSpan={2} className="px-4 py-4 text-center border-r border-emerald-100 align-middle bg-emerald-50/50 text-emerald-700">CL iDRG</th>
-                      <th colSpan={4} className="px-5 py-3 text-center border-r border-teal-100 border-b border-teal-100 bg-teal-50 text-teal-800">Diagnosis & Prosedur INA-CBG</th>
-                      <th colSpan={4} className="px-5 py-3 text-center border-r border-emerald-100 border-b border-emerald-100 bg-emerald-50 text-emerald-800">Diagnosis & Prosedur iDRG</th>
-                      <th rowSpan={2} className="px-5 py-4 text-right border-r border-teal-100 align-middle bg-teal-50/50 text-teal-800">Tarif RS</th>
-                      <th rowSpan={2} className="px-5 py-4 text-right border-r border-teal-100 align-middle bg-teal-50/50 text-teal-800">Tarif INA</th>
-                      <th rowSpan={2} className="px-5 py-4 text-right border-r border-emerald-100 align-middle bg-emerald-50/50 text-emerald-800">Tarif iDRG</th>
-                      <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih (iDRG-RS)</th>
-                      <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih (iDRG-INA)</th>
-                      <th colSpan={18} className="px-5 py-3 text-center bg-slate-800 text-white border-b border-slate-700 tracking-[0.2em]">RINCIAN 18 KOMPONEN BILLING (Rp)</th>
-                    </tr>
-                    <tr className="text-[10px]">
-                      <th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100/50">Code</th><th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100/50">Deskripsi</th><th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100/50">Diaglist</th><th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100">Proclist</th>
-                      <th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100/50">Code</th><th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100/50">Deskripsi</th><th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100/50">Diaglist</th><th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100">Proclist</th>
-                      {compKeys.map(c => <th key={c.key} className="px-4 py-2 bg-slate-700 text-slate-300 border-r border-slate-600 text-right">{c.label}</th>)}
-                    </tr>
-                  </thead>
-                  <tfoot className="sticky bottom-0 z-20">
-                     {drilldownStats && (
-                       <tr className="bg-teal-100 border-t-2 border-teal-300 shadow-[0_-2px_8px_-2px_rgba(20,184,166,0.25)]">
-                         <td colSpan={7} className="px-5 py-3 font-black text-right text-teal-900 tracking-wider text-xs uppercase">~ Rata-Rata / {drilldown.data.length.toLocaleString()} Kasus:</td>
-                         <td className="px-5 py-3 text-center font-black text-teal-800 bg-teal-200/50">ALOS: {drilldownStats.avgLos.toFixed(1)}</td>
-                         <td className="px-5 py-3 text-center font-black text-rose-800 bg-rose-100/70">MAX: {drilldownStats.maxLos}</td>
-                         <td colSpan={8}></td>
-                         <td className="px-5 py-3 text-right font-black text-slate-800">{formatRp(drilldownStats.avgRS)}</td>
-                         <td className="px-5 py-3 text-right font-black text-teal-800">{formatRp(drilldownStats.avgIna)}</td>
-                         <td className="px-5 py-3 text-right font-black text-emerald-800">{formatRp(drilldownStats.avgIdrg)}</td>
-                         <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-400 ${drilldownStats.avgSelVsRs > 0 ? 'text-lime-700' : drilldownStats.avgSelVsRs < 0 ? 'text-rose-700' : 'text-slate-600'}`}>{drilldownStats.avgSelVsRs > 0 ? '+' : ''}{formatRp(drilldownStats.avgSelVsRs)}</td>
-                         <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-400 ${drilldownStats.avgSel > 0 ? 'text-lime-700' : drilldownStats.avgSel < 0 ? 'text-rose-700' : 'text-slate-600'}`}>{drilldownStats.avgSel > 0 ? '+' : ''}{formatRp(drilldownStats.avgSel)}</td>
-                         {compKeys.map(c => <td key={`avg-${c.key}`} className="px-4 py-3 text-right font-bold text-teal-900 bg-teal-200/60 border-r border-teal-200">{formatRpEx(drilldownStats.avgComps[c.key].val)}</td>)}
-                       </tr>
-                     )}
-                   </tfoot>
-                  <tbody className="divide-y divide-slate-100 bg-white">
-                    {drilldown.data.slice(0, 300).map((row, i) => {
-                      const rs = parseFloat(row.TARIF_RS || row.BIAYA_RS || row.TOTAL_TARIF_RS || 0) || 0;
-                      const ina = parseFloat(row.TOTAL_TARIF) || 0; const idrg = parseFloat(row.IDRG_TOTAL_TARIF) || 0; const sel = idrg - ina; const selVsRs = idrg - rs;
-                      const comps = extract18(row); const sev = row.INACBG ? (String(row.INACBG).endsWith('-I') ? 1 : String(row.INACBG).endsWith('-II') ? 2 : String(row.INACBG).endsWith('-III') ? 3 : 0) : 0; const cl = row.IDRG_DRG_CODE ? parseInt(String(row.IDRG_DRG_CODE).slice(-1)) : 0;
-                      const patientName = String(row.NAMA_PASien || row.NAMA_PASIEN || '-');
-                      const displayName = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
-                      // --- Highlight logic: flag cells/row above average ---
-                      const aboveAvgRS = drilldownStats && rs > 0 && drilldownStats.avgRS > 0 && rs > drilldownStats.avgRS;
-                      const aboveAvgIna = drilldownStats && ina > 0 && drilldownStats.avgIna > 0 && ina > drilldownStats.avgIna;
-                      const aboveAvgIdrg = drilldownStats && idrg > 0 && drilldownStats.avgIdrg > 0 && idrg > drilldownStats.avgIdrg;
-                      const rowFlag = aboveAvgRS; // row highlight driven by Tarif RS
-                      return (
-                        <tr key={`ddr-${i}`} className={`transition-colors ${rowFlag ? 'bg-rose-50/70 hover:bg-rose-100/60' : 'hover:bg-slate-50/80'}`}>
-                          <td className={`${tCell} text-center font-semibold ${rowFlag ? 'text-rose-400' : 'text-slate-400'}`}>{rowFlag ? <span className="text-rose-500 font-black">!</span> : i + 1}</td>
-                          <td className={`${tCell} font-extrabold ${rowFlag ? 'text-rose-800 sticky left-0 bg-rose-50 shadow-[2px_0_5px_-2px_rgba(244,63,94,0.1)] z-10' : 'text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10'}`}>{displayName}</td>
-                          <td className={`${tCell} font-bold text-slate-600`}>{String(row.MRN || '-')}</td>
-                          <td className={`${tCell} text-xs font-mono font-semibold text-slate-500`}>{String(row.SEP || '-')}</td>
-                          <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row._tglMasuk || '-')}</td>
-                          <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row.DISCHARGE_DATE || '-')}</td>
-                          <td className={`${tCell} text-center font-bold text-slate-600 bg-slate-50/50`}>{row._los}</td>
-                          <td className={`${tCell} text-center font-black text-teal-600 bg-teal-50/20`}>{sev > 0 ? sev : '-'}</td>
-                          <td className={`${tCell} text-center font-black text-emerald-600 bg-emerald-50/20`}>{isNaN(cl) ? '-' : cl}</td>
-                          <td className={`${tCell} font-bold text-teal-700 bg-teal-50/10`}>{String(row.INACBG || '-')}</td>
-                          <td className={`${tCell} text-xs font-medium text-slate-600 max-w-[200px] truncate bg-teal-50/10`} title={String(row.DESKRIPSI_INACBG || '-')}>{String(row.DESKRIPSI_INACBG || '-')}</td>
-                          <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-teal-50/10`} title={String(row.DIAGLIST || '-')}>{String(row.DIAGLIST || '-')}</td>
-                          <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-teal-50/10`} title={String(row.PROCLIST || '-')}>{String(row.PROCLIST || '-')}</td>
-                          <td className={`${tCell} font-bold text-emerald-700 bg-emerald-50/10`}>{String(row.IDRG_DRG_CODE || '-')}</td>
-                          <td className={`${tCell} text-xs font-medium text-slate-600 max-w-[200px] truncate bg-emerald-50/10`} title={String(row.IDRG_DRG_DESCRIPTION || '-')}>{String(row.IDRG_DRG_DESCRIPTION || '-')}</td>
-                          <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-emerald-50/10`} title={String(row.IDRG_DIAG_LISTS || '-')}>{String(row.IDRG_DIAG_LISTS || '-')}</td>
-                          <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-emerald-50/10`} title={String(row.IDRG_PROC_LISTS || '-')}>{String(row.IDRG_PROC_LISTS || '-')}</td>
-                          <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgRS ? 'border-l-rose-400 bg-rose-100/60 text-rose-700 ring-1 ring-rose-200' : 'bg-slate-50/20 text-slate-600 border-l-transparent'}`} title={aboveAvgRS ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgRS)})` : ''}>{aboveAvgRS && <span className="text-[9px] mr-1 align-middle font-black text-rose-500">^</span>}{formatRp(rs)}</td>
-                          <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgIna ? 'border-l-orange-400 bg-orange-50/60 text-orange-700 ring-1 ring-orange-200' : 'bg-teal-50/20 text-teal-700 border-l-transparent'}`} title={aboveAvgIna ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgIna)})` : ''}>{aboveAvgIna && <span className="text-[9px] mr-1 align-middle font-black text-orange-500">^</span>}{formatRp(ina)}</td>
-                          <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgIdrg ? 'border-l-orange-400 bg-orange-50/60 text-orange-700 ring-1 ring-orange-200' : 'bg-emerald-50/20 text-emerald-700 border-l-transparent'}`} title={aboveAvgIdrg ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgIdrg)})` : ''}>{aboveAvgIdrg && <span className="text-[9px] mr-1 align-middle font-black text-orange-500">^</span>}{formatRp(idrg)}</td>
-                          <td className={`px-5 py-3 text-right font-black border-r-4 border-slate-200 bg-slate-50/50 ${selVsRs > 0 ? 'text-lime-500' : selVsRs < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{selVsRs > 0 ? '+' : ''}{formatRp(selVsRs)}</td>
-                          <td className={`px-5 py-3 text-right font-black border-r-4 border-slate-200 bg-slate-50/50 ${sel > 0 ? 'text-lime-500' : sel < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{sel > 0 ? '+' : ''}{formatRp(sel)}</td>
-                          {compKeys.map(c => {
-                            const compVal = comps[c.key] || 0;
-                            const avgCompVal = drilldownStats?.avgComps?.[c.key]?.val || 0;
-                            const aboveAvgComp = compVal > 0 && avgCompVal > 0 && compVal > avgCompVal;
-                            return <td key={`cmp-${i}-${c.key}`} className={`${tCell} text-right text-[11px] font-semibold border-l-2 ${aboveAvgComp ? 'border-l-rose-300 bg-rose-50/50 text-rose-600 ring-1 ring-rose-100' : 'text-slate-400 border-l-transparent'}`} title={aboveAvgComp ? `Di atas rata-rata komponen ini (~${formatRpEx(avgCompVal)})` : ''}>{aboveAvgComp && <span className="text-[9px] mr-0.5 font-black text-rose-500">^</span>}{formatRpEx(compVal)}</td>;
+                    {drilldown.type === 'audit_kpi' ? (
+                      <table className="w-full text-sm text-left whitespace-nowrap">
+                        <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
+                          <tr>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 w-12 text-center">No</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white">SEP</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50">Rule ID</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[200px]">Temuan / Kasus</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[300px]">Warning Message</th>
+                            <th className="px-5 py-4 bg-white text-center">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 bg-white">
+                          {drilldown.data.map((f, idx) => {
+                            const key = `${f.sep}|${f.ruleId}`;
+                            const verdict = auditVerdicts[key] || 'belum';
+                            return (
+                              <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                <td className="px-5 py-3 border-r border-slate-50 text-center text-slate-400 font-semibold">{idx + 1}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 font-mono text-xs text-slate-500">{f.sep}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 font-black text-slate-700 text-xs">{f.ruleId}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-xs font-bold text-slate-600 truncate max-w-[250px]" title={f.case}>{f.case}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-rose-600 font-medium whitespace-normal min-w-[300px]">{f.warning}</td>
+                                <td className="px-5 py-3 text-center">
+                                  <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase ${verdict === 'sesuai' ? 'bg-emerald-100 text-emerald-700' : verdict === 'tidak' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'}`}>
+                                    {verdict === 'sesuai' ? 'Sesuai' : verdict === 'tidak' ? 'Tidak Sesuai' : 'Belum Review'}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
                           })}
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                        </tbody>
+                      </table>
+                    ) : drilldown.type === 'summary_ina' || drilldown.type === 'summary_idrg' ? (
+                      <table className="w-full text-sm text-left whitespace-nowrap">
+                        <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
+                          <tr>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 w-12 text-center">No</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[120px]">{drilldown.type === 'summary_ina' ? 'Kode INA-CBG' : 'Kode iDRG'}</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[300px]">Deskripsi</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white text-center">Jumlah Kasus</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-teal-50 text-center text-teal-700">ALOS</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-rose-50 text-center text-rose-700">Max LOS</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 text-right">Tarif RS</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white text-right">{drilldown.type === 'summary_ina' ? 'Total Tarif INA' : 'Total Tarif iDRG'}</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 text-right">Selisih Tarif</th>
+                            <th className="px-5 py-4 bg-white text-center">Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 bg-white">
+                          {(() => {
+                            const codeKey = drilldown.type === 'summary_ina' ? 'INACBG' : 'IDRG_DRG_CODE';
+                            const descKey = drilldown.type === 'summary_ina' ? 'DESKRIPSI_INACBG' : 'IDRG_DRG_DESCRIPTION';
+                            const tarifKey = drilldown.type === 'summary_ina' ? 'TOTAL_TARIF' : 'IDRG_TOTAL_TARIF';
+                            const map = {};
+                            drilldown.data.forEach(r => {
+                              const code = String(r[codeKey] || '').trim();
+                              if (!code) return;
+                              if (!map[code]) map[code] = { code, desc: String(r[descKey] || '-'), count: 0, sumRS: 0, sumTarif: 0, sumLos: 0, maxLos: 0 };
+                              map[code].count++;
+                              const curLos = parseFloat(r.LOS || 0);
+                              map[code].sumLos += curLos;
+                              map[code].maxLos = Math.max(map[code].maxLos, curLos);
+                              map[code].sumRS += parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+                              map[code].sumTarif += parseFloat(r[tarifKey] || 0) || 0;
+                            });
+                            return Object.values(map).sort((a, b) => b.count - a.count).map((item, idx) => (
+                              <tr key={idx} className="hover:bg-slate-50/80 transition-colors">
+                                <td className="px-5 py-3 border-r border-slate-50 text-center text-slate-400 font-semibold">{idx + 1}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 font-black text-slate-700">{item.code}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 font-bold text-slate-600 truncate max-w-[400px]" title={item.desc}>{item.desc}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-center font-black text-teal-600">{item.count.toLocaleString()}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-center font-bold text-teal-700 bg-teal-50/30">{item.count > 0 ? (item.sumLos / item.count).toFixed(1) : 0}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-center font-bold text-rose-700 bg-rose-50/30">{item.maxLos || 0}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-right font-semibold text-slate-600">{formatRp(item.sumRS)}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-right font-black text-slate-700">{formatRp(item.sumTarif)}</td>
+                                <td className={`px-5 py-3 border-r border-slate-50 text-right font-black ${item.sumTarif - item.sumRS >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{item.sumTarif - item.sumRS >= 0 ? '+' : ''}{formatRp(item.sumTarif - item.sumRS)}</td>
+                                <td className="px-5 py-3 text-center">
+                                  <button
+                                    onClick={() => setDrilldown({ ...drilldown, title: `Data Pasien: ${item.code}`, data: drilldown.data.filter(r => String(r[codeKey]).trim() === item.code), type: 'patient', prev: { ...drilldown, prev: null } })}
+                                    className="bg-teal-50 hover:bg-teal-600 text-teal-600 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border border-teal-100"
+                                  >Tampilkan Data Pasien</button>
+                                </td>
+                              </tr>
+                            ));
+                          })()}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <table className="w-full text-sm text-left whitespace-nowrap">
+                        <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
+                          <tr>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle text-center bg-slate-50">No</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle sticky left-0 bg-white z-40 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-slate-800">Nama Pasien</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">MRN</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">No SEP</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">Tgl Masuk</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">Tgl Pulang</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle text-center bg-slate-50">LOS</th>
+                            <th rowSpan={2} className="px-4 py-4 text-center border-r border-teal-100 align-middle bg-teal-50/50 text-teal-700">SL INA</th>
+                            <th rowSpan={2} className="px-4 py-4 text-center border-r border-emerald-100 align-middle bg-emerald-50/50 text-emerald-700">CL iDRG</th>
+                            <th colSpan={4} className="px-5 py-3 text-center border-r border-teal-100 border-b border-teal-100 bg-teal-50 text-teal-800">Diagnosis & Prosedur INA-CBG</th>
+                            <th colSpan={4} className="px-5 py-3 text-center border-r border-emerald-100 border-b border-emerald-100 bg-emerald-50 text-emerald-800">Diagnosis & Prosedur iDRG</th>
+                            <th rowSpan={2} className="px-5 py-4 text-right border-r border-teal-100 align-middle bg-teal-50/50 text-teal-800">Tarif RS</th>
+                            <th rowSpan={2} className="px-5 py-4 text-right border-r border-teal-100 align-middle bg-teal-50/50 text-teal-800">Tarif INA</th>
+                            <th rowSpan={2} className="px-5 py-4 text-right border-r border-emerald-100 align-middle bg-emerald-50/50 text-emerald-800">Tarif iDRG</th>
+                            <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih (iDRG-RS)</th>
+                            <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih (iDRG-INA)</th>
+                            <th colSpan={18} className="px-5 py-3 text-center bg-slate-800 text-white border-b border-slate-700 tracking-[0.2em]">RINCIAN 18 KOMPONEN BILLING (Rp)</th>
+                          </tr>
+                          <tr className="text-[10px]">
+                            <th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100/50">Code</th><th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100/50">Deskripsi</th><th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100/50">Diaglist</th><th className="px-4 py-2 bg-teal-50/30 text-teal-600 border-r border-teal-100">Proclist</th>
+                            <th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100/50">Code</th><th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100/50">Deskripsi</th><th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100/50">Diaglist</th><th className="px-4 py-2 bg-emerald-50/30 text-emerald-600 border-r border-emerald-100">Proclist</th>
+                            {compKeys.map(c => <th key={c.key} className="px-4 py-2 bg-slate-700 text-slate-300 border-r border-slate-600 text-right">{c.label}</th>)}
+                          </tr>
+                        </thead>
+                        <tfoot className="sticky bottom-0 z-20">
+                          {drilldownStats && (
+                            <tr className="bg-teal-100 border-t-2 border-teal-300 shadow-[0_-2px_8px_-2px_rgba(20,184,166,0.25)]">
+                              <td colSpan={7} className="px-5 py-3 font-black text-right text-teal-900 tracking-wider text-xs uppercase">~ Rata-Rata / {drilldown.data.length.toLocaleString()} Kasus:</td>
+                              <td className="px-5 py-3 text-center font-black text-teal-800 bg-teal-200/50">ALOS: {drilldownStats.avgLos.toFixed(1)}</td>
+                              <td className="px-5 py-3 text-center font-black text-rose-800 bg-rose-100/70">MAX: {drilldownStats.maxLos}</td>
+                              <td colSpan={8}></td>
+                              <td className="px-5 py-3 text-right font-black text-slate-800">{formatRp(drilldownStats.avgRS)}</td>
+                              <td className="px-5 py-3 text-right font-black text-teal-800">{formatRp(drilldownStats.avgIna)}</td>
+                              <td className="px-5 py-3 text-right font-black text-emerald-800">{formatRp(drilldownStats.avgIdrg)}</td>
+                              <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-400 ${drilldownStats.avgSelVsRs > 0 ? 'text-lime-700' : drilldownStats.avgSelVsRs < 0 ? 'text-rose-700' : 'text-slate-600'}`}>{drilldownStats.avgSelVsRs > 0 ? '+' : ''}{formatRp(drilldownStats.avgSelVsRs)}</td>
+                              <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-400 ${drilldownStats.avgSel > 0 ? 'text-lime-700' : drilldownStats.avgSel < 0 ? 'text-rose-700' : 'text-slate-600'}`}>{drilldownStats.avgSel > 0 ? '+' : ''}{formatRp(drilldownStats.avgSel)}</td>
+                              {compKeys.map(c => <td key={`avg-${c.key}`} className="px-4 py-3 text-right font-bold text-teal-900 bg-teal-200/60 border-r border-teal-200">{formatRpEx(drilldownStats.avgComps[c.key].val)}</td>)}
+                            </tr>
+                          )}
+                        </tfoot>
+                        <tbody className="divide-y divide-slate-100 bg-white">
+                          {drilldown.data.slice(0, 300).map((row, i) => {
+                            const rs = parseFloat(row.TARIF_RS || row.BIAYA_RS || row.TOTAL_TARIF_RS || 0) || 0;
+                            const ina = parseFloat(row.TOTAL_TARIF) || 0; const idrg = parseFloat(row.IDRG_TOTAL_TARIF) || 0; const sel = idrg - ina; const selVsRs = idrg - rs;
+                            const comps = extract18(row); const sev = row.INACBG ? (String(row.INACBG).endsWith('-I') ? 1 : String(row.INACBG).endsWith('-II') ? 2 : String(row.INACBG).endsWith('-III') ? 3 : 0) : 0; const cl = row.IDRG_DRG_CODE ? parseInt(String(row.IDRG_DRG_CODE).slice(-1)) : 0;
+                            const patientName = String(row.NAMA_PASien || row.NAMA_PASIEN || '-');
+                            const displayName = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
+                            // --- Highlight logic: flag cells/row above average ---
+                            const aboveAvgRS = drilldownStats && rs > 0 && drilldownStats.avgRS > 0 && rs > drilldownStats.avgRS;
+                            const aboveAvgIna = drilldownStats && ina > 0 && drilldownStats.avgIna > 0 && ina > drilldownStats.avgIna;
+                            const aboveAvgIdrg = drilldownStats && idrg > 0 && drilldownStats.avgIdrg > 0 && idrg > drilldownStats.avgIdrg;
+                            const rowFlag = aboveAvgRS; // row highlight driven by Tarif RS
+                            return (
+                              <tr key={`ddr-${i}`} className={`transition-colors ${rowFlag ? 'bg-rose-50/70 hover:bg-rose-100/60' : 'hover:bg-slate-50/80'}`}>
+                                <td className={`${tCell} text-center font-semibold ${rowFlag ? 'text-rose-400' : 'text-slate-400'}`}>{rowFlag ? <span className="text-rose-500 font-black">!</span> : i + 1}</td>
+                                <td className={`${tCell} font-extrabold ${rowFlag ? 'text-rose-800 sticky left-0 bg-rose-50 shadow-[2px_0_5px_-2px_rgba(244,63,94,0.1)] z-10' : 'text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10'}`}>{displayName}</td>
+                                <td className={`${tCell} font-bold text-slate-600`}>{String(row.MRN || '-')}</td>
+                                <td className={`${tCell} text-xs font-mono font-semibold text-slate-500`}>{String(row.SEP || '-')}</td>
+                                <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row._tglMasuk || '-')}</td>
+                                <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row.DISCHARGE_DATE || '-')}</td>
+                                <td className={`${tCell} text-center font-bold text-slate-600 bg-slate-50/50`}>{row._los}</td>
+                                <td className={`${tCell} text-center font-black text-teal-600 bg-teal-50/20`}>{sev > 0 ? sev : '-'}</td>
+                                <td className={`${tCell} text-center font-black text-emerald-600 bg-emerald-50/20`}>{isNaN(cl) ? '-' : cl}</td>
+                                <td className={`${tCell} font-bold text-teal-700 bg-teal-50/10`}>{String(row.INACBG || '-')}</td>
+                                <td className={`${tCell} text-xs font-medium text-slate-600 max-w-[200px] truncate bg-teal-50/10`} title={String(row.DESKRIPSI_INACBG || '-')}>{String(row.DESKRIPSI_INACBG || '-')}</td>
+                                <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-teal-50/10`} title={String(row.DIAGLIST || '-')}>{String(row.DIAGLIST || '-')}</td>
+                                <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-teal-50/10`} title={String(row.PROCLIST || '-')}>{String(row.PROCLIST || '-')}</td>
+                                <td className={`${tCell} font-bold text-emerald-700 bg-emerald-50/10`}>{String(row.IDRG_DRG_CODE || '-')}</td>
+                                <td className={`${tCell} text-xs font-medium text-slate-600 max-w-[200px] truncate bg-emerald-50/10`} title={String(row.IDRG_DRG_DESCRIPTION || '-')}>{String(row.IDRG_DRG_DESCRIPTION || '-')}</td>
+                                <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-emerald-50/10`} title={String(row.IDRG_DIAG_LISTS || '-')}>{String(row.IDRG_DIAG_LISTS || '-')}</td>
+                                <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-emerald-50/10`} title={String(row.IDRG_PROC_LISTS || '-')}>{String(row.IDRG_PROC_LISTS || '-')}</td>
+                                <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgRS ? 'border-l-rose-400 bg-rose-100/60 text-rose-700 ring-1 ring-rose-200' : 'bg-slate-50/20 text-slate-600 border-l-transparent'}`} title={aboveAvgRS ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgRS)})` : ''}>{aboveAvgRS && <span className="text-[9px] mr-1 align-middle font-black text-rose-500">^</span>}{formatRp(rs)}</td>
+                                <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgIna ? 'border-l-orange-400 bg-orange-50/60 text-orange-700 ring-1 ring-orange-200' : 'bg-teal-50/20 text-teal-700 border-l-transparent'}`} title={aboveAvgIna ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgIna)})` : ''}>{aboveAvgIna && <span className="text-[9px] mr-1 align-middle font-black text-orange-500">^</span>}{formatRp(ina)}</td>
+                                <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgIdrg ? 'border-l-orange-400 bg-orange-50/60 text-orange-700 ring-1 ring-orange-200' : 'bg-emerald-50/20 text-emerald-700 border-l-transparent'}`} title={aboveAvgIdrg ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgIdrg)})` : ''}>{aboveAvgIdrg && <span className="text-[9px] mr-1 align-middle font-black text-orange-500">^</span>}{formatRp(idrg)}</td>
+                                <td className={`px-5 py-3 text-right font-black border-r-4 border-slate-200 bg-slate-50/50 ${selVsRs > 0 ? 'text-lime-500' : selVsRs < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{selVsRs > 0 ? '+' : ''}{formatRp(selVsRs)}</td>
+                                <td className={`px-5 py-3 text-right font-black border-r-4 border-slate-200 bg-slate-50/50 ${sel > 0 ? 'text-lime-500' : sel < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{sel > 0 ? '+' : ''}{formatRp(sel)}</td>
+                                {compKeys.map(c => {
+                                  const compVal = comps[c.key] || 0;
+                                  const avgCompVal = drilldownStats?.avgComps?.[c.key]?.val || 0;
+                                  const aboveAvgComp = compVal > 0 && avgCompVal > 0 && compVal > avgCompVal;
+                                  return <td key={`cmp-${i}-${c.key}`} className={`${tCell} text-right text-[11px] font-semibold border-l-2 ${aboveAvgComp ? 'border-l-rose-300 bg-rose-50/50 text-rose-600 ring-1 ring-rose-100' : 'text-slate-400 border-l-transparent'}`} title={aboveAvgComp ? `Di atas rata-rata komponen ini (~${formatRpEx(avgCompVal)})` : ''}>{aboveAvgComp && <span className="text-[9px] mr-0.5 font-black text-rose-500">^</span>}{formatRpEx(compVal)}</td>;
+                                })}
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </div>
               )}
@@ -4575,94 +4741,94 @@ export default function App() {
       <div className={`flex h-screen overflow-hidden font-sans ${isDarkMode ? 'dark-mode-container' : 'bg-slate-50 text-slate-800'}`}>
 
         {/* SIDEBAR NAVIGATION */}
-          <aside className={`bg-white border-r border-teal-100 transition-all duration-300 z-[100] flex flex-col shadow-2xl shadow-teal-900/5 print:hidden ${isSidebarOpen ? 'w-64' : 'w-20'} shrink-0 h-screen`}>
-            {/* Branding */}
-            <div className="p-4 flex items-center justify-between border-b border-teal-100 shrink-0 h-16 bg-gradient-to-r from-teal-50 to-white">
-              <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-                <div className="p-1.5 bg-white rounded-lg shrink-0 shadow-[0_0_15px_rgba(20,184,166,0.2)] w-9 h-9 flex items-center justify-center overflow-hidden border border-teal-200">
-                  <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" className="w-full h-full object-contain" alt="Logo" />
+        <aside className={`bg-white border-r border-teal-100 transition-all duration-300 z-[100] flex flex-col shadow-2xl shadow-teal-900/5 print:hidden ${isSidebarOpen ? 'w-64' : 'w-20'} shrink-0 h-screen`}>
+          {/* Branding */}
+          <div className="p-4 flex items-center justify-between border-b border-teal-100 shrink-0 h-16 bg-gradient-to-r from-teal-50 to-white">
+            <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <div className="p-1.5 bg-white rounded-lg shrink-0 shadow-[0_0_15px_rgba(20,184,166,0.2)] w-9 h-9 flex items-center justify-center overflow-hidden border border-teal-200">
+                <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" className="w-full h-full object-contain" alt="Logo" />
+              </div>
+              {isSidebarOpen && (
+                <div className="flex flex-col ml-1">
+                  <span className="text-xl font-black whitespace-nowrap tracking-tight leading-none text-slate-800">
+                    AKURAT - <span className="text-teal-600">iD</span><span className="text-slate-800">RG</span>
+                  </span>
+                  <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
+                    Analisis Klaim & Utilisasi Review Terpadu
+                  </span>
                 </div>
-                {isSidebarOpen && (
-                  <div className="flex flex-col ml-1">
-                    <span className="text-xl font-black whitespace-nowrap tracking-tight leading-none text-slate-800">
-                      AKURAT - <span className="text-teal-600">iD</span><span className="text-slate-800">RG</span>
-                    </span>
-                    <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
-                      Analisis Klaim & Utilisasi Review Terpadu
-                    </span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-            
-            {/* User Profile Section */}
-            {isLoggedIn && (
-              <div className={`p-4 border-b border-slate-50 flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} bg-slate-50/30`}>
-                <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-teal-600/20 shrink-0 border border-teal-500/20">
-                  {username.charAt(0).toUpperCase()}
+          </div>
+
+          {/* User Profile Section */}
+          {isLoggedIn && (
+            <div className={`p-4 border-b border-slate-50 flex items-center ${isSidebarOpen ? 'gap-3' : 'justify-center'} bg-slate-50/30`}>
+              <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-teal-600/20 shrink-0 border border-teal-500/20">
+                {username.charAt(0).toUpperCase()}
+              </div>
+              {isSidebarOpen && (
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest leading-none mb-1 opacity-70">Logged In As</span>
+                  <span className="text-sm font-black text-slate-800 truncate leading-tight">{username}</span>
                 </div>
-                {isSidebarOpen && (
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest leading-none mb-1 opacity-70">Logged In As</span>
-                    <span className="text-sm font-black text-slate-800 truncate leading-tight">{username}</span>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+            </div>
+          )}
 
-            {/* Navigation Menu */}
-            <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1.5 custom-scrollbar">
-              <button onClick={() => setActiveTab('upload')} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'upload' ? 'bg-teal-600 text-white shadow-xl shadow-teal-600/30' : 'text-slate-600 hover:bg-teal-50 hover:text-teal-700'} ${!isSidebarOpen && 'justify-center'}`} title="Integrasi Data">
-                <UploadCloud size={20} className="shrink-0" />
-                {isSidebarOpen && <span>Integrasi Data</span>}
-              </button>
+          {/* Navigation Menu */}
+          <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1.5 custom-scrollbar">
+            <button onClick={() => setActiveTab('upload')} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'upload' ? 'bg-teal-600 text-white shadow-xl shadow-teal-600/30' : 'text-slate-600 hover:bg-teal-50 hover:text-teal-700'} ${!isSidebarOpen && 'justify-center'}`} title="Integrasi Data">
+              <UploadCloud size={20} className="shrink-0" />
+              {isSidebarOpen && <span>Integrasi Data</span>}
+            </button>
 
-              <div className={`mt-8 mb-3 ${isSidebarOpen ? 'px-3' : 'text-center'}`}>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSidebarOpen ? 'Dashboard Menu' : '...'}</p>
-              </div>
-
-              {TABS.map((t, idx) => {
-                const Icon = t.icon;
-                const isActive = activeTab === 'dashboard' && subTab === t.id;
-                return (
-                  <button key={idx} onClick={() => { setActiveTab('dashboard'); setSubTab(t.id); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all group ${isActive ? 'bg-teal-50 text-teal-700 font-bold border border-teal-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium border border-transparent'} ${!isSidebarOpen && 'justify-center'}`} title={t.label}>
-                    <Icon size={20} className={`shrink-0 transition-colors ${isActive ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                    {isSidebarOpen && <span className="whitespace-nowrap">{t.label}</span>}
-                  </button>
-                )
-              })}
+            <div className={`mt-8 mb-3 ${isSidebarOpen ? 'px-3' : 'text-center'}`}>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSidebarOpen ? 'Dashboard Menu' : '...'}</p>
             </div>
 
-            {/* User Action & Settings */}
-            <div className="p-4 border-t border-slate-100 shrink-0 space-y-2 bg-slate-50/50">
-              <button onClick={() => setIsDarkMode(!isDarkMode)} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-white hover:text-slate-800 hover:shadow-sm transition-all border border-transparent hover:border-slate-200 ${!isSidebarOpen && 'justify-center'}`} title="Toggle Mode Gelap/Terang">
-                {isDarkMode ? <Sun size={20} className="shrink-0 text-amber-500" /> : <Moon size={20} className="shrink-0 text-slate-400" />}
-                {isSidebarOpen && <span>{isDarkMode ? 'Mode Terang' : 'Mode Gelap'}</span>}
-              </button>
-              <button onClick={handleLogout} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border border-transparent hover:border-rose-100 ${!isSidebarOpen && 'justify-center'}`} title="Keluar">
-                <LogOut size={20} className="shrink-0" />
-                {isSidebarOpen && <span>Keluar</span>}
-              </button>
-            </div>
-          </aside>
+            {TABS.map((t, idx) => {
+              const Icon = t.icon;
+              const isActive = activeTab === 'dashboard' && subTab === t.id;
+              return (
+                <button key={idx} onClick={() => { setActiveTab('dashboard'); setSubTab(t.id); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all group ${isActive ? 'bg-teal-50 text-teal-700 font-bold border border-teal-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium border border-transparent'} ${!isSidebarOpen && 'justify-center'}`} title={t.label}>
+                  <Icon size={20} className={`shrink-0 transition-colors ${isActive ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                  {isSidebarOpen && <span className="whitespace-nowrap">{t.label}</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* User Action & Settings */}
+          <div className="p-4 border-t border-slate-100 shrink-0 space-y-2 bg-slate-50/50">
+            <button onClick={() => setIsDarkMode(!isDarkMode)} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-600 hover:bg-white hover:text-slate-800 hover:shadow-sm transition-all border border-transparent hover:border-slate-200 ${!isSidebarOpen && 'justify-center'}`} title="Toggle Mode Gelap/Terang">
+              {isDarkMode ? <Sun size={20} className="shrink-0 text-amber-500" /> : <Moon size={20} className="shrink-0 text-slate-400" />}
+              {isSidebarOpen && <span>{isDarkMode ? 'Mode Terang' : 'Mode Gelap'}</span>}
+            </button>
+            <button onClick={handleLogout} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all border border-transparent hover:border-rose-100 ${!isSidebarOpen && 'justify-center'}`} title="Keluar">
+              <LogOut size={20} className="shrink-0" />
+              {isSidebarOpen && <span>Keluar</span>}
+            </button>
+          </div>
+        </aside>
 
         {/* MAIN CONTENT AREA */}
         <div className="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 relative">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.035] z-0 overflow-hidden">
-              <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="" className="w-[600px] grayscale select-none" />
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.035] z-0 overflow-hidden">
+            <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="" className="w-[600px] grayscale select-none" />
+          </div>
           {/* Header */}
-            <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 shrink-0 flex items-center px-6 justify-between z-[80] shadow-sm print:hidden">
-              <div className="flex items-center gap-4">
-                <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
-                  <Menu size={20} />
-                </button>
-                <h2 className="text-lg font-black text-slate-800 tracking-tight">{activeTab === 'upload' ? 'Integrasi Data' : TABS.find(t => t.id === subTab)?.label || 'Dashboard'}</h2>
-              </div>
-              <div className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> Aktif
-              </div>
-            </header>
+          <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 shrink-0 flex items-center px-6 justify-between z-[80] shadow-sm print:hidden">
+            <div className="flex items-center gap-4">
+              <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
+                <Menu size={20} />
+              </button>
+              <h2 className="text-lg font-black text-slate-800 tracking-tight">{activeTab === 'upload' ? 'Integrasi Data' : TABS.find(t => t.id === subTab)?.label || 'Dashboard'}</h2>
+            </div>
+            <div className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> Aktif
+            </div>
+          </header>
 
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar scroll-smooth">
             {activeTab === 'upload' ? (<div className="px-6">{renderUploadTab()}</div>) : (
@@ -4727,111 +4893,111 @@ export default function App() {
 
 
 
-      {/* MAP MODAL -€” INACBG-’iDRG or iDRG-’INACBG */}
-      {mapModal.isOpen && dashData && (
-        <div className="fixed inset-0 z-[160] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
-            {/* Header */}
-            <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-gradient-to-r from-sky-50 to-white shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-sky-100 rounded-xl text-sky-700"><GitMerge size={20} /></div>
-                <div>
-                  <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">
-                    {mapModal.type === 'ina' ? `Peta INACBG -’ iDRG` : `Peta iDRG -’ INACBG`}
-                  </h3>
-                  <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
-                    <span className="text-sky-600">{mapModal.code}</span> -€” {mapModal.desc || '-'}
-                  </p>
+        {/* MAP MODAL — INACBG→iDRG or iDRG→INACBG */}
+        {mapModal.isOpen && dashData && (
+          <div className="fixed inset-0 z-[160] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
+              {/* Header */}
+              <div className="flex justify-between items-center p-5 border-b border-slate-100 bg-gradient-to-r from-sky-50 to-white shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-sky-100 rounded-xl text-sky-700"><GitMerge size={20} /></div>
+                  <div>
+                    <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">
+                      {mapModal.type === 'ina' ? `Peta INACBG → iDRG` : `Peta iDRG → INACBG`}
+                    </h3>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
+                      <span className="text-sky-600">{mapModal.code}</span> — {mapModal.desc || '-'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => openDrilldown(`Kasus ${mapModal.code}`, r => mapModal.type === 'ina' ? String(r.INACBG).trim() === mapModal.code : String(r.IDRG_DRG_CODE).trim() === mapModal.code)}
+                    className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-[0_4px_12px_-2px_rgba(2,132,199,0.3)] transition-all"
+                  >
+                    <Table2 size={15} /> Lihat Data Pasien
+                  </button>
+                  <button onClick={() => setMapModal({ isOpen: false, type: '', code: '', desc: '' })} className="p-2 hover:bg-slate-100 rounded-full transition-colors border border-transparent hover:border-slate-200 ml-1">
+                    <X size={22} className="text-slate-400" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => openDrilldown(`Kasus ${mapModal.code}`, r => mapModal.type === 'ina' ? String(r.INACBG).trim() === mapModal.code : String(r.IDRG_DRG_CODE).trim() === mapModal.code)}
-                  className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-[0_4px_12px_-2px_rgba(2,132,199,0.3)] transition-all"
-                >
-                  <Table2 size={15} /> Lihat Data Pasien
-                </button>
-                <button onClick={() => setMapModal({ isOpen: false, type: '', code: '', desc: '' })} className="p-2 hover:bg-slate-100 rounded-full transition-colors border border-transparent hover:border-slate-200 ml-1">
-                  <X size={22} className="text-slate-400" />
-                </button>
+
+              {/* Body */}
+              <div className="overflow-y-auto flex-1 p-5 space-y-4 custom-scrollbar bg-slate-50/40">
+                {mapModal.type === 'ina' && (() => {
+                  const entry = dashData.inaToIdrgMap?.[mapModal.code];
+                  if (!entry) return <p className="text-center text-slate-400 py-10 font-semibold">Tidak ada data pemetaan untuk kode ini.</p>;
+                  return Object.entries(entry.targets).sort((a, b) => b[1].count - a[1].count).map(([idrg, data], j) => (
+                    <div key={`mm-ina-${j}`} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:border-sky-300 hover:shadow-md transition-all">
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <span className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{idrg.split(' ')[0]}</span>
+                        <span className="text-sm font-bold text-slate-700 flex-1">{idrg.substring(idrg.indexOf(' ') + 1)}</span>
+                        <button
+                          onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} → ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
+                          className="flex items-center gap-1.5 text-[11px] font-black uppercase text-sky-700 bg-sky-100 hover:bg-sky-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
+                        >
+                          <Table2 size={11} /> {data.count} Kasus
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                        <div className="bg-sky-50 p-3 rounded-xl border border-sky-100">
+                          <p className="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-2 flex items-center gap-1"><Layers size={10} /> Diagnosa Utama</p>
+                          <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scrollbar">
+                            {Object.entries(data.priDiags).length === 0
+                              ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span>
+                              : Object.entries(data.priDiags).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pd, k) => (
+                                <span key={k} className="text-[10px] font-black text-sky-800 bg-white border border-sky-200 px-1.5 py-0.5 rounded shadow-sm">{pd[0]} <span className="text-sky-400">({pd[1]})</span></span>
+                              ))}
+                          </div>
+                        </div>
+                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1"><Stethoscope size={10} /> Diagnosa Sekunder</p>
+                          <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scrollbar">
+                            {Object.entries(data.secDiags).length === 0
+                              ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span>
+                              : Object.entries(data.secDiags).sort((a, b) => b[1] - a[1]).slice(0, 12).map((sd, k) => (
+                                <span key={k} className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm">{sd[0]} <span className="text-slate-400">({sd[1]})</span></span>
+                              ))}
+                          </div>
+                        </div>
+                        <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100 sm:col-span-2">
+                          <p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-2 flex items-center gap-1"><FileCode size={10} /> Prosedur Terkait</p>
+                          <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scrollbar">
+                            {!data.procs || Object.entries(data.procs).length === 0
+                              ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span>
+                              : Object.entries(data.procs).sort((a, b) => b[1] - a[1]).slice(0, 15).map((pr, k) => (
+                                <span key={k} className="text-[10px] font-black text-indigo-800 bg-white border border-indigo-200 px-1.5 py-0.5 rounded shadow-sm">{pr[0]} <span className="text-indigo-400 font-bold ml-0.5">({pr[1]})</span></span>
+                              ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ));
+                })()}
+
+                {mapModal.type === 'idrg' && (() => {
+                  const entry = dashData.idrgToInaMap?.[mapModal.code];
+                  if (!entry) return <p className="text-center text-slate-400 py-10 font-semibold">Tidak ada data pemetaan untuk kode ini.</p>;
+                  return Object.entries(entry.sources).sort((a, b) => b[1].count - a[1].count).map(([inaCode, data], j) => (
+                    <div key={`mm-idrg-${j}`} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:border-orange-300 hover:shadow-md transition-all">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="bg-sky-600 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{inaCode}</span>
+                        <span className="text-sm font-bold text-slate-700 flex-1">{data.desc || '-'}</span>
+                        <button
+                          onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} → ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
+                          className="flex items-center gap-1.5 text-[11px] font-black uppercase text-orange-700 bg-orange-100 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
+                        >
+                          <Table2 size={11} /> {data.count} Kasus
+                        </button>
+                      </div>
+                    </div>
+                  ));
+                })()}
               </div>
             </div>
-
-            {/* Body */}
-            <div className="overflow-y-auto flex-1 p-5 space-y-4 custom-scrollbar bg-slate-50/40">
-              {mapModal.type === 'ina' && (() => {
-                const entry = dashData.inaToIdrgMap?.[mapModal.code];
-                if (!entry) return <p className="text-center text-slate-400 py-10 font-semibold">Tidak ada data pemetaan untuk kode ini.</p>;
-                return Object.entries(entry.targets).sort((a, b) => b[1].count - a[1].count).map(([idrg, data], j) => (
-                  <div key={`mm-ina-${j}`} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:border-sky-300 hover:shadow-md transition-all">
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{idrg.split(' ')[0]}</span>
-                      <span className="text-sm font-bold text-slate-700 flex-1">{idrg.substring(idrg.indexOf(' ') + 1)}</span>
-                      <button
-                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} -’ ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
-                        className="flex items-center gap-1.5 text-[11px] font-black uppercase text-sky-700 bg-sky-100 hover:bg-sky-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
-                      >
-                        <Table2 size={11} /> {data.count} Kasus
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-                      <div className="bg-sky-50 p-3 rounded-xl border border-sky-100">
-                        <p className="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-2 flex items-center gap-1"><Layers size={10} /> Diagnosa Utama</p>
-                        <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scrollbar">
-                          {Object.entries(data.priDiags).length === 0
-                            ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span>
-                            : Object.entries(data.priDiags).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pd, k) => (
-                              <span key={k} className="text-[10px] font-black text-sky-800 bg-white border border-sky-200 px-1.5 py-0.5 rounded shadow-sm">{pd[0]} <span className="text-sky-400">({pd[1]})</span></span>
-                            ))}
-                        </div>
-                      </div>
-                      <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                        <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1"><Stethoscope size={10} /> Diagnosa Sekunder</p>
-                        <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scrollbar">
-                          {Object.entries(data.secDiags).length === 0
-                            ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span>
-                            : Object.entries(data.secDiags).sort((a, b) => b[1] - a[1]).slice(0, 12).map((sd, k) => (
-                              <span key={k} className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm">{sd[0]} <span className="text-slate-400">({sd[1]})</span></span>
-                            ))}
-                        </div>
-                      </div>
-                      <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100 sm:col-span-2">
-                        <p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-2 flex items-center gap-1"><FileCode size={10} /> Prosedur Terkait</p>
-                        <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto custom-scrollbar">
-                          {!data.procs || Object.entries(data.procs).length === 0
-                            ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span>
-                            : Object.entries(data.procs).sort((a, b) => b[1] - a[1]).slice(0, 15).map((pr, k) => (
-                              <span key={k} className="text-[10px] font-black text-indigo-800 bg-white border border-indigo-200 px-1.5 py-0.5 rounded shadow-sm">{pr[0]} <span className="text-indigo-400 font-bold ml-0.5">({pr[1]})</span></span>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ));
-              })()}
-
-              {mapModal.type === 'idrg' && (() => {
-                const entry = dashData.idrgToInaMap?.[mapModal.code];
-                if (!entry) return <p className="text-center text-slate-400 py-10 font-semibold">Tidak ada data pemetaan untuk kode ini.</p>;
-                return Object.entries(entry.sources).sort((a, b) => b[1].count - a[1].count).map(([inaCode, data], j) => (
-                  <div key={`mm-idrg-${j}`} className="bg-white border border-slate-200 p-4 rounded-2xl shadow-sm hover:border-orange-300 hover:shadow-md transition-all">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="bg-sky-600 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{inaCode}</span>
-                      <span className="text-sm font-bold text-slate-700 flex-1">{data.desc || '-'}</span>
-                      <button
-                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} -’ ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
-                        className="flex items-center gap-1.5 text-[11px] font-black uppercase text-orange-700 bg-orange-100 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
-                      >
-                        <Table2 size={11} /> {data.count} Kasus
-                      </button>
-                    </div>
-                  </div>
-                ));
-              })()}
-            </div>
           </div>
-        </div>
-      )}
+        )}
 
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -4851,6 +5017,25 @@ export default function App() {
           .fixed, .sticky { position: static !important; }
         }
       `}} />
+
+        {/* NotebookLM Shortcut Button */}
+        <a
+          href="https://notebooklm.google.com/notebook/0006be3a-8708-41f5-b2da-47cc54b04763"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-10 right-10 z-[160] flex items-center gap-3 bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 text-white p-4 rounded-3xl shadow-[0_20px_50px_rgba(13,148,136,0.3)] border border-teal-400/30 transition-all duration-700 hover:rounded-2xl hover:scale-105 group print:hidden overflow-hidden"
+          title="Tanya AI Analis (NotebookLM)"
+        >
+          <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="relative flex items-center justify-center">
+            <Bot size={24} className="relative z-10 transition-all duration-700 group-hover:scale-110 group-hover:rotate-12" />
+            <Sparkles size={12} className="absolute -top-1 -right-1 text-emerald-300 animate-pulse" />
+          </div>
+          <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-[200px] transition-all duration-700 ease-in-out font-black tracking-widest text-[11px] uppercase">
+            Tanya AI Analis
+          </span>
+          <div className="absolute -inset-2 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+        </a>
       </div>
     </div>
   );
