@@ -4797,6 +4797,24 @@ export default function App() {
                 </button>
               )
             })}
+
+            {/* Banner Iklan */}
+            {isSidebarOpen && (
+              <div className="mt-10 px-3 pb-2 animate-in fade-in duration-500">
+                <a href="#" target="_blank" rel="noopener noreferrer" className="block relative rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group bg-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <img 
+                    src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a" 
+                    alt="Advertisement" 
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" 
+                    loading="lazy"
+                  />
+                  <div className="absolute bottom-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="bg-white/90 backdrop-blur text-slate-800 text-[8px] font-black uppercase px-2 py-1 rounded border border-white/50 shadow-sm">Info</span>
+                  </div>
+                </a>
+              </div>
+            )}
           </div>
 
           {/* User Action & Settings */}
