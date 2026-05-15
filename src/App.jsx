@@ -1403,6 +1403,47 @@ export default function App() {
     } catch (e) { return {}; }
   });
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  
+  const [showAdOverlay, setShowAdOverlay] = useState(true);
+  const [initialAdDone, setInitialAdDone] = useState(false);
+  const idleTimerRef = useRef(null);
+
+  // Initial 5-second Ad
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowAdOverlay(false);
+      setInitialAdDone(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Idle Timer (10 minutes)
+  useEffect(() => {
+    if (!initialAdDone) return;
+
+    const resetIdleTimer = () => {
+      if (showAdOverlay) setShowAdOverlay(false);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = setTimeout(() => {
+        setShowAdOverlay(true);
+      }, 600000); // 10 minutes
+    };
+
+    window.addEventListener('mousemove', resetIdleTimer);
+    window.addEventListener('keydown', resetIdleTimer);
+    window.addEventListener('click', resetIdleTimer);
+    window.addEventListener('scroll', resetIdleTimer);
+
+    resetIdleTimer();
+
+    return () => {
+      window.removeEventListener('mousemove', resetIdleTimer);
+      window.removeEventListener('keydown', resetIdleTimer);
+      window.removeEventListener('click', resetIdleTimer);
+      window.removeEventListener('scroll', resetIdleTimer);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, [initialAdDone, showAdOverlay]);
 
   // Persistence Sync
   useEffect(() => {
@@ -4798,23 +4839,7 @@ export default function App() {
               )
             })}
 
-            {/* Banner Iklan */}
-            {isSidebarOpen && (
-              <div className="mt-10 px-3 pb-2 animate-in fade-in duration-500">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="block relative rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-200 group bg-white">
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <img 
-                    src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a" 
-                    alt="Advertisement" 
-                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700" 
-                    loading="lazy"
-                  />
-                  <div className="absolute bottom-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="bg-white/90 backdrop-blur text-slate-800 text-[8px] font-black uppercase px-2 py-1 rounded border border-white/50 shadow-sm">Info</span>
-                  </div>
-                </a>
-              </div>
-            )}
+
           </div>
 
           {/* User Action & Settings */}
@@ -5054,6 +5079,30 @@ export default function App() {
           </span>
           <div className="absolute -inset-2 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
         </a>
+
+        {/* Advertisement Overlay (Login / Screensaver) */}
+        {showAdOverlay && (
+          <div className="fixed inset-0 z-[9999] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-6 animate-in fade-in duration-500">
+            <div className="relative max-w-4xl w-full mx-auto animate-in zoom-in-95 duration-700">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowAdOverlay(false); }}
+                className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-xl text-slate-500 hover:text-rose-600 hover:scale-110 transition-all z-10"
+              >
+                <X size={20} />
+              </button>
+              <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
+                <img 
+                  src="https://drive.google.com/uc?export=view&id=1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a" 
+                  alt="Advertisement" 
+                  className="w-full h-auto object-contain max-h-[85vh]"
+                />
+              </a>
+              <p className="text-center text-white/50 text-xs mt-4 font-medium tracking-wider">
+                {initialAdDone ? 'Gerakkan mouse atau klik untuk menutup' : 'Iklan ini akan otomatis tertutup dalam 5 detik...'}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
