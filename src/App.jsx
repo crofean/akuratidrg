@@ -716,130 +716,234 @@ const resolveKsmDept = (dpjp) => {
   if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
     return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
 
-  // 1. ONCOLOGY (High Priority)
-  if (n.includes('ONK') || n.includes('KHOM') || n.includes('HEMATOLOGI')) {
-    let ksm = 'Radiasi & Kedokteran Nuklir Onkologi';
-    if (n.includes('SPB')) ksm = 'Bedah Onkologi';
-    else if (n.includes('SPA') || n.includes('ANAK')) ksm = 'Hematologi Onkologi Anak';
-    else if (n.includes('SPPD') || n.includes('DALAM')) ksm = 'Hematologi Onkologi Medik';
-    else if (n.includes('SPOG') || n.includes('KANDUNGAN')) ksm = 'Ginekologi Onkologi';
-    else if (n.includes('DVE') || n.includes('DV')) ksm = 'Onkologi dan Bedah Kulit';
-    else if (n.includes('THT')) ksm = 'THT Onkologi';
-    else if (n.includes('SPPA')) ksm = 'Patologi Anatomi';
-    return { ksm, dept: 'Departemen Onkologi' };
-  }
+  const check = (keywords) => keywords.some(k => n.includes(k));
 
-  // 2. CARDIOVASCULAR
-  if (n.includes('KAKV') || n.includes('BTKV') || n.includes('BVE') || n.includes('KKV') || n.includes('KARDIO')) {
-    let ksm = 'Jantung Dewasa';
-    if (n.includes('BTKV')) ksm = 'Bedah Jantung & Thorak';
-    else if (n.includes('BVE')) ksm = 'Vaskuler';
-    else if (n.includes('SPA') || n.includes('ANAK')) ksm = 'Jantung Pediatrik & Kongenital';
-    else if (n.includes('AN')) ksm = 'Anestesi Kardiovaskular';
-    else if (n.includes('REHAB')) ksm = 'Rehabilitasi Kardiorespirasi';
-    return { ksm, dept: 'Departemen Kardiologi' };
-  }
+  // --- Department of Cardiology ---
+  if (check(['SP.JP(K) KARDIOLOGI INTERVENSI', 'SPJP(K) KARDIOLOGI INTERVENSI', 'KARDIOLOGI INTERVENSI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Intervensi', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) EKOKARDIOGRAFI', 'SPJP(K) EKOKARDIOGRAFI', 'EKOKARDIOGRAFI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Ekokardiografi', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) ARITMIA', 'SPJP(K) ARITMIA', 'ARITMIA'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Aritmia', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) GAGAL JANTUNG', 'SPJP(K) GAGAL JANTUNG', 'GAGAL JANTUNG'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Gagal Jantung', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) VASKULAR', 'SPJP(K) VASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kedokteran Vaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) PENCITRAAN KARDIOVASKULAR', 'SPJP(K) PENCITRAAN KARDIOVASKULAR', 'PENCITRAAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Pencitraan Kardiovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) PEDIATRIK & PJB', 'SPJP(K) PEDIATRIK & PJB', 'PEDIATRIK & PJB', 'PEDIATRIK DAN PJB', 'PEDIATRIK'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Pediatrik dan Penyakit Jantung Bawaan', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) TERAPI INTENSIF', 'SPJP(K) TERAPI INTENSIF'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Terapi Intensif', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) INTENSIF & KEGAWATAN', 'SPJP(K) INTENSIF & KEGAWATAN', 'INTENSIF & KEGAWATAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Intensif & Kegawatan Kardiovascular', dept: 'Department of Cardiology' };
+  if (check(['SP.JP(K) PREVENSI & REHABILITASI', 'SPJP(K) PREVENSI & REHABILITASI', 'PREVENSI & REHABILITASI KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Prevensi dan Rehabilitasi Kardiovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.A(K) KARDIOLOGI', 'SPA(K) KARDIOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Kardiologi', dept: 'Department of Cardiology' };
+  if (check(['SP.PD(K) KARDIOVASKULAR', 'SPPD(K) KARDIOVASKULAR', 'K-KV', 'KKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.BTKV', 'SPBTKV'])) return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.B(K) BEDAH VASKULAR & ENDOVASKULAR', 'SPB(K) BEDAH VASKULAR & ENDOVASKULAR', 'SP.B(K) BEDAH VASKULAR', 'SP.B(K) VASKULAR', 'SPB(K) VASKULAR', 'BVE'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.KFR(K) REHABILITASI KARDIORESPIRASI', 'SPKFR(K) REHABILITASI KARDIORESPIRASI'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Kardiorespirasi', dept: 'Department of Cardiology' };
+  if (check(['SP.AN(K) ANESTESI KARDIOVASKULAR', 'SPAN(K) ANESTESI KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Kardiovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.JP', 'SPJP'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah', dept: 'Department of Cardiology' };
 
-  // 3. GASTROENTEROLOGY
-  if (n.includes('KBD') || n.includes('GASTRO') || n.includes('HEPATOLOGI') || (n.includes('SPB') && n.includes('DIGESTIF'))) {
-    let ksm = 'Gastroenterohepatologi';
-    if (n.includes('SPB')) ksm = 'Bedah Digestif';
-    else if (n.includes('SPA') || n.includes('ANAK')) ksm = 'Gastrohepatologi & Nutrisi';
-    return { ksm, dept: 'Departemen Gastroenterologi' };
-  }
+  // --- Department of Gastroenterology ---
+  if (check(['SP.PD(K) GASTROENTEROHEPATOLOGI', 'SPPD(K) GASTROENTEROHEPATOLOGI', 'K-GEH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
+  if (check(['SP.A(K) GASTROENTEROLOGI-HEPATOLOGI', 'SPA(K) GASTROENTEROLOGI-HEPATOLOGI', 'SP.A(K) GASTROENTEROLOGI & HEPATOLOGI', 'K-GASTRO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Gastroenterologi-hepatologi', dept: 'Department of Gastroenterology' };
+  if (check(['SP.B(K) BEDAH DIGESTIF', 'SPB(K) BEDAH DIGESTIF', 'K-BD', 'KBD', 'DIGESTIF'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Digestif', dept: 'Department of Gastroenterology' };
 
-  // 4. NEUROLOGY
-  if (n.includes('KNA') || n.includes('NEUROMUSKULAR') || n.includes('SPBS') || n.includes('BS ') || n.includes('NEURO')) {
-    let ksm = 'Stroke, Endovaskular intervensi, Neurotrauma dan Neurocritical care';
-    if (n.includes('SPBS') || n.includes('BS ')) ksm = 'Bedah Saraf';
-    else if (n.includes('SPA') || n.includes('ANAK')) ksm = 'Neuropediatri, neuroimunologi dan neuroinfeksi';
-    else if (n.includes('REHAB')) ksm = 'Neurorehabilitasi dan Neurorestorasi';
-    else if (n.includes('AN')) ksm = 'Neuroanestesi';
-    return { ksm, dept: 'Departemen Neurologi' };
-  }
+  // --- Department of Medicine ---
+  if (check(['SP.PD(K) ENDOKRIN-METABOLIK-DIABETES', 'SPPD(K) ENDOKRIN-METABOLIK-DIABETES', 'K-EMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) GERIATRI', 'SPPD(K) GERIATRI', 'K-GER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) PSIKOSOMATIK & PALIATIF', 'SPPD(K) PSIKOSOMATIK & PALIATIF'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept: 'Department of Medicine' };
+  if (check(['SP.PD', 'SPPD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam', dept: 'Department of Medicine' };
+  if (check(['SP.DVE(K) GERIATRI', 'SPDVE(K) GERIATRI', 'SP.KK(K) GERIATRI', 'SPKK(K) GERIATRI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Geriatri', dept: 'Department of Medicine' };
+  if (check(['SP.GK(K) KELAINAN METABOLIK', 'SPGK(K) KELAINAN METABOLIK'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Kelainan Metabolik', dept: 'Department of Medicine' };
+  if (check(['SP.GK(K) NUTRISI PADA PENYAKIT KRITIS', 'SPGK(K) NUTRISI PADA PENYAKIT KRITIS'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Nutrisi pada Penyakit Kritis', dept: 'Department of Medicine' };
+  if (check(['SP.GK', 'SPGK'])) return { ksm: 'Dokter Spesialis Gizi Klinik', dept: 'Department of Medicine' };
+  if (check(['SP.FK', 'SPFK'])) return { ksm: 'Dokter Spesialis Farmakologi Klinik', dept: 'Department of Medicine' };
+  if (check(['SP.OK', 'SPOK'])) return { ksm: 'Dokter Spesialis Kedokteran Okupasi', dept: 'Department of Medicine' };
+  if (check(['SP.KFR(K) REHABILITASI GERIATRI', 'SPKFR(K) REHABILITASI GERIATRI'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Geriatri', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) ADIKSI', 'SPKJ(K) ADIKSI'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Adiksi', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) ANAK & REMAJA', 'SPKJ(K) ANAK & REMAJA', 'SP.KJ(K) ANAK DAN REMAJA'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Anak & Remaja', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) FORENSIK', 'SPKJ(K) FORENSIK'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Forensik', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) PSIKOTERAPI', 'SPKJ(K) PSIKOTERAPI'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikoterapi', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) LIAISON', 'SPKJ(K) LIAISON'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri dan Liaison', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) GERIATRI', 'SPKJ(K) GERIATRI'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Geriatri', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) PSIKOSEKSUAL & MARITAL', 'SPKJ(K) PSIKOSEKSUAL & MARITAL', 'SP.KJ(K) PSIKOSEKSUAL DAN MARITAL'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Psikoseksual dan Marital', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) PEREMPUAN', 'SPKJ(K) PEREMPUAN'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Perempuan', dept: 'Department of Medicine' };
+  if (check(['SP.KJ(K) PSIKOMETRIK', 'SPKJ(K) PSIKOMETRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikometrik', dept: 'Department of Medicine' };
+  if (check(['SP.KJ', 'SPKJ'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa', dept: 'Department of Medicine' };
 
-  // 5. IMUNOLOGI & INFEKSI
-  if (n.includes('ALERGI') || n.includes('TROPIS') || n.includes('INFEKSI') || n.includes('KPTI') || n.includes('REUMATOLOGI') || n.includes('KR ')) {
-    let ksm = 'Tropik Infeksi';
-    if (n.includes('REUMATOLOGI') || n.includes('KR ')) ksm = 'Rematologi dan Alergi Imunologi';
-    else if (n.includes('SPA') || n.includes('ANAK')) ksm = 'Imunologi & Infeksi';
-    else if (n.includes('DVE') || n.includes('DV')) ksm = 'Dermatologi Tropis';
-    return { ksm, dept: 'Departemen Imunologi dan Penyakit Infeksi' };
-  }
+  // --- Department of Neurologi ---
+  if (check(['SP.S(K) EPILEPSI & NEUROFISIOLOGI', 'SPS(K) EPILEPSI & NEUROFISIOLOGI', 'SP.S(K) EPILEPSI DAN NEUROFISIOLOGI', 'SP.N(K) EPILEPSI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Epilepsi dan Neurofisiologi', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROINFEKSI', 'SPS(K) NEUROINFEKSI', 'SP.N(K) NEUROINFEKSI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neuro Infeksi', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NYERI', 'SPS(K) NYERI', 'SP.N(K) NYERI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurologi Nyeri', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROVASKULAR', 'SPS(K) NEUROVASKULAR', 'SP.N(K) NEUROVASKULAR'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurovaskular', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROOTOLOGI/NEUROOPTHALMOLOGI', 'SPS(K) NEUROOTOLOGI', 'SP.S(K) NEUROOTOLOGI', 'SP.S(K) NEUROOPTHALMOLOGI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurootologi / Neuroopthalmologi', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROINTERVENSI', 'SPS(K) NEUROINTERVENSI', 'SP.N(K) NEUROINTERVENSI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurointervensi', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROIMAGING', 'SPS(K) NEUROIMAGING', 'SP.N(K) NEUROIMAGING'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neuroimaging', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) GANGGUAN TIDUR', 'SPS(K) GANGGUAN TIDUR', 'SP.N(K) GANGGUAN TIDUR'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Gangguan Tidur (Sleep Disorder)', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) SARAF TEPI', 'SPS(K) SARAF TEPI', 'SP.N(K) SARAF TEPI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Saraf Tepi', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) SARAF ANAK', 'SPS(K) SARAF ANAK', 'SP.N(K) SARAF ANAK'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Saraf Anak', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEURODEGENERATIF/NEUROBEHAVIOUR', 'SPS(K) NEURODEGENERATIF', 'SP.S(K) NEURODEGENERATIF', 'NEUROBEHAVIOUR'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurodegeneratif / Neurobehaviour', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROONKOLOGI', 'SPS(K) NEUROONKOLOGI', 'SP.N(K) NEUROONKOLOGI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neuroonkologi', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) GANGGUAN GERAK', 'SPS(K) GANGGUAN GERAK', 'SP.N(K) GANGGUAN GERAK'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Gangguan Gerak (Movement Disorder)', dept: 'Department of Neurologi' };
+  if (check(['SP.S(K) NEUROKRITIKAL & INTENSIF', 'SPS(K) NEUROKRITIKAL & INTENSIF', 'SP.S(K) NEUROKRITIKAL'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurokritikal dan Intensif', dept: 'Department of Neurologi' };
+  if (check(['SP.S', 'SPS', 'SP.N', 'SPN', 'NEURO'])) return { ksm: 'Dokter Spesialis Neurologi', dept: 'Department of Neurologi' };
+  if (check(['SP.BS(K) NEUROFUNGSIONAL', 'SPBS(K) NEUROFUNGSIONAL'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurofungsional', dept: 'Department of Neurologi' };
+  if (check(['SP.BS(K) NEUROONKOLOGI & SKULL BASE', 'SPBS(K) NEUROONKOLOGI & SKULL BASE', 'SP.BS(K) NEUROONKOLOGI'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neuroonkologi + Skull Base', dept: 'Department of Neurologi' };
+  if (check(['SP.BS(K) NEUROSPINE', 'SPBS(K) NEUROSPINE'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurospine', dept: 'Department of Neurologi' };
+  if (check(['SP.BS(K) NEUROVASKULAR', 'SPBS(K) NEUROVASKULAR'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurovaskular', dept: 'Department of Neurologi' };
+  if (check(['SP.BS(K) PEDIATRIK', 'SPBS(K) PEDIATRIK'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Pediatrik', dept: 'Department of Neurologi' };
+  if (check(['SP.BS(K) NEUROTRAUMA', 'SPBS(K) NEUROTRAUMA'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurotrauma', dept: 'Department of Neurologi' };
+  if (check(['SP.BS', 'SPBS'])) return { ksm: 'Dokter Spesialis Bedah Saraf', dept: 'Department of Neurologi' };
+  if (check(['SP.A(K) NEUROPEDIATRI', 'SPA(K) NEUROPEDIATRI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Neuropediatri', dept: 'Department of Neurologi' };
+  if (check(['SP.KFR(K) NEUROMUSKULAR', 'SPKFR(K) NEUROMUSKULAR'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Neuromuskular', dept: 'Department of Neurologi' };
+  if (check(['SP.AN(K) NEUROANESTESI & NEURO CRITICAL CARE', 'SPAN(K) NEUROANESTESI', 'SP.AN(K) NEUROANESTESI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Neuro Anestesi dan Neuro Critical Care', dept: 'Department of Neurologi' };
 
-  // 6. URO-NEFRO
-  if (n.includes('KGH') || n.includes('NEFROLOGI') || n.includes('UROGINEKOLOGI') || n.includes('VENEREOLOGI') || n.includes('UROLOGI')) {
-    let ksm = 'Urologi';
-    if (n.includes('KGH') || n.includes('NEFRO')) ksm = 'Nefrologi';
-    else if (n.includes('UROGINEKOLOGI')) ksm = 'Uroginekologi';
-    else if (n.includes('VENEREOLOGI')) ksm = 'Venereologi';
-    return { ksm, dept: 'Departemen Uro-Nefro' };
-  }
+  // --- Department of Uro-Nephrology ---
+  if (check(['SP.U(K) ANDROLOGI', 'SPU(K) ANDROLOGI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Andrologi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.U(K) UROLOGI PEREMPUAN FUNGSIONAL & NEURO', 'SPU(K) UROLOGI PEREMPUAN', 'SP.U(K) UROLOGI PEREMPUAN'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Perempuan, Fungsional, dan Neuro - Urologi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.U(K) ONKOLOGI UROLOGI', 'SPU(K) ONKOLOGI UROLOGI', 'SP.U(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Onkologi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.U(K) PEDIATRIK UROLOGI', 'SPU(K) PEDIATRIK UROLOGI', 'SP.U(K) PEDIATRIK'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Pediatrik', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.U(K) REKONSTRUKSI', 'SPU(K) REKONSTRUKSI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Rekonstruksi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.U(K) TRANSPLANTASI', 'SPU(K) TRANSPLANTASI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Transplantasi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.U', 'SPU', 'UROLOGI'])) return { ksm: 'Dokter Spesialis Urologi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.DVE(K) VENEREOLOGI', 'SPDVE(K) VENEREOLOGI', 'SP.KK(K) VENEREOLOGI', 'SPKK(K) VENEREOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Venereologi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.PD(K) GINJAL HIPERTENSI', 'SPPD(K) GINJAL HIPERTENSI', 'K-GH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.A(K) NEFROLOGI', 'SPA(K) NEFROLOGI', 'K-NEFRO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Nefrologi Anak', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.OG(K) UROGINEKOLOGI REKONSTRUKSI', 'SPOG(K) UROGINEKOLOGI REKONSTRUKSI', 'UROGINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Uroginekologi Rekonstruksi', dept: 'Department of Uro-Nephrology' };
 
-  // 7. IBU DAN ANAK
-  if (n.includes('KAP') || n.includes('SPBA') || n.includes('BA ') || n.includes('PEDIATRI') || n.includes('NEONATOLOGI') || n.includes('FER') || n.includes('KFER') || n.includes('KFM') || n.includes('OBGINSOS')) {
-    let ksm = 'Ilmu Kesehatan Anak';
-    if (n.includes('SPOG') || n.includes('KANDUNGAN')) ksm = 'Obstetri dan Ginekologi';
-    else if (n.includes('SPBA') || n.includes('BA ')) ksm = 'Bedah Anak';
-    else if (n.includes('KFM') || n.includes('FETO')) ksm = 'Fetomaternal & Sosial';
-    else if (n.includes('FER') || n.includes('KFER')) ksm = 'FER';
-    else if (n.includes('AN')) ksm = 'Emergensi dan Terapi Intensif Anak';
-    return { ksm, dept: 'Departemen Ibu dan Anak' };
-  }
+  // --- Department of Maternal and Child ---
+  if (check(['SP.OG(K) FER', 'SPOG(K) FER', 'FER (FERTILITAS ENDOKRINOLOGI REPRODUKSI)', 'KFER'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Fertilitas dan Endokrinologi Reproduksi', dept: 'Department of Maternal and Child' };
+  if (check(['SP.OG(K) FETOMATERNAL', 'SPOG(K) FETOMATERNAL', 'K-FM', 'FETOMATERNAL'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Fetomaternal', dept: 'Department of Maternal and Child' };
+  if (check(['SP.OG(K) OBSTETRI GINEKOLOGI SOSIAL', 'SPOG(K) OBSTETRI GINEKOLOGI SOSIAL', 'OBSTETRI DAN GINEKOLOGI SOSIAL', 'OBGINSOS'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Obstetri dan Ginekologi Sosial', dept: 'Department of Maternal and Child' };
+  if (check(['SP.OG', 'SPOG', 'KANDUNGAN'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A(K) ENDOKRINOLOGI', 'SPA(K) ENDOKRINOLOGI', 'K-ENDO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Endokrinologi', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A(K) NEONATOLOGI', 'SPA(K) NEONATOLOGI', 'K-NEO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Neonatologi', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A(K) NUTRISI & METABOLIK', 'SPA(K) NUTRISI & METABOLIK', 'SP.A(K) NUTRISI DAN PENYAKIT METABOLIK'])) return { ksm: 'Dokter Spesialis Anak Konsultan Nutrisi dan Penyakit Metabolik', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A(K) RESPIROLOGI', 'SPA(K) RESPIROLOGI', 'K-RESPI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Respirologi', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A(K) TUMBUH KEMBANG & PEDIATRI SOSIAL', 'SPA(K) TUMBUH KEMBANG', 'SP.A(K) TUMBUH KEMBANG'])) return { ksm: 'Dokter Spesialis Anak Konsultan Tumbuh Kembang - Pediatri Sosial', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A(K) EMERGENSI & INTENSIF ANAK', 'SPA(K) EMERGENSI & INTENSIF ANAK', 'K-ERIA', 'SP.A(K) EMERGENSI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Emergensi dan Terapi Intensif Anak', dept: 'Department of Maternal and Child' };
+  if (check(['SP.A', 'SPA', 'ANAK'])) return { ksm: 'Dokter Spesialis Anak', dept: 'Department of Maternal and Child' };
+  if (check(['SP.BA(K) BEDAH UROGENITAL ANAK', 'SPBA(K) BEDAH UROGENITAL ANAK'])) return { ksm: 'Dokter Spesialis Bedah Anak Konsultan Bedah Urogenital Anak', dept: 'Department of Maternal and Child' };
+  if (check(['SP.BA(K) BEDAH DIGESTIF ANAK', 'SPBA(K) BEDAH DIGESTIF ANAK'])) return { ksm: 'Dokter Spesialis Bedah Anak Konsultan Bedah Digestif Anak', dept: 'Department of Maternal and Child' };
+  if (check(['SP.BA', 'SPBA'])) return { ksm: 'Dokter Spesialis Bedah Anak', dept: 'Department of Maternal and Child' };
+  if (check(['SP.DVE(K) DERMATOLOGI ANAK', 'SPDVE(K) DERMATOLOGI ANAK', 'SP.KK(K) DERMATOLOGI ANAK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Anak', dept: 'Department of Maternal and Child' };
+  if (check(['SP.KFR(K) REHABILITASI PEDIATRIK', 'SPKFR(K) REHABILITASI PEDIATRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Pediatrik', dept: 'Department of Maternal and Child' };
+  if (check(['SP.AN(K) ANESTESI OBSTETRI', 'SPAN(K) ANESTESI OBSTETRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Obstetri', dept: 'Department of Maternal and Child' };
+  if (check(['SP.AN(K) ANESTESI PEDIATRI', 'SPAN(K) ANESTESI PEDIATRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Pediatri', dept: 'Department of Maternal and Child' };
 
-  // 8. ANESTESI (General)
-  if (n.includes('SPAN') || n.includes('KIC')) {
-    let ksm = 'Anestesiologi';
-    if (n.includes('KIC')) ksm = 'Terapi Intensif';
-    return { ksm, dept: 'Departemen Anestesi' };
-  }
+  // --- Department of Oncology ---
+  if (check(['SP.ONK.RAD(K) ABDOMINO-PELVIK', 'SPONKRAD(K) ABDOMINO-PELVIK', 'SP.ONK.RAD(K) ABDOMINO'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD(K) KEPALA, LEHER & SSP', 'SPONKRAD(K) KEPALA, LEHER & SSP', 'SP.ONK.RAD(K) KEPALA'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Kepala, Leher dan Sistem Saraf Pusat', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD(K) TORAKS, PEDIATRIK & LIMFO-MUSKULOSKELETAL', 'SPONKRAD(K) TORAKS', 'SP.ONK.RAD(K) TORAKS'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Toraks, Pediatrik dan Limpho-muskuloskeletal', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD', 'SPONKRAD'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi', dept: 'Department of Oncology' };
+  if (check(['SP.PD(K) HEMATOLOGI ONKOLOGI MEDIK', 'SPPD(K) HEMATOLOGI ONKOLOGI MEDIK', 'K-HOM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
+  if (check(['SP.OG(K) ONKOLOGI GINEKOLOGI', 'SPOG(K) ONKOLOGI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Onkologi Ginekologi', dept: 'Department of Oncology' };
+  if (check(['SP.A(K) HEMATOONKOLOGI', 'SPA(K) HEMATOONKOLOGI', 'SP.A(K) HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Hematoonkologi', dept: 'Department of Oncology' };
+  if (check(['SP.BM(K) ONKOLOGI BEDAH MULUT & MAKSILOFASIAL', 'SPBM(K) ONKOLOGI BEDAH MULUT', 'SP.BM(K) ONKOLOGI'])) return { ksm: 'Dokter Gigi Dokter Spesialis Bedah Mulut Neoplasma dan Kista Bedah Mulut dan Maksilofasial', dept: 'Department of Oncology' };
+  if (check(['SP.B(K) BEDAH ONKOLOGI', 'SPB(K) BEDAH ONKOLOGI', 'K-ONK'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Onkologi', dept: 'Department of Oncology' };
+  if (check(['SP.THT-KL(K) ONKOLOGI BEDAH KEPALA LEHER', 'SPTHT-KL(K) ONKOLOGI', 'SP.THT(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Onkologi - Bedah Kepala Leher', dept: 'Department of Oncology' };
+  if (check(['SP.DVE(K) ONKOLOGI & BEDAH KULIT', 'SPDVE(K) ONKOLOGI & BEDAH KULIT', 'SP.KK(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Onkologi dan Bedah Kulit', dept: 'Department of Oncology' };
 
-  // 9. MEDICINE (General)
-  if (n.includes('SPPD') || n.includes('DALAM') || n.includes('PULMO') || n.includes('SPGK') || n.includes('SPFK') || n.includes('SPKJ') || n.includes('SPKFR') || n.includes('SPRM')) {
-    let ksm = 'Rehabilitasi Medik, Kedokteran Okupasi, dan Medik Umum';
-    if (n.includes('SPGK')) ksm = 'Endokrin Metabolik Diabetes dan Nutrisi Medik';
-    else if (n.includes('SPPD') || n.includes('DALAM')) ksm = 'Geriatri, Perawatan Paliatif, dan Psikosomatis';
-    else if (n.includes('PULMO')) ksm = 'Pulmonologi';
-    else if (n.includes('SPKJ')) ksm = 'Psikiatri dan Neurobehaviour Degeneratif dan Gangguan Gerak';
-    else if (n.includes('SPFK')) ksm = 'Farmakologi Klinik';
-    return { ksm, dept: 'Departemen Medicine' };
-  }
+  // --- Department of Anesthesiology ---
+  if (check(['SP.AN(K) ANESTESI REGIONAL', 'SPAN(K) ANESTESI REGIONAL'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Regional', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN(K) MANAJEMEN NYERI', 'SPAN(K) MANAJEMEN NYERI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Manajemen Nyeri', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN(K) INTENSIVE CARE (KIC)', 'SPAN(K) INTENSIVE CARE', 'KIC'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Intensive Care (KIC)', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN', 'SPAN'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif', dept: 'Department of Anesthesiology' };
 
-  // 10. SURGERY (General)
-  if (n.includes('SPB') || n.includes('BEDAH') || n.includes('SPOT') || n.includes('OT ') || n.includes('SPM ') || n.includes('SPM,') || n.includes(' MATA') || n.includes('SPTHT') || n.includes('THT')) {
-    let ksm = 'Ilmu Bedah';
-    if (n.includes('SPOT') || n.includes('OT ')) ksm = 'Bedah Orthopedi';
-    else if (n.includes('SPM ') || n.includes('SPM,') || n.includes(' MATA')) ksm = 'Ophthalmology';
-    else if (n.includes('SPTHT') || n.includes('THT')) ksm = 'THT-BKL';
-    else if (n.includes('DIGESTIF')) ksm = 'Bedah Digestif';
-    return { ksm, dept: 'Departemen Surgery' };
-  }
+  // --- Department of Supporting Medicine ---
+  if (check(['SP.PK(K) HEMATOLOGI KLINIK', 'SPPK(K) HEMATOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Hematologi Klinik', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) ONKOLOGI KLINIK', 'SPPK(K) ONKOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Onkologi Klinik', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) NEFROLOGI & RESPIRASI', 'SPPK(K) NEFROLOGI & RESPIRASI', 'SP.PK(K) NEFROLOGI DAN RESPIRASI'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Nefrologi dan Respirasi', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) GASTROENTEROHEPATOLOGI', 'SPPK(K) GASTROENTEROHEPATOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Gastroenterohepatologi', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) PENYAKIT INFEKSI', 'SPPK(K) PENYAKIT INFEKSI'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Penyakit Infeksi', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) BANK DARAH & TRANSFUSI', 'SPPK(K) BANK DARAH', 'SP.PK(K) BANK DARAH'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Bank Darah & Kedokteran Transfusi', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) IMUNOLOGI KLINIK', 'SPPK(K) IMUNOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Imunologi Klinik', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK(K) ENDOKRIN & METABOLISME', 'SPPK(K) ENDOKRIN'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Endokrin & Metabolisme', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PK', 'SPPK'])) return { ksm: 'Dokter Spesialis Patologi Klinik', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) UROPATOLOGI REPRODUKSI LAKI-LAKI', 'SPPA(K) UROPATOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Uropatologi Reproduksi Laki-laki', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) KULIT & ADNEKSA', 'SPPA(K) KULIT'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Kulit dan Adneksa', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) DIGESTIF HEPATOBILIER', 'SPPA(K) DIGESTIF'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Digestif Hepatobilier', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) HEMATOLIMFOID & ENDOKRIN', 'SPPA(K) HEMATOLIMFOID'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Hematolimfoid dan Endokrin', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) OBSTETRI GINEKOLOGI PAYUDARA', 'SPPA(K) OBSTETRI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Obstetri Ginekologi Payudara', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) SITOPATOLOGI', 'SPPA(K) SITOPATOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Sitopatologi', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) MUSKULOSKELETAL', 'SPPA(K) MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Muskuloskeletal', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) SARAF & MATA', 'SPPA(K) SARAF'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Saraf dan Mata', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA(K) KARDIOVASKULAR RESPIRASI MEDIASTINUM', 'SPPA(K) KARDIOVASKULAR RESPIRASI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Kardiovaskular Respirasi dan Mediastinum', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.PA', 'SPPA'])) return { ksm: 'Dokter Spesialis Patologi Anatomi', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.MK', 'SPMK'])) return { ksm: 'Dokter Spesialis Mikrobiologi Klinik', dept: 'Department of Supporting Medicine' };
+  if (check(['SP.KFR', 'SPKFR'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi', dept: 'Department of Supporting Medicine' };
 
-  // 11. DERMATOLOGY & AESTHETIC
-  if (n.includes('DVE') || n.includes('DV ') || n.includes('SPKK') || n.includes('DRG') || n.includes('SPBM') || n.includes('SPKG') || n.includes('SPPROS') || n.includes('ORTHO') || n.includes('PERIO')) {
-    let ksm = 'Dermatologi, Venereologi dan Estetik';
-    if (n.includes('DRG') || n.includes('SPBM') || n.includes('SPKG')) ksm = 'Kedokteran Gigi-Mulut';
-    return { ksm, dept: 'Departemen Dermatologi dan Aesthetic' };
-  }
+  // --- Department of Dermatology & Aesthetic ---
+  if (check(['SP.DVE(K) DERMATOLOGI KOSMETIK & ESTETIK', 'SPDVE(K) DERMATOLOGI KOSMETIK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Kosmetik dan Estetik', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.DVE', 'SPDVE', 'SP.KK', 'SPKK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.BP-RE(K) LUKA BAKAR (K-LB)', 'SPBP-RE(K) LUKA BAKAR', 'K-LB', 'SP.BP-RE(K) LUKA BAKAR'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Luka Bakar', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.BP-RE(K) BEDAH ESTETIK LANJUT', 'SPBP-RE(K) BEDAH ESTETIK LANJUT'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Bedah Estetik Lanjut', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.BP-RE', 'SPBP-RE'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.KG', 'SPKG'])) return { ksm: 'Dokter Gigi Spesialis Konservasi Gigi', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.ORT', 'SPORT'])) return { ksm: 'Dokter Gigi Spesialis Orthodonti', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.PM', 'SPPM'])) return { ksm: 'Dokter Gigi Spesialis Penyakit Mulut', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.PERIO', 'SPPERIO'])) return { ksm: 'Dokter Gigi Spesialis Periodonsia', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.PROS(K) PROSTETIK MAKSILOFASIAL', 'SPPROS(K) PROSTETIK MAKSILOFASIAL'])) return { ksm: 'Dokter Gigi Spesialis Prosthodonsia Konsultan Prostetik Maksilofasial', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.PROS', 'SPPROS'])) return { ksm: 'Dokter Gigi Spesialis Prosthodonsia', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.KGA', 'SPKGA'])) return { ksm: 'Dokter Gigi Spesialis Kesehatan Gigi Anak', dept: 'Department of Dermatology & Aesthetic' };
 
-  // 12. SUPPORTING MEDICINE
-  if (n.includes('SPRAD') || n.includes('SPKN') || n.includes('NUKLIR') || n.includes('SPPA') || n.includes('SPPK') || n.includes('SPMK')) {
-    let ksm = 'Radiologi dan Kedokteran Nuklir';
-    if (n.includes('SPPA')) ksm = 'Patologi Anatomi';
-    else if (n.includes('SPPK')) ksm = 'Patologi Klinik';
-    else if (n.includes('SPMK')) ksm = 'Mikrobiologi Klinik';
-    return { ksm, dept: 'Departement of Supporting Medicine' };
-  }
+  // --- Department of Otolaryngology (ENT) ---
+  if (check(['SP.THT-KL(K) BRONKOESOFAGOLOGI', 'SPTHT-KL(K) BRONKOESOFAGOLOGI', 'SP.THT(K) BRONKOESOFAGOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Bronkoesofagologi', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) LARING-FARING', 'SPTHT-KL(K) LARING-FARING', 'SP.THT(K) LARING-FARING'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Laring - Faring', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) MAKSILOFASIAL PLASTIK REKONSTRUKSI', 'SPTHT-KL(K) MAKSILOFASIAL', 'SP.THT(K) MAKSILOFASIAL'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Maksilofasial Plastik Rekonstruksi', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) NEUROTOLOGI', 'SPTHT-KL(K) NEUROTOLOGI', 'SP.THT(K) NEUROTOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Neurotologi', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) OTOLOGI', 'SPTHT-KL(K) OTOLOGI', 'SP.THT(K) OTOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Otologi', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) RINOLOGI', 'SPTHT-KL(K) RINOLOGI', 'SP.THT(K) RINOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Rinologi', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) ALERGI IMUNOLOGI', 'SPTHT-KL(K) ALERGI IMUNOLOGI', 'SP.THT(K) ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Alergi Imunologi', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL(K) THT KOMUNITAS', 'SPTHT-KL(K) THT KOMUNITAS', 'SP.THT(K) THT KOMUNITAS'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan THT Komunitas', dept: 'Department of Otolaryngology (ENT)' };
+  if (check(['SP.THT-KL', 'SPTHT-KL', 'SP.THT', 'SPTHT', 'THT'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher', dept: 'Department of Otolaryngology (ENT)' };
 
-  // Final specialties
-  if (n.includes('SPOG')) return { ksm: 'Obstetri dan Ginekologi', dept: 'Departemen Ibu dan Anak' };
-  if (n.includes('SPA')) return { ksm: 'Ilmu Kesehatan Anak', dept: 'Departemen Ibu dan Anak' };
-  if (n.includes('SPAN')) return { ksm: 'Anestesiologi', dept: 'Departemen Anestesi' };
-  if (n.includes('SPJP')) return { ksm: 'Jantung Dewasa', dept: 'Departemen Kardiologi' };
-  if (n.includes('SPOT')) return { ksm: 'Bedah Orthopedi', dept: 'Departemen Orthopaedi' };
-  if (n.includes('SPU')) return { ksm: 'Urologi', dept: 'Departemen Uro-Nefro' };
+  // --- Department of Immunology and Infectious Diseases ---
+  if (check(['SP.A(K) ALERGI IMUNOLOGI & RHEUMATOLOGI', 'SPA(K) ALERGI IMUNOLOGI', 'SP.A(K) ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Alergi Imunologi dan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.A(K) INFEKSI & PENYAKIT TROPIS', 'SPA(K) INFEKSI & PENYAKIT TROPIS', 'SP.A(K) INFEKSI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Infeksi dan Penyakit Tropis', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.PD(K) TROPIK INFEKSI (K-PTI)', 'SPPD(K) TROPIK INFEKSI', 'K-PTI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.PD(K) RHEUMATOLOGI (K-R)', 'SPPD(K) RHEUMATOLOGI', 'K-R', 'REUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.DVE(K) DERMATO ALERGI IMUNOLOGI', 'SPDVE(K) DERMATO ALERGI IMUNOLOGI', 'SP.KK(K) DERMATO ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermato Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.DVE(K) DERMATOLOGI TROPIS', 'SPDVE(K) DERMATOLOGI TROPIS', 'SP.KK(K) DERMATOLOGI TROPIS'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Tropis', dept: 'Department of Immunology and Infectious Diseases' };
 
-  return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
+  // --- Department of Surgery ---
+  if (check(['SP.BM(K) CLEFT LIP & PALATE', 'SPBM(K) CLEFT LIP & PALATE'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Oral dan Maksilofasial Cleft / Cleft Lip and Palate', dept: 'Department of Surgery' };
+  if (check(['SP.BM(K) ORTHOGNATIK & OSTEODISTRAKSI', 'SPBM(K) ORTHOGNATIK & OSTEODISTRAKSI'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Orthognatik dan Osteodistraksi / Disgnatia dan Osteodistraksi', dept: 'Department of Surgery' };
+  if (check(['SP.BM(K) TRAUMA MAKSILOFASIAL & TMJ', 'SPBM(K) TRAUMA MAKSILOFASIAL & TMJ'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Trauma Maksilofasial dan Temporomandibular Joint', dept: 'Department of Surgery' };
+  if (check(['SP.BM', 'SPBM'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial', dept: 'Department of Surgery' };
+  if (check(['SP.F', 'SPF', 'SP.FM', 'SPFM', 'FORENSIK'])) return { ksm: 'Dokter Spesialis Kedokteran Forensik dan Medikolegal', dept: 'Department of Surgery' };
+  if (check(['SP.B', 'SPB', 'BEDAH UMUM'])) return { ksm: 'Dokter Spesialis Bedah Umum', dept: 'Department of Surgery' };
+  if (check(['SP.M', 'SPM', 'MATA'])) return { ksm: 'Dokter Spesialis Mata', dept: 'Department of Surgery' };
+
+  // --- Department of Radiology ---
+  if (check(['SP.RAD(K) ABDOMEN', 'SPRAD(K) ABDOMEN'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Abdomen', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) MUSKULOSKELETAL', 'SPRAD(K) MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Muskuloskeletal', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) NEUROIMAGING', 'SPRAD(K) NEUROIMAGING'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Neuroimaging', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) TORAKS & KARDIOVASKULAR', 'SPRAD(K) TORAKS & KARDIOVASKULAR', 'SP.RAD(K) TORAKS DAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Toraks dan Kardiovaskular', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) INTERVENSIONAL & KARDIOVASKULAR', 'SPRAD(K) INTERVENSIONAL & KARDIOVASKULAR', 'SP.RAD(K) INTERVENSIONAL DAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Intervensional dan Kardiovaskular', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) ANAK', 'SPRAD(K) ANAK'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Anak', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) PAYUDARA & REPRODUKSI WANITA', 'SPRAD(K) PAYUDARA'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Payudara dan Reproduksi Wanita', dept: 'Department of Radiology' };
+  if (check(['SP.RAD(K) INTERVENSI', 'SPRAD(K) INTERVENSI'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Intervensi', dept: 'Department of Radiology' };
+  if (check(['SP.RAD', 'SPRAD'])) return { ksm: 'Dokter Spesialis Radiologi', dept: 'Department of Radiology' };
+  if (check(['SP.KN(K) NUKLIR KARDIOLOGI', 'SPKN(K) NUKLIR KARDIOLOGI'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Kardiologi', dept: 'Department of Radiology' };
+  if (check(['SP.KN(K) NUKLIR NEUROLOGI', 'SPKN(K) NUKLIR NEUROLOGI'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Neurologi', dept: 'Department of Radiology' };
+  if (check(['SP.KN(K) NUKLIR ONKOLOGI', 'SPKN(K) NUKLIR ONKOLOGI'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Onkologi', dept: 'Department of Radiology' };
+  if (check(['SP.KN(K) NUKLIR PEDIATRIK', 'SPKN(K) NUKLIR PEDIATRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Pediatrik', dept: 'Department of Radiology' };
+  if (check(['SP.KN', 'SPKN'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler', dept: 'Department of Radiology' };
+
+  // --- Department of Orthopaedy ---
+  if (check(['SP.OT(K) ADVANCED ORTHOPAEDIC TRAUMA', 'SPOT(K) ADVANCED ORTHOPAEDIC TRAUMA'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Advanced Orthopaedic Trauma', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) FOOT AND ANKLE', 'SPOT(K) FOOT AND ANKLE'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Foot and Ankle', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) HAND, UPPER LIMB & MICROSURGERY', 'SPOT(K) HAND, UPPER LIMB'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Hand, Upper Limb and Microsurgery', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) HIP & KNEE', 'SPOT(K) HIP & KNEE'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Hip and Knee (Adult Reconstruction, Trauma and Sport)', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) SPINE', 'SPOT(K) SPINE'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Spine', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) SPORT INJURY', 'SPOT(K) SPORT INJURY'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Sport Injury', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) SHOULDER & ELBOW', 'SPOT(K) SHOULDER & ELBOW'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Shoulder and Elbow', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) PEDIATRIC ORTHOPAEDIC', 'SPOT(K) PEDIATRIC ORTHOPAEDIC'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Pediatric Orthopaedic', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT(K) ONKOLOGI REKONSTRUKSI', 'SPOT(K) ONKOLOGI REKONSTRUKSI'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Onkologi Rekonstruksi', dept: 'Department of Orthopaedy' };
+  if (check(['SP.OT', 'SPOT', 'ORTHOPAEDI'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi', dept: 'Department of Orthopaedy' };
+  if (check(['SP.KO', 'SPKO'])) return { ksm: 'Dokter Spesialis Kedokteran Olahraga', dept: 'Department of Orthopaedy' };
+  if (check(['SP.KFR(K) REHABILITASI MUSKULOSKELETAL', 'SPKFR(K) REHABILITASI MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Muskuloskeletal', dept: 'Department of Orthopaedy' };
+
+  // --- Fallback (Dokter Umum) ---
+  if (check(['DR. ']) && !n.includes('SP')) return { ksm: 'Dokter Umum', dept: 'Department of Medicine' };
+
+  return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
 };
 
 const extractKsm = (dpjp) => resolveKsmDept(dpjp).ksm;
@@ -1569,21 +1673,21 @@ export default function App() {
 
   const drilldownStats = useMemo(() => {
     if (!drilldown.isOpen || drilldown.data.length === 0) return null;
-    let sumRS = 0, sumIna = 0, sumIdrg = 0, sumSel = 0, sumLos = 0, maxLos = 0;
+    let sumRS = 0, sumIna = 0, sumIdrg = 0, sumSel = 0, sumSelVsRs = 0, sumLos = 0, maxLos = 0;
     let compsSum = {};
     compKeys.forEach(c => compsSum[c.key] = 0);
     drilldown.data.forEach(row => {
       const rs = parseFloat(row.TARIF_RS || row.BIAYA_RS || row.TOTAL_TARIF_RS || 0) || 0;
       const ina = parseFloat(row.TOTAL_TARIF) || 0; const idrg = parseFloat(row.IDRG_TOTAL_TARIF) || 0;
       const los = parseFloat(row._los || 0);
-      sumRS += rs; sumIna += ina; sumIdrg += idrg; sumSel += (idrg - ina);
+      sumRS += rs; sumIna += ina; sumIdrg += idrg; sumSel += (idrg - ina); sumSelVsRs += (idrg - rs);
       sumLos += los; maxLos = Math.max(maxLos, los);
       const comps = extract18(row);
       compKeys.forEach(c => compsSum[c.key] += comps[c.key] || 0);
     });
     const count = drilldown.data.length;
     return {
-      avgRS: sumRS / count, avgIna: sumIna / count, avgIdrg: sumIdrg / count, avgSel: sumSel / count,
+      avgRS: sumRS / count, avgIna: sumIna / count, avgIdrg: sumIdrg / count, avgSel: sumSel / count, avgSelVsRs: sumSelVsRs / count,
       avgLos: sumLos / count, maxLos,
       avgComps: Object.fromEntries(compKeys.map(c => [
         c.key, 
@@ -1816,7 +1920,7 @@ export default function App() {
         if (dList[0]) maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] = (maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] || 0) + 1;
         for (let i = 1; i < dList.length; i++) maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] = (maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] || 0) + 1;
         for (let p of pList) if (p) maps.inaToIdrg[inaCode].targets[tK].procs[p] = (maps.inaToIdrg[inaCode].targets[tK].procs[p] || 0) + 1;
-        // Reverse map: iDRG → INA
+        // Reverse map: iDRG โ’ INA
         if (!maps.idrgToIna[drgCode]) maps.idrgToIna[drgCode] = { desc: String(r['IDRG_DRG_DESCRIPTION'] || '-'), totalCases: 0, sumLos: 0, maxLos: 0, sumIna: 0, sumIdrg: 0, sources: {} };
         maps.idrgToIna[drgCode].totalCases++;
         maps.idrgToIna[drgCode].sumLos += curLos;
@@ -1924,7 +2028,7 @@ export default function App() {
       clReportArray: Object.values(maps.clReport).sort((a, b) => a.sortVal - b.sortVal).map(item => ({ ...item, total_kasus: item.rj_kasus + item.cl9_kasus + item.cl0_kasus + item.cl1_kasus + item.cl2_kasus + item.cl3_kasus + item.cl4_kasus, total_rp: item.rj_rp + item.cl9_rp + item.cl0_rp + item.cl1_rp + item.cl2_rp + item.cl3_rp + item.cl4_rp })),
       drgSummary: drgArr.sort((a, b) => b.count - a.count), drgSummaryRanap: drgArrRanap.sort((a, b) => b.count - a.count), drgSummaryRajal: drgArrRajal.sort((a, b) => b.count - a.count), 
       inaSummary: inaArr.sort((a, b) => b.count - a.count),
-      topDefisit: drgArr.filter(x => x.totalSelisih < 0).sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 10), topSurplus: drgArr.filter(x => x.totalSelisih > 0).sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 10),
+      topDefisit: drgArr.filter(x => x.selisihVsRs < 0).sort((a, b) => a.selisihVsRs - b.selisihVsRs).slice(0, 10), topSurplus: drgArr.filter(x => x.selisihVsRs > 0).sort((a, b) => b.selisihVsRs - a.selisihVsRs).slice(0, 10),
       topDefisitIna: inaArr.filter(x => x.totalSelisih < 0).sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 10), topSurplusIna: inaArr.filter(x => x.totalSelisih > 0).sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 10),
       dpjpSummaryArray: Object.values(maps.dpjp).sort((a, b) => b.count - a.count),
       ksmSummaryArray, deptSummaryArray, topKsmSurplusIna, topKsmDefisitIna, topKsmSurplusIdrg, topKsmDefisitIdrg, ksmEfficiencyTree,
@@ -2034,7 +2138,7 @@ export default function App() {
                 </div>
               </div>
               <p className={`text-base font-black mb-1 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-700'}`}>
-                {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '✅ Selesai!' : uploadProgress.status === 'error' ? '❌ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '📂 Membaca...' : uploadProgress.status === 'parsing' ? '⚙️ Memproses...' : '⏳ Menghubungkan...'}
+                {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'โ… Selesai!' : uploadProgress.status === 'error' ? 'โ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '๐“ Membaca...' : uploadProgress.status === 'parsing' ? 'โ๏ธ Memproses...' : 'โณ Menghubungkan...'}
               </p>
               <p className="text-xs text-slate-500 font-medium truncate max-w-[220px] mx-auto mb-4" title={uploadProgress.fileName}>{uploadProgress.fileName || 'Menyelesaikan...'}</p>
               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden max-w-[200px] mx-auto">
@@ -2168,7 +2272,7 @@ export default function App() {
               {uploadedFiles.map((f) => (
                 <li key={f.id} className="flex items-center gap-5 text-sm bg-white border border-slate-100 shadow-sm p-5 rounded-[1.5rem] group hover:border-teal-200 transition-all hover:shadow-xl hover:-translate-y-1">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm shadow-emerald-100"><CheckCircle size={24} className="text-emerald-500" /></div>
-                  <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} • <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
+                  <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} โ€ข <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
                   <button onClick={() => removeFile(f.id)} className="text-slate-300 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 transition-all hover:rotate-90"><X size={20} /></button>
                 </li>
               ))}
@@ -2194,15 +2298,15 @@ export default function App() {
 
     const insights = [
       selInaRS < 0
-        ? { t: 'w', icon: '⚠️', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} — potensi defisit klaim.` }
-        : { t: 's', icon: '✅', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} — klaim dalam posisi surplus.` },
+        ? { t: 'w', icon: 'โ ๏ธ', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} โ€” potensi defisit klaim.` }
+        : { t: 's', icon: 'โ…', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} โ€” klaim dalam posisi surplus.` },
       selIdrgRS < 0
-        ? { t: 'w', icon: '⚠️', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} — evaluasi koding CL diperlukan.` }
-        : { t: 's', icon: '✅', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} — koding complexity level sudah optimal.` },
-      { t: 'i', icon: '📊', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
-      { t: 'i', icon: '🏥', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
-      ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '💡', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
-      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '🔍', txt: `${dashData.auditFindings.length} temuan audit koding — segera tinjau di modul Audit.` }] : []),
+        ? { t: 'w', icon: 'โ ๏ธ', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} โ€” evaluasi koding CL diperlukan.` }
+        : { t: 's', icon: 'โ…', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} โ€” koding complexity level sudah optimal.` },
+      { t: 'i', icon: '๐“', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
+      { t: 'i', icon: '๐ฅ', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
+      ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '๐’ก', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
+      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '๐”', txt: `${dashData.auditFindings.length} temuan audit koding โ€” segera tinjau di modul Audit.` }] : []),
     ];
 
     return (
@@ -2782,13 +2886,13 @@ export default function App() {
             onClick={() => setPemetaanTab('inaToIdrg')}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${!isReverse ? 'bg-white text-sky-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
           >
-            <GitMerge size={14} /> INA-CBG → iDRG
+            <GitMerge size={14} /> INA-CBG โ’ iDRG
           </button>
           <button
             onClick={() => setPemetaanTab('idrgToIna')}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${isReverse ? 'bg-white text-orange-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
           >
-            <GitMerge size={14} className="rotate-180" /> iDRG → INA-CBG
+            <GitMerge size={14} className="rotate-180" /> iDRG โ’ INA-CBG
           </button>
         </div>
 
@@ -2801,7 +2905,7 @@ export default function App() {
               type="text"
               value={mapFilter}
               onChange={e => setMapFilter(e.target.value)}
-              placeholder={isReverse ? "Cari kode iDRG atau deskripsi…" : "Cari kode INACBG atau deskripsi…"}
+              placeholder={isReverse ? "Cari kode iDRG atau deskripsiโ€ฆ" : "Cari kode INACBG atau deskripsiโ€ฆ"}
               className="w-full pl-9 pr-9 py-2 text-sm border border-slate-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition placeholder-slate-400"
             />
             {mapFilter && (
@@ -2963,7 +3067,7 @@ export default function App() {
             <div className="p-2 bg-teal-100 rounded-xl text-teal-700"><Activity size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus INA-CBG</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus — klik titik untuk drill-down</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus โ€” klik titik untuk drill-down</p>
             </div>
           </div>
           <div className="p-4">
@@ -2974,10 +3078,10 @@ export default function App() {
             const data = dashData.inaSummary || [];
             if (data.length === 0) return null;
             const avgVol = data.reduce((s, d) => s + d.count, 0) / data.length;
-            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi — KRITIS
-            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi — OPTIMAL
-            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah — WASPADA
-            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah — MONITOR
+            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi โ€” KRITIS
+            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi โ€” OPTIMAL
+            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah โ€” WASPADA
+            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah โ€” MONITOR
             const topQ1 = [...q1].sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 3);
             const topQ2 = [...q2].sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 3);
             const totalDefisit = data.filter(d => d.totalSelisih < 0).reduce((s, d) => s + d.totalSelisih, 0);
@@ -2986,10 +3090,10 @@ export default function App() {
               <div className="px-5 pb-5 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '🔴', note: 'Prioritas perbaikan koding' },
-                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '🟢', note: 'Kode unggulan, pertahankan' },
-                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '🟡', note: 'Pantau efisiensi koding' },
-                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '🔵', note: 'Potensi pengembangan layanan' },
+                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'Prioritas perbaikan koding' },
+                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'Kode unggulan, pertahankan' },
+                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau efisiensi koding' },
+                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '๐”ต', note: 'Potensi pengembangan layanan' },
                   ].map((item, i) => {
                     const qData = [q1, q2, q3, q4][i];
                     const codes = new Set(qData.map(d => d.code));
@@ -3015,7 +3119,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topQ1.length > 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">⚠️ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
+                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ ๏ธ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
                       <div className="space-y-1.5">
                         {topQ1.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
@@ -3029,7 +3133,7 @@ export default function App() {
                   )}
                   {topQ2.length > 0 && (
                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">✅ Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
+                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ… Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
                       <div className="space-y-1.5">
                         {topQ2.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
@@ -3059,7 +3163,7 @@ export default function App() {
             <div className="p-2 bg-rose-100 rounded-xl text-rose-700"><Activity size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus iDRG</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus — klik titik untuk drill-down</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus โ€” klik titik untuk drill-down</p>
             </div>
           </div>
           <div className="p-4">
@@ -3082,10 +3186,10 @@ export default function App() {
               <div className="px-5 pb-5 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '🔴', note: 'CL terlalu rendah, review koding' },
-                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '🟢', note: 'CL optimal, pertahankan' },
-                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '🟡', note: 'Pantau & evaluasi per kasus' },
-                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '🔵', note: 'Efisien, kembangkan layanan' },
+                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'CL terlalu rendah, review koding' },
+                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'CL optimal, pertahankan' },
+                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau & evaluasi per kasus' },
+                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '๐”ต', note: 'Efisien, kembangkan layanan' },
                   ].map((item, i) => {
                     const qData = [q1, q2, q3, q4][i];
                     const codes = new Set(qData.map(d => d.code));
@@ -3111,7 +3215,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topQ1.length > 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">⚠️ Kode iDRG Berdefisit Tinggi (Review CL)</p>
+                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ ๏ธ Kode iDRG Berdefisit Tinggi (Review CL)</p>
                       <div className="space-y-1.5">
                         {topQ1.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
@@ -3125,7 +3229,7 @@ export default function App() {
                   )}
                   {topQ2.length > 0 && (
                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">✅ Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
+                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ… Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
                       <div className="space-y-1.5">
                         {topQ2.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
@@ -3173,7 +3277,8 @@ export default function App() {
               { header: 'Avg LOS', className: 'text-center text-orange-600', render: r => (r?.avgLos ?? 0).toFixed(1) },
               { header: 'Max LOS', className: 'text-center text-rose-600 font-semibold', render: r => r?.maxLos ?? 0 },
               { header: 'Avg RS', className: 'text-right', render: r => formatRp((r?.sumRS ?? 0) / (r?.count ?? 1)) },
-              { header: 'Selisih (iDRG-RS)', className: 'text-right font-black', render: r => <span className={(r?.selisihVsRs ?? 0) >= 0 ? 'text-lime-600' : 'text-orange-600'}>{formatRp(r?.selisihVsRs ?? 0)}</span> }
+              { header: 'Selisih (iDRG-RS)', className: 'text-right font-black', render: r => <span className={(r?.selisihVsRs ?? 0) >= 0 ? 'text-lime-600' : 'text-orange-600'}>{formatRp(r?.selisihVsRs ?? 0)}</span> },
+              { header: 'Selisih (iDRG-INA)', className: 'text-right font-black', render: r => <span className={(r?.totalSelisih ?? 0) >= 0 ? 'text-lime-600' : 'text-orange-600'}>{formatRp(r?.totalSelisih ?? 0)}</span> }
             ]} onRowClick={r => openDrilldown(`Kasus iDRG: ${r.code}`, row => String(row.IDRG_DRG_CODE).trim() === r.code)} maxHeight="600px" />
           </Card>
         </div>
@@ -3283,8 +3388,8 @@ export default function App() {
         {/* DEPT BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 Departemen — Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
-            { title: 'Top 10 Departemen — Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
+            { title: 'Top 10 Departemen โ€” Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
+            { title: 'Top 10 Departemen โ€” Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.data.map(d => Math.abs(d[chart.key])), 1);
             return (
@@ -3369,7 +3474,7 @@ export default function App() {
                       <tr className="bg-slate-100/80 font-black border-y border-slate-200">
                         <td className="p-4 sticky left-0 z-20 bg-slate-100/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
                           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setOpenKsm(isDeptOpen ? null : `dept-${di}`)}>
-                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>▶</span>
+                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>โ–ถ</span>
                             <span className="uppercase text-slate-800 tracking-tight">{dept.name}</span>
                           </div>
                         </td>
@@ -3393,7 +3498,7 @@ export default function App() {
                             >
                               <td className="p-4 pl-10 border-l-4 border-indigo-500">
                                 <div className="flex items-center gap-2">
-                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>▶</span>
+                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>โ–ถ</span>
                                   <span className="font-bold text-indigo-700">{ksm.name}</span>
                                 </div>
                               </td>
@@ -3500,8 +3605,8 @@ export default function App() {
         {/* DPJP BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 DPJP — Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
-            { title: 'Top 10 DPJP — Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
+            { title: 'Top 10 DPJP โ€” Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
+            { title: 'Top 10 DPJP โ€” Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.items.map(d => Math.abs(chart.getVal(d))), 1);
             return (
@@ -3882,10 +3987,10 @@ export default function App() {
                         <div className="flex gap-2 justify-center">
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'sesuai' ? undefined : 'sesuai'); }}
                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'sesuai' ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-emerald-200 hover:text-emerald-600'}`}
-                          >✓ SESUAI</button>
+                          >โ“ SESUAI</button>
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'tidak' ? undefined : 'tidak'); }}
                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'tidak' ? 'bg-rose-600 border-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-rose-200 hover:text-rose-600'}`}
-                          >✕ TIDAK</button>
+                          >โ• TIDAK</button>
                         </div>
                       </td>
                     </tr>
@@ -3909,14 +4014,14 @@ export default function App() {
         }} />
         <Card className="overflow-x-auto">
           <MiniTable data={data} columns={[
-            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} → ${r.akhir}` },
+            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} โ’ ${r.akhir}` },
             { header: 'Pembayar', className: 'text-xs font-semibold', render: r => r.pembayar },
             { header: 'Jumlah', className: 'text-right font-bold', render: r => r.count },
             { header: 'Total Nilai', className: 'text-right font-black text-cyan-600', render: r => formatRp(r.totalNilai) },
             { header: 'SL1', className: 'text-right', render: r => r.sev1 },
             { header: 'SL2', className: 'text-right', render: r => r.sev2 },
             { header: 'SL3', className: 'text-right', render: r => r.sev3 }
-          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}→${r.akhir}`, row => {
+          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}โ’${r.akhir}`, row => {
             const kAw = String(row['KELAS_RAWAT'] || row['KELAS'] || row['HAK_KELAS'] || '').trim();
             const matchC2 = String(row['C2'] || '').match(/"selisih_biaya":\s*\{\s*"nilai":\s*"(\d+)"\s*,\s*"pembayar":\s*"([^"]+)"\s*,\s*"naik_kelas":\s*"([^"]+)"/);
             const kAk = matchC2 ? matchC2[3].toUpperCase() : '';
@@ -4042,11 +4147,11 @@ export default function App() {
 
   // === ANALYSIS OVERLAY ===
   const analysisSteps = [
-    { icon: '📊', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
-    { icon: '🔬', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
-    { icon: '💰', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
-    { icon: '🩺', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
-    { icon: '📈', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
+    { icon: '๐“', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
+    { icon: '๐”ฌ', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
+    { icon: '๐’ฐ', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
+    { icon: '๐ฉบ', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
+    { icon: '๐“', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
   ];
   useEffect(() => {
     if (!isAnalyzing) { setAnalysisStep(0); return; }
@@ -4138,7 +4243,7 @@ export default function App() {
 
               <div className="mt-8 text-center">
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Kemenkes Edition</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">ยฉ 2026 iDRG Analytics Platform โ€ข Kemenkes Edition</p>
               </div>
             </div>
           </div>
@@ -4233,9 +4338,18 @@ export default function App() {
             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-white shrink-0">
               <div>
                 <h3 className="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><Table2 size={24} className="text-teal-600" /> Rincian Data Analitik</h3>
-                <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} — {drilldown.data.length.toLocaleString()} Record Terfilter</p>
+                <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} โ€” {drilldown.data.length.toLocaleString()} Record Terfilter</p>
               </div>
               <div className="flex items-center gap-3">
+                {drilldown.prev && (
+                  <button
+                    onClick={() => setDrilldown(drilldown.prev)}
+                    className="flex items-center gap-2 bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all border border-slate-200 hover:border-teal-200"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    Kembali ke Ringkasan
+                  </button>
+                )}
                 <button onClick={dlDrilldownCSV} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 transition-all uppercase tracking-wider"><Download size={16} /> Unduh CSV</button>
                 <button onClick={() => setDrilldown({ isOpen: false, title: '', data: [] })} className="p-2.5 hover:bg-rose-50 rounded-full transition-all ml-2 border border-transparent hover:border-rose-100 text-slate-400 hover:text-rose-600"><X size={24} /></button>
               </div>
@@ -4273,7 +4387,17 @@ export default function App() {
                        </div>
                     </div>
                   )}
-                  
+
+                  {/* Color legend */}
+                  {drilldownStats && (
+                    <div className="px-6 py-3 bg-rose-50/60 border-b border-rose-100 flex flex-wrap items-center gap-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                      <span className="text-rose-700 flex items-center gap-1.5"><span className="inline-block w-3.5 h-3.5 rounded bg-rose-200 border border-rose-400 mr-0.5" />Baris Merah = Tarif RS di atas rata-rata (~ {formatRp(drilldownStats.avgRS)})</span>
+                      <span className="text-rose-500 flex items-center gap-1.5">^ = Nilai sel melebihi rata-rata (hover untuk detail)</span>
+                      <span className="text-orange-600 flex items-center gap-1.5"><span className="inline-block w-3.5 h-3.5 rounded bg-orange-100 border border-orange-400 mr-0.5" />Orange = Tarif INA / iDRG di atas rata-rata</span>
+                      <span className="text-teal-600 flex items-center gap-1.5"><span className="inline-block w-3.5 h-3.5 rounded bg-teal-50 border border-teal-300 mr-0.5" />Normal = Di bawah atau sama dengan rata-rata</span>
+                    </div>
+                  )}
+
                   <div className="p-0">
                 <table className="w-full text-sm text-left whitespace-nowrap">
                    <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
@@ -4320,7 +4444,7 @@ export default function App() {
                                <td className={`px-5 py-3 border-r border-slate-50 text-right font-black ${item.sumTarif - item.sumRS >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>{item.sumTarif - item.sumRS >= 0 ? '+' : ''}{formatRp(item.sumTarif - item.sumRS)}</td>
                                <td className="px-5 py-3 text-center">
                                   <button 
-                                     onClick={() => setDrilldown({ ...drilldown, title: `Data Pasien: ${item.code}`, data: drilldown.data.filter(r => String(r[codeKey]).trim() === item.code), type: 'patient' })}
+                                     onClick={() => setDrilldown({ ...drilldown, title: `Data Pasien: ${item.code}`, data: drilldown.data.filter(r => String(r[codeKey]).trim() === item.code), type: 'patient', prev: { ...drilldown, prev: null } })}
                                      className="bg-teal-50 hover:bg-teal-600 text-teal-600 hover:text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border border-teal-100"
                                   >Tampilkan Data Pasien</button>
                                </td>
@@ -4347,7 +4471,8 @@ export default function App() {
                       <th rowSpan={2} className="px-5 py-4 text-right border-r border-teal-100 align-middle bg-teal-50/50 text-teal-800">Tarif RS</th>
                       <th rowSpan={2} className="px-5 py-4 text-right border-r border-teal-100 align-middle bg-teal-50/50 text-teal-800">Tarif INA</th>
                       <th rowSpan={2} className="px-5 py-4 text-right border-r border-emerald-100 align-middle bg-emerald-50/50 text-emerald-800">Tarif iDRG</th>
-                      <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih</th>
+                      <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih (iDRG-RS)</th>
+                      <th rowSpan={2} className="px-5 py-4 text-right border-r-4 border-r-slate-200 align-middle bg-slate-100 text-slate-800">Selisih (iDRG-INA)</th>
                       <th colSpan={18} className="px-5 py-3 text-center bg-slate-800 text-white border-b border-slate-700 tracking-[0.2em]">RINCIAN 18 KOMPONEN BILLING (Rp)</th>
                     </tr>
                     <tr className="text-[10px]">
@@ -4356,30 +4481,38 @@ export default function App() {
                       {compKeys.map(c => <th key={c.key} className="px-4 py-2 bg-slate-700 text-slate-300 border-r border-slate-600 text-right">{c.label}</th>)}
                     </tr>
                   </thead>
+                  <tfoot className="sticky bottom-0 z-20">
+                     {drilldownStats && (
+                       <tr className="bg-teal-100 border-t-2 border-teal-300 shadow-[0_-2px_8px_-2px_rgba(20,184,166,0.25)]">
+                         <td colSpan={7} className="px-5 py-3 font-black text-right text-teal-900 tracking-wider text-xs uppercase">~ Rata-Rata / {drilldown.data.length.toLocaleString()} Kasus:</td>
+                         <td className="px-5 py-3 text-center font-black text-teal-800 bg-teal-200/50">ALOS: {drilldownStats.avgLos.toFixed(1)}</td>
+                         <td className="px-5 py-3 text-center font-black text-rose-800 bg-rose-100/70">MAX: {drilldownStats.maxLos}</td>
+                         <td colSpan={8}></td>
+                         <td className="px-5 py-3 text-right font-black text-slate-800">{formatRp(drilldownStats.avgRS)}</td>
+                         <td className="px-5 py-3 text-right font-black text-teal-800">{formatRp(drilldownStats.avgIna)}</td>
+                         <td className="px-5 py-3 text-right font-black text-emerald-800">{formatRp(drilldownStats.avgIdrg)}</td>
+                         <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-400 ${drilldownStats.avgSelVsRs > 0 ? 'text-lime-700' : drilldownStats.avgSelVsRs < 0 ? 'text-rose-700' : 'text-slate-600'}`}>{drilldownStats.avgSelVsRs > 0 ? '+' : ''}{formatRp(drilldownStats.avgSelVsRs)}</td>
+                         <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-400 ${drilldownStats.avgSel > 0 ? 'text-lime-700' : drilldownStats.avgSel < 0 ? 'text-rose-700' : 'text-slate-600'}`}>{drilldownStats.avgSel > 0 ? '+' : ''}{formatRp(drilldownStats.avgSel)}</td>
+                         {compKeys.map(c => <td key={`avg-${c.key}`} className="px-4 py-3 text-right font-bold text-teal-900 bg-teal-200/60 border-r border-teal-200">{formatRpEx(drilldownStats.avgComps[c.key].val)}</td>)}
+                       </tr>
+                     )}
+                   </tfoot>
                   <tbody className="divide-y divide-slate-100 bg-white">
-                    {drilldownStats && (
-                      <tr className="bg-teal-50 border-b-2 border-teal-200">
-                        <td colSpan={7} className="px-5 py-3 font-black text-right text-teal-800 tracking-wider text-xs">RATA-RATA DARI {drilldown.data.length.toLocaleString()} KASUS:</td>
-                        <td className="px-5 py-3 text-center font-black text-teal-700 bg-teal-100/30">ALOS: {drilldownStats.avgLos.toFixed(1)}</td>
-                        <td className="px-5 py-3 text-center font-black text-rose-700 bg-rose-100/30">MAX: {drilldownStats.maxLos}</td>
-                        <td colSpan={8}></td>
-                        <td className="px-5 py-3 text-right font-black text-slate-700">{formatRp(drilldownStats.avgRS)}</td>
-                        <td className="px-5 py-3 text-right font-black text-teal-700">{formatRp(drilldownStats.avgIna)}</td>
-                        <td className="px-5 py-3 text-right font-black text-emerald-700">{formatRp(drilldownStats.avgIdrg)}</td>
-                        <td className={`px-5 py-3 text-right font-black border-r-4 border-teal-300 ${drilldownStats.avgSel > 0 ? 'text-lime-600' : drilldownStats.avgSel < 0 ? 'text-rose-600' : 'text-slate-500'}`}>{drilldownStats.avgSel > 0 ? '+' : ''}{formatRp(drilldownStats.avgSel)}</td>
-                        {compKeys.map(c => <td key={`avg-${c.key}`} className="px-4 py-3 text-right font-bold text-teal-800 bg-teal-100/50 border-r border-teal-100">{formatRpEx(drilldownStats.avgComps[c.key].val)}</td>)}
-                      </tr>
-                    )}
                     {drilldown.data.slice(0, 300).map((row, i) => {
                       const rs = parseFloat(row.TARIF_RS || row.BIAYA_RS || row.TOTAL_TARIF_RS || 0) || 0;
-                      const ina = parseFloat(row.TOTAL_TARIF) || 0; const idrg = parseFloat(row.IDRG_TOTAL_TARIF) || 0; const sel = idrg - ina;
+                      const ina = parseFloat(row.TOTAL_TARIF) || 0; const idrg = parseFloat(row.IDRG_TOTAL_TARIF) || 0; const sel = idrg - ina; const selVsRs = idrg - rs;
                       const comps = extract18(row); const sev = row.INACBG ? (String(row.INACBG).endsWith('-I') ? 1 : String(row.INACBG).endsWith('-II') ? 2 : String(row.INACBG).endsWith('-III') ? 3 : 0) : 0; const cl = row.IDRG_DRG_CODE ? parseInt(String(row.IDRG_DRG_CODE).slice(-1)) : 0;
                       const patientName = String(row.NAMA_PASien || row.NAMA_PASIEN || '-');
                       const displayName = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
+                      // --- Highlight logic: flag cells/row above average ---
+                      const aboveAvgRS = drilldownStats && rs > 0 && drilldownStats.avgRS > 0 && rs > drilldownStats.avgRS;
+                      const aboveAvgIna = drilldownStats && ina > 0 && drilldownStats.avgIna > 0 && ina > drilldownStats.avgIna;
+                      const aboveAvgIdrg = drilldownStats && idrg > 0 && drilldownStats.avgIdrg > 0 && idrg > drilldownStats.avgIdrg;
+                      const rowFlag = aboveAvgRS; // row highlight driven by Tarif RS
                       return (
-                        <tr key={`ddr-${i}`} className="hover:bg-slate-50/80 transition-colors">
-                          <td className={`${tCell} text-center font-semibold text-slate-400`}>{i + 1}</td>
-                          <td className={`${tCell} font-extrabold text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10`}>{displayName}</td>
+                        <tr key={`ddr-${i}`} className={`transition-colors ${rowFlag ? 'bg-rose-50/70 hover:bg-rose-100/60' : 'hover:bg-slate-50/80'}`}>
+                          <td className={`${tCell} text-center font-semibold ${rowFlag ? 'text-rose-400' : 'text-slate-400'}`}>{rowFlag ? <span className="text-rose-500 font-black">!</span> : i + 1}</td>
+                          <td className={`${tCell} font-extrabold ${rowFlag ? 'text-rose-800 sticky left-0 bg-rose-50 shadow-[2px_0_5px_-2px_rgba(244,63,94,0.1)] z-10' : 'text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10'}`}>{displayName}</td>
                           <td className={`${tCell} font-bold text-slate-600`}>{String(row.MRN || '-')}</td>
                           <td className={`${tCell} text-xs font-mono font-semibold text-slate-500`}>{String(row.SEP || '-')}</td>
                           <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row._tglMasuk || '-')}</td>
@@ -4395,11 +4528,17 @@ export default function App() {
                           <td className={`${tCell} text-xs font-medium text-slate-600 max-w-[200px] truncate bg-emerald-50/10`} title={String(row.IDRG_DRG_DESCRIPTION || '-')}>{String(row.IDRG_DRG_DESCRIPTION || '-')}</td>
                           <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-emerald-50/10`} title={String(row.IDRG_DIAG_LISTS || '-')}>{String(row.IDRG_DIAG_LISTS || '-')}</td>
                           <td className={`${tCell} text-xs font-mono font-semibold text-slate-500 max-w-[150px] truncate bg-emerald-50/10`} title={String(row.IDRG_PROC_LISTS || '-')}>{String(row.IDRG_PROC_LISTS || '-')}</td>
-                          <td className={`${tCell} text-right font-bold text-slate-600 bg-slate-50/20`}>{formatRp(rs)}</td>
-                          <td className={`${tCell} text-right font-bold text-teal-700 bg-teal-50/20`}>{formatRp(ina)}</td>
-                          <td className={`${tCell} text-right font-bold text-emerald-700 bg-emerald-50/20`}>{formatRp(idrg)}</td>
+                          <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgRS ? 'border-l-rose-400 bg-rose-100/60 text-rose-700 ring-1 ring-rose-200' : 'bg-slate-50/20 text-slate-600 border-l-transparent'}`} title={aboveAvgRS ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgRS)})` : ''}>{aboveAvgRS && <span className="text-[9px] mr-1 align-middle font-black text-rose-500">^</span>}{formatRp(rs)}</td>
+                          <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgIna ? 'border-l-orange-400 bg-orange-50/60 text-orange-700 ring-1 ring-orange-200' : 'bg-teal-50/20 text-teal-700 border-l-transparent'}`} title={aboveAvgIna ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgIna)})` : ''}>{aboveAvgIna && <span className="text-[9px] mr-1 align-middle font-black text-orange-500">^</span>}{formatRp(ina)}</td>
+                          <td className={`${tCell} text-right font-bold border-l-2 ${aboveAvgIdrg ? 'border-l-orange-400 bg-orange-50/60 text-orange-700 ring-1 ring-orange-200' : 'bg-emerald-50/20 text-emerald-700 border-l-transparent'}`} title={aboveAvgIdrg ? `Di atas rata-rata (~${formatRp(drilldownStats?.avgIdrg)})` : ''}>{aboveAvgIdrg && <span className="text-[9px] mr-1 align-middle font-black text-orange-500">^</span>}{formatRp(idrg)}</td>
+                          <td className={`px-5 py-3 text-right font-black border-r-4 border-slate-200 bg-slate-50/50 ${selVsRs > 0 ? 'text-lime-500' : selVsRs < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{selVsRs > 0 ? '+' : ''}{formatRp(selVsRs)}</td>
                           <td className={`px-5 py-3 text-right font-black border-r-4 border-slate-200 bg-slate-50/50 ${sel > 0 ? 'text-lime-500' : sel < 0 ? 'text-emerald-500' : 'text-slate-400'}`}>{sel > 0 ? '+' : ''}{formatRp(sel)}</td>
-                          {compKeys.map(c => <td key={`cmp-${i}-${c.key}`} className={`${tCell} text-right text-[11px] font-semibold text-slate-400`}>{formatRpEx(comps[c.key])}</td>)}
+                          {compKeys.map(c => {
+                            const compVal = comps[c.key] || 0;
+                            const avgCompVal = drilldownStats?.avgComps?.[c.key]?.val || 0;
+                            const aboveAvgComp = compVal > 0 && avgCompVal > 0 && compVal > avgCompVal;
+                            return <td key={`cmp-${i}-${c.key}`} className={`${tCell} text-right text-[11px] font-semibold border-l-2 ${aboveAvgComp ? 'border-l-rose-300 bg-rose-50/50 text-rose-600 ring-1 ring-rose-100' : 'text-slate-400 border-l-transparent'}`} title={aboveAvgComp ? `Di atas rata-rata komponen ini (~${formatRpEx(avgCompVal)})` : ''}>{aboveAvgComp && <span className="text-[9px] mr-0.5 font-black text-rose-500">^</span>}{formatRpEx(compVal)}</td>;
+                          })}
                         </tr>
                       )
                     })}
@@ -4588,7 +4727,7 @@ export default function App() {
 
 
 
-      {/* MAP MODAL — INACBG→iDRG or iDRG→INACBG */}
+      {/* MAP MODAL โ€” INACBGโ’iDRG or iDRGโ’INACBG */}
       {mapModal.isOpen && dashData && (
         <div className="fixed inset-0 z-[160] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
@@ -4598,10 +4737,10 @@ export default function App() {
                 <div className="p-2 bg-sky-100 rounded-xl text-sky-700"><GitMerge size={20} /></div>
                 <div>
                   <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">
-                    {mapModal.type === 'ina' ? `Peta INACBG → iDRG` : `Peta iDRG → INACBG`}
+                    {mapModal.type === 'ina' ? `Peta INACBG โ’ iDRG` : `Peta iDRG โ’ INACBG`}
                   </h3>
                   <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
-                    <span className="text-sky-600">{mapModal.code}</span> — {mapModal.desc || '-'}
+                    <span className="text-sky-600">{mapModal.code}</span> โ€” {mapModal.desc || '-'}
                   </p>
                 </div>
               </div>
@@ -4629,7 +4768,7 @@ export default function App() {
                       <span className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{idrg.split(' ')[0]}</span>
                       <span className="text-sm font-bold text-slate-700 flex-1">{idrg.substring(idrg.indexOf(' ') + 1)}</span>
                       <button
-                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} → ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
+                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} โ’ ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
                         className="flex items-center gap-1.5 text-[11px] font-black uppercase text-sky-700 bg-sky-100 hover:bg-sky-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
                       >
                         <Table2 size={11} /> {data.count} Kasus
@@ -4680,7 +4819,7 @@ export default function App() {
                       <span className="bg-sky-600 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{inaCode}</span>
                       <span className="text-sm font-bold text-slate-700 flex-1">{data.desc || '-'}</span>
                       <button
-                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} → ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
+                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} โ’ ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
                         className="flex items-center gap-1.5 text-[11px] font-black uppercase text-orange-700 bg-orange-100 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
                       >
                         <Table2 size={11} /> {data.count} Kasus
