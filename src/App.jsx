@@ -951,7 +951,7 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   if (check(['SPKFR'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi', dept: 'Department of Supporting Medicine' };
 
   // --- J. DERMATOLOGY, PLASTIC & DENTAL ---
-  if (check(['SPDVE', 'SPKK', 'SPKKK', 'SPBPRE', 'BPRE', 'BEDAH PLASTIK', 'SPKG', 'GIGI', 'SPORT', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA'])) {
+  if (check(['SPDVE', 'SPKK', 'SPKKK', 'SPBPRE', 'BPRE', 'SPB PRE', 'BEDAH PLASTIK', 'SPKG', 'GIGI', 'SPORT', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA'])) {
     const dept = 'Department of Dermatology & Aesthetic';
     if (check(['SPDVE', 'SPKK', 'SPKKK'])) {
       if (check(['GERIATRI', 'GER'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Geriatri', dept };
@@ -963,10 +963,10 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
       if (check(['TROPIK', 'DT'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Tropis', dept };
       return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika', dept };
     }
-    if (check(['SPBPRE', 'BPRE', 'BEDAH PLASTIK'])) {
+    if (check(['SPBPRE', 'BPRE', 'SPB PRE', 'BEDAH PLASTIK'])) {
       if (check(['LUKA BAKAR', 'LBL'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Luka Bakar', dept };
       if (check(['ESTETIK LANJUT', 'EL'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Bedah Estetik Lanjut', dept };
-      if (check(['KM'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept };
+      if (check(['KM', 'K M'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept };
       if (check(['MO'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept };
       return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept };
     }
