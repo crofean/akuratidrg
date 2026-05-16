@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
-import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles } from 'lucide-react';
+import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors } from 'lucide-react';
 
 export const saveAsPng = async (elementId, fileName) => {
   const el = document.getElementById(elementId);
@@ -2154,6 +2154,9 @@ export default function App() {
       dpjpSummaryArray: Object.values(maps.dpjp).sort((a, b) => b.count - a.count),
       ksmSummaryArray, deptSummaryArray, topKsmSurplusIna, topKsmDefisitIna, topKsmSurplusIdrg, topKsmDefisitIdrg, ksmEfficiencyTree,
       topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
+      diagUtamaFull: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, count, pct: (count / (rows.length || 1)) * 100 })),
+      diagSekunderFull: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, count, pct: (count / (rows.length || 1)) * 100 })),
+      procFull: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, count, pct: (count / (rows.length || 1)) * 100 })),
       dischargeStats: maps.discharge,
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
       inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies },
@@ -2648,6 +2651,9 @@ export default function App() {
       { id: 'summary', label: 'Ringkasan Bulanan', icon: Calendar, color: 'teal' },
       { id: 'severity', label: 'Severity Level', icon: Layers, color: 'emerald' },
       { id: 'complexity', label: 'Complexity Level', icon: Activity, color: 'sky' },
+      { id: 'diagnosis_primary', label: 'Diagnosa Utama', icon: Stethoscope, color: 'rose' },
+      { id: 'diagnosis_secondary', label: 'Diagnosa Sekunder', icon: ClipboardList, color: 'orange' },
+      { id: 'procedure', label: 'Tindakan', icon: Scissors, color: 'purple' },
       { id: 'detail_ranap', label: 'Detail Rawat Inap', icon: Bed, color: 'blue' },
       { id: 'detail_rajal', label: 'Detail Rawat Jalan', icon: Building2, color: 'indigo' },
     ];
@@ -2784,6 +2790,117 @@ export default function App() {
                   ))}
                 </tbody>
               </table>
+            </Card>
+          </div>
+        )}
+
+        {reportSubTab === 'diagnosis_primary' && (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+            <SectionHeader icon={Stethoscope} title="Laporan Diagnosa Utama" desc={`Daftar diagnosa utama terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-rose-50 text-rose-600" highlightClass="bg-rose-500/5" exportAction={() => exportToXlsx('Diagnosa_Utama', ['No', 'Kode Diagnosa', 'Jumlah', 'Persentase (%)'], dashData.diagUtamaFull.map((d, i) => [i + 1, d.code, d.count, d.pct]))} />
+            <Card className="overflow-hidden p-0 border-0 shadow-xl">
+              <div className="overflow-x-auto custom-scrollbar max-h-[700px]">
+                <table className="w-full text-sm border-collapse">
+                  <thead className="bg-slate-900 text-white sticky top-0 z-10">
+                    <tr>
+                      <th className="p-4 text-center border-r border-white/10 w-16">NO</th>
+                      <th className="p-4 text-left border-r border-white/10">KODE DIAGNOSA (ICD 10)</th>
+                      <th className="p-4 text-center border-r border-white/10">JUMLAH KASUS</th>
+                      <th className="p-4 text-center">PERSENTASE (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {dashData.diagUtamaFull.map((d, i) => (
+                      <tr key={i} className="hover:bg-rose-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Diagnosa Utama: ${d.code}`, r => String(r['DIAGNOSA'] || '').toUpperCase().startsWith(d.code.toUpperCase()))}>
+                        <td className="p-4 text-center font-bold text-slate-400 border-r border-slate-100">{i + 1}</td>
+                        <td className="p-4 font-black text-slate-800 border-r border-slate-100">{d.code}</td>
+                        <td className="p-4 text-center font-bold text-rose-600 border-r border-slate-100">{d.count.toLocaleString()}</td>
+                        <td className="p-4 text-center">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
+                              <div className="bg-rose-500 h-full rounded-full" style={{ width: `${d.pct}%` }} />
+                            </div>
+                            <span className="font-bold text-slate-600 min-w-[50px]">{d.pct.toFixed(2)}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {reportSubTab === 'diagnosis_secondary' && (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+            <SectionHeader icon={ClipboardList} title="Laporan Diagnosa Sekunder" desc={`Daftar diagnosa sekunder terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-orange-50 text-orange-600" highlightClass="bg-orange-500/5" exportAction={() => exportToXlsx('Diagnosa_Sekunder', ['No', 'Kode Diagnosa', 'Jumlah', 'Persentase (%)'], dashData.diagSekunderFull.map((d, i) => [i + 1, d.code, d.count, d.pct]))} />
+            <Card className="overflow-hidden p-0 border-0 shadow-xl">
+              <div className="overflow-x-auto custom-scrollbar max-h-[700px]">
+                <table className="w-full text-sm border-collapse">
+                  <thead className="bg-slate-900 text-white sticky top-0 z-10">
+                    <tr>
+                      <th className="p-4 text-center border-r border-white/10 w-16">NO</th>
+                      <th className="p-4 text-left border-r border-white/10">KODE DIAGNOSA (ICD 10)</th>
+                      <th className="p-4 text-center border-r border-white/10">JUMLAH TEMUAN</th>
+                      <th className="p-4 text-center">PERSENTASE (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {dashData.diagSekunderFull.map((d, i) => (
+                      <tr key={i} className="hover:bg-orange-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Diagnosa Sekunder: ${d.code}`, r => String(r['DIAGLIST'] || '').split(';').slice(1).some(diag => diag.trim().toUpperCase().startsWith(d.code.toUpperCase())))}>
+                        <td className="p-4 text-center font-bold text-slate-400 border-r border-slate-100">{i + 1}</td>
+                        <td className="p-4 font-black text-slate-800 border-r border-slate-100">{d.code}</td>
+                        <td className="p-4 text-center font-bold text-orange-600 border-r border-slate-100">{d.count.toLocaleString()}</td>
+                        <td className="p-4 text-center">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
+                              <div className="bg-orange-500 h-full rounded-full" style={{ width: `${d.pct}%` }} />
+                            </div>
+                            <span className="font-bold text-slate-600 min-w-[50px]">{d.pct.toFixed(2)}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {reportSubTab === 'procedure' && (
+          <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+            <SectionHeader icon={Scissors} title="Laporan Tindakan" desc={`Daftar tindakan (procedure) terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-purple-50 text-purple-600" highlightClass="bg-purple-500/5" exportAction={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Jumlah', 'Persentase (%)'], dashData.procFull.map((d, i) => [i + 1, d.code, d.count, d.pct]))} />
+            <Card className="overflow-hidden p-0 border-0 shadow-xl">
+              <div className="overflow-x-auto custom-scrollbar max-h-[700px]">
+                <table className="w-full text-sm border-collapse">
+                  <thead className="bg-slate-900 text-white sticky top-0 z-10">
+                    <tr>
+                      <th className="p-4 text-center border-r border-white/10 w-16">NO</th>
+                      <th className="p-4 text-left border-r border-white/10">KODE TINDAKAN (ICD 9-CM)</th>
+                      <th className="p-4 text-center border-r border-white/10">JUMLAH TINDAKAN</th>
+                      <th className="p-4 text-center">PERSENTASE (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {dashData.procFull.map((d, i) => (
+                      <tr key={i} className="hover:bg-purple-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Tindakan: ${d.code}`, r => String(r['PROCLIST'] || '').split(';').some(proc => proc.trim().toUpperCase().startsWith(d.code.toUpperCase())))}>
+                        <td className="p-4 text-center font-bold text-slate-400 border-r border-slate-100">{i + 1}</td>
+                        <td className="p-4 font-black text-slate-800 border-r border-slate-100">{d.code}</td>
+                        <td className="p-4 text-center font-bold text-purple-600 border-r border-slate-100">{d.count.toLocaleString()}</td>
+                        <td className="p-4 text-center">
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
+                              <div className="bg-purple-500 h-full rounded-full" style={{ width: `${d.pct}%` }} />
+                            </div>
+                            <span className="font-bold text-slate-600 min-w-[50px]">{d.pct.toFixed(2)}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </Card>
           </div>
         )}

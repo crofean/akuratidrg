@@ -104,7 +104,7 @@ header {
 .logo img {
     width: 50px;
     height: 50px;
-    object-contain;
+    object-fit: contain;
     background: white;
     padding: 6px;
     border-radius: 12px;
@@ -434,4 +434,66 @@ small {
     .credentials-grid { grid-template-columns: 1fr; }
     .header-content h2 { font-size: 24px; }
     .agreement-section { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
+
+.modal-content.terms-content {
+    max-width: 650px;
+    text-align: left;
+    padding: 40px;
+}
+
+.terms-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    color: var(--primary);
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 16px;
+}
+
+.terms-header i {
+    width: 28px;
+    height: 28px;
+}
+
+.terms-body ol {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 32px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 15px;
+}
+
+.terms-body li {
+    font-size: 14px;
+    color: var(--secondary);
+}
+
+.terms-body li strong {
+    display: block;
+    font-size: 15px;
+    color: var(--secondary);
+    margin-bottom: 4px;
+}
+
+.terms-body p {
+    color: #64748b;
+    margin-bottom: 0;
+}
+
+/* Custom Scrollbar for terms */
+.terms-body ol::-webkit-scrollbar {
+    width: 6px;
+}
+.terms-body ol::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+.terms-body ol::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
 }

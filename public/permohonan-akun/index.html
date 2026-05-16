@@ -113,7 +113,7 @@
                 <label class="checkbox-container">
                     <input type="checkbox" id="agreement" name="agreement" required>
                     <span class="checkmark"></span>
-                    <span class="label-text">Apakah Anda sudah membaca dan menyetujui <a href="#">Syarat dan Ketentuan</a> layanan Akurat iDRG?</span>
+                    <span class="label-text">Apakah Anda sudah membaca dan menyetujui <a href="javascript:void(0)" id="termsLink">Syarat dan Ketentuan</a> layanan Akurat iDRG?</span>
                 </label>
                 <div class="agreement-options">
                     <span class="status-badge" id="agreementStatus">Belum Disetujui</span>
@@ -137,7 +137,38 @@
             </div>
             <h2>Permohonan Berhasil Dikirim!</h2>
             <p>Terima kasih <strong><span id="displayUserName"></span></strong>. Tim kami akan melakukan verifikasi data Rumah Sakit Anda. Notifikasi akan dikirimkan melalui email dalam waktu 1x24 jam.</p>
-            <button class="btn-close" onclick="closeModal()">Selesai</button>
+            <button class="btn-close" onclick="closeModal('successModal')">Selesai</button>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content terms-content">
+            <div class="terms-header">
+                <i data-lucide="scroll-text"></i>
+                <h2>Syarat & Ketentuan Layanan</h2>
+            </div>
+            <div class="terms-body">
+                <ol>
+                    <li>
+                        <strong>Hak Cipta & Kekayaan Intelektual</strong>
+                        <p>Pengguna wajib menghormati hak cipta karya aplikasi ini. Dilarang keras meniru, menggandakan, atau mengambil konsep dan ide aplikasi AKURAT iDRG tanpa izin tertulis dari pengembang.</p>
+                    </li>
+                    <li>
+                        <strong>Lisensi Penggunaan Akun</strong>
+                        <p>Satu akun hanya diperuntukkan bagi satu orang pengguna. Dilarang keras membagikan atau menyebarkan kredensial akun kepada pihak lain mana pun.</p>
+                    </li>
+                    <li>
+                        <strong>Tanggung Jawab Keamanan Data</strong>
+                        <p>Segala bentuk kebocoran data yang terjadi di luar kendali sistem aplikasi (akibat kelalaian pengguna atau faktor eksternal lainnya) bukan merupakan tanggung jawab developer AKURAT iDRG.</p>
+                    </li>
+                    <li>
+                        <strong>Pemrosesan Data Lokal</strong>
+                        <p>Aplikasi ini mengutamakan privasi. Kami menjamin bahwa data klaim (file .txt/.xlsx) Anda <strong>TIDAK disimpan ke server kami</strong>. Seluruh proses analisis dilakukan secara lokal di browser Anda untuk keamanan maksimal.</p>
+                    </li>
+                </ol>
+            </div>
+            <button class="btn-close" onclick="closeModal('termsModal')">Saya Mengerti</button>
         </div>
     </div>
 

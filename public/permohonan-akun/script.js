@@ -63,21 +63,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(scriptURL, {
             method: 'POST',
-            mode: 'no-cors', // Penting untuk Google Apps Script
+            mode: 'no-cors',
             cache: 'no-cache',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(formData)
         })
         .then(() => {
+            console.log('Submission successful (no-cors)');
             displayUserName.textContent = formData.fullName;
             modal.style.display = 'flex';
             form.reset();
             agreementStatus.textContent = 'Belum Disetujui';
             agreementStatus.classList.remove('active');
+            lucide.createIcons();
         })
         .catch(error => {
-            console.error('Error!', error.message);
-            alert('Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
+            console.error('Submission error:', error);
+            alert('Terjadi kesalahan saat mengirim permohonan. Pastikan koneksi internet stabil.');
         })
         .finally(() => {
             submitBtn.disabled = false;
@@ -87,14 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function closeModal() {
-    document.getElementById('successModal').style.display = 'none';
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
 }
+
+// Terms Modal Logic
+document.getElementById('termsLink').addEventListener('click', () => {
+    document.getElementById('termsModal').style.display = 'flex';
+});
 
 // Close modal when clicking outside
 window.onclick = function(event) {
-    const modal = document.getElementById('successModal');
-    if (event.target == modal) {
-        closeModal();
-    }
+    const successModal = document.getElementById('successModal');
+    const termsModal = document.getElementById('termsModal');
+    if (event.target == successModal) closeModal('successModal');
+    if (event.target == termsModal) closeModal('termsModal');
 }
