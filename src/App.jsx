@@ -1651,14 +1651,24 @@ export default function App() {
     let interval;
     if (isLoggedIn && SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
       interval = setInterval(async () => {
+        // Hanya cek jika tab sedang aktif (mencegah tab background saling 'bunuh' sesi)
+        if (document.hidden) return; 
+
         try {
           const res = await fetch(`${SESSION_API_URL}?username=${username}`);
           const data = await res.json();
           const activeSid = sessionStorage.getItem('sak_session_id');
 
-          if (data.activeSessionId && data.activeSessionId !== activeSid) {
-            alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
-            handleLogout();
+          // Cek: Jika server punya ID dan ID itu beda dengan milik kita
+          if (data.activeSessionId && activeSid && data.activeSessionId !== activeSid) {
+            // Beri kesempatan 1x lagi (siapa tahu delay server)
+            const secondCheckRes = await fetch(`${SESSION_API_URL}?username=${username}`);
+            const secondData = await secondCheckRes.json();
+            
+            if (secondData.activeSessionId && secondData.activeSessionId !== activeSid) {
+              alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
+              handleLogout();
+            }
           }
         } catch (e) { console.warn("Gagal mengecek validitas sesi:", e); }
       }, 60000);
