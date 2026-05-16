@@ -4646,6 +4646,9 @@ export default function App() {
 
               <div className="mt-8 text-center">
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
+                <div className="mt-3">
+                  <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
+                </div>
                 <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.5 (160526-16.56)</p>
               </div>
             </div>
