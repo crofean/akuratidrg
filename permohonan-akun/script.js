@@ -39,27 +39,51 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Simulate form processing
+        // REAL SUBMISSION TO GOOGLE SHEETS
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx_Y2r1t7k6l_Y2r1t7k6l_Y2r1t7k6l_Y2r1t7k6l/exec'; // GANTI DENGAN URL DEPLOYMENT BRO
+        
         const submitBtn = form.querySelector('.btn-submit');
         const originalBtnText = submitBtn.innerHTML;
         
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>MEMPROSES...</span> <i class="animate-spin" data-lucide="refresh-cw"></i>';
+        submitBtn.innerHTML = '<span>MENGIRIM...</span> <i class="animate-spin" data-lucide="refresh-cw"></i>';
         lucide.createIcons();
 
-        setTimeout(() => {
-            const fullName = document.getElementById('fullName').value;
-            displayUserName.textContent = fullName;
-            
+        const formData = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            rsCode: document.getElementById('rsCode').value,
+            rsName: document.getElementById('rsName').value,
+            position: document.getElementById('position').value,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            questionType: document.getElementById('questionType').value
+        };
+
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // Penting untuk Google Apps Script
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+        .then(() => {
+            displayUserName.textContent = formData.fullName;
             modal.style.display = 'flex';
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-            lucide.createIcons();
-            
             form.reset();
             agreementStatus.textContent = 'Belum Disetujui';
             agreementStatus.classList.remove('active');
-        }, 2000);
+        })
+        .catch(error => {
+            console.error('Error!', error.message);
+            alert('Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+            lucide.createIcons();
+        });
     });
 });
 
