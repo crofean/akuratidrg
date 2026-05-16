@@ -1919,34 +1919,37 @@ export default function App() {
   // Heartbeat: Pengecekan Sesi Ganda (Setiap 60 detik)
   useEffect(() => {
     let interval;
-    if (isLoggedIn && SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
+    if (isLoggedIn && username && SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
       interval = setInterval(async () => {
         if (document.hidden) return; 
 
         try {
-          const res = await fetch(`${SESSION_API_URL}?username=${username}`);
+          const cb = Date.now();
+          const res = await fetch(`${SESSION_API_URL}?username=${encodeURIComponent(username)}&t=${cb}`);
           if (!res.ok) return; 
           const data = await res.json();
           const activeSid = localStorage.getItem('sak_session_id');
 
           if (data.activeSessionId && activeSid && data.activeSessionId !== activeSid) {
             console.log(`[Session] Conflict detected. Server: ${data.activeSessionId}, Local: ${activeSid}`);
-            // Re-verify after a short delay
-            await new Promise(r => setTimeout(r, 5000)); 
-            const secondRes = await fetch(`${SESSION_API_URL}?username=${username}`);
+            // Re-verify after a 10s delay to allow server sync
+            await new Promise(r => setTimeout(r, 10000)); 
+            const secondRes = await fetch(`${SESSION_API_URL}?username=${encodeURIComponent(username)}&t=${Date.now()}`);
             if (!secondRes.ok) return;
             const secondData = await secondRes.json();
             
             if (secondData.activeSessionId && secondData.activeSessionId !== activeSid) {
-              console.warn("[Session] Session invalidated. Logging out.");
+              console.warn("[Session] Persistent conflict. Forcing logout.");
               alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
               handleLogout();
             } else {
               console.log("[Session] Conflict resolved (propagation delay).");
             }
+          } else {
+            console.log("[Session] Heartbeat OK", { local: activeSid, server: data.activeSessionId });
           }
         } catch (e) { console.warn("Session check failed (network):", e); }
-      }, 30000); // Check every 30s
+      }, 60000); // Check every 60s
     }
     return () => { if (interval) clearInterval(interval); };
   }, [isLoggedIn, username, handleLogout]);
