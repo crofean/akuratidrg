@@ -715,7 +715,7 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
 
   // --- CHECK OVERRIDES FIRST ---
   const np = normDpjp(dpjp);
-  if (overrides && overrides[np]) return overrides[np];
+  if (overrides && overrides[np]) return { ksm: overrides[np], dept: 'Override' };
 
   // 1. ADVANCED NORMALIZATION
   let n = String(dpjp).toUpperCase()
@@ -724,8 +724,6 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
     .replace(/-\s*([A-Z])/g, '$1') // Join hyphens: BP-RE -> BPRE
     .replace(/[.,/()\-]/g, ' ')
     .replace(/SUBSP/g, ' SUBSP ') // Ensure SUBSP is its own word
-    .replace(/SP([A-Z])/g, ' SP $1 ') // Split SP from the title to allow \b [TITLE] \b matching
-    .replace(/SP\s+([A-Z])/g, ' SP$1 ')
     .replace(/SUB\s*SP/g, ' SUBSP ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -733,8 +731,10 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   const check = (keys) => {
     return keys.some(k => {
       const normalizedK = k.toUpperCase().replace(/[.,/()\-]/g, ' ').replace(/\s+/g, ' ').trim();
-      const regex = new RegExp('\\b' + normalizedK + '\\b', 'i');
-      return regex.test(n);
+      // Match both joined (SPPD) and separated (SP PD)
+      const regexJoined = new RegExp('\\b' + normalizedK.replace(/\s+/g, '') + '\\b', 'i');
+      const regexSeparated = new RegExp('\\b' + normalizedK.split('').join('\\s*') + '\\b', 'i');
+      return regexJoined.test(n) || regexSeparated.test(n);
     });
   };
 
@@ -1798,9 +1798,9 @@ export default function App() {
     duration: Math.random() * 3 + 2
   })));
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentSessionId, setCurrentSessionId] = useState(() => sessionStorage.getItem('sak_session_id'));
-  const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('sak_isLoggedIn') === 'true');
+  const [currentSessionId, setCurrentSessionId] = useState(() => localStorage.getItem('sak_session_id'));
+  const [username, setUsername] = useState(() => localStorage.getItem('sak_username') || '');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [captchaVerified, setCaptchaVerified] = useState(false);
@@ -1881,7 +1881,9 @@ export default function App() {
   const finalizeLogin = async () => {
     const sid = Math.random().toString(36).substring(2, 15);
     setCurrentSessionId(sid);
-    sessionStorage.setItem('sak_session_id', sid);
+    localStorage.setItem('sak_session_id', sid);
+    localStorage.setItem('sak_isLoggedIn', 'true');
+    localStorage.setItem('sak_username', username);
 
     // Daftarkan Sesi ke Server (Google Apps Script)
     if (SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
@@ -1908,7 +1910,9 @@ export default function App() {
     setPassword('');
     setLoginError('');
     setCaptchaVerified(false);
-    sessionStorage.removeItem('sak_session_id');
+    localStorage.removeItem('sak_session_id');
+    localStorage.removeItem('sak_isLoggedIn');
+    localStorage.removeItem('sak_username');
   };
 
   // Heartbeat: Pengecekan Sesi Ganda (Setiap 60 detik)
@@ -1916,28 +1920,32 @@ export default function App() {
     let interval;
     if (isLoggedIn && SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
       interval = setInterval(async () => {
-        // Hanya cek jika tab sedang aktif (mencegah tab background saling 'bunuh' sesi)
         if (document.hidden) return; 
 
         try {
           const res = await fetch(`${SESSION_API_URL}?username=${username}`);
+          if (!res.ok) return; 
           const data = await res.json();
-          const activeSid = sessionStorage.getItem('sak_session_id');
+          const activeSid = localStorage.getItem('sak_session_id');
 
-          // Cek: Jika server punya ID dan ID itu beda dengan milik kita
           if (data.activeSessionId && activeSid && data.activeSessionId !== activeSid) {
-            // Beri kesempatan 1x lagi (siapa tahu delay server)
-            await new Promise(r => setTimeout(r, 2000)); 
-            const secondCheckRes = await fetch(`${SESSION_API_URL}?username=${username}`);
-            const secondData = await secondCheckRes.json();
+            console.log(`[Session] Conflict detected. Server: ${data.activeSessionId}, Local: ${activeSid}`);
+            // Re-verify after a short delay
+            await new Promise(r => setTimeout(r, 5000)); 
+            const secondRes = await fetch(`${SESSION_API_URL}?username=${username}`);
+            if (!secondRes.ok) return;
+            const secondData = await secondRes.json();
             
             if (secondData.activeSessionId && secondData.activeSessionId !== activeSid) {
+              console.warn("[Session] Session invalidated. Logging out.");
               alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
               handleLogout();
+            } else {
+              console.log("[Session] Conflict resolved (propagation delay).");
             }
           }
-        } catch (e) { console.warn("Gagal mengecek validitas sesi:", e); }
-      }, 60000);
+        } catch (e) { console.warn("Session check failed (network):", e); }
+      }, 30000); // Check every 30s
     }
     return () => { if (interval) clearInterval(interval); };
   }, [isLoggedIn, username, handleLogout]);
