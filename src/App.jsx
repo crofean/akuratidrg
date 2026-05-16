@@ -722,26 +722,26 @@ const resolveKsmDept = (dpjp) => {
   // LANGKAH 3: Hapus gelar akademik dan fellowship
   n = n.replace(/\b(PROF|DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM|MH|MHPE|FINASIM|FAPSR|FINAIM|PAPDI|FRSM|FCSI|FACG|AIFOK|FICS|FINSDV|MPHIL|PHIL)\b/g, ' ');
 
-  // LANGKAH 4: Hapus Subsp dan keterangan setelahnya
-  n = n.replace(/\bSUBSP\b.*/g, ' ');
-
-  // LANGKAH 5: Normalize spasi
+  // LANGKAH 4: Hapus keterangan akademik non-spesialis yang tersisa
   n = n.replace(/ {2,}/g, ' ').trim();
 
-  // LANGKAH 6: Gabungkan "SP X" → "SPX" (kode tanpa titik, ada spasi)
+  // LANGKAH 5: Tangani Subspesialis secara eksplisit sebelum dihapus
+  if (n.includes('SPBS') || n.includes('SP BS')) return { ksm: 'Bedah Saraf', dept: 'Department of Surgery' };
+  if (n.includes('SPBA') || n.includes('SP BA')) return { ksm: 'Bedah Anak', dept: 'Department of Surgery' };
+  if (n.includes('SPBTKV') || n.includes('SP BTKV')) return { ksm: 'Bedah Jantung & Pembuluh Darah', dept: 'Department of Surgery' };
+  if (n.includes('SPBM') || n.includes('SP BM')) return { ksm: 'Bedah Mulut & Maksilofasial', dept: 'Department of Surgery' };
+  if (n.includes('SPBP') || n.includes('SP BP')) return { ksm: 'Bedah Plastik & Rekonstruksi', dept: 'Department of Surgery' };
+  if (n.includes('SPB SUBSP') || n.includes('SP B SUBSP') || n.includes('SP B(K)') || n.includes('SP.B(K)')) {
+    if (n.includes('BD') || n.includes('DIGESTIF')) return { ksm: 'Bedah Digestif', dept: 'Department of Surgery' };
+    if (n.includes('ONK') || n.includes('ONKOLOGI')) return { ksm: 'Bedah Onkologi', dept: 'Department of Surgery' };
+    if (n.includes('BVE') || n.includes('VASKULAR')) return { ksm: 'Bedah Vaskular', dept: 'Department of Surgery' };
+    return { ksm: 'Bedah Umum (Subsp)', dept: 'Department of Surgery' };
+  }
+  if (n.includes('SPONK RAD') || n.includes('SP ONK RAD') || n.includes('ONK RAD') || n.includes('SPONKRAD')) return { ksm: 'Onkologi Radiasi', dept: 'Department of Oncology' };
+  if (n.includes('SPKJ') || n.includes('SP KJ')) return { ksm: 'Kesehatan Jiwa', dept: 'Department of Medicine' };
+
+  // LANGKAH 6: Gabungkan "SP X" → "SPX"
   n = n.replace(/\bSP\s+([A-Z]{1,8})\b/g, 'SP$1');
-
-  // LANGKAH 7: Setelah SP regex, gabungkan multi-kata yang tersisa
-  n = n.replace(/\b(SPONK)\s+(RAD)\b/g, '$1$2');
-  n = n.replace(/\b(SPPD)\s+K\s+([A-Z]{2,})\b/g, '$1 K$2');
-  // Hapus tanda kurung dan gabungkan: "SPB (K) ONK" → "SPBKONK", "SPB (K)Onk" → "SPBKONK"
-  n = n.replace(/\b(SP[A-Z]+)\s*\(K\)\s*([A-Z]+)/g, '$1K$2');
-  // Hapus sisa tanda kurung
-  n = n.replace(/[()]/g, ' ').replace(/ {2,}/g, ' ').trim();
-
-  // LANGKAH 8: Fused code split (Tambahkan SPBM, SPBA, SPBS agar tidak termakan SPB)
-  n = n.replace(/\b(SP(?:AN|OG|PD|JP|BS|BA|BM|BTKV|OT|DVE|THT|ONK|KFR|KK|PROS|ORL|OFT|ONKRAD|BEDAH|A|B|U|S|M|GK|N))(K)?([A-Z]+)/g,
-    (_, base, k, rest) => k ? `${base}(K) ${rest}` : `${base} ${rest}`);
 
   if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
     return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
@@ -1915,8 +1915,8 @@ export default function App() {
         maps.ina[inaCode].sumLos += los; if (los > maps.ina[inaCode].maxLos) maps.ina[inaCode].maxLos = los;
       }
 
-      const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
-      const pList = String(r['PROCLIST'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+      const dList = String(r['DIAGLIST'] || '').replace(/"/g, '').split(';').map(d => d.trim()).filter(d => d);
+      const pList = String(r['PROCLIST'] || '').replace(/"/g, '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
 
       // Top-Up Detection
       let billing_detected = false;
