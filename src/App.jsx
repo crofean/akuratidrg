@@ -1425,15 +1425,15 @@ const SliderCaptcha = ({ onVerified, verified }) => {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('sak_activeTab') || 'dashboard');
-  const [subTab, setSubTab] = useState(() => localStorage.getItem('sak_subTab') || 'executive');
+  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('sak_activeTab') || 'dashboard');
+  const [subTab, setSubTab] = useState(() => sessionStorage.getItem('sak_subTab') || 'executive');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState('');
   const [drilldown, setDrilldown] = useState({ isOpen: false, title: '', data: [], type: 'patient' });
   const [globalFilter, setGlobalFilter] = useState(() => {
     try {
-      const saved = localStorage.getItem('sak_globalFilter');
+      const saved = sessionStorage.getItem('sak_globalFilter');
       return saved ? JSON.parse(saved) : { periode: [], jenisRawat: [], kelasRawat: [], dpjp: [], ksm: [], departemen: [] };
     } catch (e) { return { periode: [], jenisRawat: [], kelasRawat: [], dpjp: [], ksm: [], departemen: [] }; }
   });
@@ -1455,7 +1455,7 @@ export default function App() {
   const [analysisStep, setAnalysisStep] = useState(0);
   const [auditVerdicts, setAuditVerdicts] = useState(() => {
     try {
-      const saved = localStorage.getItem('sak_auditVerdicts');
+      const saved = sessionStorage.getItem('sak_auditVerdicts');
       return saved ? JSON.parse(saved) : {};
     } catch (e) { return {}; }
   });
@@ -1505,10 +1505,10 @@ export default function App() {
   // Persistence Sync
   useEffect(() => {
     console.log('[SAK-iDRG] Navigation state:', { activeTab, subTab });
-    localStorage.setItem('sak_activeTab', activeTab);
-    localStorage.setItem('sak_subTab', subTab);
-    localStorage.setItem('sak_globalFilter', JSON.stringify(globalFilter));
-    localStorage.setItem('sak_auditVerdicts', JSON.stringify(auditVerdicts));
+    sessionStorage.setItem('sak_activeTab', activeTab);
+    sessionStorage.setItem('sak_subTab', subTab);
+    sessionStorage.setItem('sak_globalFilter', JSON.stringify(globalFilter));
+    sessionStorage.setItem('sak_auditVerdicts', JSON.stringify(auditVerdicts));
   }, [activeTab, subTab, globalFilter, auditVerdicts]);
 
   useEffect(() => {
@@ -1535,7 +1535,7 @@ export default function App() {
   })));
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentSessionId, setCurrentSessionId] = useState(() => localStorage.getItem('sak_session_id'));
+  const [currentSessionId, setCurrentSessionId] = useState(() => sessionStorage.getItem('sak_session_id'));
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -1617,7 +1617,7 @@ export default function App() {
   const finalizeLogin = async () => {
     const sid = Math.random().toString(36).substring(2, 15);
     setCurrentSessionId(sid);
-    localStorage.setItem('sak_session_id', sid);
+    sessionStorage.setItem('sak_session_id', sid);
 
     // Daftarkan Sesi ke Server (Google Apps Script)
     if (SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
