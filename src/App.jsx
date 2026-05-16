@@ -711,12 +711,22 @@ const normDpjp = (name) => {
 
 const resolveKsmDept = (dpjp) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
-  const n = String(dpjp).toUpperCase().replace(/\./g, '').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
+  let n = String(dpjp).toUpperCase().replace(/\./g, '').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
+
+  // Perbaiki kasus "Sp. A" (ada spasi) yang menjadi "SP A", ubah menjadi "SPA" agar terbaca oleh mapping
+  n = n.replace(/\bSP\s+([A-Z]{1,4})\b/g, 'SP$1');
 
   if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
     return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
 
-  const check = (keywords) => keywords.some(k => n.includes(k));
+  // Gunakan RegExp untuk menghindari false positive (misal nama "PRASPANCA" terdeteksi sebagai "SPA")
+  // Regex: (^|[^A-Z0-9_]) berarti awal string atau karakter non-huruf. (?![A-Z0-9_]) berarti tidak boleh diikuti huruf/angka.
+  const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const check = (keywords) => keywords.some(k => {
+    const term = k.replace(/\./g, '');
+    const regex = new RegExp(`(^|[^A-Z0-9_])${escapeRegExp(term)}(?![A-Z0-9_])`);
+    return regex.test(n);
+  });
 
   // --- Department of Cardiology ---
   if (check(['SP.JP(K) KARDIOLOGI INTERVENSI', 'SPJP(K) KARDIOLOGI INTERVENSI', 'KARDIOLOGI INTERVENSI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Intervensi', dept: 'Department of Cardiology' };
@@ -941,9 +951,9 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.KFR(K) REHABILITASI MUSKULOSKELETAL', 'SPKFR(K) REHABILITASI MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Muskuloskeletal', dept: 'Department of Orthopaedy' };
 
   // --- Fallback (Dokter Umum) ---
-  if (check(['DR. ']) && !n.includes('SP')) return { ksm: 'Dokter Umum', dept: 'Department of Medicine' };
-
-  return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
+  // Jika kode sudah berjalan sejauh ini dan tidak ada gelar spesialis yang cocok,
+  // maka ia adalah dokter umum (hanya gelar dr. tanpa Sp yang terdefinisi).
+  return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
 };
 
 const extractKsm = (dpjp) => resolveKsmDept(dpjp).ksm;
