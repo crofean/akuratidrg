@@ -3493,7 +3493,7 @@ export default function App() {
         </div>
 
         <Card className="overflow-hidden border border-slate-200 mt-6">
-          <div className="overflow-x-auto max-h-[800px] custom-scrollbar">
+          <div className="overflow-auto max-h-[800px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
                 <tr>
@@ -3680,7 +3680,7 @@ export default function App() {
         </div>
 
         <Card className="overflow-hidden border border-slate-200 mt-6">
-          <div className="overflow-x-auto max-h-[800px] custom-scrollbar">
+          <div className="overflow-auto max-h-[800px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
                 <tr>
@@ -3741,25 +3741,31 @@ export default function App() {
                         {compKeys.map(c => <td key={c.key} className="p-3 text-right text-[10px] font-bold text-slate-500 bg-slate-200/50">{formatRpEx((ksm.comps?.[c.key] || 0) / (ksm.count || 1))}</td>)}
                       </tr>
                       
-                      {isKsmOpen && ksm.dpjps.map((dpjp, pi) => (
-                        <tr
-                          key={`dpjp-${ki}-${pi}`}
-                          className="bg-white hover:bg-slate-50 transition-colors cursor-pointer animate-in fade-in slide-in-from-bottom-1 duration-300 group"
-                          style={{ animationDelay: `${pi * 30}ms`, animationFillMode: 'both' }}
-                          onClick={() => openDrilldown(`Kasus DPJP: ${dpjp.name}`, row => normDpjp(row['DPJP']) === dpjp.normName)}
-                        >
-                          <td className="p-3 pl-12 border-l-2 border-indigo-300 sticky left-0 z-20 bg-white group-hover:bg-slate-50 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                            <div className="flex items-center gap-3">
-                              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
-                                <User size={12} />
+                      {isKsmOpen && ksm.dpjps.map((dpjp, pi) => {
+                        const ksmAvgLos = ksm.sumLos / (ksm.count || 1);
+                        const dpjpAvgLos = dpjp.sumLos / dpjp.count;
+                        const ksmAvgRS = ksm.sumRS / (ksm.count || 1);
+                        const dpjpAvgRS = dpjp.sumRS / dpjp.count;
+
+                        return (
+                          <tr
+                            key={`dpjp-${ki}-${pi}`}
+                            className="bg-white hover:bg-slate-50 transition-colors cursor-pointer animate-in fade-in slide-in-from-bottom-1 duration-300 group"
+                            style={{ animationDelay: `${pi * 30}ms`, animationFillMode: 'both' }}
+                            onClick={() => openDrilldown(`Kasus DPJP: ${dpjp.name}`, row => normDpjp(row['DPJP']) === dpjp.normName)}
+                          >
+                            <td className="p-3 pl-12 border-l-2 border-indigo-300 sticky left-0 z-20 bg-white group-hover:bg-slate-50 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                              <div className="flex items-center gap-3">
+                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                                  <User size={12} />
+                                </div>
+                                <span className="font-semibold text-slate-600 group-hover:text-indigo-700 transition-colors">{dpjp.name}</span>
                               </div>
-                              <span className="font-semibold text-slate-600 group-hover:text-indigo-700 transition-colors">{dpjp.name}</span>
-                            </div>
-                          </td>
-                          <td className="p-3 text-right font-bold text-slate-600">{dpjp.count.toLocaleString()}</td>
-                          <td className="p-3 text-center text-teal-600 font-bold text-xs bg-teal-50/10">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
-                          <td className="p-3 text-center text-rose-600 font-bold text-xs bg-rose-50/10">{dpjp.maxLos}</td>
-                          <td className="p-3 text-right text-slate-500 text-xs">{formatRp(dpjp.sumRS / dpjp.count)}</td>
+                            </td>
+                            <td className="p-3 text-right font-bold text-slate-600">{dpjp.count.toLocaleString()}</td>
+                            <td className={`p-3 text-center font-bold text-xs bg-teal-50/10 ${dpjpAvgLos > ksmAvgLos ? 'text-rose-600' : 'text-teal-600'}`}>{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
+                            <td className="p-3 text-center text-rose-600 font-bold text-xs bg-rose-50/10">{dpjp.maxLos}</td>
+                            <td className={`p-3 text-right text-xs font-semibold ${dpjpAvgRS > ksmAvgRS ? 'text-rose-600' : 'text-slate-500'}`}>{formatRp(dpjp.sumRS / dpjp.count)}</td>
                           <td className={`p-3 text-right font-bold ${(dpjp.sumIna - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIna - dpjp.sumRS) / dpjp.count)}</td>
                           <td className={`p-3 text-right font-bold ${(dpjp.sumIdrg - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIdrg - dpjp.sumRS) / dpjp.count)}</td>
                           <td className="p-3 text-right font-bold text-purple-600">{formatRp((dpjp.sumIdrg - dpjp.sumIna) / dpjp.count)}</td>
@@ -3779,7 +3785,7 @@ export default function App() {
                             );
                           })}
                         </tr>
-                      ))}
+                      )})}
                     </React.Fragment>
                   );
                 })}
