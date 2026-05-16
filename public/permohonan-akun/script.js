@@ -71,13 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             mode: 'no-cors',
             cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
             body: params.toString()
         })
         .then(() => {
-            console.log('Submission successful (form-urlencoded)');
+            console.log('Submission attempt finished');
             displayUserName.textContent = formData.fullName;
             modal.style.display = 'flex';
             form.reset();
@@ -87,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Submission error:', error);
-            alert('Terjadi kesalahan saat mengirim permohonan. Pastikan koneksi internet stabil.');
+            alert('Terjadi kesalahan saat mengirim permohonan.');
         })
         .finally(() => {
             submitBtn.disabled = false;
