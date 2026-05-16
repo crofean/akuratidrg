@@ -710,14 +710,28 @@ const normDpjp = (name) => {
 };
 
 const resolveKsmDept = (dpjp) => {
-  if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
+  if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
   let n = String(dpjp).toUpperCase().replace(/\./g, '').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
 
+  // Hapus gelar akademik (M.Kes, M.Ked, M.Biomed, Ph.D, Dr., dr., dll) agar tidak mengacaukan deteksi Sp
+  n = n.replace(/\b(DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM)\b/g, ' ');
+  // Hapus Subsp. dan keterangan setelahnya agar tidak mengganggu
+  n = n.replace(/SUBSP\s*[A-Z()./\s]*/g, ' ');
+  // Normalkan kembali spasi ganda
+  n = n.replace(/ {2,}/g, ' ').trim();
+
   // Perbaiki kasus "Sp. A" (ada spasi) yang menjadi "SP A", ubah menjadi "SPA" agar terbaca oleh mapping
-  n = n.replace(/\bSP\s+([A-Z]{1,4})\b/g, 'SP$1');
+  n = n.replace(/\bSP\s+([A-Z]{1,6})\b/g, 'SP$1');
+  // Normalisasi kode gelar fused: SPAK→SPA, SPANTI→SPAN, SPBKONK→SPB, SPBPRE→SPBPRE, dll.
+  // Pisahkan kode SP+X dari suffiks tambahan agar `check` dapat mencocokkan kode dasar (SPA, SPB, SPAN, dll)
+  // Aturan: setelah SP + 1-4 huruf inti, jika diikuti huruf alfanumerik tanpa spasi (fused), sisipkan spasi
+  n = n.replace(/\b(SP(?:A|B|AN|OG|PD|JP|BS|BA|P|U|S|THT|ONK|KFR|KK|DVE|M|GK|N|PM|GH|MK|KP|BTKV|ORL|OFT|ONKRAD|BEDAH))(K)?([A-Z]+)/g,
+    (_, base, k, rest) => k ? `${base}(K) ${rest}` : `${base} ${rest}`);
+  // Perbaiki format SpB.Subsp → SPB (sudah distrip subsp di atas)
+  n = n.replace(/\bSPB\s*SUBSP\b/g, 'SPB');
 
   if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
-    return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
+    return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
 
   // Gunakan RegExp untuk menghindari false positive (misal nama "PRASPANCA" terdeteksi sebagai "SPA")
   // Regex: (^|[^A-Z0-9_]) berarti awal string atau karakter non-huruf. (?![A-Z0-9_]) berarti tidak boleh diikuti huruf/angka.
@@ -953,7 +967,7 @@ const resolveKsmDept = (dpjp) => {
   // --- Fallback (Dokter Umum) ---
   // Jika kode sudah berjalan sejauh ini dan tidak ada gelar spesialis yang cocok,
   // maka ia adalah dokter umum (hanya gelar dr. tanpa Sp yang terdefinisi).
-  return { ksm: 'Kedokteran Umum', dept: 'Departemen Medicine' };
+  return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
 };
 
 const extractKsm = (dpjp) => resolveKsmDept(dpjp).ksm;
