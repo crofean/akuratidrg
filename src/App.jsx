@@ -711,298 +711,109 @@ const normDpjp = (name) => {
 
 const resolveKsmDept = (dpjp) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
-  // LANGKAH 1: Uppercase lalu gabungkan kode Sp.X.Y.Z dotted sebelum mengubah titik ke spasi
-  // Contoh: Sp.O.T→SPOT, Sp.T.H.T.B.K.L→SPTHTBKL, Sp.Onk.Rad→SPONKRAD, Sp.D.V.E→SPDVE
-  let n = String(dpjp).toUpperCase();
-  n = n.replace(/\bSP(?:\.(?!SUBSP)([A-Z0-9]+))+/g, m => m.replace(/\./g, ''));
+  
+  // 1. ADVANCED NORMALIZATION
+  // We remove common titles and academic degrees to focus on the clinical specialty string.
+  // We also normalize "SP X" to "SPX" and merge varied sub-specialty prefixes.
+  let n = String(dpjp).toUpperCase()
+    .replace(/(PROF|DRG|DR|M\.KES|M\.SC|PH\.D|FICS|FACS|FIHA|MMRS|MHPE|MARS|FISQUA|FINS|FINA|FMIN|FANMB|FCPM|FIPM|KMN|AIFO|FAPSR|MH)/g, '')
+    .replace(/[.,/()\-]/g, ' ') // Replace punctuation with space
+    .replace(/SP\s+([A-Z])/g, 'SP$1') // Normalize "SP A" to "SPA"
+    .replace(/SUB\s*SP/g, 'SUBSP')    // Normalize "SUB SP" to "SUBSP"
+    .replace(/\s+/g, ' ')             // Collapse multiple spaces
+    .trim();
 
-  // LANGKAH 2: Ganti sisa titik dengan spasi (untuk M.Kes, M.Ked, dll.)
-  n = n.replace(/\./g, ' ').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
+  const check = (keys) => {
+    return keys.some(k => {
+      const normalizedK = k.toUpperCase().replace(/[.,/()\-]/g, ' ').replace(/\s+/g, ' ').trim();
+      // We use word boundaries to avoid partial matches (e.g. "SPA" matching "SPAN")
+      // Since we already normalized spaces in 'n', word boundaries work well.
+      const regex = new RegExp('\\b' + normalizedK + '\\b', 'i');
+      return regex.test(n);
+    });
+  };
 
-  // LANGKAH 3: Hapus gelar akademik dan fellowship
-  n = n.replace(/\b(PROF|DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM|MH|MHPE|FINASIM|FAPSR|FINAIM|PAPDI|FRSM|FCSI|FACG|AIFOK|FICS|FINSDV|MPHIL|PHIL)\b/g, ' ');
+  // 2. PRIORITY MAPPING (Highest specificity first)
 
-  // LANGKAH 4: Hapus keterangan akademik non-spesialis yang tersisa
-  n = n.replace(/ {2,}/g, ' ').trim();
-
-  // LANGKAH 5: Tangani Subspesialis secara eksplisit sebelum dihapus
-  if (n.includes('SPBS') || n.includes('SP BS')) return { ksm: 'Bedah Saraf', dept: 'Department of Surgery' };
-  if (n.includes('SPBA') || n.includes('SP BA')) return { ksm: 'Bedah Anak', dept: 'Department of Surgery' };
-  if (n.includes('SPBTKV') || n.includes('SP BTKV')) return { ksm: 'Bedah Jantung & Pembuluh Darah', dept: 'Department of Surgery' };
-  if (n.includes('SPBM') || n.includes('SP BM')) return { ksm: 'Bedah Mulut & Maksilofasial', dept: 'Department of Surgery' };
-  if (n.includes('SPBP') || n.includes('SP BP')) return { ksm: 'Bedah Plastik & Rekonstruksi', dept: 'Department of Surgery' };
-  if (n.includes('SPB SUBSP') || n.includes('SP B SUBSP') || n.includes('SP B(K)') || n.includes('SP.B(K)')) {
-    if (n.includes('BD') || n.includes('DIGESTIF')) return { ksm: 'Bedah Digestif', dept: 'Department of Surgery' };
-    if (n.includes('ONK') || n.includes('ONKOLOGI')) return { ksm: 'Bedah Onkologi', dept: 'Department of Surgery' };
-    if (n.includes('BVE') || n.includes('VASKULAR')) return { ksm: 'Bedah Vaskular', dept: 'Department of Surgery' };
-    return { ksm: 'Bedah Umum (Subsp)', dept: 'Department of Surgery' };
+  // --- 1. DEPARTMENT OF ONCOLOGY ---
+  if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD', 'ONK RAD', 'ONKOLOGI', 'SPBKONK', 'ONKO', 'KHOM', 'HEMATOLOGI ONKOLOGI'])) {
+    return { ksm: 'Dokter Spesialis Konsultan Onkologi', dept: 'Department of Oncology' };
   }
-  if (n.includes('SPONK RAD') || n.includes('SP ONK RAD') || n.includes('ONK RAD') || n.includes('SPONKRAD')) return { ksm: 'Onkologi Radiasi', dept: 'Department of Oncology' };
-  if (n.includes('SPKJ') || n.includes('SP KJ')) return { ksm: 'Kesehatan Jiwa', dept: 'Department of Medicine' };
 
-  // LANGKAH 6: Gabungkan "SP X" → "SPX"
-  n = n.replace(/\bSP\s+([A-Z]{1,8})\b/g, 'SP$1');
+  // --- 2. DEPARTMENT OF CARDIOLOGY & VASCULAR ---
+  if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'SPBTK', 'BTKV', 'SUBSP JD', 'SUBSP T', 'IKKV', 'KPPJB', 'VAS', 'VASKULAR', 'BKV', 'BVE', 'KAKV', 'JD', 'KKV'])) {
+    if (check(['BTKV', 'SPBTKV', 'SPBTK', 'JD'])) return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept: 'Department of Cardiology' };
+    if (check(['BVE', 'BKV', 'VASKULAR', 'BVK'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular', dept: 'Department of Cardiology' };
+    return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah', dept: 'Department of Cardiology' };
+  }
 
-  if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
-    return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
+  // --- 3. DEPARTMENT OF GASTROENTEROLOGY ---
+  if (check(['KGEH', 'GASTROENTEROHEPATOLOGI', 'GASTRO'])) {
+    return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
+  }
+  if (check(['SUBSP BD', 'SPBKBD', 'KBD', 'DIGESTIF'])) {
+    return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Digestif', dept: 'Department of Gastroenterology' };
+  }
 
-  // Gunakan RegExp untuk menghindari false positive (misal nama "PRASPANCA" terdeteksi sebagai "SPA")
-  // Regex: (^|[^A-Z0-9_]) berarti awal string atau karakter non-huruf. (?![A-Z0-9_]) berarti tidak boleh diikuti huruf/angka.
-  const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const check = (keywords) => keywords.some(k => {
-    const term = k.replace(/\./g, '');
-    const regex = new RegExp(`(^|[^A-Z0-9_])${escapeRegExp(term)}(?![A-Z0-9_])`);
-    return regex.test(n);
-  });
+  // --- 4. DEPARTMENT OF URO-NEPHROLOGY ---
+  if (check(['SPU', 'UROLOGI', 'KGH', 'GINJAL', 'UROGIN', 'UROGINEKOLOGI'])) {
+    return { ksm: 'Dokter Spesialis Urologi / Nefrologi', dept: 'Department of Uro-Nephrology' };
+  }
 
-  // --- Department of Cardiology ---
-  if (check(['SP.JP(K) KARDIOLOGI INTERVENSI', 'SPJP(K) KARDIOLOGI INTERVENSI', 'KARDIOLOGI INTERVENSI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Intervensi', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) EKOKARDIOGRAFI', 'SPJP(K) EKOKARDIOGRAFI', 'EKOKARDIOGRAFI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Ekokardiografi', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) ARITMIA', 'SPJP(K) ARITMIA', 'ARITMIA'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Aritmia', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) GAGAL JANTUNG', 'SPJP(K) GAGAL JANTUNG', 'GAGAL JANTUNG'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Gagal Jantung', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) VASKULAR', 'SPJP(K) VASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kedokteran Vaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) PENCITRAAN KARDIOVASKULAR', 'SPJP(K) PENCITRAAN KARDIOVASKULAR', 'PENCITRAAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Pencitraan Kardiovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) PEDIATRIK & PJB', 'SPJP(K) PEDIATRIK & PJB', 'PEDIATRIK & PJB', 'PEDIATRIK DAN PJB', 'PEDIATRIK'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Pediatrik dan Penyakit Jantung Bawaan', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) TERAPI INTENSIF', 'SPJP(K) TERAPI INTENSIF'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Terapi Intensif', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) INTENSIF & KEGAWATAN', 'SPJP(K) INTENSIF & KEGAWATAN', 'INTENSIF & KEGAWATAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Intensif & Kegawatan Kardiovascular', dept: 'Department of Cardiology' };
-  if (check(['SP.JP(K) PREVENSI & REHABILITASI', 'SPJP(K) PREVENSI & REHABILITASI', 'PREVENSI & REHABILITASI KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Prevensi dan Rehabilitasi Kardiovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.A(K) KARDIOLOGI', 'SPA(K) KARDIOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Kardiologi', dept: 'Department of Cardiology' };
-  if (check(['SP.PD(K) KARDIOVASKULAR', 'SPPD(K) KARDIOVASKULAR', 'K-KV', 'KKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.BTKV', 'SPBTKV'])) return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.B(K) BEDAH VASKULAR & ENDOVASKULAR', 'SPB(K) BEDAH VASKULAR & ENDOVASKULAR', 'SP.B(K) BEDAH VASKULAR', 'SP.B(K) VASKULAR', 'SPB(K) VASKULAR', 'BVE'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.KFR(K) REHABILITASI KARDIORESPIRASI', 'SPKFR(K) REHABILITASI KARDIORESPIRASI'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Kardiorespirasi', dept: 'Department of Cardiology' };
-  if (check(['SP.JP', 'SPJP'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah', dept: 'Department of Cardiology' };
+  // --- 5. DEPARTMENT OF NEUROLOGI ---
+  if (check(['SPBS', 'BEDAH SARAF', 'SPN', 'SPS', 'NEUROLOGI', 'SARAF', 'NEURO', 'FINS', 'FINR', 'FMIN'])) {
+    if (check(['SPBS', 'BEDAH SARAF'])) return { ksm: 'Dokter Spesialis Bedah Saraf', dept: 'Department of Neurologi' };
+    return { ksm: 'Dokter Spesialis Neurologi', dept: 'Department of Neurologi' };
+  }
 
-  // --- Department of Anesthesiology (Dinaikkan agar tidak tertukar dengan SPA) ---
-  if (check(['SP.AN(K) ANESTESI REGIONAL', 'SPAN(K) ANESTESI REGIONAL'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Regional', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN(K) MANAJEMEN NYERI', 'SPAN(K) MANAJEMEN NYERI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Manajemen Nyeri', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN(K) INTENSIVE CARE (KIC)', 'SPAN(K) INTENSIVE CARE', 'KIC', 'K-IC'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Intensive Care (KIC)', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN', 'SPAN', 'ANESTESI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN(K) ANESTESI KARDIOVASKULAR', 'SPAN(K) ANESTESI KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Kardiovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.AN(K) NEUROANESTESI & NEURO CRITICAL CARE', 'SPAN(K) NEUROANESTESI', 'SP.AN(K) NEUROANESTESI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Neuro Anestesi dan Neuro Critical Care', dept: 'Department of Neurologi' };
-  if (check(['SP.AN(K) ANESTESI OBSTETRI', 'SPAN(K) ANESTESI OBSTETRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Obstetri', dept: 'Department of Maternal and Child' };
-  if (check(['SP.AN(K) ANESTESI PEDIATRI', 'SPAN(K) ANESTESI PEDIATRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Pediatri', dept: 'Department of Maternal and Child' };
+  // --- 6. DEPARTMENT OF MATERNAL AND CHILD ---
+  if (check(['SPOG', 'KEBIDANAN', 'KANDUNGAN', 'SPA', 'ANAK', 'SPBA', 'SUBSP DA', 'NEO', 'NEONATOLOGI', 'RESPI', 'FETO', 'KFM', 'NPM', 'FER'])) {
+    if (check(['SPBA', 'BEDAH ANAK', 'DA'])) return { ksm: 'Dokter Spesialis Bedah Anak', dept: 'Department of Maternal and Child' };
+    if (check(['SPA', 'ANAK'])) return { ksm: 'Dokter Spesialis Anak', dept: 'Department of Maternal and Child' };
+    return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi', dept: 'Department of Maternal and Child' };
+  }
 
-  // --- Department of Gastroenterology ---
-  if (check(['SP.PD(K) GASTROENTEROHEPATOLOGI', 'SPPD(K) GASTROENTEROHEPATOLOGI', 'K-GEH', 'KGEH', 'KGEH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
-  if (check(['SP.A(K) GASTROENTEROLOGI-HEPATOLOGI', 'SPA(K) GASTROENTEROLOGI-HEPATOLOGI', 'SP.A(K) GASTROENTEROLOGI & HEPATOLOGI', 'K-GASTRO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Gastroenterologi-hepatologi', dept: 'Department of Gastroenterology' };
-  if (check(['SP.B(K) BEDAH DIGESTIF', 'SPB(K) BEDAH DIGESTIF', 'K-BD', 'KBD', 'DIGESTIF'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Digestif', dept: 'Department of Gastroenterology' };
+  // --- 7. DEPARTMENT OF OTOLARYNGOLOGY (ENT) ---
+  if (check(['SPTHT', 'SPTHTKL', 'SPTHTBKL', 'THT', 'RINO', 'RINOLOGI', 'OTO', 'OTOLOGI', 'BE', 'BRONKO'])) {
+    return { ksm: 'Dokter Spesialis THT-BKL', dept: 'Department of Otolaryngology (ENT)' };
+  }
 
-  // --- Department of Medicine ---
-  if (check(['SP.PD(K) ENDOKRIN-METABOLIK-DIABETES', 'SPPD(K) ENDOKRIN-METABOLIK-DIABETES', 'K-EMD', 'KEMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept: 'Department of Medicine' };
-  if (check(['SP.PD(K) GERIATRI', 'SPPD(K) GERIATRI', 'K-GER', 'KGER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept: 'Department of Medicine' };
-  if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
-  if (check(['SP.PD(K) PSIKOSOMATIK & PALIATIF', 'SPPD(K) PSIKOSOMATIK & PALIATIF'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept: 'Department of Medicine' };
-  // SPPD Konsultan lain — harus SEBELUM generic SPPD
-  if (check(['KHOM', 'KHOMFINASIM', 'K-HOM', 'HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
-  if (check(['KGH', 'K-GH', 'GINJAL HIPERTENSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
-  if (check(['KAI', 'K-AI', 'ALERGI IMUNOLOGI DALAM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['KPTI', 'K-PTI', 'TROPIK INFEKSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
-  // KR harus dicek setelah SPKFR agar Sp.KFR KR(K) tidak salah → cek SPKFR lebih dulu di blok ini
-  if (n.includes('SPKFR')) { /* biarkan jatuh ke blok KFR di bawah */ }
-  else if (check(['KR', 'K-R', 'REUMATOLOGI', 'RHEUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['KGEH', 'K-GEH', 'GASTROENTEROHEPATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
-  if (check(['KP', 'K-P', 'PULMONOLOGI DALAM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
-  if (check(['KKV', 'K-KV', 'SPPDKKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept: 'Department of Cardiology' };
-  // Generic SPPD catch (harus setelah semua konsultan spesifik di atas)
-  if (check(['SP.PD', 'SPPD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam', dept: 'Department of Medicine' };
-  // Sp.P (Paru) — setelah SPPD, dan pastikan SPPROS tidak masuk sini
-  if (!n.includes('SPPROS') && check(['SP.P(K)', 'SPP(K)', 'SP.P', 'SPP', 'PARU'])) return { ksm: 'Dokter Spesialis Paru', dept: 'Department of Medicine' };
-  // Sp.Pros (Prostodontia)
-  if (check(['SP.PROS', 'SPPROS', 'PROSTODONTIA', 'PROSTHODONTIC'])) return { ksm: 'Dokter Gigi Spesialis Prostodontia', dept: 'Department of Dentistry' };
-  if (check(['SP.GK(K) KELAINAN METABOLIK', 'SPGK(K) KELAINAN METABOLIK'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Kelainan Metabolik', dept: 'Department of Medicine' };
-  if (check(['SP.GK(K) NUTRISI PADA PENYAKIT KRITIS', 'SPGK(K) NUTRISI PADA PENYAKIT KRITIS'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Nutrisi pada Penyakit Kritis', dept: 'Department of Medicine' };
-  if (check(['SP.GK', 'SPGK'])) return { ksm: 'Dokter Spesialis Gizi Klinik', dept: 'Department of Medicine' };
-  if (check(['SP.FK', 'SPFK'])) return { ksm: 'Dokter Spesialis Farmakologi Klinik', dept: 'Department of Medicine' };
-  if (check(['SP.OK', 'SPOK'])) return { ksm: 'Dokter Spesialis Kedokteran Okupasi', dept: 'Department of Medicine' };
-  if (check(['SP.KFR(K) REHABILITASI GERIATRI', 'SPKFR(K) REHABILITASI GERIATRI'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Geriatri', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) ADIKSI', 'SPKJ(K) ADIKSI'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Adiksi', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) ANAK & REMAJA', 'SPKJ(K) ANAK & REMAJA', 'SP.KJ(K) ANAK DAN REMAJA'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Anak & Remaja', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) FORENSIK', 'SPKJ(K) FORENSIK'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Forensik', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) PSIKOTERAPI', 'SPKJ(K) PSIKOTERAPI'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikoterapi', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) LIAISON', 'SPKJ(K) LIAISON'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri dan Liaison', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) GERIATRI', 'SPKJ(K) GERIATRI'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Geriatri', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) PSIKOSEKSUAL & MARITAL', 'SPKJ(K) PSIKOSEKSUAL & MARITAL', 'SP.KJ(K) PSIKOSEKSUAL DAN MARITAL'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Psikoseksual dan Marital', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) PEREMPUAN', 'SPKJ(K) PEREMPUAN'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikiatri Perempuan', dept: 'Department of Medicine' };
-  if (check(['SP.KJ(K) PSIKOMETRIK', 'SPKJ(K) PSIKOMETRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa Konsultan Psikometrik', dept: 'Department of Medicine' };
-  if (check(['SP.KJ', 'SPKJ'])) return { ksm: 'Dokter Spesialis Kedokteran Jiwa', dept: 'Department of Medicine' };
+  // --- 8. DEPARTMENT OF ORTHOPAEDY ---
+  if (check(['SPOT', 'ORTHOPEDI', 'OT', 'SUBSP OT', 'SPOTK'])) {
+    return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi', dept: 'Department of Orthopaedy' };
+  }
 
-  // --- Department of Neurologi ---
-  if (check(['SP.S(K) EPILEPSI & NEUROFISIOLOGI', 'SPS(K) EPILEPSI & NEUROFISIOLOGI', 'SP.S(K) EPILEPSI DAN NEUROFISIOLOGI', 'SP.N(K) EPILEPSI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Epilepsi dan Neurofisiologi', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROINFEKSI', 'SPS(K) NEUROINFEKSI', 'SP.N(K) NEUROINFEKSI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neuro Infeksi', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NYERI', 'SPS(K) NYERI', 'SP.N(K) NYERI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurologi Nyeri', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROVASKULAR', 'SPS(K) NEUROVASKULAR', 'SP.N(K) NEUROVASKULAR'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurovaskular', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROOTOLOGI/NEUROOPTHALMOLOGI', 'SPS(K) NEUROOTOLOGI', 'SP.S(K) NEUROOTOLOGI', 'SP.S(K) NEUROOPTHALMOLOGI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurootologi / Neuroopthalmologi', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROINTERVENSI', 'SPS(K) NEUROINTERVENSI', 'SP.N(K) NEUROINTERVENSI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurointervensi', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROIMAGING', 'SPS(K) NEUROIMAGING', 'SP.N(K) NEUROIMAGING'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neuroimaging', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) GANGGUAN TIDUR', 'SPS(K) GANGGUAN TIDUR', 'SP.N(K) GANGGUAN TIDUR'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Gangguan Tidur (Sleep Disorder)', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) SARAF TEPI', 'SPS(K) SARAF TEPI', 'SP.N(K) SARAF TEPI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Saraf Tepi', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) SARAF ANAK', 'SPS(K) SARAF ANAK', 'SP.N(K) SARAF ANAK'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Saraf Anak', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEURODEGENERATIF/NEUROBEHAVIOUR', 'SPS(K) NEURODEGENERATIF', 'SP.S(K) NEURODEGENERATIF', 'NEUROBEHAVIOUR'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurodegeneratif / Neurobehaviour', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROONKOLOGI', 'SPS(K) NEUROONKOLOGI', 'SP.N(K) NEUROONKOLOGI'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neuroonkologi', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) GANGGUAN GERAK', 'SPS(K) GANGGUAN GERAK', 'SP.N(K) GANGGUAN GERAK'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Gangguan Gerak (Movement Disorder)', dept: 'Department of Neurologi' };
-  if (check(['SP.S(K) NEUROKRITIKAL & INTENSIF', 'SPS(K) NEUROKRITIKAL & INTENSIF', 'SP.S(K) NEUROKRITIKAL'])) return { ksm: 'Dokter Spesialis Neurologi Konsultan Neurokritikal dan Intensif', dept: 'Department of Neurologi' };
-  if (check(['SP.S', 'SPS', 'SP.N', 'SPN', 'NEURO'])) return { ksm: 'Dokter Spesialis Neurologi', dept: 'Department of Neurologi' };
-  if (check(['SP.BS(K) NEUROFUNGSIONAL', 'SPBS(K) NEUROFUNGSIONAL'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurofungsional', dept: 'Department of Neurologi' };
-  if (check(['SP.BS(K) NEUROONKOLOGI & SKULL BASE', 'SPBS(K) NEUROONKOLOGI & SKULL BASE', 'SP.BS(K) NEUROONKOLOGI'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neuroonkologi + Skull Base', dept: 'Department of Neurologi' };
-  if (check(['SP.BS(K) NEUROSPINE', 'SPBS(K) NEUROSPINE'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurospine', dept: 'Department of Neurologi' };
-  if (check(['SP.BS(K) NEUROVASKULAR', 'SPBS(K) NEUROVASKULAR'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurovaskular', dept: 'Department of Neurologi' };
-  if (check(['SP.BS(K) PEDIATRIK', 'SPBS(K) PEDIATRIK'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Pediatrik', dept: 'Department of Neurologi' };
-  if (check(['SP.BS(K) NEUROTRAUMA', 'SPBS(K) NEUROTRAUMA'])) return { ksm: 'Dokter Spesialis Bedah Saraf Konsultan Neurotrauma', dept: 'Department of Neurologi' };
-  if (check(['SP.BS', 'SPBS'])) return { ksm: 'Dokter Spesialis Bedah Saraf', dept: 'Department of Neurologi' };
-  if (check(['SP.A(K) NEUROPEDIATRI', 'SPA(K) NEUROPEDIATRI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Neuropediatri', dept: 'Department of Neurologi' };
-  if (check(['SP.KFR(K) NEUROMUSKULAR', 'SPKFR(K) NEUROMUSKULAR'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Neuromuskular', dept: 'Department of Neurologi' };
-  if (check(['SP.AN(K) NEUROANESTESI & NEURO CRITICAL CARE', 'SPAN(K) NEUROANESTESI', 'SP.AN(K) NEUROANESTESI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Neuro Anestesi dan Neuro Critical Care', dept: 'Department of Neurologi' };
+  // --- 9. DEPARTMENT OF MEDICINE & INTERNAL ---
+  if (check(['SPPD', 'PENYAKIT DALAM', 'SPP', 'PARU', 'SPKJ', 'JIWA', 'SPGK', 'GIZI', 'SPOK', 'OKUPASI', 'SPFK', 'KGER', 'KEMD', 'KR', 'REUMATOLOGI', 'KPTI', 'KAI', 'KP'])) {
+    return { ksm: 'Dokter Spesialis Kedokteran Penyakit Dalam / Lainnya', dept: 'Department of Medicine' };
+  }
 
-  // --- Department of Uro-Nephrology ---
-  if (check(['SP.U(K) ANDROLOGI', 'SPU(K) ANDROLOGI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Andrologi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.U(K) UROLOGI PEREMPUAN FUNGSIONAL & NEURO', 'SPU(K) UROLOGI PEREMPUAN', 'SP.U(K) UROLOGI PEREMPUAN'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Perempuan, Fungsional, dan Neuro - Urologi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.U(K) ONKOLOGI UROLOGI', 'SPU(K) ONKOLOGI UROLOGI', 'SP.U(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Onkologi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.U(K) PEDIATRIK UROLOGI', 'SPU(K) PEDIATRIK UROLOGI', 'SP.U(K) PEDIATRIK'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Pediatrik', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.U(K) REKONSTRUKSI', 'SPU(K) REKONSTRUKSI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Rekonstruksi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.U(K) TRANSPLANTASI', 'SPU(K) TRANSPLANTASI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Transplantasi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.U', 'SPU', 'UROLOGI'])) return { ksm: 'Dokter Spesialis Urologi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.DVE(K) VENEREOLOGI', 'SPDVE(K) VENEREOLOGI', 'SP.KK(K) VENEREOLOGI', 'SPKK(K) VENEREOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Venereologi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.PD(K) GINJAL HIPERTENSI', 'SPPD(K) GINJAL HIPERTENSI', 'K-GH', 'KGH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.A(K) NEFROLOGI', 'SPA(K) NEFROLOGI', 'K-NEFRO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Nefrologi Anak', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.OG(K) UROGINEKOLOGI REKONSTRUKSI', 'SPOG(K) UROGINEKOLOGI REKONSTRUKSI', 'UROGINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Uroginekologi Rekonstruksi', dept: 'Department of Uro-Nephrology' };
+  // --- 10. DEPARTMENT OF ANESTHESIOLOGY ---
+  if (check(['SPAN', 'ANESTESI', 'SPANTI', 'KIC', 'KNA', 'MN', 'KAP', 'ANPED', 'SUBSP TI'])) {
+    return { ksm: 'Dokter Spesialis Anestesiologi', dept: 'Department of Anesthesiology' };
+  }
 
-  // --- Department of Maternal and Child ---
-  if (check(['SP.OG(K) FER', 'SPOG(K) FER', 'FER (FERTILITAS ENDOKRINOLOGI REPRODUKSI)', 'KFER'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Fertilitas dan Endokrinologi Reproduksi', dept: 'Department of Maternal and Child' };
-  if (check(['SP.OG(K) FETOMATERNAL', 'SPOG(K) FETOMATERNAL', 'K-FM', 'FETOMATERNAL'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Fetomaternal', dept: 'Department of Maternal and Child' };
-  if (check(['SP.OG(K) OBSTETRI GINEKOLOGI SOSIAL', 'SPOG(K) OBSTETRI GINEKOLOGI SOSIAL', 'OBSTETRI DAN GINEKOLOGI SOSIAL', 'OBGINSOS'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Obstetri dan Ginekologi Sosial', dept: 'Department of Maternal and Child' };
-  if (check(['SP.OG', 'SPOG', 'KANDUNGAN'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi', dept: 'Department of Maternal and Child' };
-  if (check(['SP.A(K) ENDOKRINOLOGI', 'SPA(K) ENDOKRINOLOGI', 'K-ENDO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Endokrinologi', dept: 'Department of Maternal and Child' };
-  if (check(['SP.A(K) NEONATOLOGI', 'SPA(K) NEONATOLOGI', 'K-NEO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Neonatologi', dept: 'Department of Maternal and Child' };
-  if (check(['SP.A(K) NUTRISI & METABOLIK', 'SPA(K) NUTRISI & METABOLIK', 'SP.A(K) NUTRISI DAN PENYAKIT METABOLIK'])) return { ksm: 'Dokter Spesialis Anak Konsultan Nutrisi dan Penyakit Metabolik', dept: 'Department of Maternal and Child' };
-  if (check(['SP.A(K) RESPIROLOGI', 'SPA(K) RESPIROLOGI', 'K-RESPI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Respirologi', dept: 'Department of Maternal and Child' };
-  if (check(['SP.A(K) TUMBUH KEMBANG & PEDIATRI SOSIAL', 'SPA(K) TUMBUH KEMBANG', 'SP.A(K) TUMBUH KEMBANG'])) return { ksm: 'Dokter Spesialis Anak Konsultan Tumbuh Kembang - Pediatri Sosial', dept: 'Department of Maternal and Child' };
-  if (check(['SP.A(K) EMERGENSI & INTENSIF ANAK', 'SPA(K) EMERGENSI & INTENSIF ANAK', 'K-ERIA', 'SP.A(K) EMERGENSI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Emergensi dan Terapi Intensif Anak', dept: 'Department of Maternal and Child' };
-  if (!n.includes('SPAN') && check(['SP.A', 'SPA', 'ANAK'])) return { ksm: 'Dokter Spesialis Anak', dept: 'Department of Maternal and Child' };
-  if (check(['SP.BA(K) BEDAH UROGENITAL ANAK', 'SPBA(K) BEDAH UROGENITAL ANAK'])) return { ksm: 'Dokter Spesialis Bedah Anak Konsultan Bedah Urogenital Anak', dept: 'Department of Maternal and Child' };
-  if (check(['SP.BA(K) BEDAH DIGESTIF ANAK', 'SPBA(K) BEDAH DIGESTIF ANAK'])) return { ksm: 'Dokter Spesialis Bedah Anak Konsultan Bedah Digestif Anak', dept: 'Department of Maternal and Child' };
-  if (check(['SP.BA', 'SPBA'])) return { ksm: 'Dokter Spesialis Bedah Anak', dept: 'Department of Maternal and Child' };
-  if (check(['SP.DVE(K) DERMATOLOGI ANAK', 'SPDVE(K) DERMATOLOGI ANAK', 'SP.KK(K) DERMATOLOGI ANAK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Anak', dept: 'Department of Maternal and Child' };
-  if (check(['SP.KFR(K) REHABILITASI PEDIATRIK', 'SPKFR(K) REHABILITASI PEDIATRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Pediatrik', dept: 'Department of Maternal and Child' };
+  // --- 11. DEPARTMENT OF DERMATOLOGY & AESTHETIC ---
+  if (check(['SPDVE', 'SPKK', 'KULIT', 'SPBPRE', 'BEDAH PLASTIK', 'SPBP RE', 'SPBM', 'BEDAH MULUT', 'SPKG', 'SPORT', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA', 'PROS', 'KG', 'SPBP', 'DVE'])) {
+    return { ksm: 'Dokter Spesialis Kulit / Bedah Plastik / Gigi', dept: 'Department of Dermatology & Aesthetic' };
+  }
 
-  // --- Department of Oncology ---
-  if (check(['SP.ONK.RAD(K) ABDOMINO-PELVIK', 'SPONKRAD(K) ABDOMINO-PELVIK', 'SP.ONK.RAD(K) ABDOMINO', 'SPONKRAD K ABDOMINO'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept: 'Department of Oncology' };
-  if (check(['SP.ONK.RAD(K) KEPALA, LEHER & SSP', 'SPONKRAD(K) KEPALA, LEHER & SSP', 'SP.ONK.RAD(K) KEPALA', 'SPONKRAD K KEPALA'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Kepala, Leher dan Sistem Saraf Pusat', dept: 'Department of Oncology' };
-  if (check(['SP.ONK.RAD(K) TORAKS, PEDIATRIK & LIMFO-MUSKULOSKELETAL', 'SPONKRAD(K) TORAKS', 'SP.ONK.RAD(K) TORAKS', 'SPONKRAD K TORAKS'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Toraks, Pediatrik dan Limpho-muskuloskeletal', dept: 'Department of Oncology' };
-  if (check(['SP.ONK.RAD', 'SPONKRAD', 'SP ONK RAD', 'ONKOLOGI RADIASI'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi', dept: 'Department of Oncology' };
-  if (check(['SP.PD(K) HEMATOLOGI ONKOLOGI MEDIK', 'SPPD(K) HEMATOLOGI ONKOLOGI MEDIK', 'K-HOM', 'KHOM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
-  if (check(['SP.OG(K) ONKOLOGI GINEKOLOGI', 'SPOG(K) ONKOLOGI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Onkologi Ginekologi', dept: 'Department of Oncology' };
-  if (check(['SP.A(K) HEMATOONKOLOGI', 'SPA(K) HEMATOONKOLOGI', 'SP.A(K) HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Hematoonkologi', dept: 'Department of Oncology' };
-  if (check(['SP.BM(K) ONKOLOGI BEDAH MULUT & MAKSILOFASIAL', 'SPBM(K) ONKOLOGI BEDAH MULUT', 'SP.BM(K) ONKOLOGI'])) return { ksm: 'Dokter Gigi Dokter Spesialis Bedah Mulut Neoplasma dan Kista Bedah Mulut dan Maksilofasial', dept: 'Department of Oncology' };
-  if (check(['SP.B(K) BEDAH ONKOLOGI', 'SPB(K) BEDAH ONKOLOGI', 'SPB(K) ONK', 'SPB ONK', 'K-ONK', 'SPBKONK', 'KONK', 'BEDAH ONKOLOGI'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Onkologi', dept: 'Department of Oncology' };
-  if (check(['SP.THT-KL(K) ONKOLOGI BEDAH KEPALA LEHER', 'SPTHT-KL(K) ONKOLOGI', 'SP.THT(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Onkologi - Bedah Kepala Leher', dept: 'Department of Oncology' };
-  if (check(['SP.DVE(K) ONKOLOGI & BEDAH KULIT', 'SPDVE(K) ONKOLOGI & BEDAH KULIT', 'SP.KK(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Onkologi dan Bedah Kulit', dept: 'Department of Oncology' };
+  // --- 12. DEPARTMENT OF RADIOLOGY ---
+  if (check(['SPRAD', 'RADIOLOGI', 'SPKN', 'NUKLIR', 'SPKN-TM', 'SPKNTM'])) {
+    return { ksm: 'Dokter Spesialis Radiologi / Nuklir', dept: 'Department of Radiology' };
+  }
 
-  // Pengecekan SPAN dipindah ke atas
+  // --- 13. DEPARTMENT OF SURGERY & EYES ---
+  if (check(['SPB', 'BEDAH', 'SPM', 'MATA'])) {
+    if (check(['SPM', 'MATA'])) return { ksm: 'Dokter Spesialis Mata', dept: 'Department of Surgery' };
+    return { ksm: 'Dokter Spesialis Bedah Umum', dept: 'Department of Surgery' };
+  }
 
-  // --- Department of Supporting Medicine ---
-  if (check(['SP.PK(K) HEMATOLOGI KLINIK', 'SPPK(K) HEMATOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Hematologi Klinik', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) ONKOLOGI KLINIK', 'SPPK(K) ONKOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Onkologi Klinik', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) NEFROLOGI & RESPIRASI', 'SPPK(K) NEFROLOGI & RESPIRASI', 'SP.PK(K) NEFROLOGI DAN RESPIRASI'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Nefrologi dan Respirasi', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) GASTROENTEROHEPATOLOGI', 'SPPK(K) GASTROENTEROHEPATOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Gastroenterohepatologi', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) PENYAKIT INFEKSI', 'SPPK(K) PENYAKIT INFEKSI'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Penyakit Infeksi', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) BANK DARAH & TRANSFUSI', 'SPPK(K) BANK DARAH', 'SP.PK(K) BANK DARAH'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Bank Darah & Kedokteran Transfusi', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) IMUNOLOGI KLINIK', 'SPPK(K) IMUNOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Imunologi Klinik', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK(K) ENDOKRIN & METABOLISME', 'SPPK(K) ENDOKRIN'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Endokrin & Metabolisme', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PK', 'SPPK'])) return { ksm: 'Dokter Spesialis Patologi Klinik', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) UROPATOLOGI REPRODUKSI LAKI-LAKI', 'SPPA(K) UROPATOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Uropatologi Reproduksi Laki-laki', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) KULIT & ADNEKSA', 'SPPA(K) KULIT'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Kulit dan Adneksa', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) DIGESTIF HEPATOBILIER', 'SPPA(K) DIGESTIF'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Digestif Hepatobilier', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) HEMATOLIMFOID & ENDOKRIN', 'SPPA(K) HEMATOLIMFOID'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Hematolimfoid dan Endokrin', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) OBSTETRI GINEKOLOGI PAYUDARA', 'SPPA(K) OBSTETRI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Obstetri Ginekologi Payudara', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) SITOPATOLOGI', 'SPPA(K) SITOPATOLOGI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Sitopatologi', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) MUSKULOSKELETAL', 'SPPA(K) MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Muskuloskeletal', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) SARAF & MATA', 'SPPA(K) SARAF'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Saraf dan Mata', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA(K) KARDIOVASKULAR RESPIRASI MEDIASTINUM', 'SPPA(K) KARDIOVASKULAR RESPIRASI'])) return { ksm: 'Dokter Spesialis Patologi Anatomi Konsultan Patologi Kardiovaskular Respirasi dan Mediastinum', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.PA', 'SPPA'])) return { ksm: 'Dokter Spesialis Patologi Anatomi', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.MK', 'SPMK'])) return { ksm: 'Dokter Spesialis Mikrobiologi Klinik', dept: 'Department of Supporting Medicine' };
-  if (check(['SP.KFR', 'SPKFR'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi', dept: 'Department of Supporting Medicine' };
+  // --- 14. DEPARTMENT OF SUPPORTING MEDICINE ---
+  if (check(['SPPK', 'PATOLOGI KLINIK', 'SPPA', 'PATOLOGI ANATOMI', 'SPMK', 'MIKROBIOLOGI', 'SPKFR', 'REHABILITASI'])) {
+    return { ksm: 'Dokter Spesialis Penunjang Medis', dept: 'Department of Supporting Medicine' };
+  }
 
-  // --- Department of Dermatology & Aesthetic ---
-  if (check(['SP.DVE(K) DERMATOLOGI KOSMETIK & ESTETIK', 'SPDVE(K) DERMATOLOGI KOSMETIK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Kosmetik dan Estetik', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.DVE', 'SPDVE', 'SP.KK', 'SPKK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.BP-RE(K) LUKA BAKAR (K-LB)', 'SPBP-RE(K) LUKA BAKAR', 'K-LB', 'SP.BP-RE(K) LUKA BAKAR'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Luka Bakar', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.BP-RE(K) BEDAH ESTETIK LANJUT', 'SPBP-RE(K) BEDAH ESTETIK LANJUT'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Bedah Estetik Lanjut', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.BP-RE', 'SPBP-RE', 'SP.BPRE', 'SPBPRE', 'BEDAH PLASTIK'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.BKV', 'SPBKV'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept: 'Department of Cardiology' };
-  if (check(['SP.KG', 'SPKG'])) return { ksm: 'Dokter Gigi Spesialis Konservasi Gigi', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.ORT', 'SPORT'])) return { ksm: 'Dokter Gigi Spesialis Orthodonti', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.PM', 'SPPM'])) return { ksm: 'Dokter Gigi Spesialis Penyakit Mulut', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.PERIO', 'SPPERIO'])) return { ksm: 'Dokter Gigi Spesialis Periodonsia', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.PROS(K) PROSTETIK MAKSILOFASIAL', 'SPPROS(K) PROSTETIK MAKSILOFASIAL'])) return { ksm: 'Dokter Gigi Spesialis Prosthodonsia Konsultan Prostetik Maksilofasial', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.PROS', 'SPPROS'])) return { ksm: 'Dokter Gigi Spesialis Prosthodonsia', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.KGA', 'SPKGA'])) return { ksm: 'Dokter Gigi Spesialis Kesehatan Gigi Anak', dept: 'Department of Dermatology & Aesthetic' };
-
-  // --- Department of Otolaryngology (ENT) ---
-  if (check(['SP.THT-KL(K) BRONKOESOFAGOLOGI', 'SPTHT-KL(K) BRONKOESOFAGOLOGI', 'SP.THT(K) BRONKOESOFAGOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Bronkoesofagologi', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) LARING-FARING', 'SPTHT-KL(K) LARING-FARING', 'SP.THT(K) LARING-FARING'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Laring - Faring', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) MAKSILOFASIAL PLASTIK REKONSTRUKSI', 'SPTHT-KL(K) MAKSILOFASIAL', 'SP.THT(K) MAKSILOFASIAL'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Maksilofasial Plastik Rekonstruksi', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) NEUROTOLOGI', 'SPTHT-KL(K) NEUROTOLOGI', 'SP.THT(K) NEUROTOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Neurotologi', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) OTOLOGI', 'SPTHT-KL(K) OTOLOGI', 'SP.THT(K) OTOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Otologi', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) RINOLOGI', 'SPTHT-KL(K) RINOLOGI', 'SP.THT(K) RINOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Rinologi', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) ALERGI IMUNOLOGI', 'SPTHT-KL(K) ALERGI IMUNOLOGI', 'SP.THT(K) ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Alergi Imunologi', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL(K) THT KOMUNITAS', 'SPTHT-KL(K) THT KOMUNITAS', 'SP.THT(K) THT KOMUNITAS'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan THT Komunitas', dept: 'Department of Otolaryngology (ENT)' };
-  if (check(['SP.THT-KL', 'SPTHT-KL', 'SP.THT', 'SPTHT', 'THT'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher', dept: 'Department of Otolaryngology (ENT)' };
-
-  // --- Department of Immunology and Infectious Diseases ---
-  if (check(['SP.A(K) ALERGI IMUNOLOGI & RHEUMATOLOGI', 'SPA(K) ALERGI IMUNOLOGI', 'SP.A(K) ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Alergi Imunologi dan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.A(K) INFEKSI & PENYAKIT TROPIS', 'SPA(K) INFEKSI & PENYAKIT TROPIS', 'SP.A(K) INFEKSI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Infeksi dan Penyakit Tropis', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.PD(K) TROPIK INFEKSI (K-PTI)', 'SPPD(K) TROPIK INFEKSI', 'K-PTI', 'KPTI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.PD(K) RHEUMATOLOGI (K-R)', 'SPPD(K) RHEUMATOLOGI', 'K-R', 'KR', 'REUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.PD(K) ALERGI IMUNOLOGI', 'SPPD(K) ALERGI IMUNOLOGI', 'K-AI', 'KAI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.DVE(K) DERMATO ALERGI IMUNOLOGI', 'SPDVE(K) DERMATO ALERGI IMUNOLOGI', 'SP.KK(K) DERMATO ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermato Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.DVE(K) DERMATOLOGI TROPIS', 'SPDVE(K) DERMATOLOGI TROPIS', 'SP.KK(K) DERMATOLOGI TROPIS'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Tropis', dept: 'Department of Immunology and Infectious Diseases' };
-
-  // --- Department of Surgery ---
-  if (check(['SP.BM(K) CLEFT LIP & PALATE', 'SPBM(K) CLEFT LIP & PALATE'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Oral dan Maksilofasial Cleft / Cleft Lip and Palate', dept: 'Department of Surgery' };
-  if (check(['SP.BM(K) ORTHOGNATIK & OSTEODISTRAKSI', 'SPBM(K) ORTHOGNATIK & OSTEODISTRAKSI'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Orthognatik dan Osteodistraksi / Disgnatia dan Osteodistraksi', dept: 'Department of Surgery' };
-  if (check(['SP.BM(K) TRAUMA MAKSILOFASIAL & TMJ', 'SPBM(K) TRAUMA MAKSILOFASIAL & TMJ'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Trauma Maksilofasial dan Temporomandibular Joint', dept: 'Department of Surgery' };
-  if (check(['SP.BM', 'SPBM', 'SPBMM'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial', dept: 'Department of Surgery' };
-  if (check(['SP.F', 'SPF', 'SP.FM', 'SPFM', 'FORENSIK'])) return { ksm: 'Dokter Spesialis Kedokteran Forensik dan Medikolegal', dept: 'Department of Surgery' };
-  // Pastikan subspesialis Bedah dicek SEBELUM generic SPB
-  // SPBPRE → Dermatology & Aesthetic (per mapping resmi, bukan Surgery)
-  // SPBKV → Cardiology (sudah ada di line ~762 sebagai SPB(K) Vaskular Endovaskular)
-  if (check(['SP.B', 'SPB', 'BEDAH UMUM'])) return { ksm: 'Dokter Spesialis Bedah Umum', dept: 'Department of Surgery' };
-  if (check(['SP.M', 'SPM', 'MATA'])) return { ksm: 'Dokter Spesialis Mata', dept: 'Department of Surgery' };
-
-  // --- Department of Radiology ---
-  if (check(['SP.RAD(K) ABDOMEN', 'SPRAD(K) ABDOMEN'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Abdomen', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) MUSKULOSKELETAL', 'SPRAD(K) MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Muskuloskeletal', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) NEUROIMAGING', 'SPRAD(K) NEUROIMAGING'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Neuroimaging', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) TORAKS & KARDIOVASKULAR', 'SPRAD(K) TORAKS & KARDIOVASKULAR', 'SP.RAD(K) TORAKS DAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Toraks dan Kardiovaskular', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) INTERVENSIONAL & KARDIOVASKULAR', 'SPRAD(K) INTERVENSIONAL & KARDIOVASKULAR', 'SP.RAD(K) INTERVENSIONAL DAN KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Intervensional dan Kardiovaskular', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) ANAK', 'SPRAD(K) ANAK'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Anak', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) PAYUDARA & REPRODUKSI WANITA', 'SPRAD(K) PAYUDARA'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Payudara dan Reproduksi Wanita', dept: 'Department of Radiology' };
-  if (check(['SP.RAD(K) INTERVENSI', 'SPRAD(K) INTERVENSI'])) return { ksm: 'Dokter Spesialis Radiologi Konsultan Radiologi Intervensi', dept: 'Department of Radiology' };
-  if (check(['SP.RAD', 'SPRAD'])) return { ksm: 'Dokter Spesialis Radiologi', dept: 'Department of Radiology' };
-  if (check(['SP.KN(K) NUKLIR KARDIOLOGI', 'SPKN(K) NUKLIR KARDIOLOGI'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Kardiologi', dept: 'Department of Radiology' };
-  if (check(['SP.KN(K) NUKLIR NEUROLOGI', 'SPKN(K) NUKLIR NEUROLOGI'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Neurologi', dept: 'Department of Radiology' };
-  if (check(['SP.KN(K) NUKLIR ONKOLOGI', 'SPKN(K) NUKLIR ONKOLOGI'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Onkologi', dept: 'Department of Radiology' };
-  if (check(['SP.KN(K) NUKLIR PEDIATRIK', 'SPKN(K) NUKLIR PEDIATRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler Konsultan Nuklir Pediatrik', dept: 'Department of Radiology' };
-  if (check(['SP.KN', 'SPKN'])) return { ksm: 'Dokter Spesialis Kedokteran Nuklir Teranostik Molekuler', dept: 'Department of Radiology' };
-
-  // --- Department of Orthopaedy ---
-  if (check(['SP.OT(K) ADVANCED ORTHOPAEDIC TRAUMA', 'SPOT(K) ADVANCED ORTHOPAEDIC TRAUMA'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Advanced Orthopaedic Trauma', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) FOOT AND ANKLE', 'SPOT(K) FOOT AND ANKLE'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Foot and Ankle', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) HAND, UPPER LIMB & MICROSURGERY', 'SPOT(K) HAND, UPPER LIMB'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Hand, Upper Limb and Microsurgery', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) HIP & KNEE', 'SPOT(K) HIP & KNEE'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Hip and Knee (Adult Reconstruction, Trauma and Sport)', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) SPINE', 'SPOT(K) SPINE'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Spine', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) SPORT INJURY', 'SPOT(K) SPORT INJURY'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Sport Injury', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) SHOULDER & ELBOW', 'SPOT(K) SHOULDER & ELBOW'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Shoulder and Elbow', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) PEDIATRIC ORTHOPAEDIC', 'SPOT(K) PEDIATRIC ORTHOPAEDIC'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Pediatric Orthopaedic', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT(K) ONKOLOGI REKONSTRUKSI', 'SPOT(K) ONKOLOGI REKONSTRUKSI'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi Konsultan Onkologi Rekonstruksi', dept: 'Department of Orthopaedy' };
-  if (check(['SP.OT', 'SPOT', 'ORTHOPAEDI'])) return { ksm: 'Dokter Spesialis Orthopaedi dan Traumatologi', dept: 'Department of Orthopaedy' };
-  if (check(['SP.KO', 'SPKO'])) return { ksm: 'Dokter Spesialis Kedokteran Olahraga', dept: 'Department of Orthopaedy' };
-  if (check(['SP.KFR(K) REHABILITASI MUSKULOSKELETAL', 'SPKFR(K) REHABILITASI MUSKULOSKELETAL'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Muskuloskeletal', dept: 'Department of Orthopaedy' };
-
-  // --- Fallback (Dokter Umum) ---
-  // Jika kode sudah berjalan sejauh ini dan tidak ada gelar spesialis yang cocok,
-  // maka ia adalah dokter umum (hanya gelar dr. tanpa Sp yang terdefinisi).
   return { ksm: 'Dokter Umum', dept: 'Department of Medicine' };
 };
 
@@ -1625,10 +1436,14 @@ export default function App() {
     // Daftarkan Sesi ke Server (Google Apps Script)
     if (SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
       try {
+        const params = new URLSearchParams();
+        params.append('username', username);
+        params.append('sessionId', sid);
+        
         await fetch(SESSION_API_URL, {
           method: 'POST',
           mode: 'no-cors',
-          body: JSON.stringify({ username: username, sessionId: sid })
+          body: params
         });
       } catch (e) { console.warn("Gagal mendaftarkan sesi:", e); }
     }
@@ -1662,6 +1477,7 @@ export default function App() {
           // Cek: Jika server punya ID dan ID itu beda dengan milik kita
           if (data.activeSessionId && activeSid && data.activeSessionId !== activeSid) {
             // Beri kesempatan 1x lagi (siapa tahu delay server)
+            await new Promise(r => setTimeout(r, 2000)); 
             const secondCheckRes = await fetch(`${SESSION_API_URL}?username=${username}`);
             const secondData = await secondCheckRes.json();
             
@@ -1674,7 +1490,7 @@ export default function App() {
       }, 60000);
     }
     return () => { if (interval) clearInterval(interval); };
-  }, [isLoggedIn, username]);
+  }, [isLoggedIn, username, handleLogout]);
 
   const fileInputRef = useRef(null); const folderInputRef = useRef(null);
 
@@ -1854,7 +1670,7 @@ export default function App() {
 
     if (rows.length === 0) return { isLoaded: true, rawRows: rows, totalRows: 0, isEmptyAfterFilter: true };
 
-    let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, scoredCount: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0 };
+    let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, scoredCount: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0, totalDiagUCount: 0, totalDiagSCount: 0, totalProcCount: 0 };
     let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], audit: [], topUp: {}, ksmEfficiency: {} };
     const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
 
@@ -1990,10 +1806,10 @@ export default function App() {
       maps.discharge[['1', '2', '3', '4'].includes(ds) ? ds : "5"]++;
 
       if (dList.length > 0) {
-        if (!dList[0].toUpperCase().startsWith('Z')) maps.diagU[dList[0]] = (maps.diagU[dList[0]] || 0) + 1;
-        for (let i = 1; i < dList.length; i++) maps.diagS[dList[i]] = (maps.diagS[dList[i]] || 0) + 1;
+        if (!dList[0].toUpperCase().startsWith('Z')) { maps.diagU[dList[0]] = (maps.diagU[dList[0]] || 0) + 1; stats.totalDiagUCount++; }
+        for (let i = 1; i < dList.length; i++) { maps.diagS[dList[i]] = (maps.diagS[dList[i]] || 0) + 1; stats.totalDiagSCount++; }
       }
-      pList.forEach(p => maps.proc[p] = (maps.proc[p] || 0) + 1);
+      pList.forEach(p => { maps.proc[p] = (maps.proc[p] || 0) + 1; stats.totalProcCount++; });
 
       let sev = 0; if (inaCode.endsWith('-I')) sev = 1; else if (inaCode.endsWith('-II')) sev = 2; else if (inaCode.endsWith('-III')) sev = 3;
       if (isRanap) {
@@ -2166,27 +1982,15 @@ export default function App() {
       topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
       diagUtamaFull: (() => {
         const entries = Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]);
-        const totalU = rows.filter(r => {
-          const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
-          return dList.length > 0;
-        }).length;
-        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (stats.totalDiagUCount || 1)) * 100 }));
       })(),
       diagSekunderFull: (() => {
         const entries = Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]);
-        const totalU = rows.filter(r => {
-          const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
-          return dList.length > 0;
-        }).length;
-        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (stats.totalDiagSCount || 1)) * 100 }));
       })(),
       procFull: (() => {
         const entries = Object.entries(maps.proc).sort((a, b) => b[1] - a[1]);
-        const totalU = rows.filter(r => {
-          const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
-          return dList.length > 0;
-        }).length;
-        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (stats.totalProcCount || 1)) * 100 }));
       })(),
       dischargeStats: maps.discharge,
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
@@ -4797,7 +4601,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.6 (160526-19.06)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.7 (160526-21.00)</p>
               </div>
             </div>
           </div>
@@ -5219,7 +5023,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.6 (160526-19.06)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.7 (160526-21.00)</span>
                 </div>
               )}
             </div>
