@@ -776,7 +776,7 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   if (check(['SPAN', 'ANESTESI']) && check(['KARDIO', 'KV', 'AKV'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Kardiovaskular', dept: 'Department of Cardiology' };
 
   // --- C. MEDICINE, PSYCHIATRY & OTHERS ---
-  if (check(['SPPD', 'PENYAKIT DALAM', 'SPDVE', 'SPKK', 'SPKKK', 'GIZI', 'FARMAKOLOGI', 'OKUPASI', 'JIWA', 'SPKJ', 'SPP', 'PARU', 'SPGK'])) {
+  if (check(['SPPD', 'PENYAKIT DALAM', 'GIZI', 'FARMAKOLOGI', 'OKUPASI', 'JIWA', 'SPKJ', 'SPP', 'PARU', 'SPGK'])) {
     const dept = 'Department of Medicine';
     if (check(['SPP', 'PARU', 'SPP'])) {
       if (check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept };
@@ -788,16 +788,7 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
       if (check(['PULMONOLOGI', 'PARU', 'KP']) && check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept };
       if (check(['PSIKOSOMATIK', 'PALIATIF', 'PSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept };
     }
-    if (check(['SPDVE', 'SPKK', 'SPKKK'])) {
-      if (check(['GERIATRI', 'GER'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Geriatri', dept };
-      if (check(['VENEREOLOGI', 'V'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Venereologi', dept };
-      if (check(['ANAK', 'DA'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Anak', dept };
-      if (check(['ONKOLOGI', 'OBK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Onkologi dan Bedah Kulit', dept };
-      if (check(['KOSMETIK', 'ESTETIK', 'DKE'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Kosmetik dan Estetik', dept };
-      if (check(['ALERGI', 'DAI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermato Alergi Imunologi', dept };
-      if (check(['TROPIK', 'DT'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Tropis', dept };
-      return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika', dept };
-    }
+
     if (check(['GIZI', 'SPGK'])) {
       if (check(['METABOLIK', 'KM'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Kelainan Metabolik', dept };
       if (check(['KRITIS', 'NPK', 'PK'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Nutrisi pada Penyakit Kritis', dept };
@@ -961,6 +952,16 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   // --- J. DERMATOLOGY, PLASTIC & DENTAL ---
   if (check(['SPDVE', 'SPKK', 'SPKKK', 'SPBPRE', 'BPRE', 'BEDAH PLASTIK', 'SPKG', 'GIGI', 'SPORT', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA'])) {
     const dept = 'Department of Dermatology & Aesthetic';
+    if (check(['SPDVE', 'SPKK', 'SPKKK'])) {
+      if (check(['GERIATRI', 'GER'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Geriatri', dept };
+      if (check(['VENEREOLOGI', 'V'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Venereologi', dept };
+      if (check(['ANAK', 'DA'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Anak', dept };
+      if (check(['ONKOLOGI', 'OBK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Onkologi dan Bedah Kulit', dept };
+      if (check(['KOSMETIK', 'ESTETIK', 'DKE'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Kosmetik dan Estetik', dept };
+      if (check(['ALERGI', 'DAI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermato Alergi Imunologi', dept };
+      if (check(['TROPIK', 'DT'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Tropis', dept };
+      return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika', dept };
+    }
     if (check(['SPBPRE', 'BPRE', 'BEDAH PLASTIK'])) {
       if (check(['LUKA BAKAR', 'LBL'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Luka Bakar', dept };
       if (check(['ESTETIK LANJUT', 'EL'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Bedah Estetik Lanjut', dept };
