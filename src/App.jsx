@@ -1643,7 +1643,7 @@ export default function App() {
     setPassword('');
     setLoginError('');
     setCaptchaVerified(false);
-    localStorage.removeItem('sak_session_id');
+    sessionStorage.removeItem('sak_session_id');
   };
 
   // Heartbeat: Pengecekan Sesi Ganda (Setiap 60 detik)
@@ -1654,9 +1654,9 @@ export default function App() {
         try {
           const res = await fetch(`${SESSION_API_URL}?username=${username}`);
           const data = await res.json();
-          const localSid = localStorage.getItem('sak_session_id');
+          const activeSid = sessionStorage.getItem('sak_session_id');
 
-          if (data.activeSessionId && data.activeSessionId !== localSid) {
+          if (data.activeSessionId && data.activeSessionId !== activeSid) {
             alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
             handleLogout();
           }
