@@ -2154,9 +2154,21 @@ export default function App() {
       dpjpSummaryArray: Object.values(maps.dpjp).sort((a, b) => b.count - a.count),
       ksmSummaryArray, deptSummaryArray, topKsmSurplusIna, topKsmDefisitIna, topKsmSurplusIdrg, topKsmDefisitIdrg, ksmEfficiencyTree,
       topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
-      diagUtamaFull: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, count, pct: (count / (rows.length || 1)) * 100 })),
-      diagSekunderFull: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, count, pct: (count / (rows.length || 1)) * 100 })),
-      procFull: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).map(([code, count]) => ({ code, count, pct: (count / (rows.length || 1)) * 100 })),
+      diagUtamaFull: (() => {
+        const entries = Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]);
+        const totalU = entries.reduce((sum, [, count]) => sum + count, 0);
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
+      })(),
+      diagSekunderFull: (() => {
+        const entries = Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]);
+        const totalS = entries.reduce((sum, [, count]) => sum + count, 0);
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalS || 1)) * 100 }));
+      })(),
+      procFull: (() => {
+        const entries = Object.entries(maps.proc).sort((a, b) => b[1] - a[1]);
+        const totalP = entries.reduce((sum, [, count]) => sum + count, 0);
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalP || 1)) * 100 }));
+      })(),
       dischargeStats: maps.discharge,
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
       inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies },
