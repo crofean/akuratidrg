@@ -999,7 +999,7 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
 
   // --- L. INFECTION & IMMUNOLOGY ---
   if (check(['ALERGI', 'IMUNOLOGI', 'INFEKSI', 'TROPIK', 'RHEUMATOLOGI', 'KPTI', 'PTI', 'KR', 'R'])) {
-    const dept = 'Department of Medicine';
+    const dept = 'Department of Immunology and Infectious Diseases';
     if (check(['SPPD', 'PENYAKIT DALAM'])) {
       if (check(['INFEKSI', 'TROPIK', 'PTI', 'KPTI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept };
       if (check(['RHEUMATOLOGI', 'KR', 'R'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept };
@@ -1064,6 +1064,24 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
 
   return { ksm: 'Dokter Umum', dept: 'Department of Medicine' };
 };
+
+const DEPT_LIST = [
+  "Department of Cardiology",
+  "Department of Medicine",
+  "Department of Neurologi",
+  "Department of Uro-Nephrology",
+  "Department of Gastroenterology",
+  "Department of Maternal and Child",
+  "Department of Oncology",
+  "Department of Anesthesiology",
+  "Department of Supporting Medicine",
+  "Department of Dermatology & Aesthetic",
+  "Department of Otolaryngology (ENT)",
+  "Department of Immunology and Infectious Diseases",
+  "Department of Surgery",
+  "Department of Radiology",
+  "Department of Orthopaedy"
+];
 
 const KSM_LIST = [
   'Dokter Spesialis Penyakit Dalam',
@@ -4754,21 +4772,10 @@ export default function App() {
                           onChange={(e) => updateOverride(d.norm, current.ksm, e.target.value)}
                           className={`w-full bg-white border rounded-lg px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-sky-500/20 outline-none transition-all cursor-pointer ${isOverridden ? 'border-sky-300 text-sky-700' : 'border-slate-200 text-slate-600'}`}
                         >
-                          <option value="Department of Medicine">Department of Medicine</option>
-                          <option value="Department of Surgery">Department of Surgery</option>
-                          <option value="Department of Obstetrics and Gynecology">Department of Obstetrics and Gynecology</option>
-                          <option value="Department of Pediatrics">Department of Pediatrics</option>
-                          <option value="Department of Cardiology">Department of Cardiology</option>
-                          <option value="Department of Neurologi">Department of Neurologi</option>
-                          <option value="Department of Uro-Nephrology">Department of Uro-Nephrology</option>
-                          <option value="Department of Gastroenterology">Department of Gastroenterology</option>
-                          <option value="Department of Oncology">Department of Oncology</option>
-                          <option value="Department of Ophthalmology">Department of Ophthalmology</option>
-                          <option value="Department of Otolaryngology (ENT)">Department of Otolaryngology (ENT)</option>
-                          <option value="Department of Dermatology & Aesthetic">Department of Dermatology & Aesthetic</option>
-                          <option value="Department of Radiology">Department of Radiology</option>
-                          <option value="Department of Orthopaedy">Department of Orthopaedy</option>
-                          <option value="Department of Supporting Medicine">Department of Supporting Medicine</option>
+                          <option value="">-- Pilih Departemen --</option>
+                          {DEPT_LIST.sort().map(dept => (
+                            <option key={dept} value={dept}>{dept}</option>
+                          ))}
                         </select>
                       </td>
                       <td className="px-6 py-4 text-center">
