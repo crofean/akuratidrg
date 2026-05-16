@@ -739,8 +739,8 @@ const resolveKsmDept = (dpjp) => {
   // Hapus sisa tanda kurung
   n = n.replace(/[()]/g, ' ').replace(/ {2,}/g, ' ').trim();
 
-  // LANGKAH 8: Fused code split (hapus P dari alternasi agar SPPROS tidak salah jadi SPP+ROS)
-  n = n.replace(/\b(SP(?:AN|OG|PD|JP|BS|BA|OT|OT|DVE|THT|ONK|KFR|KK|PROS|BTKV|ORL|OFT|ONKRAD|BEDAH|A|B|U|S|M|GK|N))(K)?([A-Z]+)/g,
+  // LANGKAH 8: Fused code split (Tambahkan SPBM, SPBA, SPBS agar tidak termakan SPB)
+  n = n.replace(/\b(SP(?:AN|OG|PD|JP|BS|BA|BM|BTKV|OT|DVE|THT|ONK|KFR|KK|PROS|ORL|OFT|ONKRAD|BEDAH|A|B|U|S|M|GK|N))(K)?([A-Z]+)/g,
     (_, base, k, rest) => k ? `${base}(K) ${rest}` : `${base} ${rest}`);
 
   if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
@@ -771,8 +771,17 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.BTKV', 'SPBTKV'])) return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept: 'Department of Cardiology' };
   if (check(['SP.B(K) BEDAH VASKULAR & ENDOVASKULAR', 'SPB(K) BEDAH VASKULAR & ENDOVASKULAR', 'SP.B(K) BEDAH VASKULAR', 'SP.B(K) VASKULAR', 'SPB(K) VASKULAR', 'BVE'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept: 'Department of Cardiology' };
   if (check(['SP.KFR(K) REHABILITASI KARDIORESPIRASI', 'SPKFR(K) REHABILITASI KARDIORESPIRASI'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Kardiorespirasi', dept: 'Department of Cardiology' };
-  if (check(['SP.AN(K) ANESTESI KARDIOVASKULAR', 'SPAN(K) ANESTESI KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Kardiovaskular', dept: 'Department of Cardiology' };
   if (check(['SP.JP', 'SPJP'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah', dept: 'Department of Cardiology' };
+
+  // --- Department of Anesthesiology (Dinaikkan agar tidak tertukar dengan SPA) ---
+  if (check(['SP.AN(K) ANESTESI REGIONAL', 'SPAN(K) ANESTESI REGIONAL'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Regional', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN(K) MANAJEMEN NYERI', 'SPAN(K) MANAJEMEN NYERI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Manajemen Nyeri', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN(K) INTENSIVE CARE (KIC)', 'SPAN(K) INTENSIVE CARE', 'KIC', 'K-IC'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Intensive Care (KIC)', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN', 'SPAN', 'ANESTESI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif', dept: 'Department of Anesthesiology' };
+  if (check(['SP.AN(K) ANESTESI KARDIOVASKULAR', 'SPAN(K) ANESTESI KARDIOVASKULAR'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Kardiovaskular', dept: 'Department of Cardiology' };
+  if (check(['SP.AN(K) NEUROANESTESI & NEURO CRITICAL CARE', 'SPAN(K) NEUROANESTESI', 'SP.AN(K) NEUROANESTESI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Neuro Anestesi dan Neuro Critical Care', dept: 'Department of Neurologi' };
+  if (check(['SP.AN(K) ANESTESI OBSTETRI', 'SPAN(K) ANESTESI OBSTETRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Obstetri', dept: 'Department of Maternal and Child' };
+  if (check(['SP.AN(K) ANESTESI PEDIATRI', 'SPAN(K) ANESTESI PEDIATRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Pediatri', dept: 'Department of Maternal and Child' };
 
   // --- Department of Gastroenterology ---
   if (check(['SP.PD(K) GASTROENTEROHEPATOLOGI', 'SPPD(K) GASTROENTEROHEPATOLOGI', 'K-GEH', 'KGEH', 'KGEH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
@@ -875,8 +884,6 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.BA', 'SPBA'])) return { ksm: 'Dokter Spesialis Bedah Anak', dept: 'Department of Maternal and Child' };
   if (check(['SP.DVE(K) DERMATOLOGI ANAK', 'SPDVE(K) DERMATOLOGI ANAK', 'SP.KK(K) DERMATOLOGI ANAK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Anak', dept: 'Department of Maternal and Child' };
   if (check(['SP.KFR(K) REHABILITASI PEDIATRIK', 'SPKFR(K) REHABILITASI PEDIATRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Pediatrik', dept: 'Department of Maternal and Child' };
-  if (check(['SP.AN(K) ANESTESI OBSTETRI', 'SPAN(K) ANESTESI OBSTETRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Obstetri', dept: 'Department of Maternal and Child' };
-  if (check(['SP.AN(K) ANESTESI PEDIATRI', 'SPAN(K) ANESTESI PEDIATRI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Pediatri', dept: 'Department of Maternal and Child' };
 
   // --- Department of Oncology ---
   if (check(['SP.ONK.RAD(K) ABDOMINO-PELVIK', 'SPONKRAD(K) ABDOMINO-PELVIK', 'SP.ONK.RAD(K) ABDOMINO'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept: 'Department of Oncology' };
@@ -891,11 +898,7 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.THT-KL(K) ONKOLOGI BEDAH KEPALA LEHER', 'SPTHT-KL(K) ONKOLOGI', 'SP.THT(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Onkologi - Bedah Kepala Leher', dept: 'Department of Oncology' };
   if (check(['SP.DVE(K) ONKOLOGI & BEDAH KULIT', 'SPDVE(K) ONKOLOGI & BEDAH KULIT', 'SP.KK(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Onkologi dan Bedah Kulit', dept: 'Department of Oncology' };
 
-  // --- Department of Anesthesiology ---
-  if (check(['SP.AN(K) ANESTESI REGIONAL', 'SPAN(K) ANESTESI REGIONAL'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Regional', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN(K) MANAJEMEN NYERI', 'SPAN(K) MANAJEMEN NYERI'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Manajemen Nyeri', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN(K) INTENSIVE CARE (KIC)', 'SPAN(K) INTENSIVE CARE', 'KIC'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Intensive Care (KIC)', dept: 'Department of Anesthesiology' };
-  if (check(['SP.AN', 'SPAN'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif', dept: 'Department of Anesthesiology' };
+  // Pengecekan SPAN dipindah ke atas
 
   // --- Department of Supporting Medicine ---
   if (check(['SP.PK(K) HEMATOLOGI KLINIK', 'SPPK(K) HEMATOLOGI KLINIK'])) return { ksm: 'Dokter Spesialis Patologi Klinik Konsultan Hematologi Klinik', dept: 'Department of Supporting Medicine' };
@@ -959,7 +962,7 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.BM(K) CLEFT LIP & PALATE', 'SPBM(K) CLEFT LIP & PALATE'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Oral dan Maksilofasial Cleft / Cleft Lip and Palate', dept: 'Department of Surgery' };
   if (check(['SP.BM(K) ORTHOGNATIK & OSTEODISTRAKSI', 'SPBM(K) ORTHOGNATIK & OSTEODISTRAKSI'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Orthognatik dan Osteodistraksi / Disgnatia dan Osteodistraksi', dept: 'Department of Surgery' };
   if (check(['SP.BM(K) TRAUMA MAKSILOFASIAL & TMJ', 'SPBM(K) TRAUMA MAKSILOFASIAL & TMJ'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Trauma Maksilofasial dan Temporomandibular Joint', dept: 'Department of Surgery' };
-  if (check(['SP.BM', 'SPBM'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial', dept: 'Department of Surgery' };
+  if (check(['SP.BM', 'SPBM', 'SPBMM'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial', dept: 'Department of Surgery' };
   if (check(['SP.F', 'SPF', 'SP.FM', 'SPFM', 'FORENSIK'])) return { ksm: 'Dokter Spesialis Kedokteran Forensik dan Medikolegal', dept: 'Department of Surgery' };
   // Pastikan subspesialis Bedah dicek SEBELUM generic SPB
   // SPBPRE → Dermatology & Aesthetic (per mapping resmi, bukan Surgery)
