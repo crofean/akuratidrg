@@ -4643,7 +4643,7 @@ export default function App() {
 
               <div className="mt-8 text-center">
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.5 (16.05.26)</p>
               </div>
             </div>
           </div>
@@ -5065,6 +5065,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.5 (16.05.26)</span>
                 </div>
               )}
             </div>
