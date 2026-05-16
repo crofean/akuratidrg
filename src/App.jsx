@@ -713,12 +713,15 @@ const resolveKsmDept = (dpjp) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
   let n = String(dpjp).toUpperCase().replace(/\./g, '').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
 
-  // Hapus gelar akademik (M.Kes, M.Ked, M.Biomed, Ph.D, Dr., dr., dll) agar tidak mengacaukan deteksi Sp
-  n = n.replace(/\b(DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM)\b/g, ' ');
+  // Hapus gelar akademik dan fellowship agar tidak mengacaukan deteksi Sp
+  n = n.replace(/\b(PROF|DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM|MH|MHPE|FINASIM|FAPSR|FINAIM|FINASIM|PAPDI|FRSM|FCSI|FACG)\b/g, ' ');
   // Hapus Subsp. dan keterangan setelahnya agar tidak mengganggu
-  n = n.replace(/SUBSP\s*[A-Z()./\s]*/g, ' ');
+  n = n.replace(/SUBSP\s*[A-Z().\s]*/g, ' ');
   // Normalkan kembali spasi ganda
   n = n.replace(/ {2,}/g, ' ').trim();
+  // Gabungkan kode multi-kata seperti "SPONK RAD" → "SPONKRAD" dan "SPPD K GH" → "SPPD KGH"
+  n = n.replace(/\b(SPONK)\s+(RAD)\b/g, '$1$2');
+  n = n.replace(/\b(SPPD|SPPD)\s+K\s+([A-Z]{2,})\b/g, '$1 K$2');
 
   // Perbaiki kasus "Sp. A" (ada spasi) yang menjadi "SP A", ubah menjadi "SPA" agar terbaca oleh mapping
   n = n.replace(/\bSP\s+([A-Z]{1,6})\b/g, 'SP$1');
@@ -762,15 +765,16 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.JP', 'SPJP'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah', dept: 'Department of Cardiology' };
 
   // --- Department of Gastroenterology ---
-  if (check(['SP.PD(K) GASTROENTEROHEPATOLOGI', 'SPPD(K) GASTROENTEROHEPATOLOGI', 'K-GEH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
+  if (check(['SP.PD(K) GASTROENTEROHEPATOLOGI', 'SPPD(K) GASTROENTEROHEPATOLOGI', 'K-GEH', 'KGEH', 'KGEH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
   if (check(['SP.A(K) GASTROENTEROLOGI-HEPATOLOGI', 'SPA(K) GASTROENTEROLOGI-HEPATOLOGI', 'SP.A(K) GASTROENTEROLOGI & HEPATOLOGI', 'K-GASTRO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Gastroenterologi-hepatologi', dept: 'Department of Gastroenterology' };
   if (check(['SP.B(K) BEDAH DIGESTIF', 'SPB(K) BEDAH DIGESTIF', 'K-BD', 'KBD', 'DIGESTIF'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Digestif', dept: 'Department of Gastroenterology' };
 
   // --- Department of Medicine ---
-  if (check(['SP.PD(K) ENDOKRIN-METABOLIK-DIABETES', 'SPPD(K) ENDOKRIN-METABOLIK-DIABETES', 'K-EMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept: 'Department of Medicine' };
-  if (check(['SP.PD(K) GERIATRI', 'SPPD(K) GERIATRI', 'K-GER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept: 'Department of Medicine' };
-  if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) ENDOKRIN-METABOLIK-DIABETES', 'SPPD(K) ENDOKRIN-METABOLIK-DIABETES', 'K-EMD', 'KEMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) GERIATRI', 'SPPD(K) GERIATRI', 'K-GER', 'KGER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO', 'KP'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
   if (check(['SP.PD(K) PSIKOSOMATIK & PALIATIF', 'SPPD(K) PSIKOSOMATIK & PALIATIF'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept: 'Department of Medicine' };
+  if (check(['SP.P(K)', 'SPP(K)', 'SP.P', 'SPP', 'PARU'])) return { ksm: 'Dokter Spesialis Paru', dept: 'Department of Medicine' };
   if (check(['SP.PD', 'SPPD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam', dept: 'Department of Medicine' };
   if (check(['SP.DVE(K) GERIATRI', 'SPDVE(K) GERIATRI', 'SP.KK(K) GERIATRI', 'SPKK(K) GERIATRI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Geriatri', dept: 'Department of Medicine' };
   if (check(['SP.GK(K) KELAINAN METABOLIK', 'SPGK(K) KELAINAN METABOLIK'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Kelainan Metabolik', dept: 'Department of Medicine' };
@@ -826,7 +830,7 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.U(K) TRANSPLANTASI', 'SPU(K) TRANSPLANTASI'])) return { ksm: 'Dokter Spesialis Urologi Konsultan Urologi Transplantasi', dept: 'Department of Uro-Nephrology' };
   if (check(['SP.U', 'SPU', 'UROLOGI'])) return { ksm: 'Dokter Spesialis Urologi', dept: 'Department of Uro-Nephrology' };
   if (check(['SP.DVE(K) VENEREOLOGI', 'SPDVE(K) VENEREOLOGI', 'SP.KK(K) VENEREOLOGI', 'SPKK(K) VENEREOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Venereologi', dept: 'Department of Uro-Nephrology' };
-  if (check(['SP.PD(K) GINJAL HIPERTENSI', 'SPPD(K) GINJAL HIPERTENSI', 'K-GH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
+  if (check(['SP.PD(K) GINJAL HIPERTENSI', 'SPPD(K) GINJAL HIPERTENSI', 'K-GH', 'KGH'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
   if (check(['SP.A(K) NEFROLOGI', 'SPA(K) NEFROLOGI', 'K-NEFRO'])) return { ksm: 'Dokter Spesialis Anak Konsultan Nefrologi Anak', dept: 'Department of Uro-Nephrology' };
   if (check(['SP.OG(K) UROGINEKOLOGI REKONSTRUKSI', 'SPOG(K) UROGINEKOLOGI REKONSTRUKSI', 'UROGINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Uroginekologi Rekonstruksi', dept: 'Department of Uro-Nephrology' };
 
@@ -855,7 +859,7 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.ONK.RAD(K) KEPALA, LEHER & SSP', 'SPONKRAD(K) KEPALA, LEHER & SSP', 'SP.ONK.RAD(K) KEPALA'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Kepala, Leher dan Sistem Saraf Pusat', dept: 'Department of Oncology' };
   if (check(['SP.ONK.RAD(K) TORAKS, PEDIATRIK & LIMFO-MUSKULOSKELETAL', 'SPONKRAD(K) TORAKS', 'SP.ONK.RAD(K) TORAKS'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Toraks, Pediatrik dan Limpho-muskuloskeletal', dept: 'Department of Oncology' };
   if (check(['SP.ONK.RAD', 'SPONKRAD'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi', dept: 'Department of Oncology' };
-  if (check(['SP.PD(K) HEMATOLOGI ONKOLOGI MEDIK', 'SPPD(K) HEMATOLOGI ONKOLOGI MEDIK', 'K-HOM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
+  if (check(['SP.PD(K) HEMATOLOGI ONKOLOGI MEDIK', 'SPPD(K) HEMATOLOGI ONKOLOGI MEDIK', 'K-HOM', 'KHOM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
   if (check(['SP.OG(K) ONKOLOGI GINEKOLOGI', 'SPOG(K) ONKOLOGI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Onkologi Ginekologi', dept: 'Department of Oncology' };
   if (check(['SP.A(K) HEMATOONKOLOGI', 'SPA(K) HEMATOONKOLOGI', 'SP.A(K) HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Hematoonkologi', dept: 'Department of Oncology' };
   if (check(['SP.BM(K) ONKOLOGI BEDAH MULUT & MAKSILOFASIAL', 'SPBM(K) ONKOLOGI BEDAH MULUT', 'SP.BM(K) ONKOLOGI'])) return { ksm: 'Dokter Gigi Dokter Spesialis Bedah Mulut Neoplasma dan Kista Bedah Mulut dan Maksilofasial', dept: 'Department of Oncology' };
@@ -920,8 +924,9 @@ const resolveKsmDept = (dpjp) => {
   // --- Department of Immunology and Infectious Diseases ---
   if (check(['SP.A(K) ALERGI IMUNOLOGI & RHEUMATOLOGI', 'SPA(K) ALERGI IMUNOLOGI', 'SP.A(K) ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Alergi Imunologi dan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
   if (check(['SP.A(K) INFEKSI & PENYAKIT TROPIS', 'SPA(K) INFEKSI & PENYAKIT TROPIS', 'SP.A(K) INFEKSI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Infeksi dan Penyakit Tropis', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.PD(K) TROPIK INFEKSI (K-PTI)', 'SPPD(K) TROPIK INFEKSI', 'K-PTI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['SP.PD(K) RHEUMATOLOGI (K-R)', 'SPPD(K) RHEUMATOLOGI', 'K-R', 'REUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.PD(K) TROPIK INFEKSI (K-PTI)', 'SPPD(K) TROPIK INFEKSI', 'K-PTI', 'KPTI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.PD(K) RHEUMATOLOGI (K-R)', 'SPPD(K) RHEUMATOLOGI', 'K-R', 'KR', 'REUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['SP.PD(K) ALERGI IMUNOLOGI', 'SPPD(K) ALERGI IMUNOLOGI', 'K-AI', 'KAI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
   if (check(['SP.DVE(K) DERMATO ALERGI IMUNOLOGI', 'SPDVE(K) DERMATO ALERGI IMUNOLOGI', 'SP.KK(K) DERMATO ALERGI IMUNOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermato Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
   if (check(['SP.DVE(K) DERMATOLOGI TROPIS', 'SPDVE(K) DERMATOLOGI TROPIS', 'SP.KK(K) DERMATOLOGI TROPIS'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Dermatologi Tropis', dept: 'Department of Immunology and Infectious Diseases' };
 
