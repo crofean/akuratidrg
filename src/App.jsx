@@ -925,7 +925,8 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.DVE', 'SPDVE', 'SP.KK', 'SPKK'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika', dept: 'Department of Dermatology & Aesthetic' };
   if (check(['SP.BP-RE(K) LUKA BAKAR (K-LB)', 'SPBP-RE(K) LUKA BAKAR', 'K-LB', 'SP.BP-RE(K) LUKA BAKAR'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Luka Bakar', dept: 'Department of Dermatology & Aesthetic' };
   if (check(['SP.BP-RE(K) BEDAH ESTETIK LANJUT', 'SPBP-RE(K) BEDAH ESTETIK LANJUT'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik Konsultan Bidang Bedah Estetik Lanjut', dept: 'Department of Dermatology & Aesthetic' };
-  if (check(['SP.BP-RE', 'SPBP-RE'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.BP-RE', 'SPBP-RE', 'SP.BPRE', 'SPBPRE', 'BEDAH PLASTIK'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept: 'Department of Dermatology & Aesthetic' };
+  if (check(['SP.BKV', 'SPBKV'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept: 'Department of Cardiology' };
   if (check(['SP.KG', 'SPKG'])) return { ksm: 'Dokter Gigi Spesialis Konservasi Gigi', dept: 'Department of Dermatology & Aesthetic' };
   if (check(['SP.ORT', 'SPORT'])) return { ksm: 'Dokter Gigi Spesialis Orthodonti', dept: 'Department of Dermatology & Aesthetic' };
   if (check(['SP.PM', 'SPPM'])) return { ksm: 'Dokter Gigi Spesialis Penyakit Mulut', dept: 'Department of Dermatology & Aesthetic' };
@@ -961,8 +962,8 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.BM', 'SPBM'])) return { ksm: 'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial', dept: 'Department of Surgery' };
   if (check(['SP.F', 'SPF', 'SP.FM', 'SPFM', 'FORENSIK'])) return { ksm: 'Dokter Spesialis Kedokteran Forensik dan Medikolegal', dept: 'Department of Surgery' };
   // Pastikan subspesialis Bedah dicek SEBELUM generic SPB
-  if (check(['SP.B.PRE', 'SPBPRE', 'BEDAH PLASTIK REKONSTRUKSI', 'PLASTIK RE'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi dan Estetika', dept: 'Department of Surgery' };
-  if (check(['SP.BKV', 'SPBKV', 'BEDAH VASKULAR'])) return { ksm: 'Dokter Spesialis Bedah Vaskular', dept: 'Department of Surgery' };
+  // SPBPRE → Dermatology & Aesthetic (per mapping resmi, bukan Surgery)
+  // SPBKV → Cardiology (sudah ada di line ~762 sebagai SPB(K) Vaskular Endovaskular)
   if (check(['SP.B', 'SPB', 'BEDAH UMUM'])) return { ksm: 'Dokter Spesialis Bedah Umum', dept: 'Department of Surgery' };
   if (check(['SP.M', 'SPM', 'MATA'])) return { ksm: 'Dokter Spesialis Mata', dept: 'Department of Surgery' };
 
@@ -999,7 +1000,7 @@ const resolveKsmDept = (dpjp) => {
   // --- Fallback (Dokter Umum) ---
   // Jika kode sudah berjalan sejauh ini dan tidak ada gelar spesialis yang cocok,
   // maka ia adalah dokter umum (hanya gelar dr. tanpa Sp yang terdefinisi).
-  return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
+  return { ksm: 'Dokter Umum', dept: 'Department of Medicine' };
 };
 
 const extractKsm = (dpjp) => resolveKsmDept(dpjp).ksm;
