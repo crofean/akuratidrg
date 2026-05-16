@@ -711,7 +711,8 @@ const normDpjp = (name) => {
 
 const resolveKsmDept = (dpjp) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
-  let n = String(dpjp).toUpperCase().replace(/\./g, '').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
+  // Ganti titik dengan spasi (bukan hapus) agar M.Ked.Sp.BPRE tidak menjadi MKEDSPBPRE
+  let n = String(dpjp).toUpperCase().replace(/\./g, ' ').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
 
   // Hapus gelar akademik dan fellowship agar tidak mengacaukan deteksi Sp
   n = n.replace(/\b(PROF|DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM|MH|MHPE|FINASIM|FAPSR|FINAIM|FINASIM|PAPDI|FRSM|FCSI|FACG)\b/g, ' ');
@@ -772,11 +773,20 @@ const resolveKsmDept = (dpjp) => {
   // --- Department of Medicine ---
   if (check(['SP.PD(K) ENDOKRIN-METABOLIK-DIABETES', 'SPPD(K) ENDOKRIN-METABOLIK-DIABETES', 'K-EMD', 'KEMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept: 'Department of Medicine' };
   if (check(['SP.PD(K) GERIATRI', 'SPPD(K) GERIATRI', 'K-GER', 'KGER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept: 'Department of Medicine' };
-  if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO', 'KP'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
+  if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
   if (check(['SP.PD(K) PSIKOSOMATIK & PALIATIF', 'SPPD(K) PSIKOSOMATIK & PALIATIF'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept: 'Department of Medicine' };
-  if (check(['SP.P(K)', 'SPP(K)', 'SP.P', 'SPP', 'PARU'])) return { ksm: 'Dokter Spesialis Paru', dept: 'Department of Medicine' };
+  // SPPD Konsultan lain (dari dept berbeda) — harus di-check SEBELUM generic SPPD agar tidak tertangkap lebih awal
+  if (check(['KHOM', 'K-HOM', 'HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
+  if (check(['KGH', 'K-GH', 'GINJAL HIPERTENSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
+  if (check(['KAI', 'K-AI', 'ALERGI IMUNOLOGI DALAM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['KPTI', 'K-PTI', 'TROPIK INFEKSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['KR', 'K-R', 'REUMATOLOGI', 'RHEUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
+  if (check(['KGEH', 'K-GEH', 'GASTROENTEROHEPATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
+  if (check(['KP', 'K-P', 'PULMONOLOGI DALAM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
+  // Generic SPPD catch (harus setelah semua konsultan spesifik di atas)
   if (check(['SP.PD', 'SPPD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam', dept: 'Department of Medicine' };
-  if (check(['SP.DVE(K) GERIATRI', 'SPDVE(K) GERIATRI', 'SP.KK(K) GERIATRI', 'SPKK(K) GERIATRI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Geriatri', dept: 'Department of Medicine' };
+  // Sp.P (Paru) — setelah SPPD agar SPP tidak menabrak SPPD
+  if (check(['SP.P(K)', 'SPP(K)', 'SP.P', 'SPP', 'PARU'])) return { ksm: 'Dokter Spesialis Paru', dept: 'Department of Medicine' };
   if (check(['SP.GK(K) KELAINAN METABOLIK', 'SPGK(K) KELAINAN METABOLIK'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Kelainan Metabolik', dept: 'Department of Medicine' };
   if (check(['SP.GK(K) NUTRISI PADA PENYAKIT KRITIS', 'SPGK(K) NUTRISI PADA PENYAKIT KRITIS'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Nutrisi pada Penyakit Kritis', dept: 'Department of Medicine' };
   if (check(['SP.GK', 'SPGK'])) return { ksm: 'Dokter Spesialis Gizi Klinik', dept: 'Department of Medicine' };
