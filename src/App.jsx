@@ -711,28 +711,33 @@ const normDpjp = (name) => {
 
 const resolveKsmDept = (dpjp) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
-  // Ganti titik dengan spasi (bukan hapus) agar M.Ked.Sp.BPRE tidak menjadi MKEDSPBPRE
-  let n = String(dpjp).toUpperCase().replace(/\./g, ' ').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
+  // LANGKAH 1: Uppercase lalu gabungkan kode Sp.X.Y.Z dotted sebelum mengubah titik ke spasi
+  // Contoh: Sp.O.T→SPOT, Sp.T.H.T.B.K.L→SPTHTBKL, Sp.Onk.Rad→SPONKRAD, Sp.D.V.E→SPDVE
+  let n = String(dpjp).toUpperCase();
+  n = n.replace(/\bSP(?:\.(?!SUBSP)([A-Z0-9]+))+/g, m => m.replace(/\./g, ''));
 
-  // Hapus gelar akademik dan fellowship agar tidak mengacaukan deteksi Sp
-  n = n.replace(/\b(PROF|DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM|MH|MHPE|FINASIM|FAPSR|FINAIM|FINASIM|PAPDI|FRSM|FCSI|FACG)\b/g, ' ');
-  // Hapus Subsp. dan keterangan setelahnya agar tidak mengganggu
-  n = n.replace(/SUBSP\s*[A-Z().\s]*/g, ' ');
-  // Normalkan kembali spasi ganda
+  // LANGKAH 2: Ganti sisa titik dengan spasi (untuk M.Kes, M.Ked, dll.)
+  n = n.replace(/\./g, ' ').replace(/,/g, ' ').replace(/ {2,}/g, ' ');
+
+  // LANGKAH 3: Hapus gelar akademik dan fellowship
+  n = n.replace(/\b(PROF|DR|M\s*KES|M\s*KED|M\s*BIOMED|M\s*SC|M\s*SI|M\s*EPID|M\s*GIZ|M\s*GIZI|PH\s*D|SKM|SKG|SSI|S\s*KEP|NS|MARS|MBA|MM|MH|MHPE|FINASIM|FAPSR|FINAIM|PAPDI|FRSM|FCSI|FACG|AIFOK|FICS|FINSDV|MPHIL|PHIL)\b/g, ' ');
+
+  // LANGKAH 4: Hapus Subsp dan keterangan setelahnya
+  n = n.replace(/\bSUBSP\b.*/g, ' ');
+
+  // LANGKAH 5: Normalize spasi
   n = n.replace(/ {2,}/g, ' ').trim();
-  // Gabungkan kode multi-kata seperti "SPONK RAD" → "SPONKRAD" dan "SPPD K GH" → "SPPD KGH"
-  n = n.replace(/\b(SPONK)\s+(RAD)\b/g, '$1$2');
-  n = n.replace(/\b(SPPD|SPPD)\s+K\s+([A-Z]{2,})\b/g, '$1 K$2');
 
-  // Perbaiki kasus "Sp. A" (ada spasi) yang menjadi "SP A", ubah menjadi "SPA" agar terbaca oleh mapping
-  n = n.replace(/\bSP\s+([A-Z]{1,6})\b/g, 'SP$1');
-  // Normalisasi kode gelar fused: SPAK→SPA, SPANTI→SPAN, SPBKONK→SPB, SPBPRE→SPBPRE, dll.
-  // Pisahkan kode SP+X dari suffiks tambahan agar `check` dapat mencocokkan kode dasar (SPA, SPB, SPAN, dll)
-  // Aturan: setelah SP + 1-4 huruf inti, jika diikuti huruf alfanumerik tanpa spasi (fused), sisipkan spasi
-  n = n.replace(/\b(SP(?:A|B|AN|OG|PD|JP|BS|BA|P|U|S|THT|ONK|KFR|KK|DVE|M|GK|N|PM|GH|MK|KP|BTKV|ORL|OFT|ONKRAD|BEDAH))(K)?([A-Z]+)/g,
+  // LANGKAH 6: Gabungkan "SP X" → "SPX" (kode tanpa titik, ada spasi)
+  n = n.replace(/\bSP\s+([A-Z]{1,8})\b/g, 'SP$1');
+
+  // LANGKAH 7: Setelah SP regex, gabungkan multi-kata yang tersisa (SPONK RAD→SPONKRAD, SPPD K GH→SPPD KGH)
+  n = n.replace(/\b(SPONK)\s+(RAD)\b/g, '$1$2');
+  n = n.replace(/\b(SPPD)\s+K\s+([A-Z]{2,})\b/g, '$1 K$2');
+
+  // LANGKAH 8: Fused code split (hapus P dari alternasi agar SPPROS tidak salah jadi SPP+ROS)
+  n = n.replace(/\b(SP(?:AN|OG|PD|JP|BS|BA|OT|OT|DVE|THT|ONK|KFR|KK|PROS|BTKV|ORL|OFT|ONKRAD|BEDAH|A|B|U|S|M|GK|N))(K)?([A-Z]+)/g,
     (_, base, k, rest) => k ? `${base}(K) ${rest}` : `${base} ${rest}`);
-  // Perbaiki format SpB.Subsp → SPB (sudah distrip subsp di atas)
-  n = n.replace(/\bSPB\s*SUBSP\b/g, 'SPB');
 
   if (n.includes('BKOM') || n.includes('PELAYANAN MEDIK') || n.includes('PEMERIKSAAN INTERN') || n.includes('KOMITE MEDIK') || n.includes('PENGEMBANGAN PROFESI'))
     return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
@@ -775,18 +780,23 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.PD(K) GERIATRI', 'SPPD(K) GERIATRI', 'K-GER', 'KGER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept: 'Department of Medicine' };
   if (check(['SP.PD(K) PULMONOLOGI', 'SPPD(K) PULMONOLOGI', 'K-PULMO'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
   if (check(['SP.PD(K) PSIKOSOMATIK & PALIATIF', 'SPPD(K) PSIKOSOMATIK & PALIATIF'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept: 'Department of Medicine' };
-  // SPPD Konsultan lain (dari dept berbeda) — harus di-check SEBELUM generic SPPD agar tidak tertangkap lebih awal
-  if (check(['KHOM', 'K-HOM', 'HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
+  // SPPD Konsultan lain — harus SEBELUM generic SPPD
+  if (check(['KHOM', 'KHOMFINASIM', 'K-HOM', 'HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
   if (check(['KGH', 'K-GH', 'GINJAL HIPERTENSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Ginjal Hipertensi', dept: 'Department of Uro-Nephrology' };
   if (check(['KAI', 'K-AI', 'ALERGI IMUNOLOGI DALAM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Alergi Imunologi', dept: 'Department of Immunology and Infectious Diseases' };
   if (check(['KPTI', 'K-PTI', 'TROPIK INFEKSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept: 'Department of Immunology and Infectious Diseases' };
-  if (check(['KR', 'K-R', 'REUMATOLOGI', 'RHEUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
+  // KR harus dicek setelah SPKFR agar Sp.KFR KR(K) tidak salah → cek SPKFR lebih dulu di blok ini
+  if (n.includes('SPKFR')) { /* biarkan jatuh ke blok KFR di bawah */ }
+  else if (check(['KR', 'K-R', 'REUMATOLOGI', 'RHEUMATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept: 'Department of Immunology and Infectious Diseases' };
   if (check(['KGEH', 'K-GEH', 'GASTROENTEROHEPATOLOGI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Gastroenterohepatologi', dept: 'Department of Gastroenterology' };
   if (check(['KP', 'K-P', 'PULMONOLOGI DALAM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept: 'Department of Medicine' };
+  if (check(['KKV', 'K-KV', 'SPPDKKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept: 'Department of Cardiology' };
   // Generic SPPD catch (harus setelah semua konsultan spesifik di atas)
   if (check(['SP.PD', 'SPPD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam', dept: 'Department of Medicine' };
-  // Sp.P (Paru) — setelah SPPD agar SPP tidak menabrak SPPD
-  if (check(['SP.P(K)', 'SPP(K)', 'SP.P', 'SPP', 'PARU'])) return { ksm: 'Dokter Spesialis Paru', dept: 'Department of Medicine' };
+  // Sp.P (Paru) — setelah SPPD, dan pastikan SPPROS tidak masuk sini
+  if (!n.includes('SPPROS') && check(['SP.P(K)', 'SPP(K)', 'SP.P', 'SPP', 'PARU'])) return { ksm: 'Dokter Spesialis Paru', dept: 'Department of Medicine' };
+  // Sp.Pros (Prostodontia)
+  if (check(['SP.PROS', 'SPPROS', 'PROSTODONTIA', 'PROSTHODONTIC'])) return { ksm: 'Dokter Gigi Spesialis Prostodontia', dept: 'Department of Dentistry' };
   if (check(['SP.GK(K) KELAINAN METABOLIK', 'SPGK(K) KELAINAN METABOLIK'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Kelainan Metabolik', dept: 'Department of Medicine' };
   if (check(['SP.GK(K) NUTRISI PADA PENYAKIT KRITIS', 'SPGK(K) NUTRISI PADA PENYAKIT KRITIS'])) return { ksm: 'Dokter Spesialis Gizi Klinik Konsultan Nutrisi pada Penyakit Kritis', dept: 'Department of Medicine' };
   if (check(['SP.GK', 'SPGK'])) return { ksm: 'Dokter Spesialis Gizi Klinik', dept: 'Department of Medicine' };
