@@ -2468,7 +2468,7 @@ export default function App() {
       auditFindings: maps.audit, kpiCoderArray: Object.values(maps.coder).sort((a, b) => b.cases - a.cases), naikKelasStats: Object.values(maps.naikKelas).sort((a, b) => b.totalNilai - a.totalNilai), icuStats: maps.icu,
       topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai }
     };
-  }, [uploadedFiles, globalFilter]);
+  }, [uploadedFiles, globalFilter, ksmOverrides]);
 
   const { totalReviewed, totalSesuai, totalTidak } = useMemo(() => {
     const findings = dashData?.auditFindings || [];
