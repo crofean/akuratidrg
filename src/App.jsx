@@ -724,7 +724,6 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   let n = String(dpjp).toUpperCase()
     .replace(/(PROF|DRG|DR|M\.KES|M\.SC|PH\.D|FICS|FACS|FIHA|MMRS|MHPE|MARS|FISQUA|FINS|FINA|FMIN|FANMB|FCPM|FIPM|KMN|AIFO|FAPSR|MH|M\.KED|KLIN|FASGE|FCS|DCN|MKM|DIC|PHD)/g, '')
     .replace(/\.([A-Z])/g, '$1') // Join dots: S.P.A -> SPA
-    .replace(/-\s*([A-Z])/g, '$1') // Join hyphens: BP-RE -> BPRE
     .replace(/[.,/()\-]/g, ' ')
     .replace(/SUBSP/g, ' SUBSP ') // Ensure SUBSP is its own word
     .replace(/SUB\s*SP/g, ' SUBSP ')
