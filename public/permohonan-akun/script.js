@@ -61,17 +61,23 @@ document.addEventListener('DOMContentLoaded', () => {
             questionType: document.getElementById('questionType').value
         };
 
+        // Gunakan URLSearchParams agar lebih stabil dengan Google Apps Script (no-cors)
+        const params = new URLSearchParams();
+        for (const key in formData) {
+            params.append(key, formData[key]);
+        }
+
         fetch(scriptURL, {
             method: 'POST',
             mode: 'no-cors',
             cache: 'no-cache',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: JSON.stringify(formData)
+            body: params.toString()
         })
         .then(() => {
-            console.log('Submission successful (no-cors)');
+            console.log('Submission successful (form-urlencoded)');
             displayUserName.textContent = formData.fullName;
             modal.style.display = 'flex';
             form.reset();
