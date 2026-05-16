@@ -715,7 +715,10 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
 
   // --- CHECK OVERRIDES FIRST ---
   const np = normDpjp(dpjp);
-  if (overrides && overrides[np]) return { ksm: overrides[np], dept: 'Override' };
+  if (overrides && overrides[np]) {
+    const o = overrides[np];
+    return typeof o === 'string' ? { ksm: o, dept: 'Override' } : o;
+  }
 
   // 1. ADVANCED NORMALIZATION
   let n = String(dpjp).toUpperCase()
@@ -1260,8 +1263,15 @@ const KSM_LIST = [
   'Dokter Umum'
 ];
 
-const extractKsm = (dpjp, overrides = {}) => resolveKsmDept(dpjp, overrides).ksm;
-const getDept = (ksm, dpjp, overrides = {}) => resolveKsmDept(dpjp, overrides).dept;
+const extractKsm = (dpjp, overrides = {}) => {
+  const res = resolveKsmDept(dpjp, overrides);
+  return typeof res === 'string' ? res : res.ksm;
+};
+
+const getDept = (ksm, dpjp, overrides = {}) => {
+  const res = resolveKsmDept(dpjp, overrides);
+  return typeof res === 'string' ? 'Department of Medicine' : res.dept;
+};
 
 const getCLName = (cl) => ({ 0: 'No CC', 1: 'Mild CC', 2: 'Moderate CC', 3: 'Severe CC', 4: 'Catastrophic CC', 9: 'Merge CC' }[cl] || 'Unknown');
 
