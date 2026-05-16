@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // REAL SUBMISSION TO GOOGLE SHEETS
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx_Y2r1t7k6l_Y2r1t7k6l_Y2r1t7k6l_Y2r1t7k6l/exec'; // GANTI DENGAN URL DEPLOYMENT BRO
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxaNX6hx52Z5o4_8IkWKARbqyDgf9nr6Qt1C3lnQEA0GrKpBdmL_-SwBIo4Wi-PzL17/exec';
         
         const submitBtn = form.querySelector('.btn-submit');
         const originalBtnText = submitBtn.innerHTML;
