@@ -2156,7 +2156,6 @@ export default function App() {
       topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
       diagUtamaFull: (() => {
         const entries = Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]);
-        // Total Utama harus mencakup SEMUA baris yang punya diagnosa (termasuk Z) agar persentasenya akurat secara populasi
         const totalU = rows.filter(r => {
           const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
           return dList.length > 0;
@@ -2165,13 +2164,19 @@ export default function App() {
       })(),
       diagSekunderFull: (() => {
         const entries = Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]);
-        const totalS = entries.reduce((sum, [, count]) => sum + count, 0);
-        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalS || 1)) * 100 }));
+        const totalU = rows.filter(r => {
+          const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
+          return dList.length > 0;
+        }).length;
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
       })(),
       procFull: (() => {
         const entries = Object.entries(maps.proc).sort((a, b) => b[1] - a[1]);
-        const totalP = entries.reduce((sum, [, count]) => sum + count, 0);
-        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalP || 1)) * 100 }));
+        const totalU = rows.filter(r => {
+          const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
+          return dList.length > 0;
+        }).length;
+        return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
       })(),
       dischargeStats: maps.discharge,
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
