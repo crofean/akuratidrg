@@ -886,10 +886,10 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.KFR(K) REHABILITASI PEDIATRIK', 'SPKFR(K) REHABILITASI PEDIATRIK'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Pediatrik', dept: 'Department of Maternal and Child' };
 
   // --- Department of Oncology ---
-  if (check(['SP.ONK.RAD(K) ABDOMINO-PELVIK', 'SPONKRAD(K) ABDOMINO-PELVIK', 'SP.ONK.RAD(K) ABDOMINO'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept: 'Department of Oncology' };
-  if (check(['SP.ONK.RAD(K) KEPALA, LEHER & SSP', 'SPONKRAD(K) KEPALA, LEHER & SSP', 'SP.ONK.RAD(K) KEPALA'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Kepala, Leher dan Sistem Saraf Pusat', dept: 'Department of Oncology' };
-  if (check(['SP.ONK.RAD(K) TORAKS, PEDIATRIK & LIMFO-MUSKULOSKELETAL', 'SPONKRAD(K) TORAKS', 'SP.ONK.RAD(K) TORAKS'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Toraks, Pediatrik dan Limpho-muskuloskeletal', dept: 'Department of Oncology' };
-  if (check(['SP.ONK.RAD', 'SPONKRAD'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD(K) ABDOMINO-PELVIK', 'SPONKRAD(K) ABDOMINO-PELVIK', 'SP.ONK.RAD(K) ABDOMINO', 'SPONKRAD K ABDOMINO'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD(K) KEPALA, LEHER & SSP', 'SPONKRAD(K) KEPALA, LEHER & SSP', 'SP.ONK.RAD(K) KEPALA', 'SPONKRAD K KEPALA'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Kepala, Leher dan Sistem Saraf Pusat', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD(K) TORAKS, PEDIATRIK & LIMFO-MUSKULOSKELETAL', 'SPONKRAD(K) TORAKS', 'SP.ONK.RAD(K) TORAKS', 'SPONKRAD K TORAKS'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Toraks, Pediatrik dan Limpho-muskuloskeletal', dept: 'Department of Oncology' };
+  if (check(['SP.ONK.RAD', 'SPONKRAD', 'SP ONK RAD', 'ONKOLOGI RADIASI'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi', dept: 'Department of Oncology' };
   if (check(['SP.PD(K) HEMATOLOGI ONKOLOGI MEDIK', 'SPPD(K) HEMATOLOGI ONKOLOGI MEDIK', 'K-HOM', 'KHOM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept: 'Department of Oncology' };
   if (check(['SP.OG(K) ONKOLOGI GINEKOLOGI', 'SPOG(K) ONKOLOGI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Onkologi Ginekologi', dept: 'Department of Oncology' };
   if (check(['SP.A(K) HEMATOONKOLOGI', 'SPA(K) HEMATOONKOLOGI', 'SP.A(K) HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Hematoonkologi', dept: 'Department of Oncology' };
