@@ -894,7 +894,7 @@ const resolveKsmDept = (dpjp) => {
   if (check(['SP.OG(K) ONKOLOGI GINEKOLOGI', 'SPOG(K) ONKOLOGI GINEKOLOGI'])) return { ksm: 'Dokter Spesialis Obstetri dan Ginekologi Konsultan Onkologi Ginekologi', dept: 'Department of Oncology' };
   if (check(['SP.A(K) HEMATOONKOLOGI', 'SPA(K) HEMATOONKOLOGI', 'SP.A(K) HEMATOLOGI ONKOLOGI'])) return { ksm: 'Dokter Spesialis Anak Konsultan Hematoonkologi', dept: 'Department of Oncology' };
   if (check(['SP.BM(K) ONKOLOGI BEDAH MULUT & MAKSILOFASIAL', 'SPBM(K) ONKOLOGI BEDAH MULUT', 'SP.BM(K) ONKOLOGI'])) return { ksm: 'Dokter Gigi Dokter Spesialis Bedah Mulut Neoplasma dan Kista Bedah Mulut dan Maksilofasial', dept: 'Department of Oncology' };
-  if (check(['SP.B(K) BEDAH ONKOLOGI', 'SPB(K) BEDAH ONKOLOGI', 'K-ONK', 'SPBKONK', 'KONK'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Onkologi', dept: 'Department of Oncology' };
+  if (check(['SP.B(K) BEDAH ONKOLOGI', 'SPB(K) BEDAH ONKOLOGI', 'SPB(K) ONK', 'SPB ONK', 'K-ONK', 'SPBKONK', 'KONK', 'BEDAH ONKOLOGI'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Onkologi', dept: 'Department of Oncology' };
   if (check(['SP.THT-KL(K) ONKOLOGI BEDAH KEPALA LEHER', 'SPTHT-KL(K) ONKOLOGI', 'SP.THT(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Onkologi - Bedah Kepala Leher', dept: 'Department of Oncology' };
   if (check(['SP.DVE(K) ONKOLOGI & BEDAH KULIT', 'SPDVE(K) ONKOLOGI & BEDAH KULIT', 'SP.KK(K) ONKOLOGI'])) return { ksm: 'Dokter Spesialis Dermatologi, Venereologi, dan Estetika Konsultan Onkologi dan Bedah Kulit', dept: 'Department of Oncology' };
 
