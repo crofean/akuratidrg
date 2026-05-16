@@ -3753,12 +3753,12 @@ export default function App() {
                             </div>
                           </td>
                           <td className="p-4 text-right font-bold text-slate-600">{dpjp.count.toLocaleString()}</td>
-                          <td className="p-4 text-center text-teal-600 font-bold text-xs bg-teal-50/10">{dpjp.avgLos.toFixed(1)}</td>
+                          <td className="p-4 text-center text-teal-600 font-bold text-xs bg-teal-50/10">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
                           <td className="p-4 text-center text-rose-600 font-bold text-xs bg-rose-50/10">{dpjp.maxLos}</td>
-                          <td className="p-4 text-right text-slate-500 text-xs">{formatRp(dpjp.avgRS)}</td>
-                          <td className={`p-4 text-right font-bold ${dpjp.avgSelIna >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp(dpjp.avgSelIna)}</td>
-                          <td className={`p-4 text-right font-bold ${dpjp.avgSelIdrg >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp(dpjp.avgSelIdrg)}</td>
-                          <td className="p-4 text-right font-bold text-purple-600">{formatRp(dpjp.avgIdrgIna)}</td>
+                          <td className="p-4 text-right text-slate-500 text-xs">{formatRp(dpjp.sumRS / dpjp.count)}</td>
+                          <td className={`p-4 text-right font-bold ${(dpjp.sumIna - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIna - dpjp.sumRS) / dpjp.count)}</td>
+                          <td className={`p-4 text-right font-bold ${(dpjp.sumIdrg - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIdrg - dpjp.sumRS) / dpjp.count)}</td>
+                          <td className="p-4 text-right font-bold text-purple-600">{formatRp((dpjp.sumIdrg - dpjp.sumIna) / dpjp.count)}</td>
                           {compKeys.map(c => {
                             const cv = dpjp.avgComps[c.key]?.val || 0;
                             const cp = dpjp.avgComps[c.key]?.pct || 0;
