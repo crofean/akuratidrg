@@ -2156,7 +2156,11 @@ export default function App() {
       topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
       diagUtamaFull: (() => {
         const entries = Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]);
-        const totalU = entries.reduce((sum, [, count]) => sum + count, 0);
+        // Total Utama harus mencakup SEMUA baris yang punya diagnosa (termasuk Z) agar persentasenya akurat secara populasi
+        const totalU = rows.filter(r => {
+          const dList = String(r['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
+          return dList.length > 0;
+        }).length;
         return entries.map(([code, count]) => ({ code, count, pct: (count / (totalU || 1)) * 100 }));
       })(),
       diagSekunderFull: (() => {
