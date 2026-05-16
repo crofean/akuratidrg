@@ -3888,7 +3888,7 @@ export default function App() {
 
         {/* DPJP TABLE WITH 18 COMPONENT BREAKDOWN */}
         <Card className="overflow-hidden">
-          <div className="overflow-x-auto max-h-[700px] custom-scrollbar">
+          <div className="overflow-auto max-h-[700px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="sticky top-0 z-40">
                 <tr>
