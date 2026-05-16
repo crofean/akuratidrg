@@ -3722,48 +3722,52 @@ export default function App() {
 
                   return (
                     <React.Fragment key={`ksm-frag-${ki}`}>
-                      <tr className="bg-slate-100/80 font-black border-y border-slate-200">
-                        <td className="p-4 sticky left-0 z-20 bg-slate-100/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setExpandedKsms(prev => ({ ...prev, [ksm.name]: !isKsmOpen }))}>
-                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isKsmOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>▶</span>
-                            <span className="uppercase text-slate-800 tracking-tight">{ksm.name}</span>
+                      <tr className="bg-indigo-50/60 hover:bg-indigo-100/60 border-b border-indigo-100 transition-colors">
+                        <td className="p-3 sticky left-0 z-20 bg-indigo-50/90 backdrop-blur-md shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                          <div className="flex items-center gap-3 cursor-pointer group/ksm" onClick={() => setExpandedKsms(prev => ({ ...prev, [ksm.name]: !isKsmOpen }))}>
+                            <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-300 shadow-sm ${isKsmOpen ? 'bg-indigo-600 text-white rotate-90' : 'bg-white text-indigo-500 border border-indigo-200 group-hover/ksm:border-indigo-400'}`}>
+                              <ChevronRight size={14} className="stroke-[3]" />
+                            </div>
+                            <span className="font-extrabold text-indigo-900 tracking-tight">{ksm.name}</span>
                           </div>
                         </td>
-                        <td className="p-4 text-right font-black">{ksm.count.toLocaleString()}</td>
-                        <td className="p-4 text-center text-teal-700 font-bold text-xs bg-teal-50/30">{(ksm.sumLos / (ksm.count || 1)).toFixed(1)}</td>
-                        <td className="p-4 text-center text-rose-700 font-bold text-xs bg-rose-50/30">{ksm.maxLos}</td>
-                        <td className="p-4 text-right text-slate-600">{formatRp(ksm.sumRS / (ksm.count || 1))}</td>
-                        <td className={`p-4 text-right font-black ${(ksm.selisihIna / (ksm.count || 1)) >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(ksm.selisihIna / (ksm.count || 1))}</td>
-                        <td className={`p-4 text-right font-black ${(ksm.selisihIdrg / (ksm.count || 1)) >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(ksm.selisihIdrg / (ksm.count || 1))}</td>
-                        <td className="p-4 text-right font-black text-purple-700">{formatRp((ksm.sumIdrg - ksm.sumIna) / (ksm.count || 1))}</td>
-                        {compKeys.map(c => <td key={c.key} className="p-4 text-right text-[10px] font-bold text-slate-500 bg-slate-200/50">{formatRpEx((ksm.comps?.[c.key] || 0) / (ksm.count || 1))}</td>)}
+                        <td className="p-3 text-right font-black text-slate-800">{ksm.count.toLocaleString()}</td>
+                        <td className="p-3 text-center text-teal-700 font-bold text-xs bg-teal-50/30">{(ksm.sumLos / (ksm.count || 1)).toFixed(1)}</td>
+                        <td className="p-3 text-center text-rose-700 font-bold text-xs bg-rose-50/30">{ksm.maxLos}</td>
+                        <td className="p-3 text-right text-slate-600 font-bold">{formatRp(ksm.sumRS / (ksm.count || 1))}</td>
+                        <td className={`p-3 text-right font-black ${(ksm.selisihIna / (ksm.count || 1)) >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(ksm.selisihIna / (ksm.count || 1))}</td>
+                        <td className={`p-3 text-right font-black ${(ksm.selisihIdrg / (ksm.count || 1)) >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(ksm.selisihIdrg / (ksm.count || 1))}</td>
+                        <td className="p-3 text-right font-black text-purple-700">{formatRp((ksm.sumIdrg - ksm.sumIna) / (ksm.count || 1))}</td>
+                        {compKeys.map(c => <td key={c.key} className="p-3 text-right text-[10px] font-bold text-slate-500 bg-slate-200/50">{formatRpEx((ksm.comps?.[c.key] || 0) / (ksm.count || 1))}</td>)}
                       </tr>
                       
                       {isKsmOpen && ksm.dpjps.map((dpjp, pi) => (
                         <tr
                           key={`dpjp-${ki}-${pi}`}
-                          className="bg-white hover:bg-indigo-50/50 transition-colors cursor-pointer animate-in fade-in slide-in-from-bottom-1 duration-300 group"
+                          className="bg-white hover:bg-slate-50 transition-colors cursor-pointer animate-in fade-in slide-in-from-bottom-1 duration-300 group"
                           style={{ animationDelay: `${pi * 30}ms`, animationFillMode: 'both' }}
                           onClick={() => openDrilldown(`Kasus DPJP: ${dpjp.name}`, row => normDpjp(row['DPJP']) === dpjp.normName)}
                         >
-                          <td className="p-4 pl-10 border-l-4 border-indigo-500 sticky left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                            <div className="flex items-center gap-2 italic">
-                              <User size={14} className="text-slate-400 group-hover:text-indigo-500" /> 
-                              <span className="font-semibold text-slate-700 group-hover:text-indigo-700">{dpjp.name}</span>
+                          <td className="p-3 pl-12 border-l-2 border-indigo-300 sticky left-0 z-20 bg-white group-hover:bg-slate-50 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            <div className="flex items-center gap-3">
+                              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                                <User size={12} />
+                              </div>
+                              <span className="font-semibold text-slate-600 group-hover:text-indigo-700 transition-colors">{dpjp.name}</span>
                             </div>
                           </td>
-                          <td className="p-4 text-right font-bold text-slate-600">{dpjp.count.toLocaleString()}</td>
-                          <td className="p-4 text-center text-teal-600 font-bold text-xs bg-teal-50/10">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
-                          <td className="p-4 text-center text-rose-600 font-bold text-xs bg-rose-50/10">{dpjp.maxLos}</td>
-                          <td className="p-4 text-right text-slate-500 text-xs">{formatRp(dpjp.sumRS / dpjp.count)}</td>
-                          <td className={`p-4 text-right font-bold ${(dpjp.sumIna - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIna - dpjp.sumRS) / dpjp.count)}</td>
-                          <td className={`p-4 text-right font-bold ${(dpjp.sumIdrg - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIdrg - dpjp.sumRS) / dpjp.count)}</td>
-                          <td className="p-4 text-right font-bold text-purple-600">{formatRp((dpjp.sumIdrg - dpjp.sumIna) / dpjp.count)}</td>
+                          <td className="p-3 text-right font-bold text-slate-600">{dpjp.count.toLocaleString()}</td>
+                          <td className="p-3 text-center text-teal-600 font-bold text-xs bg-teal-50/10">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
+                          <td className="p-3 text-center text-rose-600 font-bold text-xs bg-rose-50/10">{dpjp.maxLos}</td>
+                          <td className="p-3 text-right text-slate-500 text-xs">{formatRp(dpjp.sumRS / dpjp.count)}</td>
+                          <td className={`p-3 text-right font-bold ${(dpjp.sumIna - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIna - dpjp.sumRS) / dpjp.count)}</td>
+                          <td className={`p-3 text-right font-bold ${(dpjp.sumIdrg - dpjp.sumRS) >= 0 ? 'text-lime-600' : 'text-orange-600'}`}>{formatRp((dpjp.sumIdrg - dpjp.sumRS) / dpjp.count)}</td>
+                          <td className="p-3 text-right font-bold text-purple-600">{formatRp((dpjp.sumIdrg - dpjp.sumIna) / dpjp.count)}</td>
                           {compKeys.map(c => {
                             const cv = dpjp.avgComps[c.key]?.val || 0;
                             const cp = dpjp.avgComps[c.key]?.pct || 0;
                             return (
-                              <td key={c.key} className="p-4 text-right text-[11px] font-semibold text-indigo-500/80 bg-indigo-50/10">
+                              <td key={c.key} className="p-3 text-right text-[11px] font-semibold text-indigo-500/80 bg-indigo-50/10">
                                 <div className="flex flex-col items-end gap-1">
                                   <span>{formatRpEx(cv)}</span>
                                   <div className="flex items-center gap-1">
