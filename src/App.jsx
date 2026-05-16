@@ -711,7 +711,7 @@ const normDpjp = (name) => {
 };
 
 const resolveKsmDept = (dpjp, overrides = {}) => {
-  if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
+  if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'KSM Kedokteran Umum', dept: 'Department of Medicine' };
 
   // --- CHECK OVERRIDES FIRST ---
   const np = normDpjp(dpjp);
@@ -720,6 +720,8 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   // 1. ADVANCED NORMALIZATION
   let n = String(dpjp).toUpperCase()
     .replace(/(PROF|DRG|DR|M\.KES|M\.SC|PH\.D|FICS|FACS|FIHA|MMRS|MHPE|MARS|FISQUA|FINS|FINA|FMIN|FANMB|FCPM|FIPM|KMN|AIFO|FAPSR|MH|M\.KED|KLIN|FASGE|FCS|DCN|MKM|DIC|PHD)/g, '')
+    .replace(/\. /g, ' ') // Remove dots followed by space
+    .replace(/\.(?=[A-Z])/g, '') // Remove dots between letters (S.P.O.G -> SPOG)
     .replace(/[.,/()\-]/g, ' ')
     .replace(/SP\s+([A-Z])/g, 'SP$1')
     .replace(/SUB\s*SP/g, ' SUBSP ')
@@ -730,7 +732,7 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
     return keys.some(k => {
       const normalizedK = k.toUpperCase().replace(/[.,/()\-]/g, ' ').replace(/\s+/g, ' ').trim();
       const regex = new RegExp('\\b' + normalizedK + '\\b', 'i');
-      return regex.test(n);
+      return regex.test(n) || n.includes(normalizedK); // Fallback to includes for long abbreviations
     });
   };
 
@@ -739,345 +741,159 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   // --- A. GASTROENTEROLOGY & DIGESTIF ---
   if (check(['GASTRO', 'KGEH', 'DIGESTIF', 'KBD', 'BD'])) {
     const dept = 'Department of Gastroenterology';
-    if (check(['SPPD', 'PENYAKIT DALAM']) || check(['KGEH'])) return { ksm: 'Sp.PD, Subsp.G.E.H.(K)', dept };
-    if (check(['SPA', 'ANAK', 'SPAK'])) return { ksm: 'Sp.A, Subsp.G.E.H.(K)', dept };
-    if (check(['SPB', 'BEDAH', 'BD', 'KBD', 'DIGESTIF'])) return { ksm: 'Sp.B, Subsp.B.D.(K)', dept };
+    if (check(['SPPD', 'PENYAKIT DALAM']) || check(['KGEH'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['SPA', 'ANAK', 'SPAK'])) return { ksm: 'KSM Kesehatan Anak', dept };
+    if (check(['SPB', 'BEDAH', 'BD', 'KBD', 'DIGESTIF'])) return { ksm: 'KSM Bedah', dept };
   }
 
   // --- B. CARDIOLOGY & VASCULAR ---
   if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'BTKV', 'IKKV', 'VAS', 'BVE', 'KKV', 'KARDIOVASKULAR', 'KV', 'JD'])) {
     const dept = 'Department of Cardiology';
-    if (check(['SPJP', 'JANTUNG'])) {
-      if (check(['INTERVENSI', 'KI'])) return { ksm: 'Sp.JP, Subsp.K.I.(K)', dept };
-      if (check(['EKO', 'EKOKARDIOGRAFI'])) return { ksm: 'Sp.JP, Subsp.Eko.(K)', dept };
-      if (check(['ARITMIA', 'AR'])) return { ksm: 'Sp.JP, Subsp.Ar.(K)', dept };
-      if (check(['GAGAL JANTUNG', 'GJ'])) return { ksm: 'Sp.JP, Subsp.G.J.(K)', dept };
-      if (check(['VASKULAR', 'VAS', 'KV'])) return { ksm: 'Sp.JP, Subsp.K.V.(K)', dept };
-      if (check(['PENCITRAAN', 'PK'])) return { ksm: 'Sp.JP, Subsp.P.K.(K)', dept };
-      if (check(['PEDIATRIK', 'BAWAAN', 'JPB', 'KPPJB', 'KPJB'])) return { ksm: 'Sp.JP, Subsp.K.P.J.B.(K)', dept };
-      if (check(['TERAPI INTENSIF', 'TI'])) return { ksm: 'Sp.JP, Subsp.T.I.(K)', dept };
-      if (check(['KEGAWATAN', 'IKKV', 'IKK'])) return { ksm: 'Sp.JP, Subsp.I.K.K.(K)', dept };
-      if (check(['PREVENSI', 'REHABILITASI', 'PRK'])) return { ksm: 'Sp.JP, Subsp.P.R.K.(K)', dept };
-      return { ksm: 'Sp.JP', dept };
-    }
-    if (check(['SPBTKV', 'BTKV'])) {
-      if (check(['JD', 'T'])) return { ksm: 'Sp.BTKV (Subsp. Thorax/Jantung Dada)', dept };
-      return { ksm: 'Sp.BTKV', dept };
-    }
-    if (check(['SPB', 'BEDAH']) && check(['VASKULAR', 'BVE', 'BKV', 'KV'])) return { ksm: 'Sp.B, Subsp.B.V.E.(K)', dept };
-    if (check(['KKV'])) return { ksm: 'Sp.PD, Subsp.K.V.(K)', dept };
+    if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'BTKV', 'KKV'])) return { ksm: 'KSM Jantung, Vaskular, dan Terkait', dept };
+    if (check(['SPB', 'BEDAH']) && check(['VASKULAR', 'BVE', 'BKV', 'KV'])) return { ksm: 'KSM Bedah', dept };
   }
-  if (check(['SPA', 'ANAK', 'SPAK']) && check(['KARDIO', 'KV'])) return { ksm: 'Sp.A, Subsp.K.P.J.B.(K)', dept: 'Department of Cardiology' };
-  if (check(['SPKFR']) && check(['KARDIO', 'RESPIRASI', 'KR'])) return { ksm: 'Sp.KFR, Subsp.K.R.(K)', dept: 'Department of Cardiology' };
-  if (check(['SPAN', 'ANESTESI']) && check(['KARDIO', 'KV', 'AKV'])) return { ksm: 'Sp.An-TI, Subsp.A.K.V.(K)', dept: 'Department of Cardiology' };
+  if (check(['SPA', 'ANAK', 'SPAK']) && check(['KARDIO', 'KV'])) return { ksm: 'KSM Kesehatan Anak', dept: 'Department of Cardiology' };
+  if (check(['SPKFR']) && check(['KARDIO', 'RESPIRASI', 'KR'])) return { ksm: 'KSM Rehabilitasi Medik', dept: 'Department of Cardiology' };
+  if (check(['SPAN', 'ANESTESI']) && check(['KARDIO', 'KV', 'AKV'])) return { ksm: 'KSM Anestesiologi dan Terapi Intensif', dept: 'Department of Cardiology' };
 
   // --- C. MEDICINE, PSYCHIATRY & OTHERS ---
   if (check(['SPPD', 'PENYAKIT DALAM', 'SPDVE', 'SPKK', 'SPKKK', 'GIZI', 'FARMAKOLOGI', 'OKUPASI', 'JIWA', 'SPKJ', 'SPP', 'PARU'])) {
     const dept = 'Department of Medicine';
-    if (check(['SPP', 'PARU'])) {
-      if (check(['KRITIS', 'PMK'])) return { ksm: 'Sp.PD, Subsp.P.M.K.(K)', dept };
-      return { ksm: 'Sp.P', dept };
-    }
-    if (check(['SPPD', 'PENYAKIT DALAM'])) {
-      if (check(['ENDOKRIN', 'METABOLIK', 'DIABETES', 'KEMD'])) return { ksm: 'Sp.PD, Subsp.E.M.D.(K)', dept };
-      if (check(['GERIATRI', 'KGER', 'GER'])) return { ksm: 'Sp.PD, Subsp.Ger.(K)', dept };
-      if (check(['PULMONOLOGI', 'PARU', 'KP']) && check(['KRITIS', 'PMK'])) return { ksm: 'Sp.PD, Subsp.P.M.K.(K)', dept };
-      if (check(['PSIKOSOMATIK', 'PALIATIF', 'PSI'])) return { ksm: 'Sp.PD, Subsp.Psi.(K)', dept };
-    }
-    if (check(['SPDVE', 'SPKK', 'SPKKK'])) {
-      if (check(['GERIATRI', 'GER'])) return { ksm: 'Sp.DVE, Subsp.Ger.(K)', dept };
-      if (check(['VENEREOLOGI', 'V'])) return { ksm: 'Sp.DVE, Subsp.V.(K)', dept };
-      if (check(['ANAK', 'DA'])) return { ksm: 'Sp.DVE, Subsp.D.A.(K)', dept };
-      if (check(['ONKOLOGI', 'OBK'])) return { ksm: 'Sp.DVE, Subsp.O.B.K.(K)', dept };
-      if (check(['KOSMETIK', 'ESTETIK', 'DKE'])) return { ksm: 'Sp.DVE, Subsp.D.K.E.(K)', dept };
-      if (check(['ALERGI', 'DAI'])) return { ksm: 'Sp.DVE, Subsp.D.A.I.(K)', dept };
-      if (check(['TROPIK', 'DT'])) return { ksm: 'Sp.DVE, Subsp.D.T.(K)', dept };
-      return { ksm: 'Sp.DVE', dept };
-    }
-    if (check(['GIZI', 'SPGK'])) {
-      if (check(['METABOLIK', 'KM'])) return { ksm: 'Sp.GK, Subsp.K.M.(K)', dept };
-      if (check(['KRITIS', 'NPK', 'PK'])) return { ksm: 'Sp.GK, Subsp.N.P.K.(K)', dept };
-      return { ksm: 'Sp.GK', dept };
-    }
-    if (check(['FARMAKOLOGI', 'SPFK'])) return { ksm: 'Sp.FK', dept };
-    if (check(['OKUPASI', 'SPOK'])) return { ksm: 'Sp.Ok', dept };
-    if (check(['SPKFR']) && check(['GERIATRI'])) return { ksm: 'Sp.KFR, Subsp.Ger.(K)', dept };
-    if (check(['JIWA', 'SPKJ'])) {
-      if (check(['ADIKSI', 'AD'])) return { ksm: 'Sp.KJ, Subsp.Ad.(K)', dept };
-      if (check(['ANAK', 'REMAJA', 'AR'])) return { ksm: 'Sp.KJ, Subsp.A.R.(K)', dept };
-      if (check(['FORENSIK', 'FOR'])) return { ksm: 'Sp.KJ, Subsp.For.(K)', dept };
-      if (check(['PSIKOTERAPI', 'PT'])) return { ksm: 'Sp.KJ, Subsp.P.T.(K)', dept };
-      if (check(['LIAISON', 'CLP'])) return { ksm: 'Sp.KJ, Subsp.C.L.P.(K)', dept };
-      if (check(['GERIATRI', 'GER'])) return { ksm: 'Sp.KJ, Subsp.Ger.(K)', dept };
-      if (check(['PSIKOSEKSUAL', 'MARITAL', 'PSM'])) return { ksm: 'Sp.KJ, Subsp.P.S.M.(K)', dept };
-      if (check(['PEREMPUAN', 'PEW'])) return { ksm: 'Sp.KJ, Subsp.Pew.(K)', dept };
-      if (check(['PSIKOMETRIK', 'PM'])) return { ksm: 'Sp.KJ, Subsp.P.M.(K)', dept };
-      return { ksm: 'Sp.KJ', dept };
-    }
-    if (check(['SPPD', 'PENYAKIT DALAM'])) return { ksm: 'Sp.PD', dept };
+    if (check(['SPP', 'PARU'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['SPPD', 'PENYAKIT DALAM'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['SPDVE', 'SPKK', 'SPKKK'])) return { ksm: 'KSM Kulit dan Kelamin (DVE)', dept };
+    if (check(['GIZI', 'SPGK'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['FARMAKOLOGI', 'SPFK'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['OKUPASI', 'SPOK'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['SPKFR'])) return { ksm: 'KSM Rehabilitasi Medik', dept };
+    if (check(['JIWA', 'SPKJ'])) return { ksm: 'KSM Kedokteran Jiwa', dept };
   }
 
   // --- D. NEUROLOGY & NEUROSURGERY ---
   if (check(['SPN', 'SPS', 'NEUROLOGI', 'SPBS', 'BEDAH SARAF'])) {
     const dept = 'Department of Neurologi';
-    if (check(['SPN', 'SPS', 'NEUROLOGI'])) {
-      if (check(['EPILEPSI', 'NEUROFISIOLOGI', 'ENK'])) return { ksm: 'Sp.N, Subsp.E.N.K.(K)', dept };
-      if (check(['INFEKSI', 'NI'])) return { ksm: 'Sp.N, Subsp.N.I.(K)', dept };
-      if (check(['NYERI', 'NN'])) return { ksm: 'Sp.N, Subsp.N.N.(K)', dept };
-      if (check(['VASKULAR', 'NV'])) return { ksm: 'Sp.N, Subsp.N.V.(K)', dept };
-      if (check(['OTOLOGI', 'OPTHALMOLOGI', 'NO'])) return { ksm: 'Sp.N, Subsp.N.O.(K)', dept };
-      if (check(['INTERVENSI', 'NIT'])) return { ksm: 'Sp.N, Subsp.N.I.T.(K)', dept };
-      if (check(['IMAGING', 'NIM'])) return { ksm: 'Sp.N, Subsp.N.I.M.(K)', dept };
-      if (check(['TIDUR', 'GT'])) return { ksm: 'Sp.N, Subsp.G.T.(K)', dept };
-      if (check(['TEPI', 'ST'])) return { ksm: 'Sp.N, Subsp.S.T.(K)', dept };
-      if (check(['ANAK', 'NP'])) return { ksm: 'Sp.N, Subsp.N.P.(K)', dept };
-      if (check(['DEGENERATIF', 'BEHAVIOUR', 'NDB'])) return { ksm: 'Sp.N, Subsp.N.D.B.(K)', dept };
-      if (check(['ONKOLOGI', 'NOK'])) return { ksm: 'Sp.N, Subsp.N.O.K.(K)', dept };
-      if (check(['GERAK', 'GG'])) return { ksm: 'Sp.N, Subsp.G.G.(K)', dept };
-      if (check(['KRITIKAL', 'INTENSIF', 'NKI'])) return { ksm: 'Sp.N, Subsp.N.K.I.(K)', dept };
-      return { ksm: 'Sp.N', dept };
-    }
-    if (check(['SPBS', 'BEDAH SARAF'])) {
-      if (check(['FUNGSIONAL', 'NF'])) return { ksm: 'Sp.BS, Subsp.N.F.(K)', dept };
-      if (check(['ONKOLOGI', 'SKULL BASE', 'NO'])) return { ksm: 'Sp.BS, Subsp.N.O.(K)', dept };
-      if (check(['SPINE', 'TB'])) return { ksm: 'Sp.BS, Subsp.T.B.(K)', dept };
-      if (check(['VASKULAR', 'NV'])) return { ksm: 'Sp.BS, Subsp.N.V.(K)', dept };
-      if (check(['PEDIATRIK', 'PED'])) return { ksm: 'Sp.BS, Subsp.Ped.(K)', dept };
-      if (check(['TRAUMA', 'NT'])) return { ksm: 'Sp.BS, Subsp.N.T.(K)', dept };
-      return { ksm: 'Sp.BS', dept };
-    }
+    if (check(['SPN', 'SPS', 'NEUROLOGI'])) return { ksm: 'KSM Saraf', dept };
+    if (check(['SPBS', 'BEDAH SARAF'])) return { ksm: 'KSM Bedah', dept };
   }
-  if (check(['SPA', 'ANAK', 'SPAK']) && check(['NEUROPEDIATRI', 'NEURO', 'NP'])) return { ksm: 'Sp.A, Subsp.N.P.(K)', dept: 'Department of Neurologi' };
-  if (check(['SPKFR']) && check(['NEUROMUSKULAR', 'NM'])) return { ksm: 'Sp.KFR, Subsp.N.M.(K)', dept: 'Department of Neurologi' };
-  if (check(['SPAN', 'ANESTESI']) && check(['NEURO', 'KNA', 'NANCC'])) return { ksm: 'Sp.An-TI, Subsp.N.A.N.C.C.(K)', dept: 'Department of Neurologi' };
+  if (check(['SPA', 'ANAK', 'SPAK']) && check(['NEUROPEDIATRI', 'NEURO', 'NP'])) return { ksm: 'KSM Kesehatan Anak', dept: 'Department of Neurologi' };
+  if (check(['SPKFR']) && check(['NEUROMUSKULAR', 'NM'])) return { ksm: 'KSM Rehabilitasi Medik', dept: 'Department of Neurologi' };
+  if (check(['SPAN', 'ANESTESI']) && check(['NEURO', 'KNA', 'NANCC'])) return { ksm: 'KSM Anestesiologi dan Terapi Intensif', dept: 'Department of Neurologi' };
 
   // --- E. URO-NEPHROLOGY ---
   if (check(['SPU', 'UROLOGI', 'KGH', 'GINJAL', 'NEFRO'])) {
     const dept = 'Department of Uro-Nephrology';
-    if (check(['SPU', 'UROLOGI'])) {
-      if (check(['ANDROLOGI', 'AND'])) return { ksm: 'Sp.U, Subsp.And.(K)', dept };
-      if (check(['PEREMPUAN', 'FUNGSIONAL', 'NEURO', 'FNU'])) return { ksm: 'Sp.U, Subsp.F.N.U.(K)', dept };
-      if (check(['ONKOLOGI', 'ONK'])) return { ksm: 'Sp.U, Subsp.Onk.(K)', dept };
-      if (check(['PEDIATRIK', 'PED'])) return { ksm: 'Sp.U, Subsp.Ped.(K)', dept };
-      if (check(['REKONSTRUKSI', 'REK'])) return { ksm: 'Sp.U, Subsp.Rek.(K)', dept };
-      if (check(['TRANSPLANTASI', 'TRANS'])) return { ksm: 'Sp.U, Subsp.Trans.(K)', dept };
-      return { ksm: 'Sp.U', dept };
-    }
-    if (check(['SPPD', 'PENYAKIT DALAM']) && check(['GINJAL', 'HIPERTENSI', 'KGH', 'GH'])) return { ksm: 'Sp.PD, Subsp.G.H.(K)', dept };
-    if (check(['SPA', 'ANAK', 'SPAK']) && check(['NEFROLOGI', 'NEFRO'])) return { ksm: 'Sp.A, Subsp.Nefro.(K)', dept };
-    if (check(['SPOG']) && check(['UROGINEKOLOGI', 'UR'])) return { ksm: 'Sp.OG, Subsp.U.R.(K)', dept };
+    if (check(['SPU', 'UROLOGI'])) return { ksm: 'KSM Urologi', dept };
+    if (check(['SPPD', 'PENYAKIT DALAM']) && check(['GINJAL', 'HIPERTENSI', 'KGH', 'GH'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['SPA', 'ANAK', 'SPAK']) && check(['NEFROLOGI', 'NEFRO'])) return { ksm: 'KSM Kesehatan Anak', dept };
+    if (check(['SPOG']) && check(['UROGINEKOLOGI', 'UR'])) return { ksm: 'KSM Kebidanan dan Kandungan', dept };
   }
 
   // --- F. MATERNAL & CHILD ---
   if (check(['SPOG', 'KEBIDANAN', 'KANDUNGAN', 'SPA', 'ANAK', 'SPAK', 'SPBA'])) {
     const dept = 'Department of Maternal and Child';
-    if (check(['SPOG', 'KEBIDANAN', 'KANDUNGAN'])) {
-      if (check(['FER', 'FERTILITAS', 'ENDOKRIN'])) return { ksm: 'Sp.OG, Subsp.F.E.R.(K)', dept };
-      if (check(['FETOMATERNAL', 'KFM'])) return { ksm: 'Sp.OG, Subsp.K.F.M.(K)', dept };
-      if (check(['SOSIAL', 'OBGINSOS'])) return { ksm: 'Sp.OG, Subsp.O.b.g.i.n.s.o.s.(K)', dept };
-      if (check(['ONKOLOGI', 'ONK'])) return { ksm: 'Sp.OG, Subsp.Onk.(K)', dept };
-      return { ksm: 'Sp.OG', dept };
-    }
-    if (check(['SPA', 'ANAK', 'SPAK'])) {
-      if (check(['ENDOKRIN', 'ENDO'])) return { ksm: 'Sp.A, Subsp.Endo.(K)', dept };
-      if (check(['NEONATOLOGI', 'NEO'])) return { ksm: 'Sp.A, Subsp.Neo.(K)', dept };
-      if (check(['NUTRISI', 'METABOLIK', 'NPM'])) return { ksm: 'Sp.A, Subsp.N.P.M.(K)', dept };
-      if (check(['RESPIROLOGI', 'RESP', 'RESPI'])) return { ksm: 'Sp.A, Subsp.Resp.(K)', dept };
-      if (check(['TUMBUH KEMBANG', 'TKPS'])) return { ksm: 'Sp.A, Subsp.T.K.P.S.(K)', dept };
-      if (check(['EMERGENSI', 'INTENSIF', 'ERIK', 'ETIA'])) return { ksm: 'Sp.A, Subsp.E.R.I.K.(K)', dept };
-      if (check(['ALERGI', 'IMUNOLOGI', 'RHEUMATOLOGI', 'AIR'])) return { ksm: 'Sp.A, Subsp.A.I.R.(K)', dept };
-      if (check(['INFEKSI', 'TROPIK', 'IPT'])) return { ksm: 'Sp.A, Subsp.I.P.T.(K)', dept };
-      if (check(['HEMATOONKOLOGI', 'HOK'])) return { ksm: 'Sp.A, Subsp.H.O.K.(K)', dept };
-      return { ksm: 'Sp.A', dept };
-    }
-    if (check(['SPBA', 'BEDAH ANAK'])) {
-      if (check(['UROGENITAL', 'UG', 'UA'])) return { ksm: 'Sp.BA, Subsp.U.G.(K)', dept };
-      if (check(['DIGESTIF', 'DA'])) return { ksm: 'Sp.BA, Subsp.D.A.(K)', dept };
-      return { ksm: 'Sp.BA', dept };
-    }
+    if (check(['SPOG', 'KEBIDANAN', 'KANDUNGAN'])) return { ksm: 'KSM Kebidanan dan Kandungan', dept };
+    if (check(['SPA', 'ANAK', 'SPAK'])) return { ksm: 'KSM Kesehatan Anak', dept };
+    if (check(['SPBA', 'BEDAH ANAK'])) return { ksm: 'KSM Bedah Anak', dept };
   }
-  if (check(['SPKFR']) && check(['PEDIATRIK', 'PED'])) return { ksm: 'Sp.KFR, Subsp.Ped.(K)', dept: 'Department of Maternal and Child' };
-  if (check(['SPAN', 'ANESTESI']) && check(['OBSTETRI', 'AO'])) return { ksm: 'Sp.An-TI, Subsp.A.O.(K)', dept: 'Department of Maternal and Child' };
-  if (check(['SPAN', 'ANESTESI']) && check(['PEDIATRI', 'AP', 'ANPED'])) return { ksm: 'Sp.An-TI, Subsp.A.P.(K)', dept: 'Department of Maternal and Child' };
+  if (check(['SPKFR']) && check(['PEDIATRIK', 'PED'])) return { ksm: 'KSM Rehabilitasi Medik', dept: 'Department of Maternal and Child' };
+  if (check(['SPAN', 'ANESTESI']) && check(['OBSTETRI', 'AO'])) return { ksm: 'KSM Anestesiologi dan Terapi Intensif', dept: 'Department of Maternal and Child' };
+  if (check(['SPAN', 'ANESTESI']) && check(['PEDIATRI', 'AP', 'ANPED'])) return { ksm: 'KSM Anestesiologi dan Terapi Intensif', dept: 'Department of Maternal and Child' };
 
   // --- G. ONCOLOGY ---
   if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'KHOM', 'ONKOLOGI', 'HOK', 'HOM'])) {
     const dept = 'Department of Oncology';
-    if (check(['ONKRAD', 'ONKOLOGI RADIASI'])) {
-      if (check(['ABDOMINO', 'KAP'])) return { ksm: 'Sp.Onk.Rad, Subsp.K.A.P.(K)', dept };
-      if (check(['KEPALA', 'SSP', 'SARAF', 'KLSSP'])) return { ksm: 'Sp.Onk.Rad, Subsp.K.L.S.S.P.(K)', dept };
-      if (check(['TORAKS', 'PEDIATRIK', 'LIMPHO', 'TPL'])) return { ksm: 'Sp.Onk.Rad, Subsp.T.P.L.(K)', dept };
-      return { ksm: 'Sp.Onk.Rad', dept };
-    }
-    if (check(['SPPD', 'PENYAKIT DALAM']) && check(['HEMATOLOGI', 'ONKOLOGI', 'KHOM', 'HOM'])) return { ksm: 'Sp.PD, Subsp.H.O.M.(K)', dept };
-    if (check(['SPB', 'BEDAH']) && check(['ONKOLOGI', 'ONK'])) return { ksm: 'Sp.B, Subsp.Onk.(K)', dept };
-    if (check(['SPTHT', 'THT']) && check(['ONKOLOGI', 'ONK'])) return { ksm: 'Sp.THT-BKL, Subsp.Onk.(K)', dept };
-    if (check(['SPBM', 'SPBMM']) && check(['NEOPLASMA', 'NK'])) return { ksm: 'drg., Sp.BMM, Subsp.N.K.(K)', dept };
+    if (check(['ONKRAD', 'ONKOLOGI RADIASI'])) return { ksm: 'KSM Onkologi Radiasi', dept };
+    if (check(['SPPD', 'PENYAKIT DALAM']) && check(['HEMATOLOGI', 'ONKOLOGI', 'KHOM', 'HOM'])) return { ksm: 'KSM Penyakit Dalam', dept };
+    if (check(['SPB', 'BEDAH']) && check(['ONKOLOGI', 'ONK'])) return { ksm: 'KSM Bedah', dept };
+    if (check(['SPTHT', 'THT']) && check(['ONKOLOGI', 'ONK'])) return { ksm: 'KSM THT-BKL', dept };
+    if (check(['SPBM', 'SPBMM']) && check(['NEOPLASMA', 'NK'])) return { ksm: 'KSM Gigi dan Mulut', dept };
   }
 
   // --- H. ANESTHESIOLOGY ---
   if (check(['SPAN', 'ANESTESI', 'SPANTI'])) {
     const dept = 'Department of Anesthesiology';
-    if (check(['REGIONAL', 'AR'])) return { ksm: 'Sp.An-TI, Subsp.A.R.(K)', dept };
-    if (check(['MANAJEMEN NYERI', 'NYERI', 'MN'])) return { ksm: 'Sp.An-TI, Subsp.M.N.(K)', dept };
-    if (check(['INTENSIVE CARE', 'KIC', 'TI'])) return { ksm: 'Sp.An-TI, Subsp.T.I.(K)', dept };
-    return { ksm: 'Sp.An-TI', dept };
+    return { ksm: 'KSM Anestesiologi dan Terapi Intensif', dept };
   }
 
   // --- I. SUPPORTING MEDICINE (Laboratory/Pathology) ---
   if (check(['SPPK', 'SPPA', 'SPMK'])) {
     const dept = 'Department of Supporting Medicine';
-    if (check(['SPPK'])) {
-      if (check(['HEMATOLOGI', 'HK'])) return { ksm: 'Sp.PK, Subsp.H.K.(K)', dept };
-      if (check(['ONKOLOGI', 'OK'])) return { ksm: 'Sp.PK, Subsp.O.K.(K)', dept };
-      if (check(['NEFROLOGI', 'RESPIRASI', 'NR'])) return { ksm: 'Sp.PK, Subsp.N.R.(K)', dept };
-      if (check(['GASTRO', 'GEH'])) return { ksm: 'Sp.PK, Subsp.G.E.H.(K)', dept };
-      if (check(['INFEKSI', 'PI'])) return { ksm: 'Sp.PK, Subsp.P.I.(K)', dept };
-      if (check(['BANK DARAH', 'DARAH', 'BDKT'])) return { ksm: 'Sp.PK, Subsp.B.D.K.T.(K)', dept };
-      if (check(['IMUNOLOGI', 'IK'])) return { ksm: 'Sp.PK, Subsp.I.K.(K)', dept };
-      if (check(['ENDOKRIN', 'EM'])) return { ksm: 'Sp.PK, Subsp.E.M.(K)', dept };
-      return { ksm: 'Sp.PK', dept };
-    }
-    if (check(['SPPA'])) {
-      if (check(['UROPATOLOGI', 'URL'])) return { ksm: 'Sp.PA, Subsp.U.R.L.(K)', dept };
-      if (check(['KULIT', 'KA'])) return { ksm: 'Sp.PA, Subsp.K.A.(K)', dept };
-      if (check(['DIGESTIF', 'DH'])) return { ksm: 'Sp.PA, Subsp.D.H.(K)', dept };
-      if (check(['HEMATOLIMFOID', 'HLE'])) return { ksm: 'Sp.PA, Subsp.H.L.E.(K)', dept };
-      if (check(['OBSTETRI', 'GINEKOLOGI', 'PAYUDARA', 'OGP'])) return { ksm: 'Sp.PA, Subsp.O.G.P.(K)', dept };
-      if (check(['SITOPATOLOGI', 'SP'])) return { ksm: 'Sp.PA, Subsp.S.P.(K)', dept };
-      if (check(['MUSKULOSKELETAL', 'MS'])) return { ksm: 'Sp.PA, Subsp.M.S.(K)', dept };
-      if (check(['SARAF', 'MATA', 'SM'])) return { ksm: 'Sp.PA, Subsp.S.M.(K)', dept };
-      if (check(['KARDIOVASKULAR', 'KRM'])) return { ksm: 'Sp.PA, Subsp.K.R.M.(K)', dept };
-      return { ksm: 'Sp.PA', dept };
-    }
-    if (check(['SPMK'])) return { ksm: 'Sp.MK', dept };
+    if (check(['SPPK'])) return { ksm: 'KSM Patologi Klinik', dept };
+    if (check(['SPPA'])) return { ksm: 'KSM Patologi Anatomi', dept };
+    if (check(['SPMK'])) return { ksm: 'KSM Penyakit Dalam', dept };
   }
 
   // --- J. DERMATOLOGY, PLASTIC & DENTAL ---
   if (check(['SPDVE', 'SPKK', 'SPKKK', 'SPBPRE', 'BEDAH PLASTIK', 'SPKG', 'GIGI', 'SPORT', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA'])) {
     const dept = 'Department of Dermatology & Aesthetic';
-    if (check(['SPBPRE', 'BEDAH PLASTIK'])) {
-      if (check(['LUKA BAKAR', 'LBL'])) return { ksm: 'Sp.B.P.R.E., Subsp.L.B.L.(K)', dept };
-      if (check(['ESTETIK LANJUT', 'EL'])) return { ksm: 'Sp.B.P.R.E., Subsp.E.L.(K)', dept };
-      if (check(['KM'])) return { ksm: 'Sp.B.P.R.E., Subsp.K.M.(K)', dept };
-      if (check(['MO'])) return { ksm: 'Sp.B.P.R.E., Subsp.M.O.(K)', dept };
-      return { ksm: 'Sp.B.P.R.E.', dept };
-    }
-    if (check(['SPKG', 'GIGI'])) {
-      if (check(['KONSERVASI'])) return { ksm: 'drg., Sp.KG', dept };
-      if (check(['ORTHODONTI', 'SPORT'])) return { ksm: 'drg., Sp.Ort', dept };
-      if (check(['PENYAKIT MULUT', 'SPPM'])) return { ksm: 'drg., Sp.PM', dept };
-      if (check(['PERIODONSIA', 'SPPERIO'])) return { ksm: 'drg., Sp.Perio', dept };
-      if (check(['PROSTHODONSIA', 'SPPROS'])) {
-        if (check(['MAKSILOFASIAL', 'PMF'])) return { ksm: 'drg., Sp.Pros, Subsp.P.M.F.(K)', dept };
-        return { ksm: 'drg., Sp.Pros', dept };
-      }
-      if (check(['ANAK', 'KGA'])) return { ksm: 'drg., Sp.KGA', dept };
-    }
+    if (check(['SPBPRE', 'BEDAH PLASTIK'])) return { ksm: 'KSM Bedah Plastik, Rekonstruksi dan Estetik', dept };
+    if (check(['SPKG', 'GIGI', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA'])) return { ksm: 'KSM Gigi dan Mulut', dept };
+    if (check(['SPDVE', 'SPKK', 'SPKKK'])) return { ksm: 'KSM Kulit dan Kelamin (DVE)', dept };
   }
 
   // --- K. ENT (Otolaryngology) ---
   if (check(['SPTHT', 'THT', 'SPTHTBKL'])) {
     const dept = 'Department of Otolaryngology (ENT)';
-    if (check(['BRONKOESOFAGOLOGI', 'BE'])) return { ksm: 'Sp.THT-BKL, Subsp.B.E.(K)', dept };
-    if (check(['LARING', 'LF'])) return { ksm: 'Sp.THT-BKL, Subsp.L.F.(K)', dept };
-    if (check(['MAKSILOFASIAL', 'FPR'])) return { ksm: 'Sp.THT-BKL, Subsp.F.P.R.(K)', dept };
-    if (check(['NEUROTOLOGI', 'NO'])) return { ksm: 'Sp.THT-BKL, Subsp.N.O.(K)', dept };
-    if (check(['OTOLOGI', 'OTO'])) return { ksm: 'Sp.THT-BKL, Subsp.Oto.(K)', dept };
-    if (check(['RINOLOGI', 'RINO'])) return { ksm: 'Sp.THT-BKL, Subsp.Rino.(K)', dept };
-    if (check(['ALERGI', 'AI'])) return { ksm: 'Sp.THT-BKL, Subsp.A.I.(K)', dept };
-    if (check(['KOMUNITAS', 'K'])) return { ksm: 'Sp.THT-BKL, Subsp.K.(K)', dept };
-    return { ksm: 'Sp.THT-BKL', dept };
+    return { ksm: 'KSM THT-BKL', dept };
   }
 
   // --- L. INFECTION & IMMUNOLOGY ---
   if (check(['ALERGI', 'IMUNOLOGI', 'INFEKSI', 'TROPIK', 'RHEUMATOLOGI', 'KPTI', 'PTI', 'KR', 'R'])) {
     const dept = 'Department of Medicine';
-    if (check(['SPPD', 'PENYAKIT DALAM'])) {
-      if (check(['INFEKSI', 'TROPIK', 'PTI', 'KPTI'])) return { ksm: 'Sp.PD, Subsp.P.T.I.(K)', dept };
-      if (check(['RHEUMATOLOGI', 'KR', 'R'])) return { ksm: 'Sp.PD, Subsp.R.(K)', dept };
-      if (check(['ALERGI', 'KAI'])) return { ksm: 'Sp.PD, Subsp.A.I.(K)', dept };
-    }
+    return { ksm: 'KSM Penyakit Dalam', dept };
   }
 
   // --- M. FORENSIC, SURGERY & EYES ---
   if (check(['FORENSIK', 'SPFM', 'SPB', 'BEDAH UMUM', 'SPM', 'MATA', 'SPBM', 'SPBMM'])) {
     const dept = 'Department of Surgery';
-    if (check(['SPBM', 'SPBMM'])) {
-      if (check(['CLEFT', 'COM'])) return { ksm: 'drg., Sp.BMM, Subsp.C.O.M.(K)', dept };
-      if (check(['ORTHOGNATIK', 'OO'])) return { ksm: 'drg., Sp.BMM, Subsp.O.O.(K)', dept };
-      if (check(['TRAUMA', 'TMTJ'])) return { ksm: 'drg., Sp.BMM, Subsp.T.M.T.J.(K)', dept };
-      return { ksm: 'drg., Sp.BMM', dept };
-    }
-    if (check(['FORENSIK', 'SPFM'])) return { ksm: 'Sp.FM', dept };
-    if (check(['SPB', 'BEDAH UMUM'])) return { ksm: 'Sp.B', dept };
-    if (check(['SPM', 'MATA'])) return { ksm: 'Sp.M', dept };
+    if (check(['SPBM', 'SPBMM'])) return { ksm: 'KSM Gigi dan Mulut', dept };
+    if (check(['FORENSIK', 'SPFM'])) return { ksm: 'KSM Kedokteran Forensik', dept };
+    if (check(['SPB', 'BEDAH UMUM'])) return { ksm: 'KSM Bedah', dept };
+    if (check(['SPM', 'MATA'])) return { ksm: 'KSM Mata', dept };
   }
 
   // --- N. RADIOLOGY & NUCLEAR MEDICINE ---
   if (check(['SPRAD', 'RADIOLOGI', 'SPKN', 'SPKNTM', 'NUKLIR'])) {
     const dept = 'Department of Radiology';
-    if (check(['SPRAD', 'RADIOLOGI'])) {
-      if (check(['ABDOMEN', 'RA'])) return { ksm: 'Sp.Rad, Subsp.R.A.(K)', dept };
-      if (check(['MUSKULOSKELETAL', 'MS'])) return { ksm: 'Sp.Rad, Subsp.M.S.(K)', dept };
-      if (check(['NEUROIMAGING', 'NR'])) return { ksm: 'Sp.Rad, Subsp.N.R.(K)', dept };
-      if (check(['TORAKS', 'KARDIOVASKULAR', 'TRKV'])) return { ksm: 'Sp.Rad, Subsp.T.R.K.V.(K)', dept };
-      if (check(['INTERVENSIONAL', 'RI'])) return { ksm: 'Sp.Rad, Subsp.R.I.(K)', dept };
-      if (check(['ANAK', 'RP'])) return { ksm: 'Sp.Rad, Subsp.R.P.(K)', dept };
-      if (check(['PAYUDARA', 'WANITA', 'PRW'])) return { ksm: 'Sp.Rad, Subsp.P.R.W.(K)', dept };
-      return { ksm: 'Sp.Rad', dept };
-    }
-    if (check(['SPKN', 'SPKNTM', 'NUKLIR'])) {
-      if (check(['KARDIO', 'NK'])) return { ksm: 'Sp.KNTM, Subsp.N.K.(K)', dept };
-      if (check(['NEURO', 'NN'])) return { ksm: 'Sp.KNTM, Subsp.N.N.(K)', dept };
-      if (check(['ONKOLOGI', 'NO'])) return { ksm: 'Sp.KNTM, Subsp.N.O.(K)', dept };
-      if (check(['PEDIATRIK', 'NP'])) return { ksm: 'Sp.KNTM, Subsp.N.P.(K)', dept };
-      return { ksm: 'Sp.KNTM', dept };
-    }
+    if (check(['SPRAD', 'RADIOLOGI'])) return { ksm: 'KSM Radiologi', dept };
+    if (check(['SPKN', 'SPKNTM', 'NUKLIR'])) return { ksm: 'KSM Radiologi', dept };
   }
 
   // --- O. ORTHOPAEDY ---
   if (check(['SPOT', 'ORTHOPAEDI', 'OLAHRAGA', 'SPKO'])) {
     const dept = 'Department of Orthopaedy';
-    if (check(['SPOT', 'ORTHOPAEDI'])) {
-      if (check(['ADVANCED', 'TRAUMA', 'AOT'])) return { ksm: 'Sp.OT, Subsp.A.O.T.(K)', dept };
-      if (check(['FOOT', 'ANKLE', 'FA'])) return { ksm: 'Sp.OT, Subsp.F.A.(K)', dept };
-      if (check(['HAND', 'MICROSURGERY', 'HULM', 'TLBM'])) return { ksm: 'Sp.OT, Subsp.H.U.L.M.(K)', dept };
-      if (check(['HIP', 'KNEE', 'HK'])) return { ksm: 'Sp.OT, Subsp.H.K.(K)', dept };
-      if (check(['SPINE', 'OTB'])) return { ksm: 'Sp.OT, Subsp.Spine(K)', dept };
-      if (check(['SPORT', 'INJURY', 'SI', 'CO'])) return { ksm: 'Sp.OT, Subsp.S.I.(K)', dept };
-      if (check(['SHOULDER', 'ELBOW', 'SE'])) return { ksm: 'Sp.OT, Subsp.S.E.(K)', dept };
-      if (check(['PEDIATRIC', 'PO'])) return { ksm: 'Sp.OT, Subsp.P.O.(K)', dept };
-      if (check(['ONKOLOGI', 'OR'])) return { ksm: 'Sp.OT, Subsp.O.R.(K)', dept };
-      return { ksm: 'Sp.OT', dept };
-    }
-    if (check(['OLAHRAGA', 'SPKO'])) return { ksm: 'Sp.KO', dept };
-    if (check(['SPKFR']) && check(['MUSKULOSKELETAL', 'MS'])) return { ksm: 'Sp.KFR, Subsp.M.S.(K)', dept };
+    if (check(['SPOT', 'ORTHOPAEDI'])) return { ksm: 'KSM Orthopaedi dan Traumatologi', dept };
+    if (check(['OLAHRAGA', 'SPKO'])) return { ksm: 'KSM Orthopaedi dan Traumatologi', dept };
+    if (check(['SPKFR'])) return { ksm: 'KSM Rehabilitasi Medik', dept };
   }
 
-  return { ksm: 'Dokter Umum', dept: 'Department of Medicine' };
+  return { ksm: 'KSM Kedokteran Umum', dept: 'Department of Medicine' };
 };
 
 const KSM_LIST = [
-  'Sp.PD', 'Sp.PD, Subsp.G.E.H.(K)', 'Sp.PD, Subsp.E.M.D.(K)', 'Sp.PD, Subsp.Ger.(K)', 'Sp.PD, Subsp.P.M.K.(K)', 'Sp.PD, Subsp.Psi.(K)', 'Sp.PD, Subsp.H.O.M.(K)', 'Sp.PD, Subsp.G.H.(K)', 'Sp.PD, Subsp.P.T.I.(K)', 'Sp.PD, Subsp.R.(K)', 'Sp.PD, Subsp.A.I.(K)',
-  'Sp.A', 'Sp.A, Subsp.G.E.H.(K)', 'Sp.A, Subsp.K.P.J.B.(K)', 'Sp.A, Subsp.N.P.(K)', 'Sp.A, Subsp.Nefro.(K)', 'Sp.A, Subsp.Endo.(K)', 'Sp.A, Subsp.Neo.(K)', 'Sp.A, Subsp.N.P.M.(K)', 'Sp.A, Subsp.Resp.(K)', 'Sp.A, Subsp.T.K.P.S.(K)', 'Sp.A, Subsp.E.R.I.K.(K)', 'Sp.A, Subsp.A.I.R.(K)', 'Sp.A, Subsp.I.P.T.(K)', 'Sp.A, Subsp.H.O.K.(K)',
-  'Sp.JP', 'Sp.JP, Subsp.K.I.(K)', 'Sp.JP, Subsp.Eko.(K)', 'Sp.JP, Subsp.Ar.(K)', 'Sp.JP, Subsp.G.J.(K)', 'Sp.JP, Subsp.K.V.(K)', 'Sp.JP, Subsp.P.K.(K)', 'Sp.JP, Subsp.K.P.J.B.(K)', 'Sp.JP, Subsp.T.I.(K)', 'Sp.JP, Subsp.I.K.K.(K)', 'Sp.JP, Subsp.P.R.K.(K)',
-  'Sp.B', 'Sp.B, Subsp.B.D.(K)', 'Sp.B, Subsp.B.V.E.(K)', 'Sp.B, Subsp.Onk.(K)',
-  'Sp.OG', 'Sp.OG, Subsp.U.R.(K)', 'Sp.OG, Subsp.F.E.R.(K)', 'Sp.OG, Subsp.K.F.M.(K)', 'Sp.OG, Subsp.O.b.g.i.n.s.o.s.(K)', 'Sp.OG, Subsp.Onk.(K)',
-  'Sp.N', 'Sp.N, Subsp.E.N.K.(K)', 'Sp.N, Subsp.N.I.(K)', 'Sp.N, Subsp.N.N.(K)', 'Sp.N, Subsp.N.V.(K)', 'Sp.N, Subsp.N.O.(K)', 'Sp.N, Subsp.N.I.T.(K)', 'Sp.N, Subsp.N.I.M.(K)', 'Sp.N, Subsp.G.T.(K)', 'Sp.N, Subsp.S.T.(K)', 'Sp.N, Subsp.N.P.(K)', 'Sp.N, Subsp.N.D.B.(K)', 'Sp.N, Subsp.N.O.K.(K)', 'Sp.N, Subsp.G.G.(K)', 'Sp.N, Subsp.N.K.I.(K)',
-  'Sp.BS', 'Sp.BS, Subsp.N.F.(K)', 'Sp.BS, Subsp.N.O.(K)', 'Sp.BS, Subsp.T.B.(K)', 'Sp.BS, Subsp.N.V.(K)', 'Sp.BS, Subsp.Ped.(K)', 'Sp.BS, Subsp.N.T.(K)',
-  'Sp.U', 'Sp.U, Subsp.And.(K)', 'Sp.U, Subsp.F.N.U.(K)', 'Sp.U, Subsp.Onk.(K)', 'Sp.U, Subsp.Ped.(K)', 'Sp.U, Subsp.Rek.(K)', 'Sp.U, Subsp.Trans.(K)',
-  'Sp.OT', 'Sp.OT, Subsp.A.O.T.(K)', 'Sp.OT, Subsp.F.A.(K)', 'Sp.OT, Subsp.H.U.L.M.(K)', 'Sp.OT, Subsp.H.K.(K)', 'Sp.OT, Subsp.Spine(K)', 'Sp.OT, Subsp.S.I.(K)', 'Sp.OT, Subsp.S.E.(K)', 'Sp.OT, Subsp.P.O.(K)', 'Sp.OT, Subsp.O.R.(K)',
-  'Sp.THT-BKL', 'Sp.THT-BKL, Subsp.B.E.(K)', 'Sp.THT-BKL, Subsp.L.F.(K)', 'Sp.THT-BKL, Subsp.F.P.R.(K)', 'Sp.THT-BKL, Subsp.N.O.(K)', 'Sp.THT-BKL, Subsp.Oto.(K)', 'Sp.THT-BKL, Subsp.Rino.(K)', 'Sp.THT-BKL, Subsp.A.I.(K)', 'Sp.THT-BKL, Subsp.K.(K)', 'Sp.THT-BKL, Subsp.Onk.(K)',
-  'Sp.DVE', 'Sp.DVE, Subsp.Ger.(K)', 'Sp.DVE, Subsp.V.(K)', 'Sp.DVE, Subsp.D.A.(K)', 'Sp.DVE, Subsp.O.B.K.(K)', 'Sp.DVE, Subsp.D.K.E.(K)', 'Sp.DVE, Subsp.D.A.I.(K)', 'Sp.DVE, Subsp.D.T.(K)',
-  'Sp.An-TI', 'Sp.An-TI, Subsp.A.K.V.(K)', 'Sp.An-TI, Subsp.N.A.N.C.C.(K)', 'Sp.An-TI, Subsp.A.O.(K)', 'Sp.An-TI, Subsp.A.P.(K)', 'Sp.An-TI, Subsp.A.R.(K)', 'Sp.An-TI, Subsp.M.N.(K)', 'Sp.An-TI, Subsp.T.I.(K)',
-  'Sp.Rad', 'Sp.Rad, Subsp.R.A.(K)', 'Sp.Rad, Subsp.M.S.(K)', 'Sp.Rad, Subsp.N.R.(K)', 'Sp.Rad, Subsp.T.R.K.V.(K)', 'Sp.Rad, Subsp.R.I.(K)', 'Sp.Rad, Subsp.R.P.(K)', 'Sp.Rad, Subsp.P.R.W.(K)',
-  'Sp.PK', 'Sp.PK, Subsp.H.K.(K)', 'Sp.PK, Subsp.O.K.(K)', 'Sp.PK, Subsp.N.R.(K)', 'Sp.PK, Subsp.G.E.H.(K)', 'Sp.PK, Subsp.P.I.(K)', 'Sp.PK, Subsp.B.D.K.T.(K)', 'Sp.PK, Subsp.I.K.(K)', 'Sp.PK, Subsp.E.M.(K)',
-  'Sp.PA', 'Sp.PA, Subsp.U.R.L.(K)', 'Sp.PA, Subsp.K.A.(K)', 'Sp.PA, Subsp.D.H.(K)', 'Sp.PA, Subsp.H.L.E.(K)', 'Sp.PA, Subsp.O.G.P.(K)', 'Sp.PA, Subsp.S.P.(K)', 'Sp.PA, Subsp.M.S.(K)', 'Sp.PA, Subsp.S.M.(K)', 'Sp.PA, Subsp.K.R.M.(K)',
-  'Sp.KFR', 'Sp.KFR, Subsp.K.R.(K)', 'Sp.KFR, Subsp.Ger.(K)', 'Sp.KFR, Subsp.N.M.(K)', 'Sp.KFR, Subsp.Ped.(K)', 'Sp.KFR, Subsp.M.S.(K)',
-  'Sp.BTKV', 'Sp.BA', 'Sp.P', 'Sp.GK', 'Sp.FK', 'Sp.Ok', 'Sp.KJ', 'Sp.MK', 'Sp.FM', 'Sp.KO', 'Sp.Onk.Rad', 'Sp.KNTM', 'Sp.B.P.R.E.',
-  'drg., Sp.KG', 'drg., Sp.Ort', 'drg., Sp.PM', 'drg., Sp.Perio', 'drg., Sp.Pros', 'drg., Sp.Pros, Subsp.P.M.F.(K)', 'drg., Sp.KGA', 'drg., Sp.BMM',
-  'Dokter Umum', 'Kedokteran Umum'
+  'KSM Jantung, Vaskular, dan Terkait',
+  'KSM Bedah',
+  'KSM Penyakit Dalam',
+  'KSM Saraf',
+  'KSM Urologi',
+  'KSM Kebidanan dan Kandungan',
+  'KSM Kesehatan Anak',
+  'KSM Bedah Anak',
+  'KSM Onkologi Radiasi',
+  'KSM Anestesiologi dan Terapi Intensif',
+  'KSM Patologi Klinik',
+  'KSM Patologi Anatomi',
+  'KSM Kulit dan Kelamin (DVE)',
+  'KSM THT-BKL',
+  'KSM Bedah Plastik, Rekonstruksi dan Estetik',
+  'KSM Gigi dan Mulut',
+  'KSM Radiologi',
+  'KSM Rehabilitasi Medik',
+  'KSM Orthopaedi dan Traumatologi',
+  'KSM Mata',
+  'KSM Kedokteran Jiwa',
+  'KSM Kedokteran Umum',
+  'KSM Kedokteran Forensik'
 ];
 
 const extractKsm = (dpjp, overrides = {}) => resolveKsmDept(dpjp, overrides).ksm;
