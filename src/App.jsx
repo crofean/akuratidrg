@@ -1403,7 +1403,7 @@ export default function App() {
     } catch (e) { return {}; }
   });
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  
+
   const [showAdOverlay, setShowAdOverlay] = useState(true);
   const [initialAdDone, setInitialAdDone] = useState(false);
   const idleTimerRef = useRef(null);
@@ -1784,7 +1784,7 @@ export default function App() {
 
     if (rows.length === 0) return { isLoaded: true, rawRows: rows, totalRows: 0, isEmptyAfterFilter: true };
 
-    let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0 };
+    let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, scoredCount: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0 };
     let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], audit: [], topUp: {}, ksmEfficiency: {} };
     const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
 
@@ -1996,9 +1996,11 @@ export default function App() {
 
       const idrgDList = String(r['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
       const idrgPList = String(r['IDRG_PROC_LISTS'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+      // Hitung skor hanya untuk baris yang memiliki data iDRG
+      const hasIdrgData = String(r['IDRG_DRG_CODE'] || '').trim() !== '' && String(r['IDRG_DRG_CODE'] || '').trim() !== '-';
       const sDiag = checkMatchList(dList, idrgDList, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']);
       const sProc = checkMatchList(pList, idrgPList, ['99.290']);
-      stats.totalScoreDiag += sDiag; stats.totalScoreProc += sProc;
+      if (hasIdrgData) { stats.totalScoreDiag += sDiag; stats.totalScoreProc += sProc; stats.scoredCount++; }
 
       const rawCoderId = String(r['CODER_ID'] || r['USER_CODER'] || r['CODER'] || 'UNKNOWN').trim();
       const cId = rawCoderId.includes(';') ? rawCoderId.split(';')[0].trim().toUpperCase() : rawCoderId.toUpperCase();
@@ -2079,7 +2081,7 @@ export default function App() {
     return {
       isLoaded: true,
       rawRows: rows, totalRows: rows.length, ...stats,
-      selisihTotal: stats.tIdrg - stats.tIna, rataInacbg: rows.length > 0 ? stats.tIna / rows.length : 0, rataIdrg: rows.length > 0 ? stats.tIdrg / rows.length : 0,
+      selisihTotal: stats.tIdrg - stats.tIna, rataIna: rows.length > 0 ? stats.tIna / rows.length : 0, rataIdrg: rows.length > 0 ? stats.tIdrg / rows.length : 0,
       monthlyArray: mArray, maxPosVal: maxP, absMaxSelisih: Math.max(Math.abs(Math.max(...mArray.map(d => d.selisih), 0)), Math.abs(Math.min(...mArray.map(d => d.selisih), 0)), 1),
       posPct: range > 0 ? (maxP / range) * 100 : 0, negPct: range > 0 ? (Math.abs(minN) / range) * 100 : 0,
       reportArray: Object.values(maps.report).sort((a, b) => a.sortVal - b.sortVal),
@@ -2094,7 +2096,7 @@ export default function App() {
       topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
       dischargeStats: maps.discharge,
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
-      inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.totalScoreDiag / rows.length, avgProc: stats.totalScoreProc / rows.length, discrepancies: maps.discrepancies },
+      inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies },
       auditFindings: maps.audit, kpiCoderArray: Object.values(maps.coder).sort((a, b) => b.cases - a.cases), naikKelasStats: Object.values(maps.naikKelas).sort((a, b) => b.totalNilai - a.totalNilai), icuStats: maps.icu,
       topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai }
     };
@@ -2366,7 +2368,7 @@ export default function App() {
         ? { t: 'w', icon: '⚠️', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} — potensi defisit klaim.` }
         : { t: 's', icon: '✔', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} — klaim dalam posisi surplus.` },
       selIdrgRS < 0
-        ? { t: 'w', icon: '⚠️', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} — evaluasi koding CL diperlukan.` }
+        ? { t: 'w', icon: '⚠️', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} — evaluasi dokumentasi Klinis Diagnosa Sekunder diperlukan.` }
         : { t: 's', icon: '✔', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} — koding complexity level sudah optimal.` },
       { t: 'i', icon: '📊', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
       { t: 'i', icon: '🏥', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
@@ -4535,7 +4537,7 @@ export default function App() {
                     <div className="p-6 bg-white border-b border-slate-100 shadow-sm">
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                          <LayoutDashboard size={14} className="text-teal-600" /> 
+                          <LayoutDashboard size={14} className="text-teal-600" />
                           {drilldown.type === 'audit_kpi' ? 'Ringkasan Akurasi Input Koding & Temuan Audit' : 'Insight Rata-rata 18 Komponen Biaya per Kasus'}
                         </h4>
                         <span className="text-[10px] bg-teal-50 text-teal-700 px-2.5 py-1 rounded-full font-black uppercase">
@@ -4548,7 +4550,7 @@ export default function App() {
                           const sesuai = drilldown.data.filter(f => auditVerdicts[`${f.sep}|${f.ruleId}`] === 'sesuai').length;
                           const tidak = drilldown.data.filter(f => auditVerdicts[`${f.sep}|${f.ruleId}`] === 'tidak').length;
                           const accuracy = (sesuai + tidak) > 0 ? (sesuai / (sesuai + tidak)) * 100 : 100;
-                          
+
                           return (
                             <>
                               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
