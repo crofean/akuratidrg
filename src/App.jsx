@@ -699,6 +699,7 @@ const compKeys = [
 const TABS = [
   { id: 'executive', label: 'Executive', icon: PieChart }, { id: 'report', label: 'Laporan', icon: Table2 }, { id: 'rekap', label: 'Rekap Kasus', icon: Layers },
   { id: 'mapping', label: 'Peta iDRG', icon: GitMerge }, { id: 'sl_cl_analysis', label: 'Analisis SL/CL', icon: Layers }, { id: 'dept', label: 'Kinerja Departemen', icon: Building2 }, { id: 'ksm', label: 'Kinerja KSM', icon: Users }, { id: 'dpjp', label: 'Kinerja DPJP', icon: User },
+  { id: 'insight_sosialisasi', label: 'Insight Sosialisasi', icon: Sparkles },
   { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award },
   { id: 'settings_ksm', label: 'Pengaturan KSM', icon: Settings },
   { id: 'user_management', label: 'Manajemen Akses', icon: ClipboardList }
@@ -1773,6 +1774,11 @@ export default function App() {
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [userManagementError, setUserManagementError] = useState('');
   const [userManagementSuccess, setUserManagementSuccess] = useState('');
+
+  // --- STATE UNTUK INSIGHT SOSIALISASI ---
+  const [selectedSocializationDept, setSelectedSocializationDept] = useState('');
+  const [selectedSocializationKsm, setSelectedSocializationKsm] = useState('');
+  const [isSlideMode, setIsSlideMode] = useState(false);
 
   const [showAdOverlay, setShowAdOverlay] = useState(true);
   const [initialAdDone, setInitialAdDone] = useState(false);
@@ -4438,6 +4444,521 @@ export default function App() {
     );
   };
 
+  const renderInsightSosialisasi = () => {
+    const allRows = dashData?.rawRows || [];
+    if (allRows.length === 0) {
+      return (
+        <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50">
+          <div className="mb-6"><AlertCircle size={48} className="text-teal-600 mx-auto animate-bounce" /></div>
+          <h2 className="text-2xl font-black mb-3 text-slate-800">Menunggu Dataset Utama...</h2>
+          <p className="text-slate-500 font-medium leading-relaxed">
+            Data sosialisasi belum dapat ditampilkan. Silakan unggah file klaim RS terlebih dahulu di tab <strong>Integrasi Data</strong>.
+          </p>
+        </div>
+      );
+    }
+
+    // 1. Get Unique Departments
+    const depts = Array.from(new Set(allRows.map(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides)))).filter(Boolean).sort();
+    
+    // Auto-select first department if none selected
+    let currentDept = selectedSocializationDept;
+    if (!currentDept && depts.length > 0) {
+      currentDept = depts[0];
+      setSelectedSocializationDept(depts[0]);
+    }
+
+    // 2. Get KSMs for the selected department
+    const ksmsForDept = Array.from(new Set(
+      allRows
+        .filter(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides) === currentDept)
+        .map(r => extractKsm(r['DPJP'] || '', ksmOverrides))
+    )).filter(Boolean).sort();
+
+    // Auto-select first KSM if none selected or not in list
+    let currentKsm = selectedSocializationKsm;
+    if ((!currentKsm || !ksmsForDept.includes(currentKsm)) && ksmsForDept.length > 0) {
+      currentKsm = ksmsForDept[0];
+      setSelectedSocializationKsm(ksmsForDept[0]);
+    }
+
+    // 3. Filter rows
+    const deptRows = allRows.filter(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides) === currentDept);
+    const ksmRows = deptRows.filter(r => extractKsm(r['DPJP'] || '', ksmOverrides) === currentKsm);
+
+    // 4. Hospital-wide metrics for comparison
+    const hTotal = allRows.length || 1;
+    const hSumLos = allRows.reduce((sum, r) => sum + (parseFloat(r._los) || 0), 0);
+    const hAvgLos = hSumLos / hTotal;
+    
+    const hAvgComps = compKeys.reduce((acc, c) => {
+      const sum = allRows.reduce((s, r) => s + (extract18(r)[c.key] || 0), 0);
+      acc[c.key] = sum / hTotal;
+      return acc;
+    }, {});
+
+    // 5. KSM-specific metrics
+    const kTotal = ksmRows.length || 1;
+    const kPctOfHospital = (ksmRows.length / (allRows.length || 1)) * 100;
+    
+    const kSumLos = ksmRows.reduce((sum, r) => sum + (parseFloat(r._los) || 0), 0);
+    const kAvgLos = kSumLos / kTotal;
+    const kMaxLos = Math.max(...ksmRows.map(r => parseFloat(r._los) || 0), 0);
+
+    const kSumRS = ksmRows.reduce((sum, r) => sum + (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0), 0);
+    const kAvgRS = kSumRS / kTotal;
+
+    const kSumIna = ksmRows.reduce((sum, r) => sum + (parseFloat(r.TOTAL_TARIF || 0) || 0), 0);
+    const kAvgIna = kSumIna / kTotal;
+
+    const kSumIdrg = ksmRows.reduce((sum, r) => sum + (parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0), 0);
+    const kAvgIdrg = kSumIdrg / kTotal;
+
+    const kSelisihIna = kSumIna - kSumRS;
+    const kAvgSelisihIna = kSelisihIna / kTotal;
+
+    const kSelisihIdrg = kSumIdrg - kSumRS;
+    const kAvgSelisihIdrg = kSelisihIdrg / kTotal;
+
+    const kAvgComps = compKeys.reduce((acc, c) => {
+      const sum = ksmRows.reduce((s, r) => s + (extract18(r)[c.key] || 0), 0);
+      acc[c.key] = sum / kTotal;
+      return acc;
+    }, {});
+
+    // 6. Quadrant standing logic
+    const ksmCounts = Array.from(new Set(allRows.map(r => extractKsm(r['DPJP'] || '', ksmOverrides)))).map(kName => {
+      return allRows.filter(r => extractKsm(r['DPJP'] || '', ksmOverrides) === kName).length;
+    });
+    const avgKsmVol = ksmCounts.reduce((s, c) => s + c, 0) / (ksmCounts.length || 1);
+
+    const isHighVolume = ksmRows.length >= avgKsmVol;
+    const isSurplus = kSelisihIna >= 0;
+
+    let quadrantBadge = "";
+    let quadrantClass = "";
+    let quadrantNote = "";
+    let quadrantTip = "";
+
+    if (isSurplus && isHighVolume) {
+      quadrantBadge = "Surplus & Volume Tinggi (Kinerja Utama)";
+      quadrantClass = "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-500/10";
+      quadrantNote = "Performa luar biasa! KSM ini memberikan volume kontribusi tinggi dengan margin surplus optimal.";
+      quadrantTip = "Pertahankan kualitas koding diagnosa utama dan sekunder. Dokumentasikan standardisasi Clinical Pathway ini sebagai panduan best practice rumah sakit.";
+    } else if (!isSurplus && isHighVolume) {
+      quadrantBadge = "Defisit & Volume Tinggi (Prioritas Sosialisasi)";
+      quadrantClass = "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-500/10";
+      quadrantNote = "Sangat Kritis! Kasus dengan volume tinggi beroperasi dalam kondisi defisit finansial kumulatif.";
+      quadrantTip = "Fokus Sosialisasi: Audit ketepatan dokumentasi koding klinis, periksa pencantuman komplikasi sekunder (severity level), serta evaluasi inefisiensi biaya obat/alkes penunjang medis.";
+    } else if (!isSurplus && !isHighVolume) {
+      quadrantBadge = "Defisit & Volume Rendah (Waspada)";
+      quadrantClass = "bg-amber-50 border-amber-200 text-amber-800 shadow-amber-500/10";
+      quadrantNote = "Perhatian Khusus! Layanan berbiaya tinggi dengan frekuensi kasus kecil namun berpotensi defisit.";
+      quadrantTip = "Evaluasi Kasus Individu: Tinjau LOS (Length of Stay) per pasien dan hilangkan pemeriksaan diagnostik atau terapi obat yang berlebihan/redundant.";
+    } else {
+      quadrantBadge = "Surplus & Volume Rendah (Potensi Pengembangan)";
+      quadrantClass = "bg-sky-50 border-sky-200 text-sky-800 shadow-sky-500/10";
+      quadrantNote = "Efisien & Menguntungkan! Model biaya efisien dengan margin surplus yang terjaga baik.";
+      quadrantTip = "Pengembangan Layanan: Tingkatkan kapasitas penerimaan pasien dan promosikan keunggulan klinis KSM ini untuk memperluas jangkauan layanan.";
+    }
+
+    // 7. Top 5 Diagnosa Utama Berdefisit (Primary Diagnoses ICD-10)
+    const deficitRows = ksmRows.filter(r => {
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+      return (ina - rs) < 0;
+    });
+
+    const diagGroups = {};
+    deficitRows.forEach(r => {
+      const code = String(r.DIAGNOSA || r.DIAGUTAMA || '-').trim();
+      if (!diagGroups[code]) {
+        diagGroups[code] = { code, desc: String(r.DESKRIPSI_DIAGNOSA || r.DESKRIPSI || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
+      }
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+      diagGroups[code].count++;
+      diagGroups[code].totalDefisit += (ina - rs);
+    });
+    const top5Diags = Object.values(diagGroups).sort((a, b) => a.totalDefisit - b.totalDefisit).slice(0, 5);
+
+    // 8. Top 5 Tindakan Utama Berdefisit (Primary Procedures ICD-9-CM)
+    const procGroups = {};
+    deficitRows.forEach(r => {
+      const code = String(r.PROSEDUR || r.PROSEDUR_UTAMA || r.PROCLIST || '-').trim().split(/[;, ]/)[0] || '-';
+      if (code === '-' || code === '') return;
+      if (!procGroups[code]) {
+        procGroups[code] = { code, desc: String(r.DESKRIPSI_PROSEDUR || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
+      }
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+      procGroups[code].count++;
+      procGroups[code].totalDefisit += (ina - rs);
+    });
+    const top5Procs = Object.values(procGroups).sort((a, b) => a.totalDefisit - b.totalDefisit).slice(0, 5);
+
+    // 9. Top 5 Group INACBG Utama (Most frequent with net position)
+    const inaGroups = {};
+    ksmRows.forEach(r => {
+      const code = String(r.INACBG || '-').trim();
+      if (!inaGroups[code]) {
+        inaGroups[code] = { code, desc: String(r.DESKRIPSI_INACBG || 'Tanpa Deskripsi'), count: 0, totalSelisih: 0 };
+      }
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+      inaGroups[code].count++;
+      inaGroups[code].totalSelisih += (ina - rs);
+    });
+    const topInaGroups = Object.values(inaGroups).sort((a, b) => b.count - a.count).slice(0, 5);
+
+    // 10. Top 5 Group iDRG Utama (Most frequent with net position)
+    const idrgGroups = {};
+    ksmRows.forEach(r => {
+      const code = String(r.IDRG_DRG_CODE || '-').trim();
+      if (!idrgGroups[code]) {
+        idrgGroups[code] = { code, desc: String(r.IDRG_DRG_DESCRIPTION || 'Tanpa Deskripsi'), count: 0, totalSelisih: 0 };
+      }
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+      idrgGroups[code].count++;
+      idrgGroups[code].totalSelisih += (idrg - rs);
+    });
+    const topIdrgGroups = Object.values(idrgGroups).sort((a, b) => b.count - a.count).slice(0, 5);
+
+    // Dynamic Clinical Guidelines Generator
+    const getCodingGuideline = (code) => {
+      const c = String(code).toUpperCase();
+      if (c.startsWith('A') || c.startsWith('B')) return "Pastikan mencatat komplikasi infeksi seperti Sepsis (A41.9) atau Syok Septik (R57.2) jika kondisi klinis terpenuhi.";
+      if (c.startsWith('E')) return "Cantumkan manifestasi organ diabetik spesifik: Neuropati (E11.4), Nefropati (E11.2), atau Ulkus/Gangren (E11.5) sebagai diagnosis kombinasi.";
+      if (c.startsWith('I')) return "Bila ada gagal jantung kongestif akibat hipertensi kronis, gunakan kode kombinasi Penyakit Jantung Hipertensi dengan Gagal Jantung (I11.0).";
+      if (c.startsWith('J')) return "Pastikan mencatat tipe Pneumonia secara spesifik (misal Bakterial J15) atau komplikasi gagal napas akut (J96.0) sebagai sekunder.";
+      if (c.startsWith('N')) return "Untuk kasus batu saluran kemih dengan hidronefrosis penyerta, gunakan kode kombinasi N20.9 (Batu ginjal/ureter dengan hidronefrosis).";
+      if (c.startsWith('S') || c.startsWith('T')) return "Dokumentasikan dengan lengkap penyebab cedera eksternal (V-Y codes) dan diagnosis sekunder perdarahan traumatis.";
+      return "Tinjau kembali rekam medis lengkap untuk memastikan seluruh diagnosa sekunder/penyerta (terutama yang menaikkan tingkat keparahan / severity level CC/MCC) tercatat dengan presisi.";
+    };
+
+    const getProcedureGuideline = (code) => {
+      const c = String(code);
+      if (c.startsWith('99.1') || c.startsWith('99.2')) return "Pastikan lembar observasi obat khusus/imunisasi terisi lengkap untuk mencegah penolakan klaim top-up.";
+      if (c.startsWith('35.') || c.startsWith('36.')) return "Dokumentasikan jenis implan atau alkes habis pakai yang digunakan di laporan operasi untuk mempermudah verifikasi.";
+      if (c.startsWith('88.') || c.startsWith('87.')) return "Pastikan hasil eksisi patologi anatomi atau penafsiran hasil radiologi (X-Ray/CT-Scan/MRI) ditandatangani dokter spesialis terkait.";
+      return "Lengkapi lembar laporan operasi / tindakan dengan durasi, nama operator utama, dan tanda tangan dokter penanggung jawab pelayanan (DPJP).";
+    };
+
+    const exportKsmSocialization = () => {
+      const headers = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
+      const rows = [
+        ['Jumlah Kasus', ksmRows.length, allRows.length],
+        ['Persentase Kasus RS', `${kPctOfHospital.toFixed(1)}%`, '100%'],
+        ['Rata-rata LOS (Hari)', kAvgLos.toFixed(1), hAvgLos.toFixed(1)],
+        ['LOS Maksimal (Hari)', kMaxLos, Math.max(...allRows.map(r => parseFloat(r._los) || 0), 0)],
+        ['Rata-rata Biaya Riil RS', Math.round(kAvgRS), Math.round(allRows.reduce((s, r) => s + (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0), 0) / allRows.length)],
+        ['Rata-rata Tarif INA-CBG', Math.round(kAvgIna), Math.round(allRows.reduce((s, r) => s + (parseFloat(r.TOTAL_TARIF || 0) || 0), 0) / allRows.length)],
+        ['Rata-rata Tarif iDRG', Math.round(kAvgIdrg), Math.round(allRows.reduce((s, r) => s + (parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0), 0) / allRows.length)],
+        ['Total Selisih INA-RS', kSelisihIna, allRows.reduce((s, r) => s + (parseFloat(r.TOTAL_TARIF || 0) - (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0)), 0)],
+        ['Total Selisih iDRG-RS', kSelisihIdrg, allRows.reduce((s, r) => s + (parseFloat(r.IDRG_TOTAL_TARIF || 0) - (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0)), 0)],
+        ['Status Kinerja Klinis', quadrantBadge, 'N/A']
+      ];
+      exportToXlsx(`Sosialisasi_KSM_${currentKsm.substring(0, 15)}`, headers, rows);
+    };
+
+    return (
+      <div className={`space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isSlideMode ? 'p-6 bg-slate-900 text-white rounded-3xl' : ''}`}>
+        
+        {/* HEADER & TOP CONTROLS */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-teal-100 shadow-sm print:hidden">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-teal-600 text-white rounded-2xl shadow-lg shadow-teal-600/20">
+              <Sparkles size={24} className="animate-pulse" />
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-slate-800 tracking-tight">Insight Sosialisasi Dokter Spesialis</h1>
+              <p className="text-xs font-semibold text-slate-400 mt-0.5">Bahan presentasi evaluasi kendali mutu dan kendali biaya per KSM / Departemen.</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => setIsSlideMode(!isSlideMode)}
+              className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all border shadow-sm uppercase tracking-wider ${isSlideMode ? 'bg-teal-600 text-white border-teal-500' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
+              title="Toggle Mode Slide / Layar Penuh Presentasi"
+            >
+              📺 {isSlideMode ? 'Mode Biasa' : 'Mode Slide / Presentasi'}
+            </button>
+            <button
+              onClick={exportKsmSocialization}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
+              title="Ekspor data ringkasan KSM ke Excel"
+            >
+              <Download size={14} /> Ekspor Excel
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
+              title="Cetak/Simpan Handout Sosialisasi ke PDF"
+            >
+              <Printer size={14} /> Cetak Handout PDF
+            </button>
+          </div>
+        </div>
+
+        {/* INTERACTIVE HIERARCHY SELECTOR */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-3xl border border-slate-200/60 shadow-sm print:hidden">
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Building2 size={12} className="text-teal-600" /> Pilih Departemen
+            </label>
+            <select
+              value={currentDept}
+              onChange={e => {
+                setSelectedSocializationDept(e.target.value);
+                setSelectedSocializationKsm(''); // Reset KSM
+              }}
+              className="w-full px-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 font-bold focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all cursor-pointer shadow-inner"
+            >
+              {depts.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Users size={12} className="text-teal-600" /> Pilih Kelompok Staf Medis (KSM)
+            </label>
+            <select
+              value={currentKsm}
+              onChange={e => setSelectedSocializationKsm(e.target.value)}
+              className="w-full px-4 py-3 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 font-bold focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all cursor-pointer shadow-inner"
+            >
+              {ksmsForDept.map(k => <option key={k} value={k}>{k}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* PRINT BRANDING (Visible only when printing) */}
+        <div className="hidden print:flex items-center justify-between border-b-2 border-teal-600 pb-4 mb-6">
+          <div className="flex items-center gap-3">
+            <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="Logo" className="w-12 h-12 object-contain" />
+            <div>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">AKURAT iDRG Analytics Platform</h2>
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Laporan Sosialisasi & Evaluasi Kendali Mutu Kendali Biaya (KMKB)</p>
+            </div>
+          </div>
+          <div className="text-right text-[10px] font-bold text-slate-500">
+            <div>Departemen: <span className="text-slate-800">{currentDept}</span></div>
+            <div>KSM: <span className="text-teal-600">{currentKsm}</span></div>
+            <div>Tanggal Cetak: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+          </div>
+        </div>
+
+        {/* PRESENTATION SLIDE - EXECUTIVE SCORECARDS */}
+        <div className={`p-8 rounded-[2.5rem] border shadow-2xl flex flex-col gap-6 relative overflow-hidden transition-all duration-300 ${isSlideMode ? 'bg-slate-800 border-slate-700/50 shadow-slate-950/40 text-white' : 'bg-gradient-to-br from-white to-teal-50/20 border-teal-100/70 shadow-teal-900/5'}`}>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
+            <div>
+              <span className={`text-[10px] font-black tracking-[0.2em] uppercase px-3 py-1 rounded-full ${isSlideMode ? 'bg-teal-500/20 text-teal-300' : 'bg-teal-50 text-teal-700'}`}>Bahan Sosialisasi Medis</span>
+              <h2 className={`text-2xl font-black mt-2 tracking-tight ${isSlideMode ? 'text-white' : 'text-slate-800'}`}>
+                Evaluasi Kinerja Klinis: <span className="text-teal-600 font-extrabold">{currentKsm}</span>
+              </h2>
+              <p className={`text-[11px] font-medium mt-1 ${isSlideMode ? 'text-slate-400' : 'text-slate-400'}`}>
+                Membawahi Departemen: <strong className={isSlideMode ? 'text-slate-300' : 'text-slate-700'}>{currentDept}</strong>
+              </p>
+            </div>
+            
+            {/* Clinical Standing Quadrant */}
+            <div className={`p-4 rounded-2xl border flex flex-col gap-1.5 max-w-sm shrink-0 shadow-lg ${quadrantClass}`}>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🧭</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">Kuadran Klinis</span>
+              </div>
+              <span className="text-sm font-black tracking-tight">{quadrantBadge}</span>
+              <p className="text-[10px] leading-relaxed font-semibold opacity-90">{quadrantNote}</p>
+            </div>
+          </div>
+
+          {/* Dinamic Rekomendasi Sosialisasi */}
+          <div className={`p-5 rounded-2xl border flex gap-3.5 items-start ${isSlideMode ? 'bg-slate-700/50 border-slate-600 text-slate-100 font-semibold' : 'bg-teal-50/40 border-teal-100 text-teal-800 font-semibold'}`}>
+            <div className="p-2 bg-teal-600 text-white rounded-xl shadow-md shrink-0"><Zap size={18} /></div>
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider block opacity-70">Rekomendasi Sosialisasi Ke Dokter Spesialis</span>
+              <p className="text-xs font-semibold leading-relaxed mt-1">{quadrantTip}</p>
+            </div>
+          </div>
+
+          {/* GLOWING SCORECARDS */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+            {[
+              { label: 'Jumlah Kasus', value: `${ksmRows.length} kasus`, sub: `${kPctOfHospital.toFixed(1)}% dari total RS`, color: 'from-sky-500/10 to-blue-600/5 text-sky-700 border-sky-100/50' },
+              { label: 'Rerata Selisih (INA-RS)', value: formatRp(kAvgSelisihIna), sub: `Total: ${formatRp(kSelisihIna)}`, color: kSelisihIna >= 0 ? 'from-emerald-500/10 to-green-600/5 text-emerald-700 border-emerald-100/50' : 'from-rose-500/10 to-red-600/5 text-rose-700 border-rose-100/50' },
+              { label: 'Rerata iDRG vs INA-CBG', value: `+${formatRp(kAvgIdrg - kAvgIna)}`, sub: `Total Potensi: +${formatRp(kSumIdrg - kSumIna)}`, color: 'from-purple-500/10 to-indigo-600/5 text-purple-700 border-purple-100/50' },
+              { label: 'Rerata LOS vs RS', value: `${kAvgLos.toFixed(1)} Hari`, sub: `Rerata RS: ${hAvgLos.toFixed(1)} | Max: ${kMaxLos}`, color: kAvgLos > hAvgLos ? 'from-orange-500/10 to-amber-600/5 text-orange-700 border-orange-100/50' : 'from-teal-500/10 to-emerald-600/5 text-teal-700 border-teal-100/50' }
+            ].map((card, i) => (
+              <div key={i} className={`p-4.5 rounded-2xl border-2 bg-gradient-to-br ${card.color} flex flex-col gap-1 shadow-sm`}>
+                <span className={`text-[10px] font-bold uppercase tracking-wider block ${isSlideMode ? 'text-slate-400' : 'text-slate-400'}`}>{card.label}</span>
+                <span className={`text-xl font-black tracking-tight ${isSlideMode ? 'text-white' : 'text-slate-800'}`}>{card.value}</span>
+                <span className="text-[10px] font-bold opacity-75">{card.sub}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* GROUP CLUSTERS: INACBG & iDRG */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Top 5 INACBG Groups */}
+          <Card className="flex flex-col">
+            <div className="p-4 bg-sky-50 border-b border-sky-100/70 flex items-center justify-between">
+              <h3 className="font-extrabold text-slate-800 flex items-center gap-2"><Layers size={16} className="text-sky-600" /> Top 5 Group INACBG Utama</h3>
+              <span className="text-[9px] font-black bg-sky-200 text-sky-800 px-2 py-0.5 rounded-full uppercase">KSM Kasus</span>
+            </div>
+            <div className="p-4 space-y-3 flex-1 overflow-auto max-h-[350px]">
+              {topInaGroups.map((g, idx) => (
+                <div key={idx} className="flex gap-3 bg-slate-50 hover:bg-slate-100/80 p-3 rounded-xl border border-slate-200/50 transition-all cursor-pointer" onClick={() => openDrilldown(`INA Group: ${g.code}`, row => String(row.INACBG).trim() === g.code)}>
+                  <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center font-black text-sky-700 border border-slate-200/80 shrink-0 text-xs shadow-sm">
+                    {g.code}
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <span className="text-xs font-black text-slate-800 truncate" title={g.desc}>{g.desc}</span>
+                    <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus • Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
+                  </div>
+                </div>
+              ))}
+              {topInaGroups.length === 0 && <div className="p-6 text-center text-slate-400 text-xs font-semibold">Tidak ada grup INACBG terdeteksi.</div>}
+            </div>
+          </Card>
+
+          {/* Top 5 iDRG Groups */}
+          <Card className="flex flex-col">
+            <div className="p-4 bg-orange-50 border-b border-orange-100/70 flex items-center justify-between">
+              <h3 className="font-extrabold text-slate-800 flex items-center gap-2"><Layers size={16} className="text-orange-600" /> Top 5 Group iDRG Utama</h3>
+              <span className="text-[9px] font-black bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full uppercase font-bold">iDRG Kasus</span>
+            </div>
+            <div className="p-4 space-y-3 flex-1 overflow-auto max-h-[350px]">
+              {topIdrgGroups.map((g, idx) => (
+                <div key={idx} className="flex gap-3 bg-slate-50 hover:bg-slate-100/80 p-3 rounded-xl border border-slate-200/50 transition-all cursor-pointer" onClick={() => openDrilldown(`iDRG Group: ${g.code}`, row => String(row.IDRG_DRG_CODE).trim() === g.code)}>
+                  <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center font-black text-orange-700 border border-slate-200/80 shrink-0 text-xs shadow-sm">
+                    {g.code}
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <span className="text-xs font-black text-slate-800 truncate" title={g.desc}>{g.desc}</span>
+                    <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus • Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
+                  </div>
+                </div>
+              ))}
+              {topIdrgGroups.length === 0 && <div className="p-6 text-center text-slate-400 text-xs font-semibold">Tidak ada grup iDRG terdeteksi.</div>}
+            </div>
+          </Card>
+        </div>
+
+        {/* DOUBLE ACTIONABLE TARGET LISTS (DIAGNOSA VS TINDAKAN) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Top 5 Diagnosa Utama Berdefisit */}
+          <Card className="flex flex-col">
+            <div className="p-5 border-b border-slate-100 bg-red-50 flex items-center gap-3">
+              <div className="p-2 bg-red-100 text-red-700 rounded-xl"><AlertTriangle size={18} /></div>
+              <div>
+                <h3 className="font-extrabold text-slate-800">Top 5 Diagnosa Utama Berdefisit (ICD-10)</h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Diagnosa primer penyumbang akumulasi defisit tertinggi — Klik untuk rincian kasus</p>
+              </div>
+            </div>
+            <div className="p-4 space-y-4 flex-1 overflow-auto max-h-[500px]">
+              {top5Diags.map((d, idx) => (
+                <div key={idx} className="bg-white p-4.5 rounded-2xl border-2 border-red-100 shadow-sm flex flex-col gap-3 hover:border-red-300 transition-all cursor-pointer" onClick={() => openDrilldown(`Diagnosa Berdefisit: ${d.code}`, row => String(row.DIAGNOSA || row.DIAGUTAMA).trim() === d.code)}>
+                  <div className="flex justify-between items-start gap-3">
+                    <span className="px-2.5 py-1 bg-red-50 text-red-700 border border-red-200 rounded-lg font-black text-xs shrink-0">{d.code}</span>
+                    <span className="text-xs font-black text-slate-700 flex-1 truncate">{d.desc}</span>
+                    <span className="font-black text-red-600 text-xs whitespace-nowrap">{formatRp(d.totalDefisit)}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-semibold text-slate-600">
+                    <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">💡 Rekomendasi Koding / Sosialisasi Dokter:</span>
+                    {getCodingGuideline(d.code)}
+                  </div>
+                  <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wide flex items-center justify-between">
+                    <span>Kasus Terdampak: <strong>{d.count} kali</strong></span>
+                    <span>Rata-rata Kerugian/Kasus: <strong className="text-red-500">{formatRp(d.totalDefisit / d.count)}</strong></span>
+                  </div>
+                </div>
+              ))}
+              {top5Diags.length === 0 && <div className="p-10 text-center text-slate-400 text-sm font-semibold">Hebat! Tidak ada diagnosa utama yang mengalami defisit finansial di KSM ini.</div>}
+            </div>
+          </Card>
+
+          {/* Top 5 Tindakan Utama Berdefisit */}
+          <Card className="flex flex-col">
+            <div className="p-5 border-b border-slate-100 bg-amber-50 flex items-center gap-3">
+              <div className="p-2 bg-amber-100 text-amber-700 rounded-xl"><Scissors size={18} /></div>
+              <div>
+                <h3 className="font-extrabold text-slate-800">Top 5 Tindakan Utama Berdefisit (ICD-9-CM)</h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">Prosedur penunjang / operasi utama penyumbang kerugian terbesar — Klik untuk rincian kasus</p>
+              </div>
+            </div>
+            <div className="p-4 space-y-4 flex-1 overflow-auto max-h-[500px]">
+              {top5Procs.map((p, idx) => (
+                <div key={idx} className="bg-white p-4.5 rounded-2xl border-2 border-amber-100 shadow-sm flex flex-col gap-3 hover:border-amber-300 transition-all cursor-pointer" onClick={() => openDrilldown(`Tindakan Berdefisit: ${p.code}`, row => String(row.PROSEDUR || row.PROSEDUR_UTAMA || row.PROCLIST || '-').trim().split(/[;, ]/)[0] === p.code)}>
+                  <div className="flex justify-between items-start gap-3">
+                    <span className="px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg font-black text-xs shrink-0">{p.code}</span>
+                    <span className="text-xs font-black text-slate-700 flex-1 truncate">{p.desc}</span>
+                    <span className="font-black text-amber-600 text-xs whitespace-nowrap">{formatRp(p.totalDefisit)}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-semibold text-slate-600">
+                    <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">💡 Rekomendasi Dokumentasi Klinis:</span>
+                    {getProcedureGuideline(p.code)}
+                  </div>
+                  <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wide flex items-center justify-between">
+                    <span>Kasus Terdampak: <strong>{p.count} kali</strong></span>
+                    <span>Rata-rata Kerugian/Kasus: <strong className="text-amber-500">{formatRp(p.totalDefisit / p.count)}</strong></span>
+                  </div>
+                </div>
+              ))}
+              {top5Procs.length === 0 && <div className="p-10 text-center text-slate-400 text-sm font-semibold">Hebat! Tidak ada tindakan utama yang mengalami defisit finansial di KSM ini.</div>}
+            </div>
+          </Card>
+
+        </div>
+
+        {/* 18-COMPONENT COST EFFICIENCY ANALYZER (KSM vs Hospital Average) */}
+        <Card className="overflow-hidden">
+          <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-teal-50 to-white flex items-center gap-3">
+            <div className="p-2 bg-teal-100 text-teal-700 rounded-xl"><Layers size={18} /></div>
+            <div>
+              <h3 className="font-extrabold text-slate-800 font-semibold">Analisis Deviasi 18 Komponen Biaya</h3>
+              <p className="text-[10px] text-slate-400 mt-0.5">Perbandingan rata-rata biaya satuan komponen KSM terhadap Rata-rata Rumah Sakit secara keseluruhan.</p>
+            </div>
+          </div>
+          <div className="p-5 overflow-x-auto custom-scrollbar">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {compKeys.map((c) => {
+                const kAvg = kAvgComps[c.key] || 0;
+                const hAvg = hAvgComps[c.key] || 0;
+                const deviation = hAvg > 0 ? ((kAvg - hAvg) / hAvg) * 100 : 0;
+                
+                // Color formatting
+                let badgeClass = "bg-slate-50 text-slate-600 border-slate-200";
+                if (deviation > 10) {
+                  badgeClass = "bg-rose-50 text-rose-700 border-rose-200";
+                } else if (deviation < -10) {
+                  badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                }
+
+                return (
+                  <div key={c.key} className={`p-3 rounded-xl border-2 flex flex-col gap-1 shadow-sm ${badgeClass}`}>
+                    <span className="text-[9px] font-black uppercase tracking-wider block truncate" title={c.label}>{c.label}</span>
+                    <span className="text-sm font-black mt-0.5">{formatRp(kAvg)}</span>
+                    <div className="flex items-center justify-between text-[9px] font-bold opacity-75 mt-1 border-t border-dashed border-current/20 pt-1">
+                      <span>RS: {formatRpEx(hAvg)}</span>
+                      <span className="font-black">{deviation >= 0 ? '+' : ''}{deviation.toFixed(1)}%</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="p-3 text-center text-[10px] font-bold text-slate-400 bg-slate-50 border-t">
+            * Keterangan: Warna <span className="text-rose-500 font-extrabold">Merah</span> menandakan pengeluaran KSM lebih dari 10% di atas Rata-rata RS. Warna <span className="text-emerald-500 font-extrabold">Hijau</span> menandakan pengeluaran di bawah rata-rata RS (Efisien).
+          </div>
+        </Card>
+
+      </div>
+    );
+  };
+
   const renderDpjp = () => {
     const data = dashData?.dpjpSummaryArray || [];
 
@@ -6430,6 +6951,7 @@ export default function App() {
                         {subTab === 'sl_cl_analysis' && renderSlClAnalysis()} {subTab === 'dept' && renderDepartemen()} {subTab === 'ksm' && renderKsm()} {subTab === 'dpjp' && renderDpjp()} {subTab === 'kpi_coder' && renderKpiCoder()}
                         {subTab === 'mapping' && renderPemetaan()} {subTab === 'discrepancy' && renderKetepatan()} {subTab === 'audit' && renderAudit()}
                         {subTab === 'naik_kelas' && renderNaikKelas()} {subTab === 'icu' && renderICU()}
+                        {subTab === 'insight_sosialisasi' && renderInsightSosialisasi()}
                         {subTab === 'settings_ksm' && renderKsmMappingSettings()}
                       </div>
                     )}
