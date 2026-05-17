@@ -4461,12 +4461,8 @@ export default function App() {
     // 1. Get Unique Departments
     const depts = Array.from(new Set(allRows.map(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides)))).filter(Boolean).sort();
     
-    // Auto-select first department if none selected
-    let currentDept = selectedSocializationDept;
-    if (!currentDept && depts.length > 0) {
-      currentDept = depts[0];
-      setSelectedSocializationDept(depts[0]);
-    }
+    // Determine active department (without setting state during render)
+    const currentDept = selectedSocializationDept || depts[0] || '';
 
     // 2. Get KSMs for the selected department
     const ksmsForDept = Array.from(new Set(
@@ -4475,12 +4471,10 @@ export default function App() {
         .map(r => extractKsm(r['DPJP'] || '', ksmOverrides))
     )).filter(Boolean).sort();
 
-    // Auto-select first KSM if none selected or not in list
-    let currentKsm = selectedSocializationKsm;
-    if ((!currentKsm || !ksmsForDept.includes(currentKsm)) && ksmsForDept.length > 0) {
-      currentKsm = ksmsForDept[0];
-      setSelectedSocializationKsm(ksmsForDept[0]);
-    }
+    // Determine active KSM (without setting state during render)
+    const currentKsm = selectedSocializationKsm && ksmsForDept.includes(selectedSocializationKsm)
+      ? selectedSocializationKsm
+      : (ksmsForDept[0] || '');
 
     // 3. Filter rows
     const deptRows = allRows.filter(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides) === currentDept);
