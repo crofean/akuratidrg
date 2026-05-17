@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Actual submission function
         const submitRegistrationForm = () => {
             // REAL SUBMISSION TO GOOGLE SHEETS
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzIJd7V5NkJIFJ44MLb9IS9QpDauTClCulaZ2ahTHOWdsG4Drp-jBjiRcRw6BZr8thC/exec';
             
             const submitBtn = form.querySelector('.btn-submit');
             const originalBtnText = submitBtn.innerHTML;

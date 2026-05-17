@@ -1760,9 +1760,12 @@ export default function App() {
   });
   const [registrationScriptUrl, setRegistrationScriptUrl] = useState(() => {
     const saved = localStorage.getItem('sak_registration_script_url');
-    const oldUrl = 'https://script.google.com/macros/s/AKfycbwiCOoo3cs6B_VJjlSG-UCsQEjCV687TnruZ1TD6mNjUXxzZnCYJ0pxQjMIjffz6X7Z/exec';
-    const oldUrl2 = 'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec';
-    return (saved && saved !== oldUrl && saved !== oldUrl2) ? saved : 'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec';
+    const oldUrls = [
+      'https://script.google.com/macros/s/AKfycbwiCOoo3cs6B_VJjlSG-UCsQEjCV687TnruZ1TD6mNjUXxzZnCYJ0pxQjMIjffz6X7Z/exec',
+      'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec',
+      'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec'
+    ];
+    return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbzIJd7V5NkJIFJ44MLb9IS9QpDauTClCulaZ2ahTHOWdsG4Drp-jBjiRcRw6BZr8thC/exec';
   });
   const [pendingUsers, setPendingUsers] = useState([]);
   const [activeUsersList, setActiveUsersList] = useState([]);
@@ -1845,6 +1848,20 @@ export default function App() {
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
+      // Fetch helper dengan timeout (10 detik) untuk mencegah hang
+      const fetchWithTimeout = async (url, timeout = 10000) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          clearTimeout(id);
+          return response;
+        } catch (err) {
+          clearTimeout(id);
+          throw err;
+        }
+      };
+
       // Helper robust mapping case-insensitive & space-tolerant
       const findHeaderIndex = (headers, possibleNames, defaultIdx) => {
         const cleanedHeaders = headers.map(h => h.trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
@@ -1858,7 +1875,7 @@ export default function App() {
 
       // 1. Fetch active users list (gid=0)
       const activeUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=0`;
-      const activeRes = await fetch(activeUrl);
+      const activeRes = await fetchWithTimeout(activeUrl);
       if (!activeRes.ok) throw new Error("Gagal mengunduh daftar User Aktif dari Google Sheets.");
       const activeText = await activeRes.text();
       const activeRows = activeText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
@@ -1877,7 +1894,7 @@ export default function App() {
 
       // 2. Fetch pending users list (gid=registrationGid)
       const pendingUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=${registrationGid}`;
-      const pendingRes = await fetch(pendingUrl);
+      const pendingRes = await fetchWithTimeout(pendingUrl);
       if (!pendingRes.ok) throw new Error("Gagal mengunduh daftar Pengajuan dari Google Sheets. Pastikan GID Tab Permohonan sudah benar.");
       const pendingText = await pendingRes.text();
       const pendingRows = pendingText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
@@ -5854,7 +5871,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.8 (170526-07.45)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.1 (170526-15.50)</p>
               </div>
             </div>
           </div>
@@ -6288,7 +6305,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.8 (170526-07.45)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.1 (170526-15.50)</span>
                 </div>
               )}
             </div>
@@ -6436,7 +6453,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.0</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.1</span>
             </p>
           </footer>
         </div>
