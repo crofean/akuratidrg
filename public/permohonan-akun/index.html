@@ -87,7 +87,11 @@
                     <div class="credentials-grid">
                         <div class="input-group">
                             <label for="username">Nama Pengguna (Username) <span class="required">*</span></label>
-                            <input type="text" id="username" name="username" placeholder="Buat username unik" required>
+                            <div class="username-wrapper" style="position: relative; display: flex; align-items: center;">
+                                <input type="text" id="username" name="username" placeholder="Buat username unik" required style="width: 100%; padding-right: 40px;">
+                                <span id="usernameStatusIcon" style="position: absolute; right: 14px; display: none; align-items: center; justify-content: center; pointer-events: none;"></span>
+                            </div>
+                            <small id="usernameStatusText" style="font-size: 10px; font-weight: 700; display: block; margin-top: 4px; transition: all 0.3s;"></small>
                         </div>
                         <div class="input-group">
                             <label for="password">Kata Sandi (Password) <span class="required">*</span></label>

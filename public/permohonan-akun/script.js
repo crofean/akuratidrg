@@ -5,6 +5,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('successModal');
     const displayUserName = document.getElementById('displayUserName');
 
+    const usernameInput = document.getElementById('username');
+    const usernameStatusText = document.getElementById('usernameStatusText');
+    const usernameStatusIcon = document.getElementById('usernameStatusIcon');
+    let existingUsernames = ['admin']; // fallback list
+    let isUsernameAvailable = true;
+
+    // Prefetch all active/registered usernames from the Google Sheet
+    const fetchExistingUsernames = async () => {
+        try {
+            const res = await fetch("https://docs.google.com/spreadsheets/d/1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98/export?format=csv&gid=0");
+            if (!res.ok) throw new Error();
+            const csvText = await res.text();
+            const rows = csvText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim()));
+            const headers = rows[0] || [];
+            const userIdx = headers.indexOf("USERNAME");
+            if (userIdx !== -1) {
+                const sheetUsers = rows.slice(1).map(r => String(r[userIdx] || '').toLowerCase().trim());
+                existingUsernames = [...new Set([...existingUsernames, ...sheetUsers])];
+            }
+        } catch (err) {
+            console.warn("Gagal mengambil daftar username terdaftar untuk validasi unik.", err);
+        }
+    };
+    fetchExistingUsernames();
+
+    // Check username availability in real-time
+    usernameInput.addEventListener('input', () => {
+        const val = usernameInput.value.trim().toLowerCase();
+        
+        if (val.length === 0) {
+            usernameStatusText.textContent = '';
+            usernameStatusIcon.style.display = 'none';
+            isUsernameAvailable = true;
+            return;
+        }
+
+        if (val.length < 3) {
+            usernameStatusText.textContent = 'Nama pengguna minimal 3 karakter';
+            usernameStatusText.style.color = '#ef4444'; // red
+            usernameStatusIcon.innerHTML = '<i data-lucide="x-circle" style="color: #ef4444; width: 16px; height: 16px;"></i>';
+            usernameStatusIcon.style.display = 'flex';
+            lucide.createIcons();
+            isUsernameAvailable = false;
+            return;
+        }
+
+        if (existingUsernames.includes(val)) {
+            usernameStatusText.textContent = 'Username sudah terdaftar! Gunakan nama lain.';
+            usernameStatusText.style.color = '#ef4444'; // red
+            usernameStatusIcon.innerHTML = '<i data-lucide="x-circle" style="color: #ef4444; width: 16px; height: 16px;"></i>';
+            usernameStatusIcon.style.display = 'flex';
+            lucide.createIcons();
+            isUsernameAvailable = false;
+        } else {
+            usernameStatusText.textContent = 'Username tersedia!';
+            usernameStatusText.style.color = '#10b981'; // emerald green
+            usernameStatusIcon.innerHTML = '<i data-lucide="check-circle" style="color: #10b981; width: 16px; height: 16px;"></i>';
+            usernameStatusIcon.style.display = 'flex';
+            lucide.createIcons();
+            isUsernameAvailable = true;
+        }
+    });
+
     // Update agreement status badge
     agreementCheckbox.addEventListener('change', () => {
         if (agreementCheckbox.checked) {
@@ -37,6 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form Submission
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        if (!isUsernameAvailable) {
+            alert('Username tidak tersedia! Harap gunakan username unik lainnya.');
+            return;
+        }
 
         // Basic Validations
         const password = document.getElementById('password').value;
