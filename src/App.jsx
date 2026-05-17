@@ -1795,6 +1795,7 @@ export default function App() {
   const [selectedSocializationKsm, setSelectedSocializationKsm] = useState('');
   const [isSlideMode, setIsSlideMode] = useState(false);
   const [socializationScatterMode, setSocializationScatterMode] = useState('inacbg');
+  const [draftKsmOverrides, setDraftKsmOverrides] = useState(null);
 
   const [showAdOverlay, setShowAdOverlay] = useState(true);
   const [initialAdDone, setInitialAdDone] = useState(false);
@@ -5633,19 +5634,52 @@ export default function App() {
       d.norm.toLowerCase().includes(overrideSearch.toLowerCase())
     );
 
+    const activeOverrides = draftKsmOverrides !== null ? draftKsmOverrides : ksmOverrides;
+    const isDirty = draftKsmOverrides !== null && JSON.stringify(draftKsmOverrides) !== JSON.stringify(ksmOverrides);
+
+    // Count pending changes
+    let pendingChangesCount = 0;
+    if (draftKsmOverrides !== null) {
+      const allKeys = new Set([...Object.keys(ksmOverrides), ...Object.keys(draftKsmOverrides)]);
+      allKeys.forEach(k => {
+        const oldVal = ksmOverrides[k];
+        const newVal = draftKsmOverrides[k];
+        if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
+          pendingChangesCount++;
+        }
+      });
+    }
+
     const updateOverride = (norm, ksm, dept) => {
-      setKsmOverrides(prev => ({
-        ...prev,
-        [norm]: { ksm, dept }
-      }));
+      setDraftKsmOverrides(prev => {
+        const base = prev !== null ? prev : ksmOverrides;
+        return {
+          ...base,
+          [norm]: { ksm, dept }
+        };
+      });
     };
 
     const removeOverride = (norm) => {
-      setKsmOverrides(prev => {
-        const next = { ...prev };
+      setDraftKsmOverrides(prev => {
+        const base = prev !== null ? prev : ksmOverrides;
+        const next = { ...base };
         delete next[norm];
         return next;
       });
+    };
+
+    const saveChanges = () => {
+      if (draftKsmOverrides !== null) {
+        setKsmOverrides(draftKsmOverrides);
+        setDraftKsmOverrides(null);
+        setUserManagementSuccess("Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
+        setTimeout(() => setUserManagementSuccess(""), 4000);
+      }
+    };
+
+    const cancelChanges = () => {
+      setDraftKsmOverrides(null);
     };
 
     return (
@@ -5673,10 +5707,39 @@ export default function App() {
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-sky-600 shadow-sm"><Users size={20} /></div>
             <div>
               <p className="text-[10px] font-black text-sky-600 uppercase tracking-widest">Manual Overrides</p>
-              <p className="text-xl font-black text-slate-800">{Object.keys(ksmOverrides).length} Dokter</p>
+              <p className="text-xl font-black text-slate-800">{Object.keys(activeOverrides).length} Dokter</p>
             </div>
           </div>
         </div>
+
+        {isDirty && (
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-md shadow-orange-500/5 animate-in slide-in-from-top-2 duration-300 mb-6">
+            <div className="flex gap-3">
+              <span className="text-xl">⚠️</span>
+              <div>
+                <span className="text-[10px] font-black text-amber-800 uppercase tracking-widest block">Perubahan Mappings Belum Disimpan</span>
+                <p className="text-xs font-semibold text-slate-700 mt-1 leading-relaxed">
+                  Terdapat <strong className="text-orange-700 font-extrabold">{pendingChangesCount} dokter</strong> dengan pengaturan KSM/Departemen baru yang belum diterapkan. Klik Simpan untuk memproses ulang data.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+              <button 
+                onClick={cancelChanges}
+                className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-extrabold text-slate-500 hover:text-slate-700 bg-white border border-slate-200 shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+              >
+                Batalkan
+              </button>
+              <button 
+                onClick={saveChanges}
+                className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 transition-all active:scale-95 flex items-center justify-center gap-1.5 animate-pulse"
+              >
+                ⚡ Simpan &amp; Terapkan
+              </button>
+            </div>
+          </div>
+        )}
 
         <Card className="overflow-hidden border-0 shadow-xl">
           <div className="overflow-x-auto custom-scrollbar max-h-[70vh]">
@@ -5692,8 +5755,8 @@ export default function App() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredDpjps.slice(0, 100).map((d, i) => {
-                  const current = resolveKsmDept(d.disp, ksmOverrides);
-                  const isOverridden = !!ksmOverrides[d.norm];
+                  const current = resolveKsmDept(d.disp, activeOverrides);
+                  const isOverridden = !!activeOverrides[d.norm];
                   
                   return (
                     <tr key={d.norm} className={`transition-colors ${isOverridden ? 'bg-sky-50/50' : 'hover:bg-slate-50'}`}>
@@ -6675,7 +6738,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.5 (170526-23.10)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.6 (170526-23.16)</p>
               </div>
             </div>
           </div>
@@ -7109,7 +7172,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.5 (170526-23.10)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.6 (170526-23.16)</span>
                 </div>
               )}
             </div>
@@ -7258,7 +7321,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.5</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.6</span>
             </p>
           </footer>
         </div>
