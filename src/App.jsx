@@ -5353,7 +5353,7 @@ export default function App() {
         if (!password) {
           password = permData[j][8]; // Fallback password jika tidak dikirim lewat param
         }
-        sheet.getRange(j + 1, 11).setValue("TERVERIFIKASI");
+        sheet.getRange(j + 1, 10).setValue("TERVERIFIKASI");
       }
     }
     
@@ -5387,7 +5387,7 @@ export default function App() {
     var permData = sheet.getDataRange().getValues();
     for (var j = 1; j < permData.length; j++) {
       if (permData[j][7] === username) {
-        sheet.getRange(j + 1, 11).setValue("DITOLAK");
+        sheet.getRange(j + 1, 10).setValue("DITOLAK");
       }
     }
     return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User rejected" }))
