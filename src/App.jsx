@@ -1996,8 +1996,8 @@ export default function App() {
     duration: Math.random() * 3 + 2
   })));
 
-  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('sak_isLoggedIn') === 'true');
-  const [currentSessionId, setCurrentSessionId] = useState(() => localStorage.getItem('sak_session_id'));
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState(null);
   const [username, setUsername] = useState(() => localStorage.getItem('sak_username') || '');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -6437,7 +6437,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.2 (170526-19.30)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.3 (170526-19.40)</p>
               </div>
             </div>
           </div>
@@ -6871,7 +6871,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.2 (170526-19.30)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.3 (170526-19.40)</span>
                 </div>
               )}
             </div>
@@ -7020,7 +7020,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.2</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.3</span>
             </p>
           </footer>
         </div>
