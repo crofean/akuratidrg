@@ -1911,20 +1911,18 @@ export default function App() {
     localStorage.setItem('sak_session_id', sid);
     localStorage.setItem('sak_isLoggedIn', 'true');
     localStorage.setItem('sak_username', username);
+    localStorage.setItem('sak_login_time', Date.now().toString());
 
-    // Daftarkan Sesi ke Server (Google Apps Script)
+    // Daftarkan Sesi ke Server (Google Apps Script) secara background agar tidak mengganggu performa login
     if (SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
-      try {
-        const params = new URLSearchParams();
-        params.append('username', username);
-        params.append('sessionId', sid);
-        
-        await fetch(SESSION_API_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: params
-        });
-      } catch (e) { console.warn("Gagal mendaftarkan sesi:", e); }
+      const params = new URLSearchParams();
+      params.append('username', username);
+      params.append('sessionId', sid);
+      fetch(SESSION_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: params
+      }).catch(e => console.warn("Gagal mendaftarkan sesi di server:", e));
     }
 
     setIsLoggedIn(true);
@@ -1940,45 +1938,53 @@ export default function App() {
     localStorage.removeItem('sak_session_id');
     localStorage.removeItem('sak_isLoggedIn');
     localStorage.removeItem('sak_username');
+    localStorage.removeItem('sak_login_time');
   };
 
-  // Heartbeat: Pengecekan Sesi Ganda (Setiap 60 detik)
+  // Sesi Lokal Mandiri: Inactivity & Absolute Expiry Tracker
   useEffect(() => {
-    let interval;
-    if (isLoggedIn && username && SESSION_API_URL && SESSION_API_URL !== "ISI_DENGAN_URL_DEPLOYMENT_APPS_SCRIPT_ANDA") {
-      interval = setInterval(async () => {
-        if (document.hidden) return; 
+    if (!isLoggedIn) return;
 
-        try {
-          const cb = Date.now();
-          const res = await fetch(`${SESSION_API_URL}?username=${encodeURIComponent(username)}&t=${cb}`);
-          if (!res.ok) return; 
-          const data = await res.json();
-          const activeSid = localStorage.getItem('sak_session_id');
+    // A. Absolute Expiry: Cek apakah sesi login sudah melebihi 24 jam
+    const checkAbsoluteExpiry = () => {
+      const loginTime = localStorage.getItem('sak_login_time');
+      const now = Date.now();
+      if (loginTime && now - parseInt(loginTime) > 24 * 60 * 60 * 1000) {
+        alert("Sesi login Anda telah berakhir (Maksimal 24 jam). Silakan masuk kembali.");
+        handleLogout();
+        return true;
+      }
+      return false;
+    };
 
-          if (data.activeSessionId && activeSid && data.activeSessionId !== activeSid) {
-            console.log(`[Session] Conflict detected. Server: ${data.activeSessionId}, Local: ${activeSid}`);
-            // Re-verify after a 10s delay to allow server sync
-            await new Promise(r => setTimeout(r, 10000)); 
-            const secondRes = await fetch(`${SESSION_API_URL}?username=${encodeURIComponent(username)}&t=${Date.now()}`);
-            if (!secondRes.ok) return;
-            const secondData = await secondRes.json();
-            
-            if (secondData.activeSessionId && secondData.activeSessionId !== activeSid) {
-              console.warn("[Session] Persistent conflict. Forcing logout.");
-              alert("Akses Terputus: Akun ini telah login di perangkat atau browser lain. Silahkan gunakan satu perangkat saja.");
-              handleLogout();
-            } else {
-              console.log("[Session] Conflict resolved (propagation delay).");
-            }
-          } else {
-            console.log("[Session] Heartbeat OK", { local: activeSid, server: data.activeSessionId });
-          }
-        } catch (e) { console.warn("Session check failed (network):", e); }
-      }, 60000); // Check every 60s
-    }
-    return () => { if (interval) clearInterval(interval); };
-  }, [isLoggedIn, username, handleLogout]);
+    // Lakukan pemeriksaan awal saat mount
+    if (checkAbsoluteExpiry()) return;
+
+    // B. Inactivity Timeout (30 Menit)
+    let timeoutId;
+    const resetTimer = () => {
+      // Periksa absolute expiry setiap kali pengguna berinteraksi
+      if (checkAbsoluteExpiry()) return;
+
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        alert("Sesi terputus karena tidak ada aktivitas selama 30 menit. Silakan login kembali untuk melanjutkan.");
+        handleLogout();
+      }, 30 * 60 * 1000); // 30 menit
+    };
+
+    // Dengarkan event interaksi pengguna untuk mereset inactivity timer
+    const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+    
+    // Mulai timer pertama kali
+    resetTimer();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+    };
+  }, [isLoggedIn]);
 
   const fileInputRef = useRef(null); const folderInputRef = useRef(null);
 
@@ -5228,7 +5234,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.7 (160526-21.00)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.8 (170526-07.45)</p>
               </div>
             </div>
           </div>
@@ -5650,7 +5656,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.7 (160526-21.00)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.8 (170526-07.45)</span>
                 </div>
               )}
             </div>
