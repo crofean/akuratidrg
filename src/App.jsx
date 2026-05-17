@@ -716,13 +716,12 @@ const resolveCache = new Map();
 const resolveKsmDept = (dpjp, overrides = {}) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
   
-  const cacheKey = dpjp + "_" + (overrides ? Object.keys(overrides).length + "_" + JSON.stringify(overrides) : "no_overrides");
-  if (resolveCache.has(cacheKey)) {
-    return resolveCache.get(cacheKey);
+  if (resolveCache.has(dpjp)) {
+    return resolveCache.get(dpjp);
   }
   
   const res = _resolveKsmDept(dpjp, overrides);
-  resolveCache.set(cacheKey, res);
+  resolveCache.set(dpjp, res);
   return res;
 };
 
@@ -1823,6 +1822,11 @@ export default function App() {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Clear global resolveCache when overrides are modified
+  useEffect(() => {
+    resolveCache.clear();
+  }, [ksmOverrides]);
 
   // Idle Timer (10 minutes)
   useEffect(() => {
@@ -4474,13 +4478,14 @@ export default function App() {
       );
     }
 
-    // 1. Get KSM and Department for each row once to avoid repeated extractKsm/getDept calls (CPU bottleneck)
+    // 1. Get KSM, Department, and 18 Components for each row once (massive CPU speedup)
     const rowsWithKsm = allRows.map(r => {
       const ksm = extractKsm(r['DPJP'] || '', ksmOverrides);
       return {
         row: r,
         ksm,
-        dept: getDept(ksm, r['DPJP'] || '', ksmOverrides)
+        dept: getDept(ksm, r['DPJP'] || '', ksmOverrides),
+        comps: extract18(r)
       };
     });
 
@@ -4507,16 +4512,21 @@ export default function App() {
       .filter(item => item.ksm === currentKsm)
       .map(item => item.row);
 
+    const ksmItems = rowsWithKsm.filter(item => item.ksm === currentKsm);
+
     // 5. Hospital-wide metrics for comparison
     const hTotal = allRows.length || 1;
     const hSumLos = allRows.reduce((sum, r) => sum + (parseFloat(r._los) || 0), 0);
     const hAvgLos = hSumLos / hTotal;
     
-    const hAvgComps = compKeys.reduce((acc, c) => {
-      const sum = allRows.reduce((s, r) => s + (extract18(r)[c.key] || 0), 0);
-      acc[c.key] = sum / hTotal;
-      return acc;
-    }, {});
+    const hAvgComps = {};
+    compKeys.forEach(c => {
+      let sum = 0;
+      rowsWithKsm.forEach(item => {
+        sum += item.comps[c.key] || 0;
+      });
+      hAvgComps[c.key] = sum / hTotal;
+    });
 
     // 6. KSM-specific metrics
     const kTotal = ksmRows.length || 1;
@@ -4541,11 +4551,14 @@ export default function App() {
     const kSelisihIdrg = kSumIdrg - kSumRS;
     const kAvgSelisihIdrg = kSelisihIdrg / kTotal;
 
-    const kAvgComps = compKeys.reduce((acc, c) => {
-      const sum = ksmRows.reduce((s, r) => s + (extract18(r)[c.key] || 0), 0);
-      acc[c.key] = sum / kTotal;
-      return acc;
-    }, {});
+    const kAvgComps = {};
+    compKeys.forEach(c => {
+      let sum = 0;
+      ksmItems.forEach(item => {
+        sum += item.comps[c.key] || 0;
+      });
+      kAvgComps[c.key] = sum / kTotal;
+    });
 
     // 7. Quadrant standing logic
     const ksmCountsMap = {};
