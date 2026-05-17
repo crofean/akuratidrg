@@ -2004,8 +2004,9 @@ const InsightSosialisasiComponent = React.memo(({
   };
 
   const exportKsmSocialization = () => {
-    const headers = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
-    const rows = [
+    // 1. Sheet 1: Ringkasan Performa
+    const summaryHeaders = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
+    const summaryRows = [
       ['Jumlah Kasus', ksmRows.length, allRows.length],
       ['Persentase Kasus RS', `${kPctOfHospital.toFixed(1)}%`, '100%'],
       ['Rata-rata LOS (Hari)', kAvgLos.toFixed(1), hAvgLos.toFixed(1)],
@@ -2017,7 +2018,58 @@ const InsightSosialisasiComponent = React.memo(({
       ['Total Selisih iDRG-RS', kSelisihIdrg, allRows.reduce((s, r) => s + (parseFloat(r.IDRG_TOTAL_TARIF || 0) - (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0)), 0)],
       ['Status Kinerja Klinis', quadrantBadge, 'N/A']
     ];
-    exportToXlsx(`Sosialisasi_KSM_${currentKsm.substring(0, 15)}`, headers, rows);
+
+    // 2. Sheet 2: Detail Kasus Pasien
+    const detailHeaders = [
+      'No', 'Nomor SEP', 'Nomor RM', 'Nama Pasien', 'Dokter DPJP', 
+      'Kode INACBG', 'Deskripsi INACBG', 'Kode iDRG', 'Deskripsi iDRG',
+      'LOS (Hari)', 'Biaya Riil RS (Rp)', 'Tarif INA-CBG (Rp)', 'Tarif iDRG (Rp)',
+      'Selisih INA-CBG vs RS (Rp)', 'Selisih iDRG vs RS (Rp)'
+    ];
+
+    const detailRows = ksmRows.map((r, index) => {
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+      const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+      return [
+        index + 1,
+        r.SEP || r.NO_SEP || r.no_sep || '-',
+        r.NO_RM || r.NORM || r.no_rm || '-',
+        r.NAMA || r.NAMA_PASIEN || r.nama || '-',
+        r.DPJP || r.NAMA_DOKTER || r.dpjp || '-',
+        r.INACBG || r.KODE_INACBG || '-',
+        r.INACBG_DESC || r.DESKRIPSI_INACBG || '-',
+        r.IDRG_DRG_CODE || '-',
+        r.IDRG_DRG_DESC || '-',
+        parseFloat(r._los) || 0,
+        rs,
+        ina,
+        idrg,
+        ina - rs,
+        idrg - rs
+      ];
+    });
+
+    const workbook = XLSX.utils.book_new();
+    
+    const summarySheet = XLSX.utils.aoa_to_sheet([summaryHeaders, ...summaryRows]);
+    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Ringkasan Performa');
+
+    const detailSheet = XLSX.utils.aoa_to_sheet([detailHeaders, ...detailRows]);
+    XLSX.utils.book_append_sheet(workbook, detailSheet, 'Detail Kasus Pasien');
+
+    // Clean dynamic filename
+    const cleanKsmName = String(currentKsm.substring(0, 15)).replace(/[\/\\:\*\?"<>\|]/g, '_');
+    const filename = `Sosialisasi_KSM_${cleanKsmName}`;
+
+    // Write Base64 and download
+    const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+    const link = document.createElement('a');
+    link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
+    link.download = `${filename}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (allRows.length === 0) {
@@ -2336,9 +2388,9 @@ const InsightSosialisasiComponent = React.memo(({
           </div>
         </div>
 
-        {/* Main Visualizer: Scatter plot & Legend */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-          <div className="xl:col-span-2">
+        {/* Main Visualizer: Scatter plot & Legend (Full Width / Fit-to-Width Redesign) */}
+        <div className="space-y-6">
+          <div className="w-full">
             <div className="mb-2 text-right text-[10px] font-bold text-slate-400 uppercase tracking-wider">
               Menampilkan: <span className="text-teal-600 font-extrabold">{socializationScatterMode === 'idrg' ? 'Simulasi Tarif iDRG vs Biaya Riil' : 'Tarif INA-CBG vs Biaya Riil'}</span>
             </div>
@@ -2354,7 +2406,7 @@ const InsightSosialisasiComponent = React.memo(({
               onDotClick={(d) => openDrilldown(`Kasus Pasien: SEP ${d.SEP || d.sep || d.no_sep || ''}`, row => (row.SEP || row.sep || row.NO_SEP || row.no_sep || '').trim() === (d.SEP || d.sep || d.NO_SEP || d.no_sep || '').trim())}
             />
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {/* iDRG Impact Insight Panel */}
             <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4.5 rounded-2xl border border-indigo-100/50 space-y-2.5">
               <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">⚡ Analisis Akselerasi Tarif iDRG</span>
@@ -5523,8 +5575,9 @@ export default function App() {
     };
 
     const exportKsmSocialization = () => {
-      const headers = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
-      const rows = [
+      // 1. Sheet 1: Ringkasan Performa
+      const summaryHeaders = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
+      const summaryRows = [
         ['Jumlah Kasus', ksmRows.length, allRows.length],
         ['Persentase Kasus RS', `${kPctOfHospital.toFixed(1)}%`, '100%'],
         ['Rata-rata LOS (Hari)', kAvgLos.toFixed(1), hAvgLos.toFixed(1)],
@@ -5536,7 +5589,58 @@ export default function App() {
         ['Total Selisih iDRG-RS', kSelisihIdrg, allRows.reduce((s, r) => s + (parseFloat(r.IDRG_TOTAL_TARIF || 0) - (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0)), 0)],
         ['Status Kinerja Klinis', quadrantBadge, 'N/A']
       ];
-      exportToXlsx(`Sosialisasi_KSM_${currentKsm.substring(0, 15)}`, headers, rows);
+
+      // 2. Sheet 2: Detail Kasus Pasien
+      const detailHeaders = [
+        'No', 'Nomor SEP', 'Nomor RM', 'Nama Pasien', 'Dokter DPJP', 
+        'Kode INACBG', 'Deskripsi INACBG', 'Kode iDRG', 'Deskripsi iDRG',
+        'LOS (Hari)', 'Biaya Riil RS (Rp)', 'Tarif INA-CBG (Rp)', 'Tarif iDRG (Rp)',
+        'Selisih INA-CBG vs RS (Rp)', 'Selisih iDRG vs RS (Rp)'
+      ];
+
+      const detailRows = ksmRows.map((r, index) => {
+        const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+        const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+        const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+        return [
+          index + 1,
+          r.SEP || r.NO_SEP || r.no_sep || '-',
+          r.NO_RM || r.NORM || r.no_rm || '-',
+          r.NAMA || r.NAMA_PASIEN || r.nama || '-',
+          r.DPJP || r.NAMA_DOKTER || r.dpjp || '-',
+          r.INACBG || r.KODE_INACBG || '-',
+          r.INACBG_DESC || r.DESKRIPSI_INACBG || '-',
+          r.IDRG_DRG_CODE || '-',
+          r.IDRG_DRG_DESC || '-',
+          parseFloat(r._los) || 0,
+          rs,
+          ina,
+          idrg,
+          ina - rs,
+          idrg - rs
+        ];
+      });
+
+      const workbook = XLSX.utils.book_new();
+      
+      const summarySheet = XLSX.utils.aoa_to_sheet([summaryHeaders, ...summaryRows]);
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Ringkasan Performa');
+
+      const detailSheet = XLSX.utils.aoa_to_sheet([detailHeaders, ...detailRows]);
+      XLSX.utils.book_append_sheet(workbook, detailSheet, 'Detail Kasus Pasien');
+
+      // Clean dynamic filename
+      const cleanKsmName = String(currentKsm.substring(0, 15)).replace(/[\/\\:\*\?"<>\|]/g, '_');
+      const filename = `Sosialisasi_KSM_${cleanKsmName}`;
+
+      // Write Base64 and download
+      const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+      const link = document.createElement('a');
+      link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
+      link.download = `${filename}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     return (
@@ -5843,9 +5947,9 @@ export default function App() {
             </div>
           </div>
 
-          {/* Main Visualizer: Scatter plot & Legend */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
-            <div className="xl:col-span-2">
+          {/* Main Visualizer: Scatter plot & Legend (Full Width / Fit-to-Width Redesign) */}
+          <div className="space-y-6">
+            <div className="w-full">
               <div className="mb-2 text-right text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 Menampilkan: <span className="text-teal-600 font-extrabold">{socializationScatterMode === 'idrg' ? 'Simulasi Tarif iDRG vs Biaya Riil' : 'Tarif INA-CBG vs Biaya Riil'}</span>
               </div>
@@ -5861,7 +5965,7 @@ export default function App() {
                 onDotClick={(d) => openDrilldown(`Kasus Pasien: SEP ${d.SEP || d.sep || d.no_sep || ''}`, row => (row.SEP || row.sep || row.NO_SEP || row.no_sep || '').trim() === (d.SEP || d.sep || d.NO_SEP || d.no_sep || '').trim())}
               />
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               {/* iDRG Impact Insight Panel */}
               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4.5 rounded-2xl border border-indigo-100/50 space-y-2.5">
                 <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">⚡ Analisis Akselerasi Tarif iDRG</span>

@@ -62,18 +62,37 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       try {
         const bstr = evt.target.result;
         const wb = XLSX.read(bstr, { type: 'binary' });
-        
         const allRows = [];
         let detectedHeaders = [];
+        let detectedHeaderRowIndex = 0;
         
         wb.SheetNames.forEach((sheetName) => {
           const ws = wb.Sheets[sheetName];
           const sheetData = XLSX.utils.sheet_to_json(ws, { header: 1 });
           if (sheetData.length === 0) return;
 
-          const sheetHeaders = sheetData[0].map(h => String(h || '').trim());
+          // Dynamically detect the header row index (bypass blank or title rows)
+          let headerRowIndex = 0;
+          for (let i = 0; i < Math.min(sheetData.length, 15); i++) {
+            const row = sheetData[i];
+            if (row && row.length > 0) {
+              const rowText = row.map(cell => String(cell || '').toLowerCase()).join(' ');
+              const hasSep = rowText.includes('sep') || rowText.includes('kartu') || rowText.includes('no_sep') || rowText.includes('nomor_sep');
+              const hasNama = rowText.includes('nama') || rowText.includes('pasien') || rowText.includes('name') || rowText.includes('peserta');
+              const hasNo = rowText.includes('no') || rowText.includes('nomor');
+              const hasKet = rowText.includes('keterangan') || rowText.includes('alasan') || rowText.includes('dispute') || rowText.includes('pending') || rowText.includes('masalah');
+              
+              if ((hasSep && hasNama) || (hasSep && hasKet) || (hasNama && hasKet) || (hasSep && hasNo)) {
+                headerRowIndex = i;
+                break;
+              }
+            }
+          }
+
+          const sheetHeaders = sheetData[headerRowIndex].map(h => String(h || '').trim());
           if (detectedHeaders.length === 0) {
             detectedHeaders = sheetHeaders;
+            detectedHeaderRowIndex = headerRowIndex;
           }
 
           // Determine Service Type
@@ -85,8 +104,8 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
             layanan = 'Rawat Jalan';
           }
 
-          // Map rows from this sheet
-          sheetData.slice(1).forEach(r => {
+          // Map rows from this sheet starting after the detected header row
+          sheetData.slice(headerRowIndex + 1).forEach(r => {
             // ensure it has content
             if (r.some(cell => cell !== null && cell !== undefined && cell !== '')) {
               allRows.push({
@@ -109,16 +128,16 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         
         detectedHeaders.forEach(h => {
           const lh = h.toLowerCase();
-          if (lh.includes('sep') || lh.includes('kartu') || lh.includes('no_sep') || lh.includes('nomor_sep')) {
+          if (lh.includes('sep') || lh.includes('kartu') || lh.includes('no_sep') || lh.includes('nomor_sep') || lh.includes('no sep') || lh.includes('no. sep')) {
             if (!mapping.sep) mapping.sep = h;
           }
-          if (lh.includes('nama') || lh.includes('pasien') || lh.includes('name')) {
+          if (lh.includes('nama') || lh.includes('pasien') || lh.includes('name') || lh.includes('peserta')) {
             if (!mapping.nama) mapping.nama = h;
           }
-          if (lh.includes('masalah') || lh.includes('deskripsi') || lh.includes('keterangan') || lh.includes('pending') || lh.includes('alasan') || lh.includes('dispute') || lh.includes('reject')) {
+          if (lh.includes('masalah') || lh.includes('deskripsi') || lh.includes('keterangan') || lh.includes('pending') || lh.includes('alasan') || lh.includes('dispute') || lh.includes('reject') || lh.includes('sebab')) {
             if (!mapping.keterangan) mapping.keterangan = h;
           }
-          if (lh.includes('tarif') || lh.includes('biaya') || lh.includes('nominal') || lh.includes('rupiah') || lh.includes('klaim') || lh.includes('amount') || lh.includes('selisih')) {
+          if (lh.includes('tarif') || lh.includes('biaya') || lh.includes('nominal') || lh.includes('rupiah') || lh.includes('klaim') || lh.includes('amount') || lh.includes('selisih') || lh.includes('nilai')) {
             if (!mapping.nominal) mapping.nominal = h;
           }
           if (lh.includes('faktor') || lh.includes('penyebab') || lh.includes('cause') || lh.includes('root')) {
@@ -126,12 +145,12 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
           }
         });
 
-        // Set mapping state and show mapping modal if not fully auto-detected
+        // Set mapping state with precise and intelligent fallbacks
         setColumnMapping({
-          sep: mapping.sep || detectedHeaders[0] || '',
-          nama: mapping.nama || detectedHeaders[1] || '',
-          keterangan: mapping.keterangan || detectedHeaders[2] || '',
-          nominal: mapping.nominal || detectedHeaders[3] || '',
+          sep: mapping.sep || detectedHeaders.find(h => h.toLowerCase().includes('sep')) || detectedHeaders[0] || '',
+          nama: mapping.nama || detectedHeaders.find(h => h.toLowerCase().includes('nama')) || detectedHeaders[1] || '',
+          keterangan: mapping.keterangan || detectedHeaders.find(h => h.toLowerCase().includes('keterangan') || h.toLowerCase().includes('alasan') || h.toLowerCase().includes('dispute')) || detectedHeaders[2] || '',
+          nominal: mapping.nominal || detectedHeaders.find(h => h.toLowerCase().includes('nominal') || h.toLowerCase().includes('tarif') || h.toLowerCase().includes('biaya')) || detectedHeaders[3] || '',
           faktor: mapping.faktor || ''
         });
 
@@ -186,7 +205,8 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         if (matchedPatient) {
           diaglist = matchedPatient.DIAGNOSIS || matchedPatient.DIAGNOSIS_UTAMA || matchedPatient.DIAGNOSA || matchedPatient.DIAGLIST || '-';
           proclist = matchedPatient.PROSEDUR || matchedPatient.PROSEDUR_UTAMA || matchedPatient.TINDAKAN || matchedPatient.PROCLIST || '-';
-          coderName = matchedPatient.CODER_ID || matchedPatient.USER_CODER || matchedPatient.CODER || '-';
+          const rawCoder = matchedPatient.CODER_ID || matchedPatient.USER_CODER || matchedPatient.CODER || '-';
+          coderName = String(rawCoder).split(';')[0].trim() || '-';
           
           if (resolveKsmDept && matchedPatient.DPJP) {
             const res = resolveKsmDept(matchedPatient.DPJP);
