@@ -1794,6 +1794,7 @@ export default function App() {
   const [selectedSocializationDept, setSelectedSocializationDept] = useState('');
   const [selectedSocializationKsm, setSelectedSocializationKsm] = useState('');
   const [isSlideMode, setIsSlideMode] = useState(false);
+  const [socializationScatterMode, setSocializationScatterMode] = useState('inacbg');
 
   const [showAdOverlay, setShowAdOverlay] = useState(true);
   const [initialAdDone, setInitialAdDone] = useState(false);
@@ -3310,7 +3311,10 @@ export default function App() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     {dashData.diagUtamaFull.map((d, i) => (
-                      <tr key={i} className="hover:bg-rose-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Diagnosa Utama: ${d.code}`, r => String(r['DIAGNOSA'] || '').toUpperCase().startsWith(d.code.toUpperCase()))}>
+                      <tr key={i} className="hover:bg-rose-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Diagnosa Utama: ${d.code}`, r => {
+                        const dList = String(r['DIAGLIST'] || '').replace(/"/g, '').split(';').map(x => x.trim()).filter(x => x);
+                        return dList.length > 0 && dList[0].toUpperCase() === d.code.toUpperCase();
+                      })}>
                         <td className="p-4 text-center font-bold text-slate-400 border-r border-slate-100">{i + 1}</td>
                         <td className="p-4 font-black text-slate-800 border-r border-slate-100">{d.code}</td>
                         <td className="p-4 text-center font-bold text-rose-600 border-r border-slate-100">{d.count.toLocaleString()}</td>
@@ -3347,7 +3351,10 @@ export default function App() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     {dashData.diagSekunderFull.map((d, i) => (
-                      <tr key={i} className="hover:bg-orange-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Diagnosa Sekunder: ${d.code}`, r => String(r['DIAGLIST'] || '').split(';').slice(1).some(diag => diag.trim().toUpperCase().startsWith(d.code.toUpperCase())))}>
+                      <tr key={i} className="hover:bg-orange-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Diagnosa Sekunder: ${d.code}`, r => {
+                        const dList = String(r['DIAGLIST'] || '').replace(/"/g, '').split(';').map(x => x.trim()).filter(x => x);
+                        return dList.slice(1).some(diag => diag.toUpperCase() === d.code.toUpperCase());
+                      })}>
                         <td className="p-4 text-center font-bold text-slate-400 border-r border-slate-100">{i + 1}</td>
                         <td className="p-4 font-black text-slate-800 border-r border-slate-100">{d.code}</td>
                         <td className="p-4 text-center font-bold text-orange-600 border-r border-slate-100">{d.count.toLocaleString()}</td>
@@ -3384,7 +3391,10 @@ export default function App() {
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
                     {dashData.procFull.map((d, i) => (
-                      <tr key={i} className="hover:bg-purple-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Tindakan: ${d.code}`, r => String(r['PROCLIST'] || '').split(';').some(proc => proc.trim().toUpperCase().startsWith(d.code.toUpperCase())))}>
+                      <tr key={i} className="hover:bg-purple-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Tindakan: ${d.code}`, r => {
+                        const pList = String(r['PROCLIST'] || '').replace(/"/g, '').split(';').map(x => x.trim()).filter(x => x && x !== '-' && x.toLowerCase() !== 'none');
+                        return pList.some(proc => proc.toUpperCase() === d.code.toUpperCase());
+                      })}>
                         <td className="p-4 text-center font-bold text-slate-400 border-r border-slate-100">{i + 1}</td>
                         <td className="p-4 font-black text-slate-800 border-r border-slate-100">{d.code}</td>
                         <td className="p-4 text-center font-bold text-purple-600 border-r border-slate-100">{d.count.toLocaleString()}</td>
@@ -4125,8 +4135,38 @@ export default function App() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <SectionHeader icon={Building2} title="Kinerja Departemen" desc="Analisis efisiensi biaya hierarki Departemen ➡️ KSM ➡️ DPJP." colorClass="bg-indigo-50 text-indigo-600" highlightClass="bg-indigo-500/5" exportAction={() => {
-          const csv = ksmData.map(s => [s.dept, s.name, s.count, s.sumRS, s.sumIna, s.sumIdrg, s.selisihIna, s.selisihIdrg, s.sumIdrg - s.sumIna, ...compKeys.map(c => s.comps?.[c.key] || 0)]);
-          exportToXlsx('Kinerja_Departemen', ['Departemen', 'Nama KSM', 'Jumlah Kasus', 'Total RS', 'Total INA', 'Total iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', 'Selisih iDRG-INA', ...compKeys.map(c => c.label)], csv);
+          const csv = [];
+          deptData.forEach(dept => {
+            // 1. Department Summary Row
+            csv.push([
+              'DEPARTEMEN', dept.name, '', '', dept.count, 
+              dept.sumRS, dept.sumIna, dept.sumIdrg, 
+              dept.sumIna - dept.sumRS, dept.sumIdrg - dept.sumRS, dept.sumIdrg - dept.sumIna,
+              ...compKeys.map(c => (dept.comps?.[c.key] || 0))
+            ]);
+
+            const deptKsms = ksmData.filter(k => k.dept === dept.name);
+            deptKsms.forEach(ksm => {
+              // 2. KSM Row
+              csv.push([
+                'KSM', dept.name, ksm.name, '', ksm.count, 
+                ksm.sumRS, ksm.sumIna, ksm.sumIdrg, 
+                ksm.selisihIna, ksm.selisihIdrg, ksm.sumIdrg - ksm.sumIna,
+                ...compKeys.map(c => (ksm.comps?.[c.key] || 0))
+              ]);
+
+              // 3. DPJP Rows under KSM
+              ksm.dpjps.forEach(dpjp => {
+                csv.push([
+                  'DPJP', dept.name, ksm.name, dpjp.name, dpjp.count, 
+                  dpjp.sumRS, dpjp.sumIna, dpjp.sumIdrg, 
+                  dpjp.sumIna - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumIna,
+                  ...compKeys.map(c => (dpjp.comps?.[c.key] || 0))
+                ]);
+              });
+            });
+          });
+          exportToXlsx('Kinerja_Departemen', ['Level', 'Departemen', 'Kelompok Staf Medis (KSM)', 'Dokter (DPJP)', 'Jumlah Kasus', 'Total RS', 'Total INA-CBG', 'Total iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', 'Selisih iDRG-INA', ...compKeys.map(c => c.label)], csv);
         }} />
 
         {/* DEPT BAR CHARTS */}
@@ -4312,8 +4352,27 @@ export default function App() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <SectionHeader icon={Users} title="Kinerja KSM (Kelompok Staf Medis)" desc="Analisis efisiensi biaya hierarki KSM ➡️ DPJP." colorClass="bg-indigo-50 text-indigo-600" highlightClass="bg-indigo-500/5" exportAction={() => {
-          const csv = ksmData.map(s => [s.name, s.count, s.sumRS, s.sumIna, s.sumIdrg, s.selisihIna, s.selisihIdrg, s.sumIdrg - s.sumIna, ...compKeys.map(c => s.comps?.[c.key] || 0)]);
-          exportToXlsx('Kinerja_KSM', ['Nama KSM', 'Jumlah Kasus', 'Total RS', 'Total INA', 'Total iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', 'Selisih iDRG-INA', ...compKeys.map(c => c.label)], csv);
+          const csv = [];
+          ksmData.forEach(ksm => {
+            // 1. KSM Row
+            csv.push([
+              'KSM', ksm.name, '', ksm.count, 
+              ksm.sumRS, ksm.sumIna, ksm.sumIdrg, 
+              ksm.selisihIna, ksm.selisihIdrg, ksm.sumIdrg - ksm.sumIna,
+              ...compKeys.map(c => (ksm.comps?.[c.key] || 0))
+            ]);
+
+            // 2. DPJP Rows under KSM
+            ksm.dpjps.forEach(dpjp => {
+              csv.push([
+                'DPJP', ksm.name, dpjp.name, dpjp.count, 
+                dpjp.sumRS, dpjp.sumIna, dpjp.sumIdrg, 
+                dpjp.sumIna - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumIna,
+                ...compKeys.map(c => (dpjp.comps?.[c.key] || 0))
+              ]);
+            });
+          });
+          exportToXlsx('Kinerja_KSM', ['Level', 'Kelompok Staf Medis (KSM)', 'Dokter (DPJP)', 'Jumlah Kasus', 'Total RS', 'Total INA-CBG', 'Total iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', 'Selisih iDRG-INA', ...compKeys.map(c => c.label)], csv);
         }} />
 
         {/* KSM BAR CHARTS */}
@@ -4479,28 +4538,34 @@ export default function App() {
     }
 
     // 1. Get KSM, Department, and 18 Components for each row once (massive CPU speedup)
-    const rowsWithKsm = allRows.map(r => {
-      const ksm = extractKsm(r['DPJP'] || '', ksmOverrides);
-      return {
-        row: r,
-        ksm,
-        dept: getDept(ksm, r['DPJP'] || '', ksmOverrides),
-        comps: extract18(r)
-      };
-    });
+    const rowsWithKsm = useMemo(() => {
+      return allRows.map(r => {
+        const ksm = extractKsm(r['DPJP'] || '', ksmOverrides);
+        return {
+          row: r,
+          ksm,
+          dept: getDept(ksm, r['DPJP'] || '', ksmOverrides),
+          comps: extract18(r)
+        };
+      });
+    }, [allRows, ksmOverrides]);
 
     // 2. Get Unique Departments
-    const depts = Array.from(new Set(rowsWithKsm.map(item => item.dept))).filter(Boolean).sort();
+    const depts = useMemo(() => {
+      return Array.from(new Set(rowsWithKsm.map(item => item.dept))).filter(Boolean).sort();
+    }, [rowsWithKsm]);
     
     // Determine active department (without setting state during render)
     const currentDept = selectedSocializationDept || depts[0] || '';
 
     // 3. Get KSMs for the selected department
-    const ksmsForDept = Array.from(new Set(
-      rowsWithKsm
-        .filter(item => item.dept === currentDept)
-        .map(item => item.ksm)
-    )).filter(Boolean).sort();
+    const ksmsForDept = useMemo(() => {
+      return Array.from(new Set(
+        rowsWithKsm
+          .filter(item => item.dept === currentDept)
+          .map(item => item.ksm)
+      )).filter(Boolean).sort();
+    }, [rowsWithKsm, currentDept]);
 
     // Determine active KSM (without setting state during render)
     const currentKsm = selectedSocializationKsm && ksmsForDept.includes(selectedSocializationKsm)
@@ -4534,7 +4599,7 @@ export default function App() {
     
     const kSumLos = ksmRows.reduce((sum, r) => sum + (parseFloat(r._los) || 0), 0);
     const kAvgLos = kSumLos / kTotal;
-    const kMaxLos = Math.max(...ksmRows.map(r => parseFloat(r._los) || 0), 0);
+    const kMaxLos = ksmRows.reduce((max, r) => Math.max(max, parseFloat(r._los) || 0), 0);
 
     const kSumRS = ksmRows.reduce((sum, r) => sum + (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0), 0);
     const kAvgRS = kSumRS / kTotal;
@@ -4559,6 +4624,45 @@ export default function App() {
       });
       kAvgComps[c.key] = sum / kTotal;
     });
+
+    // Prepare unaggregated scatter data with dynamic financial positioning
+    const scatterData = useMemo(() => {
+      return ksmRows.map(r => {
+        const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+        const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+        const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+        return {
+          ...r,
+          selisih: socializationScatterMode === 'idrg' ? idrg - rs : ina - rs,
+          los: parseFloat(r._los) || 0,
+          rsTarif: rs
+        };
+      });
+    }, [ksmRows, socializationScatterMode]);
+
+    const { efficientLosCases, pctEfficientLos, ksmCostPerDay, inaDeficitCount, idrgDeficitCount } = useMemo(() => {
+      const effLos = ksmRows.filter(r => (parseFloat(r._los) || 0) <= hAvgLos).length;
+      const pctEff = (effLos / kTotal) * 100;
+      const costPerDay = kSumRS / (kSumLos || 1);
+
+      let inaDef = 0;
+      let idrgDef = 0;
+      ksmRows.forEach(r => {
+        const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+        const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+        const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+        if ((ina - rs) < 0) inaDef++;
+        if ((idrg - rs) < 0) idrgDef++;
+      });
+
+      return {
+        efficientLosCases: effLos,
+        pctEfficientLos: pctEff,
+        ksmCostPerDay: costPerDay,
+        inaDeficitCount: inaDef,
+        idrgDeficitCount: idrgDef
+      };
+    }, [ksmRows, hAvgLos, kTotal, kSumRS, kSumLos]);
 
     // 7. Quadrant standing logic
     const ksmCountsMap = {};
@@ -4696,7 +4800,7 @@ export default function App() {
         ['Jumlah Kasus', ksmRows.length, allRows.length],
         ['Persentase Kasus RS', `${kPctOfHospital.toFixed(1)}%`, '100%'],
         ['Rata-rata LOS (Hari)', kAvgLos.toFixed(1), hAvgLos.toFixed(1)],
-        ['LOS Maksimal (Hari)', kMaxLos, Math.max(...allRows.map(r => parseFloat(r._los) || 0), 0)],
+        ['LOS Maksimal (Hari)', kMaxLos, allRows.reduce((max, r) => Math.max(max, parseFloat(r._los) || 0), 0)],
         ['Rata-rata Biaya Riil RS', Math.round(kAvgRS), Math.round(allRows.reduce((s, r) => s + (parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0), 0) / allRows.length)],
         ['Rata-rata Tarif INA-CBG', Math.round(kAvgIna), Math.round(allRows.reduce((s, r) => s + (parseFloat(r.TOTAL_TARIF || 0) || 0), 0) / allRows.length)],
         ['Rata-rata Tarif iDRG', Math.round(kAvgIdrg), Math.round(allRows.reduce((s, r) => s + (parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0), 0) / allRows.length)],
@@ -4957,6 +5061,140 @@ export default function App() {
           </Card>
 
         </div>
+
+        {/* NEW: LOS & iDRG INTEGRATED 4-QUADRANT SCATTER VISUALIZER */}
+        <Card className={`p-6 border flex flex-col gap-6 ${isSlideMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200'}`}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                <Activity size={18} className="text-teal-600 animate-pulse" /> Peta Mutu Klinis (LOS) &amp; Simulasi iDRG
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">Analisis korelasi lama hari rawat (LOS) terhadap profitabilitas. Klik bulatan pasien untuk melihat rekam medis.</p>
+            </div>
+            
+            {/* Interactive Mode Toggle */}
+            <div className="flex gap-1.5 p-1 bg-slate-100 rounded-xl w-fit shrink-0 print:hidden">
+              <button
+                onClick={() => setSocializationScatterMode('inacbg')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${socializationScatterMode === 'inacbg' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                🇮🇩 INA-CBG vs RS
+              </button>
+              <button
+                onClick={() => setSocializationScatterMode('idrg')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${socializationScatterMode === 'idrg' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
+              >
+                ⚡ iDRG vs RS (Simulasi)
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Metrics Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 print:bg-white">
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Rerata LOS KSM</span>
+              <span className="text-base font-black text-slate-800 mt-1">{kAvgLos.toFixed(1)} Hari</span>
+              <span className="text-[10px] font-bold text-slate-500 mt-0.5">RS Baseline: {hAvgLos.toFixed(1)} Hari</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Efisiensi LOS</span>
+              <span className="text-base font-black text-teal-600 mt-1">{pctEfficientLos.toFixed(1)}%</span>
+              <span className="text-[10px] font-bold text-slate-500 mt-0.5">Kasus &lt;= Rerata RS</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Kinerja Keuangan ({socializationScatterMode.toUpperCase()})</span>
+              <span className={`text-base font-black mt-1 ${socializationScatterMode === 'idrg' ? (kSelisihIdrg >= 0 ? 'text-lime-600' : 'text-rose-600') : (kSelisihIna >= 0 ? 'text-emerald-600' : 'text-rose-600')}`}>
+                {socializationScatterMode === 'idrg' ? formatRp(kAvgSelisihIdrg) : formatRp(kAvgSelisihIna)}
+              </span>
+              <span className="text-[10px] font-bold text-slate-500 mt-0.5">Rerata Margin per Kasus</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider">Maksimal LOS</span>
+              <span className="text-base font-black text-rose-600 mt-1">{kMaxLos} Hari</span>
+              <span className="text-[10px] font-bold text-slate-500 mt-0.5">Lama Rawat Terpanjang</span>
+            </div>
+          </div>
+
+          {/* Main Visualizer: Scatter plot & Legend */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+            <div className="xl:col-span-2">
+              <div className="mb-2 text-right text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Menampilkan: <span className="text-teal-600 font-extrabold">{socializationScatterMode === 'idrg' ? 'Simulasi Tarif iDRG vs Biaya Riil' : 'Tarif INA-CBG vs Biaya Riil'}</span>
+              </div>
+              <ScatterChart
+                data={scatterData}
+                xKey="selisih"
+                yKey="los"
+                rKey="rsTarif"
+                color={socializationScatterMode === 'idrg' ? '#8b5cf6' : '#0d9488'}
+                xLabel={socializationScatterMode === 'idrg' ? "Selisih Finansial iDRG vs RS (Rupiah)" : "Selisih Finansial INA-CBG vs RS (Rupiah)"}
+                yLabel="Lama Hari Rawat (LOS - Hari)"
+                title=""
+                onDotClick={(d) => openDrilldown(`Kasus Pasien: SEP ${d.SEP || d.sep || d.no_sep || ''}`, row => (row.SEP || row.sep || row.NO_SEP || row.no_sep || '').trim() === (d.SEP || d.sep || d.NO_SEP || d.no_sep || '').trim())}
+              />
+            </div>
+            <div className="flex flex-col gap-4">
+              {/* iDRG Impact Insight Panel */}
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4.5 rounded-2xl border border-indigo-100/50 space-y-2.5">
+                <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">⚡ Analisis Akselerasi Tarif iDRG</span>
+                <p className="text-xs font-semibold leading-relaxed text-slate-700">
+                  Implementasi sistem tarif iDRG diproyeksikan meningkatkan rata-rata pendapatan per kasus KSM ini sebesar <strong className="text-indigo-700 font-black">+{formatRp(kAvgIdrg - kAvgIna)}</strong>.
+                </p>
+                <div className="text-[10px] text-slate-600 font-bold border-t border-indigo-200/50 pt-2 flex flex-col gap-1">
+                  <div className="flex justify-between">
+                    <span>Kasus Defisit INA-CBG:</span>
+                    <span className="text-rose-600 font-black">{inaDeficitCount} kasus</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Kasus Defisit iDRG:</span>
+                    <span className="text-emerald-600 font-black">{idrgDeficitCount} kasus</span>
+                  </div>
+                  <div className="flex justify-between border-t border-dashed border-indigo-300 pt-1.5 font-extrabold text-indigo-900 mt-1">
+                    <span>Kasus Terselamatkan:</span>
+                    <span>{inaDeficitCount - idrgDeficitCount} kasus ({((inaDeficitCount - idrgDeficitCount) / (inaDeficitCount || 1) * 100).toFixed(0)}%)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quadrant Legend */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-3 print:bg-white text-[11px] font-semibold text-slate-600">
+                <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">Evaluasi Mutu &amp; Kendali Biaya</span>
+                
+                <div className="flex items-start gap-2.5">
+                  <div className="w-3 h-3 rounded bg-emerald-500 shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-emerald-800 uppercase">Kuadran I (Surplus &amp; LOS Tinggi)</span>
+                    <span className="text-[9px] text-slate-500 font-medium">Kasus kompleks dengan diagnosis penyerta lengkap.</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 border-t border-slate-200/60 pt-2">
+                  <div className="w-3 h-3 rounded bg-rose-500 shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-rose-800 uppercase">Kuadran II (Defisit &amp; LOS Tinggi)</span>
+                    <span className="text-[9px] text-slate-500 font-medium">Lama rawat tinggi melebihi batas tarif paket. Area Audit CP!</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 border-t border-slate-200/60 pt-2">
+                  <div className="w-3 h-3 rounded bg-amber-500 shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-amber-800 uppercase">Kuadran III (Defisit &amp; LOS Rendah)</span>
+                    <span className="text-[9px] text-slate-500 font-medium">Kasus cepat tapi merugi. Indikasi kurangnya koding diagnosis sekunder.</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 border-t border-slate-200/60 pt-2">
+                  <div className="w-3 h-3 rounded bg-blue-500 shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-blue-800 uppercase">Kuadran IV (Surplus &amp; LOS Rendah)</span>
+                    <span className="text-[9px] text-slate-500 font-medium">Layanan efisien &amp; profitabel. Standar Clinical Pathway ideal!</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* 18-COMPONENT COST EFFICIENCY ANALYZER (KSM vs Hospital Average) */}
         <Card className="overflow-hidden">
@@ -6437,7 +6675,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.4 (170526-19.50)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.5 (170526-23.10)</p>
               </div>
             </div>
           </div>
@@ -6871,7 +7109,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.4 (170526-19.50)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.5 (170526-23.10)</span>
                 </div>
               )}
             </div>
@@ -7020,7 +7258,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.4</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.5</span>
             </p>
           </footer>
         </div>
@@ -7140,13 +7378,19 @@ export default function App() {
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; border: 2px solid transparent; background-clip: content-box; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
         @media print {
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white !important; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white !important; color: black !important; }
           .print\\:hidden { display: none !important; }
-          .shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)], .shadow-xl, .shadow-sm { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-          .custom-scrollbar { overflow: visible !important; }
+          .shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)], .shadow-xl, .shadow-sm { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+          .custom-scrollbar { overflow: visible !important; max-height: none !important; height: auto !important; }
           .h-screen { height: auto !important; overflow: visible !important; }
           .overflow-hidden { overflow: visible !important; }
           .overflow-y-auto { overflow: visible !important; }
+          .overflow-auto { overflow: visible !important; }
+          [style*="max-height"], [style*="maxHeight"], .max-h-\\[350px\\], .max-h-\\[500px\\], .max-h-\\[400px\\], .max-h-\\[600px\\], .max-h-\\[700px\\] {
+            max-height: none !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
           main { overflow: visible !important; height: auto !important; padding: 0 !important; }
           .fixed, .sticky { position: static !important; }
         }
