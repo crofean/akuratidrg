@@ -5032,7 +5032,7 @@ export default function App() {
                   <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
                 </tr>
                 <tr>
-                  <th className="p-4 min-w-[280px] bg-slate-900 sticky left-0 z-50">Hierarki Departemen / KSM / DPJP</th>
+                  <th className="p-4 min-w-[300px] max-w-[300px] w-[300px] truncate bg-slate-900 sticky left-0 z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)]">Hierarki Departemen / KSM / DPJP</th>
                   <th className="p-4 text-right bg-slate-900 w-20">Kasus</th>
                   <th className="p-4 text-center bg-teal-900 text-teal-300 w-20 text-[9px]">ALOS</th>
                   <th className="p-4 text-center bg-rose-900 text-rose-300 w-20 text-[9px]">MAX LOS</th>
@@ -5044,7 +5044,7 @@ export default function App() {
                 </tr>
                 {/* RATA-RATA RS SUMMARY ROW (Now in thead for perfect sticky behavior) */}
                 <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm">
-                  <td className="p-4 bg-amber-50 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+                  <td className="p-4 bg-amber-50 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center"><Zap size={12} /></div>
                       <span className="text-amber-800 uppercase text-[10px] tracking-widest font-black whitespace-nowrap">RATA-RATA RS (Seluruh Kasus)</span>
@@ -5080,10 +5080,10 @@ export default function App() {
                     <React.Fragment key={`dept-frag-${di}`}>
                       {/* DEPARTMENT SUMMARY ROW */}
                       <tr className="bg-slate-100/80 font-black border-y border-slate-200">
-                        <td className="p-4 sticky left-0 z-20 bg-slate-100/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setOpenKsm(isDeptOpen ? null : `dept-${di}`)}>
-                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>▶</span>
-                            <span className="uppercase text-slate-800 tracking-tight">{dept.name}</span>
+                        <td className="p-4 sticky left-0 z-20 bg-slate-100 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={dept.name}>
+                          <div className="flex items-center gap-2 cursor-pointer truncate" onClick={() => setOpenKsm(isDeptOpen ? null : `dept-${di}`)}>
+                            <span className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>▶</span>
+                            <span className="uppercase text-slate-800 tracking-tight truncate">{dept.name}</span>
                           </div>
                         </td>
                         <td className="p-4 text-right font-black">{dept.count.toLocaleString()}</td>
@@ -5104,10 +5104,10 @@ export default function App() {
                               style={{ animationDelay: `${ki * 40}ms`, animationFillMode: 'both' }}
                               onClick={() => setExpandedKsms(prev => ({ ...prev, [ksm.name]: !isKsmOpen }))}
                             >
-                              <td className="p-4 pl-10 border-l-4 border-indigo-500 sticky left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                                <div className="flex items-center gap-2">
-                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>▶</span>
-                                  <span className="font-bold text-indigo-700">{ksm.name}</span>
+                              <td className="p-4 pl-10 border-l-4 border-indigo-500 sticky left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={ksm.name}>
+                                <div className="flex items-center gap-2 truncate">
+                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] shrink-0 transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>▶</span>
+                                  <span className="font-bold text-indigo-700 truncate">{ksm.name}</span>
                                 </div>
                               </td>
                               <td className="p-4 text-right font-bold text-slate-700">{ksm.count.toLocaleString()}</td>
@@ -5126,8 +5126,11 @@ export default function App() {
                                 style={{ animationDelay: `${pi * 30}ms`, animationFillMode: 'both' }}
                                 onClick={() => openDrilldown(`Kasus DPJP: ${dpjp.name}`, row => normDpjp(row['DPJP']) === dpjp.normName)}
                               >
-                                <td className="p-3 pl-20 italic flex items-center gap-2 sticky left-0 z-20 bg-slate-50 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                                  <User size={12} className="text-slate-400" /> {dpjp.name}
+                                <td className="p-3 pl-20 italic sticky left-0 z-20 bg-slate-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={dpjp.name}>
+                                  <div className="flex items-center gap-2 truncate">
+                                    <User size={12} className="text-slate-400 shrink-0" />
+                                    <span className="truncate">{dpjp.name}</span>
+                                  </div>
                                 </td>
                                 <td className="p-3 text-right">{dpjp.count.toLocaleString()}</td>
                                 <td className="p-3 text-center text-teal-600 text-[10px]">{(dpjp.sumLos / dpjp.count).toFixed(1)}</td>
@@ -5238,7 +5241,7 @@ export default function App() {
                   <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
                 </tr>
                 <tr>
-                  <th className="p-4 min-w-[280px] bg-slate-900 sticky left-0 z-50">Hierarki KSM / DPJP</th>
+                  <th className="p-4 min-w-[300px] max-w-[300px] w-[300px] truncate bg-slate-900 sticky left-0 z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)]">Hierarki KSM / DPJP</th>
                   <th className="p-4 text-right bg-slate-900 w-20">Kasus</th>
                   <th className="p-4 text-center bg-teal-900 text-teal-300 w-20 text-[9px]">ALOS</th>
                   <th className="p-4 text-center bg-rose-900 text-rose-300 w-20 text-[9px]">MAX LOS</th>
@@ -5249,7 +5252,7 @@ export default function App() {
                   {compKeys.map(c => <th key={c.key} className="p-4 text-right bg-slate-800 text-slate-400 min-w-[100px]">{c.label}</th>)}
                 </tr>
                 <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm">
-                  <td className="p-4 bg-amber-50 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+                  <td className="p-4 bg-amber-50 sticky left-0 z-20 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center"><Zap size={12} /></div>
                       <span className="text-amber-800 uppercase text-[10px] tracking-widest font-black whitespace-nowrap">RATA-RATA RS (Seluruh Kasus)</span>
@@ -5273,12 +5276,12 @@ export default function App() {
                   return (
                     <React.Fragment key={`ksm-frag-${ki}`}>
                       <tr className="bg-indigo-50/60 hover:bg-indigo-100/60 border-b border-indigo-100 transition-colors">
-                        <td className="p-3 sticky left-0 z-20 bg-indigo-50/90 backdrop-blur-md shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                          <div className="flex items-center gap-3 cursor-pointer group/ksm" onClick={() => setExpandedKsms(prev => ({ ...prev, [ksm.name]: !isKsmOpen }))}>
-                            <div className={`w-6 h-6 rounded-md flex items-center justify-center transition-all duration-300 shadow-sm ${isKsmOpen ? 'bg-indigo-600 text-white rotate-90' : 'bg-white text-indigo-500 border border-indigo-200 group-hover/ksm:border-indigo-400'}`}>
+                        <td className="p-3 sticky left-0 z-20 bg-indigo-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={ksm.name}>
+                          <div className="flex items-center gap-3 cursor-pointer group/ksm truncate" onClick={() => setExpandedKsms(prev => ({ ...prev, [ksm.name]: !isKsmOpen }))}>
+                            <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 transition-all duration-300 shadow-sm ${isKsmOpen ? 'bg-indigo-600 text-white rotate-90' : 'bg-white text-indigo-500 border border-indigo-200 group-hover/ksm:border-indigo-400'}`}>
                               <ChevronRight size={14} className="stroke-[3]" />
                             </div>
-                            <span className="font-extrabold text-indigo-900 tracking-tight">{ksm.name}</span>
+                            <span className="font-extrabold text-indigo-900 tracking-tight truncate">{ksm.name}</span>
                           </div>
                         </td>
                         <td className="p-3 text-right font-black text-slate-800">{ksm.count.toLocaleString()}</td>
@@ -5304,12 +5307,12 @@ export default function App() {
                             style={{ animationDelay: `${pi * 30}ms`, animationFillMode: 'both' }}
                             onClick={() => openDrilldown(`Kasus DPJP: ${dpjp.name}`, row => normDpjp(row['DPJP']) === dpjp.normName)}
                           >
-                            <td className="p-3 pl-12 border-l-2 border-indigo-300 sticky left-0 z-20 bg-white group-hover:bg-slate-50 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
-                              <div className="flex items-center gap-3">
-                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                            <td className="p-3 pl-12 border-l-2 border-indigo-300 sticky left-0 z-20 bg-white group-hover:bg-slate-50 transition-colors shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={dpjp.name}>
+                              <div className="flex items-center gap-3 truncate">
+                                <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 shrink-0 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
                                   <User size={12} />
                                 </div>
-                                <span className="font-semibold text-slate-600 group-hover:text-indigo-700 transition-colors">{dpjp.name}</span>
+                                <span className="font-semibold text-slate-600 group-hover:text-indigo-700 transition-colors truncate">{dpjp.name}</span>
                               </div>
                             </td>
                             <td className="p-3 text-right font-bold text-slate-600">{dpjp.count.toLocaleString()}</td>
@@ -8228,7 +8231,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.7</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.2.7</span>
             </p>
           </footer>
         </div>
