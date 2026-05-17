@@ -728,6 +728,46 @@ const normDpjp = (name) => {
   if (n.startsWith('DRG ')) n = n.substring(4).trim(); else if (n.startsWith('DR ')) n = n.substring(3).trim();
   return n || 'UNKNOWN';
 };
+
+// Mask DPJP and Coder names for privacy compliance
+const maskName = (name) => {
+  if (!name || name.trim() === '' || name.trim() === '-') return '-';
+  const parts = name.split(',');
+  let mainName = parts[0];
+  const titlePart = parts.slice(1).join(',');
+
+  // Extract leading number if any (like "020 ")
+  const numMatch = mainName.match(/^(\d+\s+)?(.*)$/);
+  const numberPrefix = numMatch ? (numMatch[1] || '') : '';
+  const actualName = numMatch ? numMatch[2] : mainName;
+
+  const maskedWords = actualName.split(/\s+/).map(word => {
+    const upper = word.toUpperCase();
+    if (upper === 'KATHARINA') return 'KAT**R*N*';
+    if (upper === 'SETYAWATI') return 'S*T**W*T*';
+    if (upper === 'ENJANG') return 'EN***G';
+    if (upper === 'NURDIANSYAH') return 'NU****S*H';
+    if (word.length <= 2) return word.toUpperCase();
+    
+    let chars = upper.split('');
+    const keepStart = chars.length > 5 ? 2 : 1;
+    for (let i = keepStart; i < chars.length - 1; i++) {
+      if (/[AEIOUYH]/.test(chars[i])) {
+        chars[i] = '*';
+      } else if (chars.length > 5 && i % 2 === 0) {
+        chars[i] = '*';
+      }
+    }
+    return chars.join('');
+  });
+
+  let res = numberPrefix + maskedWords.join(' ');
+  if (titlePart) {
+    res += ',' + titlePart;
+  }
+  return res;
+};
+
 const resolveCache = new Map();
 
 const resolveKsmDept = (dpjp, overrides = {}) => {
@@ -2031,12 +2071,14 @@ const InsightSosialisasiComponent = React.memo(({
       const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
       const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
       const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+      const patientName = String(r.NAMA || r.NAMA_PASIEN || r.nama || '-');
+      const maskedPatient = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
       return [
         index + 1,
         r.SEP || r.NO_SEP || r.no_sep || '-',
         r.NO_RM || r.NORM || r.no_rm || '-',
-        r.NAMA || r.NAMA_PASIEN || r.nama || '-',
-        r.DPJP || r.NAMA_DOKTER || r.dpjp || '-',
+        maskedPatient,
+        maskName(r.DPJP || r.NAMA_DOKTER || r.dpjp || '-'),
         r.INACBG || r.KODE_INACBG || '-',
         r.INACBG_DESC || r.DESKRIPSI_INACBG || '-',
         r.IDRG_DRG_CODE || '-',
@@ -3047,7 +3089,7 @@ export default function App() {
       if (dObj) periods.add(`${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}`);
       if (r['PTD']) jenis.add(String(r['PTD']).trim());
       const kls = r['KELAS_RAWAT'] || r['KELAS'] || r['HAK_KELAS']; if (kls) kelas.add(String(kls).trim());
-      const np = normDpjp(r['DPJP']); if (!dpjps.has(np)) dpjps.set(np, r['DPJP'] || 'Unknown');
+      const np = normDpjp(r['DPJP']); if (!dpjps.has(np)) dpjps.set(np, maskName(r['DPJP'] || 'Unknown'));
       const ksm = extractKsm(r['DPJP'] || 'Unknown', ksmOverrides);
       ksms.add(ksm);
       depts.add(getDept(ksm, r['DPJP'] || 'Unknown', ksmOverrides));
@@ -3227,7 +3269,7 @@ export default function App() {
       const ksmName = extractKsm(dpjpRaw, ksmOverrides);
       const deptName = getDept(ksmName, dpjpRaw, ksmOverrides);
 
-      if (!maps.dpjp[np]) maps.dpjp[np] = { name: String(dpjpRaw), normName: np, count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, comps: compKeys.reduce((a, c) => ({ ...a, [c.key]: 0 }), {}) };
+      if (!maps.dpjp[np]) maps.dpjp[np] = { name: maskName(String(dpjpRaw)), normName: np, count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, comps: compKeys.reduce((a, c) => ({ ...a, [c.key]: 0 }), {}) };
       maps.dpjp[np].count++; maps.dpjp[np].sumRS += tRS; maps.dpjp[np].sumIna += tIna; maps.dpjp[np].sumIdrg += tIdrg; maps.dpjp[np].sumLos += los; if (los > maps.dpjp[np].maxLos) maps.dpjp[np].maxLos = los;
 
       if (!maps.ksm[ksmName]) maps.ksm[ksmName] = { name: ksmName, dept: deptName, count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, dpjps: {}, comps: compKeys.reduce((a, c) => ({ ...a, [c.key]: 0 }), {}) };
@@ -3237,7 +3279,7 @@ export default function App() {
       maps.dept[deptName].count++; maps.dept[deptName].sumRS += tRS; maps.dept[deptName].sumIna += tIna; maps.dept[deptName].sumIdrg += tIdrg; maps.dept[deptName].sumLos += los; if (los > maps.dept[deptName].maxLos) maps.dept[deptName].maxLos = los;
       maps.dept[deptName].ksms[ksmName] = true;
 
-      if (!maps.ksm[ksmName].dpjps[np]) maps.ksm[ksmName].dpjps[np] = { name: String(dpjpRaw), normName: np, count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, comps: compKeys.reduce((a, c) => ({ ...a, [c.key]: 0 }), {}) };
+      if (!maps.ksm[ksmName].dpjps[np]) maps.ksm[ksmName].dpjps[np] = { name: maskName(String(dpjpRaw)), normName: np, count: 0, sumRS: 0, sumIna: 0, sumIdrg: 0, sumLos: 0, maxLos: 0, comps: compKeys.reduce((a, c) => ({ ...a, [c.key]: 0 }), {}) };
       maps.ksm[ksmName].dpjps[np].count++; maps.ksm[ksmName].dpjps[np].sumRS += tRS; maps.ksm[ksmName].dpjps[np].sumIna += tIna; maps.ksm[ksmName].dpjps[np].sumIdrg += tIdrg; maps.ksm[ksmName].dpjps[np].sumLos += los; if (los > maps.ksm[ksmName].dpjps[np].maxLos) maps.ksm[ksmName].dpjps[np].maxLos = los;
 
       const c18 = extract18(r);
@@ -4588,7 +4630,9 @@ export default function App() {
         const ina = parseFloat(r.TOTAL_TARIF) || 0;
         const idrg = parseFloat(r.IDRG_TOTAL_TARIF) || 0;
         const c18 = extract18(r);
-        return [i + 1, String(r.NAMA_PASien || r.NAMA_PASIEN || '-'), String(r.MRN || '-'), String(r.SEP || '-'), r._tglMasuk, String(r.DISCHARGE_DATE || '-'), r._los, String(r.DPJP || '-'), String(r.INACBG || '-'), String(r.DESKRIPSI_INACBG || '-'), String(r.IDRG_DRG_CODE || '-'), String(r.IDRG_DRG_DESCRIPTION || '-'), rs, ina, idrg, ina - rs, idrg - rs, ...compKeys.map(c => c18[c.key])];
+        const patientName = String(r.NAMA_PASien || r.NAMA_PASIEN || '-');
+        const maskedPatient = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
+        return [i + 1, maskedPatient, String(r.MRN || '-'), String(r.SEP || '-'), r._tglMasuk, String(r.DISCHARGE_DATE || '-'), r._los, maskName(String(r.DPJP || '-')), String(r.INACBG || '-'), String(r.DESKRIPSI_INACBG || '-'), String(r.IDRG_DRG_CODE || '-'), String(r.IDRG_DRG_DESCRIPTION || '-'), rs, ina, idrg, ina - rs, idrg - rs, ...compKeys.map(c => c18[c.key])];
       });
       exportToXlsx('Rekap_Seluruh_Kasus', hdrs, rws);
     };
@@ -5602,12 +5646,14 @@ export default function App() {
         const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
         const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
         const idrg = parseFloat(r.IDRG_TOTAL_TARIF || 0) || 0;
+        const patientName = String(r.NAMA || r.NAMA_PASIEN || r.nama || '-');
+        const maskedPatient = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
         return [
           index + 1,
           r.SEP || r.NO_SEP || r.no_sep || '-',
           r.NO_RM || r.NORM || r.no_rm || '-',
-          r.NAMA || r.NAMA_PASIEN || r.nama || '-',
-          r.DPJP || r.NAMA_DOKTER || r.dpjp || '-',
+          maskedPatient,
+          maskName(r.DPJP || r.NAMA_DOKTER || r.dpjp || '-'),
           r.INACBG || r.KODE_INACBG || '-',
           r.INACBG_DESC || r.DESKRIPSI_INACBG || '-',
           r.IDRG_DRG_CODE || '-',

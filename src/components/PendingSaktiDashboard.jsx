@@ -18,6 +18,45 @@ const formatRp = (val) => {
   }).format(val);
 };
 
+// Mask DPJP and Coder names for privacy compliance
+const maskName = (name) => {
+  if (!name || name.trim() === '' || name.trim() === '-') return '-';
+  const parts = name.split(',');
+  let mainName = parts[0];
+  const titlePart = parts.slice(1).join(',');
+
+  // Extract leading number if any (like "020 ")
+  const numMatch = mainName.match(/^(\d+\s+)?(.*)$/);
+  const numberPrefix = numMatch ? (numMatch[1] || '') : '';
+  const actualName = numMatch ? numMatch[2] : mainName;
+
+  const maskedWords = actualName.split(/\s+/).map(word => {
+    const upper = word.toUpperCase();
+    if (upper === 'KATHARINA') return 'KAT**R*N*';
+    if (upper === 'SETYAWATI') return 'S*T**W*T*';
+    if (upper === 'ENJANG') return 'EN***G';
+    if (upper === 'NURDIANSYAH') return 'NU****S*H';
+    if (word.length <= 2) return word.toUpperCase();
+    
+    let chars = upper.split('');
+    const keepStart = chars.length > 5 ? 2 : 1;
+    for (let i = keepStart; i < chars.length - 1; i++) {
+      if (/[AEIOUYH]/.test(chars[i])) {
+        chars[i] = '*';
+      } else if (chars.length > 5 && i % 2 === 0) {
+        chars[i] = '*';
+      }
+    }
+    return chars.join('');
+  });
+
+  let res = numberPrefix + maskedWords.join(' ');
+  if (titlePart) {
+    res += ',' + titlePart;
+  }
+  return res;
+};
+
 export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], resolveKsmDept }) {
   const [fileData, setFileData] = useState([]);
   const [headers, setHeaders] = useState([]);
@@ -147,7 +186,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
 
         // Set mapping state with precise and intelligent fallbacks
         setColumnMapping({
-          sep: mapping.sep || detectedHeaders.find(h => h.toLowerCase().includes('sep')) || detectedHeaders[0] || '',
+          sep: mapping.sep || detectedHeaders.find(h => h.toLowerCase().includes('sep') && !h.toLowerCase().includes('cbg')) || detectedHeaders.find(h => !h.toLowerCase().includes('cbg') && !h.toLowerCase().includes('inacbg') && !h.toLowerCase().includes('code') && !h.toLowerCase().includes('nama')) || detectedHeaders[0] || '',
           nama: mapping.nama || detectedHeaders.find(h => h.toLowerCase().includes('nama')) || detectedHeaders[1] || '',
           keterangan: mapping.keterangan || detectedHeaders.find(h => h.toLowerCase().includes('keterangan') || h.toLowerCase().includes('alasan') || h.toLowerCase().includes('dispute')) || detectedHeaders[2] || '',
           nominal: mapping.nominal || detectedHeaders.find(h => h.toLowerCase().includes('nominal') || h.toLowerCase().includes('tarif') || h.toLowerCase().includes('biaya')) || detectedHeaders[3] || '',
@@ -182,7 +221,10 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         const layanan = item.layanan;
         const sep = String(row[sepIdx] || '').trim();
         const nama = String(row[namaIdx] || '').trim();
-        const keterangan = String(row[ketIdx] || '').trim();
+        let keterangan = String(row[ketIdx] || '').trim();
+        if (!keterangan || keterangan === '-') {
+          keterangan = 'Alasan Pending Tidak Terinci';
+        }
         const rawNom = String(row[nomIdx] || '0').replace(/[^0-9.-]/g, '');
         const nominal = parseFloat(rawNom) || 0;
 
@@ -206,7 +248,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
           diaglist = matchedPatient.DIAGNOSIS || matchedPatient.DIAGNOSIS_UTAMA || matchedPatient.DIAGNOSA || matchedPatient.DIAGLIST || '-';
           proclist = matchedPatient.PROSEDUR || matchedPatient.PROSEDUR_UTAMA || matchedPatient.TINDAKAN || matchedPatient.PROCLIST || '-';
           const rawCoder = matchedPatient.CODER_ID || matchedPatient.USER_CODER || matchedPatient.CODER || '-';
-          coderName = String(rawCoder).split(';')[0].trim() || '-';
+          coderName = maskName(String(rawCoder).split(';')[0].trim()) || '-';
           
           if (resolveKsmDept && matchedPatient.DPJP) {
             const res = resolveKsmDept(matchedPatient.DPJP);
@@ -1484,8 +1526,8 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                   <table className="w-full text-[10px] border-collapse">
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-6">Rank</th>
-                        <th className="pb-2">Alasan Dispute Pending</th>
+                        <th className="pb-2 w-8">No.</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1516,8 +1558,8 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                   <table className="w-full text-[10px] border-collapse">
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-6">Rank</th>
-                        <th className="pb-2">Alasan Dispute Pending</th>
+                        <th className="pb-2 w-8">No.</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1548,8 +1590,8 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                   <table className="w-full text-[10px] border-collapse">
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-6">Rank</th>
-                        <th className="pb-2">Alasan Dispute Pending</th>
+                        <th className="pb-2 w-8">No.</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1580,8 +1622,8 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                   <table className="w-full text-[10px] border-collapse">
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-6">Rank</th>
-                        <th className="pb-2">Alasan Dispute Pending</th>
+                        <th className="pb-2 w-8">No.</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1600,6 +1642,42 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                 ) : (
                   <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Readmisi.</div>
                 )}
+              </div>
+            </div>
+          </div>
+
+          {/* Persentase Distribusi Kategori & Faktor Penyebab Pending (NEW USER REQUEST) */}
+          <div className="print-page-break space-y-6">
+            <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
+              <Brain size={16} className="text-teal-600" /> Analisis Distribusi Kategori &amp; Faktor Penyebab Pending
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Kategori Permasalahan */}
+              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm">
+                <h3 className="text-xs font-black text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between">
+                  <span>Kategori Permasalahan</span>
+                  <span className="text-[10px] text-teal-600 font-extrabold">Persentase</span>
+                </h3>
+                <div className="space-y-4">
+                  <CategoryBar label="Indikasi Medis Klinis (Medis)" count={stats.medis} total={stats.total} color="bg-sky-500" />
+                  <CategoryBar label="Koding Medis / Aturan ICD (Koding)" count={stats.koding} total={stats.total} color="bg-rose-500" />
+                  <CategoryBar label="Administrasi / Kelengkapan Berkas (Administrasi)" count={stats.admin} total={stats.total} color="bg-amber-500" />
+                  <CategoryBar label="Readmisi / Clinical Pathway (Readmisi)" count={stats.readmisi} total={stats.total} color="bg-teal-500" />
+                </div>
+              </div>
+
+              {/* Faktor Penyebab */}
+              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm">
+                <h3 className="text-xs font-black text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between">
+                  <span>Faktor Penyebab (Causal Factors)</span>
+                  <span className="text-[10px] text-teal-600 font-extrabold">Persentase</span>
+                </h3>
+                <div className="space-y-4">
+                  <CategoryBar label="Internal RS (Edukasi Koding, Resume Medis, Sistem)" count={stats.internal} total={stats.total} color="bg-rose-500" />
+                  <CategoryBar label="Eksternal BPJS (Perbedaan Interpretasi Klaim)" count={stats.eksternal} total={stats.total} color="bg-sky-500" />
+                  <CategoryBar label="Grey Area (Butuh Konsensus Bersama)" count={stats.grey} total={stats.total} color="bg-slate-400" />
+                </div>
               </div>
             </div>
           </div>
