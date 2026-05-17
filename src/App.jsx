@@ -1840,6 +1840,17 @@ export default function App() {
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
+      // Helper robust mapping case-insensitive & space-tolerant
+      const findHeaderIndex = (headers, possibleNames, defaultIdx) => {
+        const cleanedHeaders = headers.map(h => h.trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+        for (const name of possibleNames) {
+          const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const idx = cleanedHeaders.indexOf(cleanName);
+          if (idx !== -1) return idx;
+        }
+        return defaultIdx;
+      };
+
       // 1. Fetch active users list (gid=0)
       const activeUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=0`;
       const activeRes = await fetch(activeUrl);
@@ -1848,9 +1859,9 @@ export default function App() {
       const activeRows = activeText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
       
       const activeHeaders = activeRows[0] || [];
-      const userIdx = activeHeaders.indexOf("USERNAME");
-      const passIdx = activeHeaders.indexOf("PASSWORD");
-      const activeIdx = activeHeaders.indexOf("MasaAktif");
+      const userIdx = findHeaderIndex(activeHeaders, ['username', 'user'], 3);
+      const passIdx = findHeaderIndex(activeHeaders, ['password', 'sandi', 'katasandi'], 4);
+      const activeIdx = findHeaderIndex(activeHeaders, ['masaaktif', 'expiry', 'expired', 'berlaku'], 5);
       
       const activeList = activeRows.slice(1).map(r => ({
         username: r[userIdx] || '',
@@ -1867,27 +1878,37 @@ export default function App() {
       const pendingRows = pendingText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
       
       const pendingHeaders = pendingRows[0] || [];
-      const timestampIdx = pendingHeaders.indexOf("TIMESTAMP");
-      const fullNameIdx = pendingHeaders.indexOf("NAMA_LENGKAP");
-      const emailIdx = pendingHeaders.indexOf("EMAIL");
-      const phoneIdx = pendingHeaders.indexOf("TELEPON");
-      const rsNameIdx = pendingHeaders.indexOf("NAMA_RS");
-      const positionIdx = pendingHeaders.indexOf("JABATAN");
-      const pUserIdx = pendingHeaders.indexOf("USERNAME");
-      const pPassIdx = pendingHeaders.indexOf("PASSWORD");
-      const statusIdx = pendingHeaders.indexOf("STATUS");
+      const timestampIdx = findHeaderIndex(pendingHeaders, ['timestamp', 'tanggal'], 0);
+      const fullNameIdx = findHeaderIndex(pendingHeaders, ['namalengkap', 'nama', 'fullname'], 1);
+      const emailIdx = findHeaderIndex(pendingHeaders, ['email', 'surel'], 2);
+      const phoneIdx = findHeaderIndex(pendingHeaders, ['nohp', 'phone', 'telepon', 'hp'], 3);
+      const rsNameIdx = findHeaderIndex(pendingHeaders, ['namars', 'rsname', 'rumahsakit'], 5);
+      const positionIdx = findHeaderIndex(pendingHeaders, ['jabatan', 'position'], 6);
+      const pUserIdx = findHeaderIndex(pendingHeaders, ['username', 'user'], 7);
+      const pPassIdx = findHeaderIndex(pendingHeaders, ['password', 'sandi', 'katasandi'], 8);
+      const statusIdx = findHeaderIndex(pendingHeaders, ['status', 'catatan', 'keterangan'], 9);
       
-      const pList = pendingRows.slice(1).map(r => ({
-        timestamp: r[timestampIdx] || '',
-        fullName: r[fullNameIdx] || '',
-        email: r[emailIdx] || '',
-        phone: r[phoneIdx] || '',
-        rsName: r[rsNameIdx] || '',
-        position: r[positionIdx] || '',
-        username: r[pUserIdx] || '',
-        password: r[pPassIdx] || '',
-        status: r[statusIdx] || 'PENDING'
-      })).filter(u => u.username);
+      const pList = pendingRows.slice(1).map(r => {
+        let rawStatus = r[statusIdx] || r[10] || 'PENDING';
+        rawStatus = rawStatus.trim().toUpperCase();
+        if (rawStatus === 'TERVERIFIKASI' || rawStatus === 'DITOLAK') {
+          // Status valid
+        } else {
+          // Jika kosong atau "KOSONG"
+          rawStatus = 'PENDING';
+        }
+        return {
+          timestamp: r[timestampIdx] || '',
+          fullName: (r[fullNameIdx] || '').replace(/\+/g, ' '),
+          email: r[emailIdx] || '',
+          phone: r[phoneIdx] || '',
+          rsName: (r[rsNameIdx] || '').replace(/\+/g, ' '),
+          position: (r[positionIdx] || '').replace(/\+/g, ' '),
+          username: r[pUserIdx] || '',
+          password: r[pPassIdx] || '',
+          status: rawStatus
+        };
+      }).filter(u => u.username);
       setPendingUsers(pList);
       
     } catch (err) {
