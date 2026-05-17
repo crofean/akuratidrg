@@ -1381,6 +1381,23 @@ const exportToXlsx = (filename, headers, rows) => {
 
   const data = [headers, ...rows];
   const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+  // Auto-fit column widths (neat and clean spreadsheet formatting)
+  if (headers && headers.length > 0) {
+    const colWidths = headers.map((h, colIdx) => {
+      let maxLen = String(h).length;
+      rows.forEach(r => {
+        const cellValue = r[colIdx] !== undefined && r[colIdx] !== null ? String(r[colIdx]) : '';
+        if (cellValue.length > maxLen) {
+          maxLen = cellValue.length;
+        }
+      });
+      // Add generous padding for a very clean professional layout
+      return { wch: Math.max(maxLen + 4, 12) };
+    });
+    worksheet['!cols'] = colWidths;
+  }
+
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
 
@@ -4200,7 +4217,23 @@ export default function App() {
         {reportSubTab === 'procedure' && (
           <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
             <SectionHeader icon={Scissors} title="Laporan Tindakan" desc={`Daftar tindakan (procedure) terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-purple-50 text-purple-600" highlightClass="bg-purple-500/5" exportAction={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Jumlah', 'Persentase (%)'], dashData.procFull.map((d, i) => [i + 1, d.code, d.count, d.pct]))} />
-            <Card className="overflow-hidden p-0 border-0 shadow-xl">
+            <Card className="overflow-hidden border border-slate-200 shadow-xl bg-white rounded-3xl p-0">
+              {/* Header Card Toolbar */}
+              <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 bg-gradient-to-r from-purple-50/30 to-white">
+                <div>
+                  <h4 className="text-base font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+                    <span className="w-2 h-5 bg-purple-500 rounded-full"></span>
+                    Tabel Rekapitulasi Prosedur & Tindakan ICD-9-CM
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-1 font-medium">Klik pada baris tindakan untuk melihat detail analisis kasus secara instan.</p>
+                </div>
+                <button
+                  onClick={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Jumlah', 'Persentase (%)'], dashData.procFull.map((d, i) => [i + 1, d.code, d.count, d.pct]))}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all shadow-lg shadow-purple-600/20 hover:-translate-y-0.5 shrink-0"
+                >
+                  <Download size={14} /> Ekspor Excel (Rapi & Auto-Width)
+                </button>
+              </div>
               <div className="overflow-x-auto custom-scrollbar max-h-[700px]">
                 <table className="w-full text-sm border-collapse">
                   <thead className="bg-slate-900 text-white sticky top-0 z-10">
@@ -7618,7 +7651,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.7 (170526-23.21)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.2.7 (170526-23.21)</p>
               </div>
             </div>
           </div>
@@ -8052,7 +8085,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.7 (170526-23.21)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.2.7 (170526-23.21)</span>
                 </div>
               )}
             </div>
