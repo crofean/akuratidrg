@@ -701,6 +701,7 @@ const TABS = [
   { id: 'mapping', label: 'Peta iDRG', icon: GitMerge }, { id: 'sl_cl_analysis', label: 'Analisis SL/CL', icon: Layers }, { id: 'dept', label: 'Kinerja Departemen', icon: Building2 }, { id: 'ksm', label: 'Kinerja KSM', icon: Users }, { id: 'dpjp', label: 'Kinerja DPJP', icon: User },
   { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award },
   { id: 'settings_ksm', label: 'Pengaturan KSM', icon: Settings },
+  { id: 'user_management', label: 'Manajemen Akses', icon: ClipboardList }
 ];
 
 const normDpjp = (name) => {
@@ -1722,7 +1723,7 @@ export default function App() {
   });
   const [isScrolled, setIsScrolled] = useState(false);
   const [reportSubTab, setReportSubTab] = useState('summary');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [auditFilter, setAuditFilter] = useState('');
   const [auditRuleFilter, setAuditRuleFilter] = useState('');
   const [auditReviewFilter, setAuditReviewFilter] = useState('');
@@ -1751,9 +1752,35 @@ export default function App() {
   });
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
+  // --- USER ACCESS MANAGEMENT SYSTEM STATES ---
+  const [registrationSheetId, setRegistrationSheetId] = useState(() => localStorage.getItem('sak_registration_sheet_id') || '1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98');
+  const [registrationGid, setRegistrationGid] = useState(() => localStorage.getItem('sak_registration_gid') || '1382718302');
+  const [registrationScriptUrl, setRegistrationScriptUrl] = useState(() => localStorage.getItem('sak_registration_script_url') || 'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec');
+  const [pendingUsers, setPendingUsers] = useState([]);
+  const [activeUsersList, setActiveUsersList] = useState([]);
+  const [isFetchingUsers, setIsFetchingUsers] = useState(false);
+  const [isProcessingAction, setIsProcessingAction] = useState(false);
+  const [userManagementError, setUserManagementError] = useState('');
+  const [userManagementSuccess, setUserManagementSuccess] = useState('');
+
   const [showAdOverlay, setShowAdOverlay] = useState(true);
   const [initialAdDone, setInitialAdDone] = useState(false);
   const idleTimerRef = useRef(null);
+
+  // Handle Responsive Sidebar on resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    // Initial call
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Initial 5-second Ad
   useEffect(() => {
@@ -1800,7 +1827,79 @@ export default function App() {
     sessionStorage.setItem('sak_globalFilter', JSON.stringify(globalFilter));
     sessionStorage.setItem('sak_auditVerdicts', JSON.stringify(auditVerdicts));
     localStorage.setItem('sak_ksm_overrides', JSON.stringify(ksmOverrides));
-  }, [activeTab, subTab, globalFilter, auditVerdicts, ksmOverrides]);
+    localStorage.setItem('sak_registration_sheet_id', registrationSheetId);
+    localStorage.setItem('sak_registration_gid', registrationGid);
+    localStorage.setItem('sak_registration_script_url', registrationScriptUrl);
+  }, [activeTab, subTab, globalFilter, auditVerdicts, ksmOverrides, registrationSheetId, registrationGid, registrationScriptUrl]);
+
+  const fetchUserManagementData = async () => {
+    setIsFetchingUsers(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      // 1. Fetch active users list (gid=0)
+      const activeUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=0`;
+      const activeRes = await fetch(activeUrl);
+      if (!activeRes.ok) throw new Error("Gagal mengunduh daftar User Aktif dari Google Sheets.");
+      const activeText = await activeRes.text();
+      const activeRows = activeText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
+      
+      const activeHeaders = activeRows[0] || [];
+      const userIdx = activeHeaders.indexOf("USERNAME");
+      const passIdx = activeHeaders.indexOf("PASSWORD");
+      const activeIdx = activeHeaders.indexOf("MasaAktif");
+      
+      const activeList = activeRows.slice(1).map(r => ({
+        username: r[userIdx] || '',
+        password: r[passIdx] || '',
+        masaAktif: r[activeIdx] || ''
+      })).filter(u => u.username);
+      setActiveUsersList(activeList);
+
+      // 2. Fetch pending users list (gid=registrationGid)
+      const pendingUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=${registrationGid}`;
+      const pendingRes = await fetch(pendingUrl);
+      if (!pendingRes.ok) throw new Error("Gagal mengunduh daftar Pengajuan dari Google Sheets. Pastikan GID Tab Permohonan sudah benar.");
+      const pendingText = await pendingRes.text();
+      const pendingRows = pendingText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
+      
+      const pendingHeaders = pendingRows[0] || [];
+      const timestampIdx = pendingHeaders.indexOf("TIMESTAMP");
+      const fullNameIdx = pendingHeaders.indexOf("NAMA_LENGKAP");
+      const emailIdx = pendingHeaders.indexOf("EMAIL");
+      const phoneIdx = pendingHeaders.indexOf("TELEPON");
+      const rsNameIdx = pendingHeaders.indexOf("NAMA_RS");
+      const positionIdx = pendingHeaders.indexOf("JABATAN");
+      const pUserIdx = pendingHeaders.indexOf("USERNAME");
+      const pPassIdx = pendingHeaders.indexOf("PASSWORD");
+      const statusIdx = pendingHeaders.indexOf("STATUS");
+      
+      const pList = pendingRows.slice(1).map(r => ({
+        timestamp: r[timestampIdx] || '',
+        fullName: r[fullNameIdx] || '',
+        email: r[emailIdx] || '',
+        phone: r[phoneIdx] || '',
+        rsName: r[rsNameIdx] || '',
+        position: r[positionIdx] || '',
+        username: r[pUserIdx] || '',
+        password: r[pPassIdx] || '',
+        status: r[statusIdx] || 'PENDING'
+      })).filter(u => u.username);
+      setPendingUsers(pList);
+      
+    } catch (err) {
+      console.error("[SAK-iDRG] Error fetching user management data:", err);
+      setUserManagementError(err.message || 'Gagal memuat data dari Google Sheets.');
+    } finally {
+      setIsFetchingUsers(false);
+    }
+  };
+
+  useEffect(() => {
+    if (subTab === 'user_management' && username.toLowerCase() === 'admin') {
+      fetchUserManagementData();
+    }
+  }, [subTab, registrationSheetId, registrationGid]);
 
   useEffect(() => {
     console.log('[SAK-iDRG] Global Filter changed:', globalFilter);
@@ -4816,6 +4915,474 @@ export default function App() {
     );
   };
 
+  const [pendingDurations, setPendingDurations] = useState({});
+  const [showPasswordList, setShowPasswordList] = useState({});
+
+  const renderUserManagement = () => {
+    const handleApprove = async (username, password) => {
+      const duration = pendingDurations[username] || 12;
+      setIsProcessingAction(true);
+      setUserManagementError('');
+      setUserManagementSuccess('');
+      try {
+        const url = `${registrationScriptUrl}?action=approve&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&duration=${duration}`;
+        await fetch(url, { mode: 'no-cors' });
+        setUserManagementSuccess(`Pengguna @${username} berhasil disetujui dan diaktifkan dengan masa aktif ${duration === 999 ? 'Selamanya' : duration + ' Bulan'}!`);
+        setTimeout(fetchUserManagementData, 1500);
+      } catch (err) {
+        setUserManagementError('Gagal memproses persetujuan akun: ' + err.message);
+      } finally {
+        setIsProcessingAction(false);
+      }
+    };
+
+    const handleReject = async (username) => {
+      if (!window.confirm(`Apakah Anda yakin ingin menolak pengajuan dari @${username}?`)) return;
+      setIsProcessingAction(true);
+      setUserManagementError('');
+      setUserManagementSuccess('');
+      try {
+        const url = `${registrationScriptUrl}?action=reject&username=${encodeURIComponent(username)}`;
+        await fetch(url, { mode: 'no-cors' });
+        setUserManagementSuccess(`Pengguna @${username} telah ditolak.`);
+        setTimeout(fetchUserManagementData, 1500);
+      } catch (err) {
+        setUserManagementError('Gagal menolak akun: ' + err.message);
+      } finally {
+        setIsProcessingAction(false);
+      }
+    };
+
+    const handleDeleteActive = async (username) => {
+      if (!window.confirm(`Apakah Anda yakin ingin menonaktifkan akses untuk @${username}? Pengguna ini tidak akan bisa login lagi.`)) return;
+      setIsProcessingAction(true);
+      setUserManagementError('');
+      setUserManagementSuccess('');
+      try {
+        const url = `${registrationScriptUrl}?action=delete&username=${encodeURIComponent(username)}`;
+        await fetch(url, { mode: 'no-cors' });
+        setUserManagementSuccess(`Akses untuk @${username} berhasil dinonaktifkan.`);
+        setTimeout(fetchUserManagementData, 1500);
+      } catch (err) {
+        setUserManagementError('Gagal menonaktifkan akun: ' + err.message);
+      } finally {
+        setIsProcessingAction(false);
+      }
+    };
+
+    const togglePasswordVisibility = (uname) => {
+      setShowPasswordList(prev => ({ ...prev, [uname]: !prev[uname] }));
+    };
+
+    const changeDuration = (uname, val) => {
+      setPendingDurations(prev => ({ ...prev, [uname]: parseInt(val) }));
+    };
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+        <SectionHeader 
+          icon={ClipboardList} 
+          title="Manajemen Akses & Kredensial Pengguna" 
+          desc="Otorisasi pengajuan akun baru dan atur masa aktif akses SAK-iDRG langsung dari aplikasi secara otomatis." 
+          colorClass="bg-teal-500/10 text-teal-700" 
+          highlightClass="bg-teal-500/5" 
+        />
+
+        {/* NOTIFICATION MESSAGES */}
+        {userManagementError && (
+          <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl flex items-center gap-3 text-rose-700 font-bold text-sm animate-in shake duration-300">
+            <AlertCircle size={20} className="shrink-0" />
+            <span>{userManagementError}</span>
+          </div>
+        )}
+
+        {userManagementSuccess && (
+          <div className="p-4 bg-emerald-50 border-2 border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-700 font-bold text-sm animate-in zoom-in-95 duration-200">
+            <CheckCircle size={20} className="shrink-0" />
+            <span>{userManagementSuccess}</span>
+          </div>
+        )}
+
+        {/* DATABASE SETTINGS & REFRESH BUTTON */}
+        <Card className="p-6">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-lg font-black text-slate-800 tracking-tight">Pengaturan Sinkronisasi Google Sheets</h3>
+              <p className="text-xs text-slate-500 font-medium">Hubungkan tab Permohonan dan script verifikasi otomatis untuk aktivasi instan.</p>
+            </div>
+            <button 
+              onClick={fetchUserManagementData}
+              disabled={isFetchingUsers || isProcessingAction}
+              className="bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 disabled:shadow-none transition-all uppercase tracking-wider shrink-0 w-full sm:w-auto justify-center cursor-pointer"
+            >
+              {isFetchingUsers ? <Activity size={16} className="animate-spin" /> : <Zap size={16} />} 
+              {isFetchingUsers ? 'Sedang Memuat...' : 'Muat Ulang Data'}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Google Spreadsheet ID</label>
+              <input 
+                type="text" 
+                value={registrationSheetId} 
+                onChange={e => setRegistrationSheetId(e.target.value)} 
+                placeholder="ID Spreadsheet..." 
+                className="w-full px-4 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">GID Tab Permohonan (Registrasi)</label>
+              <input 
+                type="text" 
+                value={registrationGid} 
+                onChange={e => setRegistrationGid(e.target.value)} 
+                placeholder="GID Tab Permohonan..." 
+                className="w-full px-4 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Google Apps Script API URL</label>
+              <input 
+                type="text" 
+                value={registrationScriptUrl} 
+                onChange={e => setRegistrationScriptUrl(e.target.value)} 
+                placeholder="https://script.google.com/..." 
+                className="w-full px-4 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all truncate"
+              />
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-teal-50/50 rounded-xl border border-teal-100 text-[10px] text-teal-800 font-semibold leading-relaxed">
+            💡 <strong>Petunjuk:</strong> Buka Google Spreadsheet Anda. ID Spreadsheet terletak di URL peramban antara <code>/d/</code> dan <code>/edit</code>. GID Tab Permohonan terletak di akhir URL peramban saat Anda mengeklik tab formulir registrasi (contoh: <code>gid=1382718302</code>).
+          </div>
+        </Card>
+
+        {/* SECTION 1: PENDING USERS (PENGAJUAN AKUN BARU) */}
+        <Card className="p-6">
+          <div className="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                Pengajuan Akun Baru (Pending)
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Tinjau, pilih masa aktif akses, lalu aktifkan akun langsung dari panel ini.</p>
+            </div>
+            <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+              {pendingUsers.filter(u => u.status === 'PENDING').length} Pengajuan
+            </span>
+          </div>
+
+          <div className="overflow-x-auto custom-scrollbar border border-slate-100 rounded-2xl">
+            <table className="w-full text-sm text-left whitespace-nowrap">
+              <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black tracking-wider border-b border-slate-200">
+                <tr>
+                  <th className="px-5 py-4">Tanggal Pendaftaran</th>
+                  <th className="px-5 py-4">Nama Lengkap</th>
+                  <th className="px-5 py-4">Instansi Rumah Sakit</th>
+                  <th className="px-5 py-4">Jabatan / Posisi</th>
+                  <th className="px-5 py-4">Username / Password</th>
+                  <th className="px-5 py-4 text-center">Durasi Masa Aktif</th>
+                  <th className="px-5 py-4 text-center">Aksi Keputusan</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {pendingUsers.filter(u => u.status === 'PENDING').length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada pengajuan akun baru yang tertunda. Semua bersih! ✨</td>
+                  </tr>
+                ) : (
+                  pendingUsers.filter(u => u.status === 'PENDING').map((u, idx) => {
+                    const duration = pendingDurations[u.username] || 12;
+                    return (
+                      <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-5 py-4 font-bold text-slate-500 text-xs">{u.timestamp || '-'}</td>
+                        <td className="px-5 py-4">
+                          <div className="flex flex-col">
+                            <span className="font-black text-slate-800 text-sm">{u.fullName}</span>
+                            <span className="text-[10px] text-slate-400 font-bold">{u.email} • {u.phone}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 font-extrabold text-slate-700 text-xs">{u.rsName || '-'}</td>
+                        <td className="px-5 py-4 font-bold text-slate-600 text-xs">{u.position || '-'}</td>
+                        <td className="px-5 py-4">
+                          <div className="flex flex-col">
+                            <span className="font-black text-teal-600 text-xs">@{u.username}</span>
+                            <span className="text-[10px] text-slate-400 font-bold font-mono">PWD: {u.password}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 text-center">
+                          <select 
+                            value={duration} 
+                            onChange={(e) => changeDuration(u.username, e.target.value)}
+                            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-teal-500 text-slate-700 cursor-pointer"
+                          >
+                            <option value="1">1 Bulan</option>
+                            <option value="3">3 Bulan</option>
+                            <option value="6">6 Bulan</option>
+                            <option value="12">12 Bulan (1 Tahun)</option>
+                            <option value="999">Selamanya</option>
+                          </select>
+                        </td>
+                        <td className="px-5 py-4 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <button 
+                              onClick={() => handleApprove(u.username, u.password)}
+                              disabled={isProcessingAction}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                            >
+                              Setujui
+                            </button>
+                            <button 
+                              onClick={() => handleReject(u.username)}
+                              disabled={isProcessingAction}
+                              className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                            >
+                              Tolak
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        {/* SECTION 2: ACTIVE ACCOUNTS (DAFTAR USER AKTIF) */}
+        <Card className="p-6">
+          <div className="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                Daftar Akun Terdaftar & Masa Aktif
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">Berikut adalah semua akun yang saat ini terdaftar dan memiliki akses masuk ke SAK-iDRG.</p>
+            </div>
+            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+              {activeUsersList.length} User Terdaftar
+            </span>
+          </div>
+
+          <div className="overflow-x-auto custom-scrollbar border border-slate-100 rounded-2xl">
+            <table className="w-full text-sm text-left whitespace-nowrap">
+              <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black tracking-wider border-b border-slate-200">
+                <tr>
+                  <th className="px-5 py-4">No</th>
+                  <th className="px-5 py-4">Username Akses</th>
+                  <th className="px-5 py-4">Kata Sandi (Password)</th>
+                  <th className="px-5 py-4">Masa Berlaku Akses</th>
+                  <th className="px-5 py-4 text-center">Status Keaktifan</th>
+                  <th className="px-5 py-4 text-center">Tindakan Kontrol</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white text-xs">
+                {activeUsersList.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400 font-medium">Memuat atau tidak ada daftar user aktif terdeteksi.</td>
+                  </tr>
+                ) : (
+                  activeUsersList.map((u, idx) => {
+                    const isShown = !!showPasswordList[u.username];
+                    
+                    // Check expiry status
+                    let isExpired = false;
+                    if (u.masaAktif) {
+                      const parts = u.masaAktif.split('/');
+                      if (parts.length === 3) {
+                        const activeDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
+                        const today = new Date();
+                        if (activeDate < today) isExpired = true;
+                      }
+                    }
+                    
+                    return (
+                      <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-5 py-4 text-slate-400 font-bold text-center w-12">{idx + 1}</td>
+                        <td className="px-5 py-4 font-black text-slate-800 text-sm">@{u.username}</td>
+                        <td className="px-5 py-4 font-mono font-bold text-slate-600">
+                          <div className="flex items-center gap-2">
+                            <span>{isShown ? u.password : '••••••••'}</span>
+                            <button 
+                              onClick={() => togglePasswordVisibility(u.username)}
+                              className="text-[9px] font-black text-teal-600 hover:text-teal-700 uppercase tracking-widest bg-teal-50 px-1.5 py-0.5 rounded cursor-pointer select-none"
+                            >
+                              {isShown ? 'Sembunyikan' : 'Tampilkan'}
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 font-bold text-slate-500">{u.masaAktif || 'Selamanya'}</td>
+                        <td className="px-5 py-4 text-center">
+                          {isExpired ? (
+                            <span className="bg-rose-100 text-rose-800 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Expired</span>
+                          ) : (
+                            <span className="bg-emerald-100 text-emerald-800 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Aktif</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-4 text-center">
+                          {u.username.toLowerCase() === 'admin' ? (
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Proteksi Sistem</span>
+                          ) : (
+                            <button 
+                              onClick={() => handleDeleteActive(u.username)}
+                              disabled={isProcessingAction}
+                              className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                            >
+                              Hapus Akses
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        {/* SECTION 3: GOOGLE APPS SCRIPT TUTORIAL */}
+        <Card className="p-6">
+          <h3 className="text-lg font-black text-slate-800 tracking-tight mb-2 flex items-center gap-2">
+            <ClipboardList size={22} className="text-teal-600 font-black shrink-0" />
+            Panduan Sinkronisasi Google Apps Script Otomatis
+          </h3>
+          <p className="text-xs text-slate-500 font-medium mb-4 leading-relaxed">
+            Agar tombol **Setujui**, **Tolak**, dan **Hapus Akses** di atas dapat memodifikasi Google Spreadsheet Anda secara instan, lakukan langkah penyalinan script satu kali saja di bawah ini:
+          </p>
+
+          <div className="space-y-4 text-xs font-bold text-slate-700 leading-relaxed">
+            <div className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">1</span>
+              <p>Buka Google Spreadsheet Anda. Klik menu **Extensions** (Ekstensi) lalu pilih **Apps Script** di bagian atas.</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">2</span>
+              <p>Hapus semua kode bawaan yang ada di dalam editor script tersebut.</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">3</span>
+              <p>Salin (*copy*) seluruh kode program Apps Script di kotak abu-abu di bawah ini, lalu tempelkan (*paste*) ke editor Apps Script Anda.</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">4</span>
+              <p>Klik tombol disket **Save** (Simpan). Kemudian, klik tombol **Deploy** (Terapkan) dan pilih **New Deployment** (Terapkan Baru).</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">5</span>
+              <p>Pilih tipe deployment **Web App**. Pada pilihan **Execute as**, pilih **Me (Email Anda)**. Pada pilihan **Who has access**, pilih **Anyone** (Siapa saja, bahkan anonim - tenang saja, ini aman karena hanya diakses oleh aplikasi SAK-iDRG Anda).</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">6</span>
+              <p>Klik **Deploy**. Izinkan otorisasi keamanan akun Google Anda. Salin **Web App URL** yang dihasilkan dan tempelkan (*paste*) ke kolom **Google Apps Script API URL** di bagian atas halaman pengaturan tab ini!</p>
+            </div>
+          </div>
+
+          <div className="mt-6 border border-slate-200 rounded-2xl overflow-hidden shadow-inner">
+            <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              <span>Google Apps Script - Code.gs</span>
+              <span className="text-teal-600">Teroptimasi Get/Post</span>
+            </div>
+            <textarea 
+              readOnly 
+              rows="12"
+              className="w-full bg-slate-900 text-slate-200 font-mono text-[10px] p-4 outline-none leading-relaxed resize-y select-all"
+              value={`function doGet(e) {
+  var params = e.parameter;
+  var action = params.action;
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Permohonan");
+  var activeSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("User Aktif");
+  
+  if (!sheet) sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Permohonan");
+  if (!activeSheet) {
+    activeSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("User Aktif");
+    activeSheet.appendRow(["USERNAME", "PASSWORD", "MasaAktif"]);
+  }
+  
+  var headers = {"Access-Control-Allow-Origin": "*"};
+  
+  if (action === "approve") {
+    var username = params.username;
+    var password = params.password;
+    var durationMonths = parseInt(params.duration || 12);
+    
+    // Tentukan Tanggal Kadaluwarsa
+    var expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
+    var formattedExpiry = Utilities.formatDate(expiryDate, "GMT+7", "dd/MM/yyyy");
+    if (durationMonths === 999) {
+      formattedExpiry = "31/12/2099"; // Selamanya
+    }
+    
+    // Sinkronkan ke tab User Aktif
+    var activeData = activeSheet.getDataRange().getValues();
+    var existIdx = -1;
+    for (var i = 1; i < activeData.length; i++) {
+      if (activeData[i][0] === username) {
+        existIdx = i;
+        break;
+      }
+    }
+    
+    if (existIdx !== -1) {
+      activeSheet.getRange(existIdx + 1, 2).setValue(password);
+      activeSheet.getRange(existIdx + 1, 3).setValue(formattedExpiry);
+    } else {
+      activeSheet.appendRow([username, password, formattedExpiry]);
+    }
+    
+    // Ubah status di tab Permohonan
+    var permData = sheet.getDataRange().getValues();
+    for (var j = 1; j < permData.length; j++) {
+      if (permData[j][7] === username) {
+        sheet.getRange(j + 1, 11).setValue("TERVERIFIKASI");
+      }
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User approved" }))
+                         .setMimeType(ContentService.MimeType.JSON)
+                         .setHeaders(headers);
+  }
+  
+  if (action === "reject") {
+    var username = params.username;
+    var permData = sheet.getDataRange().getValues();
+    for (var j = 1; j < permData.length; j++) {
+      if (permData[j][7] === username) {
+        sheet.getRange(j + 1, 11).setValue("DITOLAK");
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User rejected" }))
+                         .setMimeType(ContentService.MimeType.JSON)
+                         .setHeaders(headers);
+  }
+  
+  if (action === "delete") {
+    var username = params.username;
+    var activeData = activeSheet.getDataRange().getValues();
+    for (var i = 1; i < activeData.length; i++) {
+      if (activeData[i][0] === username) {
+        activeSheet.deleteRow(i + 1);
+        break;
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User deleted" }))
+                         .setMimeType(ContentService.MimeType.JSON)
+                         .setHeaders(headers);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Invalid action" }))
+                       .setMimeType(ContentService.MimeType.JSON)
+                       .setHeaders(headers);
+}`}
+            />
+          </div>
+        </Card>
+      </div>
+    );
+  };
+
   const renderAudit = () => {
     const findings = dashData?.auditFindings || [];
     const filtered = findings.filter((f) => {
@@ -5326,27 +5893,31 @@ export default function App() {
       {drilldown.isOpen && (
         <div className="fixed inset-0 z-[170] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-[98vw] h-full max-h-[95vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-white shrink-0">
-              <div className="flex items-start gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-6 gap-4 border-b border-slate-100 bg-white shrink-0">
+              <div className="flex items-start gap-3 sm:gap-4">
                 {drilldown.prev && (
                   <button
                     onClick={() => setDrilldown(drilldown.prev)}
-                    className="p-2 bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white rounded-xl transition-all shadow-sm border border-teal-100 group mt-0.5"
+                    className="p-1.5 sm:p-2 bg-teal-50 text-teal-600 hover:bg-teal-600 hover:text-white rounded-xl transition-all shadow-sm border border-teal-100 group mt-0.5"
                     title="Kembali ke Daftar INACBG / iDRG"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform"><path d="M15 18l-6-6 6-6" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:-translate-x-1 transition-transform"><path d="M15 18l-6-6 6-6" /></svg>
                   </button>
                 )}
                 <div>
-                  <h3 className="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
-                    {!drilldown.prev && <Table2 size={24} className="text-teal-600" />} Rincian Data Analitik
+                  <h3 className="text-base sm:text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
+                    {!drilldown.prev && <Table2 size={20} className="text-teal-600 shrink-0" />} Rincian Data Analitik
                   </h3>
-                  <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} — {drilldown.data.length.toLocaleString()} Record Terfilter</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} — {drilldown.data.length.toLocaleString()} Record Terfilter</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button onClick={dlDrilldownCSV} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 transition-all uppercase tracking-wider"><Download size={16} /> Unduh CSV</button>
-                <button onClick={() => setDrilldown({ isOpen: false, title: '', data: [] })} className="p-2.5 hover:bg-rose-50 rounded-full transition-all ml-2 border border-transparent hover:border-rose-100 text-slate-400 hover:text-rose-600"><X size={24} /></button>
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <button onClick={dlDrilldownCSV} className="bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 transition-all uppercase tracking-wider">
+                  <Download size={16} /> <span className="hidden sm:inline">Unduh CSV</span>
+                </button>
+                <button onClick={() => setDrilldown({ isOpen: false, title: '', data: [] })} className="p-2 sm:p-2.5 hover:bg-rose-50 rounded-full transition-all border border-transparent hover:border-rose-100 text-slate-400 hover:text-rose-600">
+                  <X size={20} />
+                </button>
               </div>
             </div>
 
@@ -5429,7 +6000,7 @@ export default function App() {
                     </div>
                   )}
 
-                  <div className="p-0">
+                  <div className="p-0 overflow-x-auto custom-scrollbar">
                     {drilldown.type === 'audit_kpi' ? (
                       <table className="w-full text-sm text-left whitespace-nowrap">
                         <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
@@ -5640,8 +6211,16 @@ export default function App() {
       )}
       <div className={`flex h-screen overflow-hidden font-sans ${isDarkMode ? 'dark-mode-container' : 'bg-slate-50 text-slate-800'}`}>
 
+        {/* MOBILE BACKDROP OVERLAY */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[90] lg:hidden animate-in fade-in duration-200"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {/* SIDEBAR NAVIGATION */}
-        <aside className={`bg-white border-r border-teal-100 transition-all duration-300 z-[100] flex flex-col shadow-2xl shadow-teal-900/5 print:hidden ${isSidebarOpen ? 'w-64' : 'w-20'} shrink-0 h-screen`}>
+        <aside className={`bg-white border-r border-teal-100 transition-all duration-300 z-[100] flex flex-col shadow-2xl shadow-teal-900/5 print:hidden fixed inset-y-0 left-0 lg:relative ${isSidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0 lg:w-20 w-64'} shrink-0 h-screen`}>
           {/* Branding */}
           <div className="p-4 flex items-center justify-between border-b border-teal-100 shrink-0 h-16 bg-gradient-to-r from-teal-50 to-white">
             <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
@@ -5660,6 +6239,12 @@ export default function App() {
                 </div>
               )}
             </div>
+            {/* Mobile close button inside sidebar */}
+            {isSidebarOpen && (
+              <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-1.5 hover:bg-teal-100 rounded-lg text-teal-600 transition-colors" title="Tutup Menu">
+                <X size={18} />
+              </button>
+            )}
           </div>
 
           {/* User Profile Section */}
@@ -5679,7 +6264,7 @@ export default function App() {
 
           {/* Navigation Menu */}
           <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1.5 custom-scrollbar">
-            <button onClick={() => setActiveTab('upload')} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'upload' ? 'bg-teal-600 text-white shadow-xl shadow-teal-600/30' : 'text-slate-600 hover:bg-teal-50 hover:text-teal-700'} ${!isSidebarOpen && 'justify-center'}`} title="Integrasi Data">
+            <button onClick={() => { setActiveTab('upload'); if (window.innerWidth < 1024) setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'upload' ? 'bg-teal-600 text-white shadow-xl shadow-teal-600/30' : 'text-slate-600 hover:bg-teal-50 hover:text-teal-700'} ${!isSidebarOpen && 'justify-center'}`} title="Integrasi Data">
               <UploadCloud size={20} className="shrink-0" />
               {isSidebarOpen && <span>Integrasi Data</span>}
             </button>
@@ -5688,11 +6273,11 @@ export default function App() {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSidebarOpen ? 'Dashboard Menu' : '...'}</p>
             </div>
 
-            {TABS.map((t, idx) => {
+            {TABS.filter(t => t.id !== 'user_management' || username.toLowerCase() === 'admin').map((t, idx) => {
               const Icon = t.icon;
               const isActive = activeTab === 'dashboard' && subTab === t.id;
               return (
-                <button key={idx} onClick={() => { setActiveTab('dashboard'); setSubTab(t.id); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all group ${isActive ? 'bg-teal-50 text-teal-700 font-bold border border-teal-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium border border-transparent'} ${!isSidebarOpen && 'justify-center'}`} title={t.label}>
+                <button key={idx} onClick={() => { setActiveTab('dashboard'); setSubTab(t.id); if (window.innerWidth < 1024) setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all group ${isActive ? 'bg-teal-50 text-teal-700 font-bold border border-teal-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium border border-transparent'} ${!isSidebarOpen && 'justify-center'}`} title={t.label}>
                   <Icon size={20} className={`shrink-0 transition-colors ${isActive ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
                   {isSidebarOpen && <span className="whitespace-nowrap">{t.label}</span>}
                 </button>
@@ -5721,22 +6306,28 @@ export default function App() {
             <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="" className="w-[600px] grayscale select-none" />
           </div>
           {/* Header */}
-          <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 shrink-0 flex items-center px-6 justify-between z-[80] shadow-sm print:hidden">
-            <div className="flex items-center gap-4">
-              <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors">
+          <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 shrink-0 flex items-center px-4 sm:px-6 justify-between z-[80] shadow-sm print:hidden">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors shrink-0">
                 <Menu size={20} />
               </button>
-              <h2 className="text-lg font-black text-slate-800 tracking-tight">{activeTab === 'upload' ? 'Integrasi Data' : TABS.find(t => t.id === subTab)?.label || 'Dashboard'}</h2>
+              <div className="flex items-center gap-2 lg:hidden shrink-0">
+                <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" className="w-6 h-6 object-contain" alt="Logo" />
+              </div>
+              <h2 className="text-sm sm:text-lg font-black text-slate-800 tracking-tight truncate max-w-[140px] sm:max-w-none">
+                {activeTab === 'upload' ? 'Integrasi Data' : TABS.find(t => t.id === subTab)?.label || 'Dashboard'}
+              </h2>
             </div>
-            <div className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div> Aktif
+            <div className="text-xs font-bold text-slate-400 bg-slate-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex items-center gap-1.5 shrink-0">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div> <span className="hidden sm:inline">Status</span> Aktif
             </div>
           </header>
 
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar scroll-smooth">
             {activeTab === 'upload' ? (<div className="px-6">{renderUploadTab()}</div>) : (
               <div className="px-4 sm:px-6">
-                {dashData && dashData.isLoaded ? (
+                {subTab === 'user_management' ? renderUserManagement() : (
+                  dashData && dashData.isLoaded ? (
                   <>
                     <div className="bg-white/40 backdrop-blur-xl p-6 rounded-[2rem] border border-white/60 mb-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] animate-in fade-in slide-in-from-top-4 relative z-[60]">
                       <div className="flex flex-col lg:flex-row items-center gap-8">
@@ -5784,13 +6375,15 @@ export default function App() {
                     </p>
                     <button onClick={() => setActiveTab('upload')} className="mt-8 bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-teal-600/20 hover:-translate-y-1 uppercase tracking-widest">MULAI INTEGRASI SEKARANG</button>
                   </div>
-                )}
+                ))}
               </div>
             )}
           </main>
           <footer className="p-4 text-center border-t border-slate-100 mt-12 bg-white/30 backdrop-blur-sm relative z-20 print:hidden">
-            <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2">
-              Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG
+            <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
+              <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.0</span>
             </p>
           </footer>
         </div>

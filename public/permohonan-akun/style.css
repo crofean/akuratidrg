@@ -497,3 +497,119 @@ small {
     background: #cbd5e1;
     border-radius: 10px;
 }
+
+/* Mobile Responsive under 480px (Handphone) */
+@media (max-width: 480px) {
+    body {
+        padding: 16px 10px;
+    }
+    .container {
+        padding: 24px 16px;
+        border-radius: 24px;
+    }
+    header {
+        margin-bottom: 24px;
+        gap: 16px;
+    }
+    .logo {
+        gap: 10px;
+    }
+    .logo img {
+        height: 38px;
+        padding: 4px 8px;
+        border-radius: 8px;
+    }
+    .logo-text h1 {
+        font-size: 18px;
+    }
+    .logo-text p {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+    .header-content h2 {
+        font-size: 20px;
+        letter-spacing: -0.5px;
+    }
+    .header-content p {
+        font-size: 13px;
+    }
+    .form-section {
+        gap: 16px;
+    }
+    .form-section h3 {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    input, select, textarea {
+        padding: 12px 14px;
+        font-size: 13px;
+        border-radius: 10px;
+    }
+    .checkbox-container {
+        font-size: 12px;
+        padding-left: 30px;
+    }
+    .checkmark {
+        height: 18px;
+        width: 18px;
+    }
+    .checkbox-container .checkmark:after {
+        left: 5px;
+        top: 2px;
+        width: 4px;
+        height: 8px;
+    }
+    .agreement-section {
+        margin-top: 24px;
+        padding: 16px;
+        border-radius: 14px;
+        gap: 12px;
+    }
+    .actions {
+        margin-top: 24px;
+    }
+    .btn-submit {
+        padding: 14px;
+        font-size: 14px;
+        border-radius: 12px;
+    }
+    .modal-content {
+        padding: 24px 16px;
+        border-radius: 20px;
+    }
+    .modal-content h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+    .modal-content p {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+    .success-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 16px;
+    }
+    .success-icon i {
+        width: 30px;
+        height: 30px;
+    }
+    .modal-content.terms-content {
+        padding: 20px 14px;
+        border-radius: 20px;
+    }
+    .terms-header h2 {
+        font-size: 18px;
+    }
+    .terms-body ol {
+        padding-left: 15px;
+        gap: 14px;
+        max-height: 280px;
+    }
+    .terms-body li strong {
+        font-size: 13px;
+    }
+    .terms-body li {
+        font-size: 12px;
+    }
+}
