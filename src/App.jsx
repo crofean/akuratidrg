@@ -4609,7 +4609,14 @@ export default function App() {
 
     const diagGroups = {};
     deficitRows.forEach(r => {
-      const code = String(r.DIAGNOSA || r.DIAGUTAMA || '-').trim();
+      let code = String(r.DIAGNOSA || r.DIAGUTAMA || '').trim();
+      if (!code || code === '-' || code.toLowerCase() === 'none') {
+        const dList = String(r.DIAGLIST || '').replace(/"/g, '').split(';').map(d => d.trim()).filter(Boolean);
+        if (dList.length > 0) code = dList[0];
+      }
+      if (!code) code = '-';
+      if (code === '-' || code.toLowerCase() === 'none') return;
+
       if (!diagGroups[code]) {
         diagGroups[code] = { code, desc: String(r.DESKRIPSI_DIAGNOSA || r.DESKRIPSI || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
       }
