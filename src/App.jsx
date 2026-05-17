@@ -5059,13 +5059,13 @@ export default function App() {
         <Card className="overflow-hidden border border-slate-200 mt-6">
           <div className="overflow-auto max-h-[800px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
-              <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
-                <tr>
+              <thead className="text-[10px] uppercase font-black tracking-wider">
+                <tr className="bg-slate-900 text-white sticky top-0 z-40">
                   <th colSpan={6} className="px-4 py-3 bg-slate-900 text-white border-b border-slate-700">Ringkasan Finansial</th>
                   <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
                 </tr>
-                <tr>
-                  <th className="p-4 min-w-[300px] max-w-[300px] w-[300px] truncate bg-slate-900 sticky left-0 top-[39px] z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)]">Hierarki Departemen / KSM / DPJP</th>
+                <tr className="bg-slate-900 text-white sticky top-[38px] z-40">
+                  <th className="p-4 min-w-[300px] max-w-[300px] w-[300px] truncate bg-slate-900 sticky left-0 z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)]">Hierarki Departemen / KSM / DPJP</th>
                   <th className="p-4 text-right bg-slate-900 w-20">Kasus</th>
                   <th className="p-4 text-center bg-teal-900 text-teal-300 w-20 text-[9px]">ALOS</th>
                   <th className="p-4 text-center bg-rose-900 text-rose-300 w-20 text-[9px]">MAX LOS</th>
@@ -5076,8 +5076,8 @@ export default function App() {
                   {compKeys.map(c => <th key={c.key} className="p-4 text-right bg-slate-800 text-slate-400 min-w-[100px]">{c.label}</th>)}
                 </tr>
                 {/* RATA-RATA RS SUMMARY ROW (Now in thead for perfect sticky behavior) */}
-                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm">
-                  <td className="p-4 bg-amber-50 sticky left-0 top-[86px] z-20 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate">
+                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm sticky top-[85px] z-30">
+                  <td className="p-4 bg-amber-50 sticky left-0 z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center"><Zap size={12} /></div>
                       <span className="text-amber-800 uppercase text-[10px] tracking-widest font-black whitespace-nowrap">RATA-RATA RS (Seluruh Kasus)</span>
@@ -5268,13 +5268,13 @@ export default function App() {
         <Card className="overflow-hidden border border-slate-200 mt-6">
           <div className="overflow-auto max-h-[800px] custom-scrollbar">
             <table className="w-full text-sm text-left whitespace-nowrap">
-              <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
-                <tr>
+              <thead className="text-[10px] uppercase font-black tracking-wider">
+                <tr className="bg-slate-900 text-white sticky top-0 z-40">
                   <th colSpan={6} className="px-4 py-3 bg-slate-900 text-white border-b border-slate-700">Ringkasan Finansial</th>
                   <th colSpan={18} className="px-4 py-3 bg-slate-800 text-white text-center border-b border-slate-700">Rincian 18 Komponen Biaya</th>
                 </tr>
-                <tr>
-                  <th className="p-4 min-w-[300px] max-w-[300px] w-[300px] truncate bg-slate-900 sticky left-0 top-[39px] z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)]">Hierarki KSM / DPJP</th>
+                <tr className="bg-slate-900 text-white sticky top-[38px] z-40">
+                  <th className="p-4 min-w-[300px] max-w-[300px] w-[300px] truncate bg-slate-900 sticky left-0 z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)]">Hierarki KSM / DPJP</th>
                   <th className="p-4 text-right bg-slate-900 w-20">Kasus</th>
                   <th className="p-4 text-center bg-teal-900 text-teal-300 w-20 text-[9px]">ALOS</th>
                   <th className="p-4 text-center bg-rose-900 text-rose-300 w-20 text-[9px]">MAX LOS</th>
@@ -5284,20 +5284,21 @@ export default function App() {
                   <th className="p-4 text-right bg-purple-900/50 min-w-[120px]">iDRG vs INA</th>
                   {compKeys.map(c => <th key={c.key} className="p-4 text-right bg-slate-800 text-slate-400 min-w-[100px]">{c.label}</th>)}
                 </tr>
-                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm">
-                  <td className="p-4 bg-amber-50 sticky left-0 top-[86px] z-20 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate">
+                {/* RATA-RATA RS SUMMARY ROW (Now in thead for perfect sticky behavior) */}
+                <tr className="bg-amber-50 font-black border-b-2 border-amber-200 shadow-sm sticky top-[85px] z-30">
+                  <td className="p-4 bg-amber-50 sticky left-0 z-50 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center"><Zap size={12} /></div>
                       <span className="text-amber-800 uppercase text-[10px] tracking-widest font-black whitespace-nowrap">RATA-RATA RS (Seluruh Kasus)</span>
                     </div>
                   </td>
-                  <td className="p-4 text-right text-amber-700 text-xs font-black italic">AVG</td>
+                  <td className="p-4 text-right text-amber-700 text-xs font-black italic bg-amber-50">AVG</td>
                   <td className="p-4 text-center text-amber-600 font-bold text-xs bg-amber-100/20">{hAvgLos.toFixed(1)}</td>
                   <td className="p-4 text-center text-rose-600 font-bold text-xs bg-rose-100/20">{hMaxLos}</td>
-                  <td className="p-4 text-right text-amber-700 text-xs font-black">{formatRp(hAvgRS)}</td>
-                  <td className={`p-4 text-right font-black text-xs ${hAvgSelIna >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(hAvgSelIna)}</td>
-                  <td className={`p-4 text-right font-black text-xs ${hAvgSelIdrg >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(hAvgSelIdrg)}</td>
-                  <td className="p-4 text-right font-black text-xs text-purple-700">{formatRp(hAvgIdrgIna)}</td>
+                  <td className="p-4 text-right text-amber-700 text-xs font-black bg-amber-50">{formatRp(hAvgRS)}</td>
+                  <td className={`p-4 text-right font-black text-xs bg-amber-50 ${hAvgSelIna >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(hAvgSelIna)}</td>
+                  <td className={`p-4 text-right font-black text-xs bg-amber-50 ${hAvgSelIdrg >= 0 ? 'text-lime-700' : 'text-orange-700'}`}>{formatRp(hAvgSelIdrg)}</td>
+                  <td className="p-4 text-right font-black text-xs text-purple-700 bg-amber-50">{formatRp(hAvgIdrgIna)}</td>
                   {compKeys.map(c => <td key={c.key} className="p-4 text-right text-[10px] font-black text-amber-600 bg-amber-100/30">{formatRpEx(hAvgComps[c.key])}</td>)}
                 </tr>
               </thead>
