@@ -1754,7 +1754,10 @@ export default function App() {
 
   // --- USER ACCESS MANAGEMENT SYSTEM STATES ---
   const [registrationSheetId, setRegistrationSheetId] = useState(() => localStorage.getItem('sak_registration_sheet_id') || '1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98');
-  const [registrationGid, setRegistrationGid] = useState(() => localStorage.getItem('sak_registration_gid') || '1382718302');
+  const [registrationGid, setRegistrationGid] = useState(() => {
+    const saved = localStorage.getItem('sak_registration_gid');
+    return (saved && saved !== '1382718302') ? saved : '2082885116';
+  });
   const [registrationScriptUrl, setRegistrationScriptUrl] = useState(() => localStorage.getItem('sak_registration_script_url') || 'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec');
   const [pendingUsers, setPendingUsers] = useState([]);
   const [activeUsersList, setActiveUsersList] = useState([]);
@@ -5053,7 +5056,7 @@ export default function App() {
             </div>
           </div>
           <div className="mt-4 p-3 bg-teal-50/50 rounded-xl border border-teal-100 text-[10px] text-teal-800 font-semibold leading-relaxed">
-            💡 <strong>Petunjuk:</strong> Buka Google Spreadsheet Anda. ID Spreadsheet terletak di URL peramban antara <code>/d/</code> dan <code>/edit</code>. GID Tab Permohonan terletak di akhir URL peramban saat Anda mengeklik tab formulir registrasi (contoh: <code>gid=1382718302</code>).
+            💡 <strong>Petunjuk:</strong> Buka Google Spreadsheet Anda. ID Spreadsheet terletak di URL peramban antara <code>/d/</code> dan <code>/edit</code>. GID Tab Permohonan terletak di akhir URL peramban saat Anda mengeklik tab formulir registrasi (contoh: <code>gid=2082885116</code>).
           </div>
         </Card>
 
