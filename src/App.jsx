@@ -5291,12 +5291,12 @@ export default function App() {
               value={`function doGet(e) {
   var params = e.parameter;
   var action = params.action;
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Permohonan");
-  var activeSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("User Aktif");
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("permohonan akun");
+  var activeSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
   
-  if (!sheet) sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Permohonan");
+  if (!sheet) sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("permohonan akun");
   if (!activeSheet) {
-    activeSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("User Aktif");
+    activeSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Sheet1");
     activeSheet.appendRow(["USERNAME", "PASSWORD", "MasaAktif"]);
   }
   
