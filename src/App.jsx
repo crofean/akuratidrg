@@ -1758,7 +1758,12 @@ export default function App() {
     const saved = localStorage.getItem('sak_registration_gid');
     return (saved && saved !== '1382718302') ? saved : '2082885116';
   });
-  const [registrationScriptUrl, setRegistrationScriptUrl] = useState(() => localStorage.getItem('sak_registration_script_url') || 'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec');
+  const [registrationScriptUrl, setRegistrationScriptUrl] = useState(() => {
+    const saved = localStorage.getItem('sak_registration_script_url');
+    const oldUrl = 'https://script.google.com/macros/s/AKfycbwiCOoo3cs6B_VJjlSG-UCsQEjCV687TnruZ1TD6mNjUXxzZnCYJ0pxQjMIjffz6X7Z/exec';
+    const oldUrl2 = 'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec';
+    return (saved && saved !== oldUrl && saved !== oldUrl2) ? saved : 'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec';
+  });
   const [pendingUsers, setPendingUsers] = useState([]);
   const [activeUsersList, setActiveUsersList] = useState([]);
   const [isFetchingUsers, setIsFetchingUsers] = useState(false);
