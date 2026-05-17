@@ -47,8 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (password.length < 8) {
-            alert('Kata sandi minimal harus 8 karakter.');
+        // Strong Password Validation (8+ chars, uppercase, lowercase, number, symbol)
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+
+        if (password.length < 8 || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+            alert('Kata sandi tidak memenuhi standar keamanan! Kata sandi harus memuat:\n' +
+                  '• Minimal 8 karakter\n' +
+                  '• Minimal 1 huruf besar (A-Z)\n' +
+                  '• Minimal 1 huruf kecil (a-z)\n' +
+                  '• Minimal 1 angka (0-9)\n' +
+                  '• Minimal 1 karakter spesial/simbol (contoh: @, #, $, !, %, *, dsb.)');
             return;
         }
 
