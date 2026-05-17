@@ -765,7 +765,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
   }
 
   // --- B. CARDIOLOGY & VASCULAR ---
-  if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'BTKV', 'IKKV', 'VAS', 'BVE', 'KKV', 'KARDIOVASKULAR', 'KV', 'JD', 'PRKV'])) {
+  if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'BTKV', 'IKKV', 'VAS', 'BVE', 'KKV', 'KARDIOVASKULAR', 'KV', 'JD', 'PRKV', 'BKV', 'PDKKV'])) {
     const dept = 'Department of Cardiology';
     if (check(['SPJP', 'JANTUNG', 'PRKV'])) {
       if (check(['INTERVENSI', 'KI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Intervensi', dept };
@@ -784,8 +784,8 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
       if (check(['JD', 'T'])) return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept };
       return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept };
     }
-    if (check(['SPB', 'BEDAH']) && check(['VASKULAR', 'BVE', 'BKV', 'KV'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept };
-    if (check(['KKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept };
+    if (check(['SPB', 'BEDAH', 'BKV']) && check(['VASKULAR', 'BVE', 'BKV', 'KV'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept };
+    if (check(['KKV', 'PDKKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept };
   }
   if (check(['SPA', 'ANAK', 'SPAK']) && check(['KARDIO', 'KV'])) return { ksm: 'Dokter Spesialis Anak Konsultan Kardiologi', dept: 'Department of Cardiology' };
   if (check(['SPKFR']) && check(['KARDIO', 'RESPIRASI', 'KR'])) return { ksm: 'Dokter Spesialis Kedokteran Fisik dan Rehabilitasi Konsultan Rehabilitasi Kardiorespirasi', dept: 'Department of Cardiology' };
@@ -912,7 +912,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
   if (check(['SPAN', 'ANESTESI']) && check(['PEDIATRI', 'AP', 'ANPED'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Pediatri', dept: 'Department of Maternal and Child' };
 
   // --- G. ONCOLOGY ---
-  if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD', 'KHOM', 'ONKOLOGI', 'HOK', 'HOM'])) {
+  if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD', 'KHOM', 'ONKOLOGI', 'HOK', 'HOM', 'BKONK', 'BK ONK'])) {
     const dept = 'Department of Oncology';
     if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD'])) {
       if (check(['ABDOMINO', 'KAP'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept };
@@ -921,7 +921,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
       return { ksm: 'Dokter Spesialis Onkologi Radiasi', dept };
     }
     if (check(['SPPD', 'PENYAKIT DALAM']) && check(['HEMATOLOGI', 'ONKOLOGI', 'KHOM', 'HOM', 'SUBSPHOM'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Hematologi Onkologi Medik', dept };
-    if (check(['SPB', 'BEDAH']) && check(['ONKOLOGI', 'ONK', 'SUBSPONK'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Onkologi', dept };
+    if (check(['SPB', 'BEDAH', 'BKONK', 'BK ONK']) && check(['ONKOLOGI', 'ONK', 'SUBSPONK', 'BKONK', 'BK ONK'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Onkologi', dept };
     if (check(['SPTHT', 'THT', 'SPTHTBKL', 'THTBKL']) && check(['ONKOLOGI', 'ONK', 'SUBSPONK'])) return { ksm: 'Dokter Spesialis Telinga, Hidung, Tenggorokan-Bedah Kepala Leher Konsultan Onkologi - Bedah Kepala Leher', dept };
     if (check(['SPBM', 'SPBMM']) && check(['NEOPLASMA', 'NK'])) return { ksm: 'Dokter Gigi Dokter Spesialis Bedah Mulut Neoplasma dan Kista Bedah Mulut dan Maksilofasial', dept };
   }
@@ -985,8 +985,8 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
       if (check(['MO'])) return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept };
       return { ksm: 'Dokter Spesialis Bedah Plastik, Rekonstruksi, dan Estetik', dept };
     }
-    if (check(['SPKG', 'GIGI'])) {
-      if (check(['KONSERVASI'])) return { ksm: 'Dokter Gigi Spesialis Konservasi Gigi', dept };
+    if (check(['SPKG', 'GIGI', 'SPORT', 'SPPM', 'SPPERIO', 'SPPROS', 'SPKGA'])) {
+      if (check(['KONSERVASI', 'SPKG'])) return { ksm: 'Dokter Gigi Spesialis Konservasi Gigi', dept };
       if (check(['ORTHODONTI', 'SPORT'])) return { ksm: 'Dokter Gigi Spesialis Orthodonti', dept };
       if (check(['PENYAKIT MULUT', 'SPPM'])) return { ksm: 'Dokter Gigi Spesialis Penyakit Mulut', dept };
       if (check(['PERIODONSIA', 'SPPERIO'])) return { ksm: 'Dokter Gigi Spesialis Periodonsia', dept };
@@ -994,7 +994,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
         if (check(['MAKSILOFASIAL', 'PMF'])) return { ksm: 'Dokter Gigi Spesialis Prosthodonsia Konsultan Prostetik Maksilofasial', dept };
         return { ksm: 'Dokter Gigi Spesialis Prosthodonsia', dept };
       }
-      if (check(['ANAK', 'KGA'])) return { ksm: 'Dokter Gigi Spesialis Kesehatan Gigi Anak', dept };
+      if (check(['ANAK', 'KGA', 'SPKGA'])) return { ksm: 'Dokter Gigi Spesialis Kesehatan Gigi Anak', dept };
     }
   }
 
@@ -1013,11 +1013,11 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
   }
 
   // --- L. INFECTION & IMMUNOLOGY ---
-  if (check(['ALERGI', 'IMUNOLOGI', 'INFEKSI', 'TROPIK', 'RHEUMATOLOGI', 'KPTI', 'PTI', 'KR', 'R'])) {
+  if (check(['ALERGI', 'IMUNOLOGI', 'INFEKSI', 'TROPIK', 'RHEUMATOLOGI', 'KPTI', 'PTI', 'KR', 'R', 'PDKR'])) {
     const dept = 'Department of Immunology and Infectious Diseases';
-    if (check(['SPPD', 'PENYAKIT DALAM'])) {
+    if (check(['SPPD', 'PENYAKIT DALAM', 'PDKR'])) {
       if (check(['INFEKSI', 'TROPIK', 'PTI', 'KPTI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi', dept };
-      if (check(['RHEUMATOLOGI', 'KR', 'R'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept };
+      if (check(['RHEUMATOLOGI', 'KR', 'R', 'PDKR'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi', dept };
       if (check(['ALERGI', 'KAI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Alergi Imunologi', dept };
     }
   }
@@ -6437,7 +6437,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.3 (170526-19.40)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.2.4 (170526-19.50)</p>
               </div>
             </div>
           </div>
@@ -6871,7 +6871,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.3 (170526-19.40)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.2.4 (170526-19.50)</span>
                 </div>
               )}
             </div>
@@ -7020,7 +7020,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.3</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Build v1.2.4</span>
             </p>
           </footer>
         </div>
