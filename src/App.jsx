@@ -794,15 +794,15 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
   // --- C. MEDICINE, PSYCHIATRY & OTHERS ---
   if (check(['SPPD', 'PENYAKIT DALAM', 'GIZI', 'FARMAKOLOGI', 'OKUPASI', 'JIWA', 'SPKJ', 'SPP', 'PARU', 'SPGK'])) {
     const dept = 'Department of Medicine';
-    if (check(['SPP', 'PARU'])) {
-      if (check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Paru Konsultan Pulmonologi dan Medik Kritis', dept };
-      return { ksm: 'Dokter Spesialis Paru', dept };
-    }
     if (check(['SPPD', 'PENYAKIT DALAM'])) {
       if (check(['ENDOKRIN', 'METABOLIK', 'DIABETES', 'KEMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept };
       if (check(['GERIATRI', 'KGER', 'GER'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Geriatri', dept };
-      if (check(['PULMONOLOGI', 'PARU', 'KP']) && check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept };
+      if (check(['PULMONOLOGI', 'PARU', 'KP'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept };
       if (check(['PSIKOSOMATIK', 'PALIATIF', 'PSI'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Psikosomatik dan Paliatif', dept };
+    }
+    if (check(['SPP', 'PARU'])) {
+      if (check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Paru Konsultan Pulmonologi dan Medik Kritis', dept };
+      return { ksm: 'Dokter Spesialis Paru', dept };
     }
 
     if (check(['GIZI', 'SPGK'])) {
