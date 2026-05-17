@@ -63,64 +63,104 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Actual submission function
+        const submitRegistrationForm = () => {
+            // REAL SUBMISSION TO GOOGLE SHEETS
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec';
+            
+            const submitBtn = form.querySelector('.btn-submit');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>MENGIRIM...</span> <i class="animate-spin" data-lucide="refresh-cw"></i>';
+            lucide.createIcons();
+
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                rsCode: document.getElementById('rsCode').value,
+                rsName: document.getElementById('rsName').value,
+                position: document.getElementById('position').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                questionType: document.getElementById('questionType').value
+            };
+
+            const formDataObj = new FormData();
+            for (const key in formData) {
+                formDataObj.append(key, formData[key]);
+            }
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                body: formDataObj
+            })
+            .then(() => {
+                console.log('Submission attempt finished');
+                displayUserName.textContent = formData.fullName;
+                modal.style.display = 'flex';
+                form.reset();
+                agreementCheckbox.checked = false;
+                agreementStatus.textContent = 'Belum Disetujui';
+                agreementStatus.classList.remove('active');
+                closeModal('termsModal');
+                lucide.createIcons();
+            })
+            .catch(error => {
+                console.error('Submission error:', error);
+                alert('Terjadi kesalahan saat mengirim permohonan.');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                lucide.createIcons();
+            });
+        };
+
         if (!agreementCheckbox.checked) {
-            alert('Harap setujui Syarat dan Ketentuan untuk melanjutkan.');
+            // Tampilkan syarat dan ketentuan dahulu sebelum kirim!
+            isSubmittingFromForm = true;
+            document.getElementById('btnTermsCancel').textContent = 'Tolak';
+            document.getElementById('btnTermsAccept').textContent = 'Setujui & Kirim Pengajuan';
+            document.getElementById('termsModal').style.display = 'flex';
             return;
         }
 
-        // REAL SUBMISSION TO GOOGLE SHEETS
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec';
-        
-        const submitBtn = form.querySelector('.btn-submit');
-        const originalBtnText = submitBtn.innerHTML;
-        
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>MENGIRIM...</span> <i class="animate-spin" data-lucide="refresh-cw"></i>';
-        lucide.createIcons();
+        submitRegistrationForm();
+    });
 
-        const formData = {
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            rsCode: document.getElementById('rsCode').value,
-            rsName: document.getElementById('rsName').value,
-            position: document.getElementById('position').value,
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value,
-            questionType: document.getElementById('questionType').value
-        };
+    // Terms Modal Buttons Listeners
+    document.getElementById('btnTermsAccept').addEventListener('click', () => {
+        agreementCheckbox.checked = true;
+        agreementStatus.textContent = 'Ya, Saya Setuju';
+        agreementStatus.classList.add('active');
 
-        const formDataObj = new FormData();
-        for (const key in formData) {
-            formDataObj.append(key, formData[key]);
+        if (isSubmittingFromForm) {
+            // Tunggu sebentar agar perubahan checkbox terlihat visual
+            setTimeout(() => {
+                const form = document.getElementById('registrationForm');
+                // Trigger form submission
+                const submitBtnElement = form.querySelector('.btn-submit');
+                submitBtnElement.click();
+            }, 150);
+        } else {
+            closeModal('termsModal');
         }
+    });
 
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            cache: 'no-cache',
-            body: formDataObj
-        })
-        .then(() => {
-            console.log('Submission attempt finished');
-            displayUserName.textContent = formData.fullName;
-            modal.style.display = 'flex';
-            form.reset();
-            agreementStatus.textContent = 'Belum Disetujui';
-            agreementStatus.classList.remove('active');
-            lucide.createIcons();
-        })
-        .catch(error => {
-            console.error('Submission error:', error);
-            alert('Terjadi kesalahan saat mengirim permohonan.');
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-            lucide.createIcons();
-        });
+    document.getElementById('btnTermsCancel').addEventListener('click', () => {
+        agreementCheckbox.checked = false;
+        agreementStatus.textContent = 'Belum Disetujui';
+        agreementStatus.classList.remove('active');
+        isSubmittingFromForm = false;
+        closeModal('termsModal');
     });
 });
+
+let isSubmittingFromForm = false;
 
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
@@ -128,6 +168,9 @@ function closeModal(modalId) {
 
 // Terms Modal Logic
 document.getElementById('termsLink').addEventListener('click', () => {
+    isSubmittingFromForm = false;
+    document.getElementById('btnTermsCancel').textContent = 'Tutup';
+    document.getElementById('btnTermsAccept').textContent = 'Saya Setuju';
     document.getElementById('termsModal').style.display = 'flex';
 });
 

@@ -180,7 +180,10 @@
                     </li>
                 </ol>
             </div>
-            <button class="btn-close" onclick="closeModal('termsModal')">Saya Mengerti</button>
+            <div class="terms-footer" style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; border-top: 2px solid #f1f5f9; padding-top: 16px;">
+                <button type="button" id="btnTermsCancel" class="btn-close" onclick="closeModal('termsModal')" style="background: #f1f5f9; color: #64748b; font-weight: 700; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: all 0.3s;">Tolak</button>
+                <button type="button" id="btnTermsAccept" class="btn-submit" style="margin-top: 0; width: auto; padding: 12px 28px; border-radius: 12px; font-size: 14px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2); transition: all 0.3s;">Setujui & Kirim Pengajuan</button>
+            </div>
         </div>
     </div>
 
