@@ -781,9 +781,9 @@ const resolveKsmDept = (dpjp, overrides = {}) => {
   // --- C. MEDICINE, PSYCHIATRY & OTHERS ---
   if (check(['SPPD', 'PENYAKIT DALAM', 'GIZI', 'FARMAKOLOGI', 'OKUPASI', 'JIWA', 'SPKJ', 'SPP', 'PARU', 'SPGK'])) {
     const dept = 'Department of Medicine';
-    if (check(['SPP', 'PARU', 'SPP'])) {
-      if (check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Pulmonologi dan Medik Kritis', dept };
-      return { ksm: 'Dokter Spesialis Penyakit Dalam', dept };
+    if (check(['SPP', 'PARU'])) {
+      if (check(['KRITIS', 'PMK'])) return { ksm: 'Dokter Spesialis Paru Konsultan Pulmonologi dan Medik Kritis', dept };
+      return { ksm: 'Dokter Spesialis Paru', dept };
     }
     if (check(['SPPD', 'PENYAKIT DALAM'])) {
       if (check(['ENDOKRIN', 'METABOLIK', 'DIABETES', 'KEMD'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Endokrinologi Metabolik dan Diabetes', dept };
@@ -1097,6 +1097,8 @@ const KSM_LIST = [
   'Dokter Spesialis Penyakit Dalam Konsultan Penyakit Tropik dan Infeksi',
   'Dokter Spesialis Penyakit Dalam Konsultan Rheumatologi',
   'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular',
+  'Dokter Spesialis Paru',
+  'Dokter Spesialis Paru Konsultan Pulmonologi dan Medik Kritis',
   'Dokter Spesialis Anak',
   'Dokter Spesialis Anak Konsultan Gastroenterologi-hepatologi',
   'Dokter Spesialis Anak Konsultan Kardiologi',
@@ -4458,17 +4460,27 @@ export default function App() {
       );
     }
 
-    // 1. Get Unique Departments
-    const depts = Array.from(new Set(allRows.map(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides)))).filter(Boolean).sort();
+    // 1. Get KSM and Department for each row once to avoid repeated extractKsm/getDept calls (CPU bottleneck)
+    const rowsWithKsm = allRows.map(r => {
+      const ksm = extractKsm(r['DPJP'] || '', ksmOverrides);
+      return {
+        row: r,
+        ksm,
+        dept: getDept(ksm, r['DPJP'] || '', ksmOverrides)
+      };
+    });
+
+    // 2. Get Unique Departments
+    const depts = Array.from(new Set(rowsWithKsm.map(item => item.dept))).filter(Boolean).sort();
     
     // Determine active department (without setting state during render)
     const currentDept = selectedSocializationDept || depts[0] || '';
 
-    // 2. Get KSMs for the selected department
+    // 3. Get KSMs for the selected department
     const ksmsForDept = Array.from(new Set(
-      allRows
-        .filter(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides) === currentDept)
-        .map(r => extractKsm(r['DPJP'] || '', ksmOverrides))
+      rowsWithKsm
+        .filter(item => item.dept === currentDept)
+        .map(item => item.ksm)
     )).filter(Boolean).sort();
 
     // Determine active KSM (without setting state during render)
@@ -4476,11 +4488,12 @@ export default function App() {
       ? selectedSocializationKsm
       : (ksmsForDept[0] || '');
 
-    // 3. Filter rows
-    const deptRows = allRows.filter(r => getDept(extractKsm(r['DPJP'] || '', ksmOverrides), r['DPJP'] || '', ksmOverrides) === currentDept);
-    const ksmRows = deptRows.filter(r => extractKsm(r['DPJP'] || '', ksmOverrides) === currentKsm);
+    // 4. Filter rows for current KSM
+    const ksmRows = rowsWithKsm
+      .filter(item => item.ksm === currentKsm)
+      .map(item => item.row);
 
-    // 4. Hospital-wide metrics for comparison
+    // 5. Hospital-wide metrics for comparison
     const hTotal = allRows.length || 1;
     const hSumLos = allRows.reduce((sum, r) => sum + (parseFloat(r._los) || 0), 0);
     const hAvgLos = hSumLos / hTotal;
@@ -4491,7 +4504,7 @@ export default function App() {
       return acc;
     }, {});
 
-    // 5. KSM-specific metrics
+    // 6. KSM-specific metrics
     const kTotal = ksmRows.length || 1;
     const kPctOfHospital = (ksmRows.length / (allRows.length || 1)) * 100;
     
@@ -4520,10 +4533,14 @@ export default function App() {
       return acc;
     }, {});
 
-    // 6. Quadrant standing logic
-    const ksmCounts = Array.from(new Set(allRows.map(r => extractKsm(r['DPJP'] || '', ksmOverrides)))).map(kName => {
-      return allRows.filter(r => extractKsm(r['DPJP'] || '', ksmOverrides) === kName).length;
+    // 7. Quadrant standing logic
+    const ksmCountsMap = {};
+    rowsWithKsm.forEach(item => {
+      if (item.ksm) {
+        ksmCountsMap[item.ksm] = (ksmCountsMap[item.ksm] || 0) + 1;
+      }
     });
+    const ksmCounts = Object.values(ksmCountsMap);
     const avgKsmVol = ksmCounts.reduce((s, c) => s + c, 0) / (ksmCounts.length || 1);
 
     const isHighVolume = ksmRows.length >= avgKsmVol;
