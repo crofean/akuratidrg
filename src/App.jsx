@@ -711,8 +711,22 @@ const normDpjp = (name) => {
   if (n.startsWith('DRG ')) n = n.substring(4).trim(); else if (n.startsWith('DR ')) n = n.substring(3).trim();
   return n || 'UNKNOWN';
 };
+const resolveCache = new Map();
 
 const resolveKsmDept = (dpjp, overrides = {}) => {
+  if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
+  
+  const cacheKey = dpjp + "_" + (overrides ? Object.keys(overrides).length + "_" + JSON.stringify(overrides) : "no_overrides");
+  if (resolveCache.has(cacheKey)) {
+    return resolveCache.get(cacheKey);
+  }
+  
+  const res = _resolveKsmDept(dpjp, overrides);
+  resolveCache.set(cacheKey, res);
+  return res;
+};
+
+const _resolveKsmDept = (dpjp, overrides = {}) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
 
   // --- CHECK OVERRIDES FIRST ---
