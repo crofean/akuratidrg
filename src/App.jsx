@@ -1896,7 +1896,7 @@ export default function App() {
       const pList = pendingRows.slice(1).map(r => {
         let rawStatus = r[statusIdx] || r[10] || 'PENDING';
         rawStatus = rawStatus.trim().toUpperCase();
-        if (rawStatus === 'TERVERIFIKASI' || rawStatus === 'DITOLAK') {
+        if (rawStatus === 'TERVERIFIKASI' || rawStatus === 'DITOLAK' || rawStatus === 'DIBATALKAN') {
           // Status valid
         } else {
           // Jika kosong atau "KOSONG"
@@ -5402,6 +5402,8 @@ export default function App() {
   
   if (action === "delete") {
     var username = params.username;
+    
+    // Hapus dari tab Sheet1 (User Aktif)
     var activeData = activeSheet.getDataRange().getValues();
     for (var i = 1; i < activeData.length; i++) {
       if (activeData[i][3] === username) { // USERNAME di kolom D (index 3)
@@ -5409,6 +5411,15 @@ export default function App() {
         break;
       }
     }
+    
+    // Ubah status di tab permohonan akun menjadi DIBATALKAN
+    var permData = sheet.getDataRange().getValues();
+    for (var j = 1; j < permData.length; j++) {
+      if (permData[j][7] === username) {
+        sheet.getRange(j + 1, 10).setValue("DIBATALKAN");
+      }
+    }
+    
     return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User deleted" }))
                          .setMimeType(ContentService.MimeType.JSON)
                          .setHeaders(headers);
