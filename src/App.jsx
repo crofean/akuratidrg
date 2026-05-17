@@ -5321,7 +5321,7 @@ export default function App() {
   if (!sheet) sheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("permohonan akun");
   if (!activeSheet) {
     activeSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Sheet1");
-    activeSheet.appendRow(["USERNAME", "PASSWORD", "MasaAktif"]);
+    activeSheet.appendRow(["KODE RS", "NAMA RS", "PIC RS", "USERNAME", "PASSWORD", "MasaAktif"]);
   }
   
   var headers = {"Access-Control-Allow-Origin": "*"};
@@ -5339,29 +5339,42 @@ export default function App() {
       formattedExpiry = "31/12/2099"; // Selamanya
     }
     
-    // Sinkronkan ke tab User Aktif
+    // Cari data RS dan PIC dari tab permohonan akun
+    var rsCode = "";
+    var rsName = "";
+    var picName = "";
+    
+    var permData = sheet.getDataRange().getValues();
+    for (var j = 1; j < permData.length; j++) {
+      if (permData[j][7] === username) {
+        picName = permData[j][1]; // Nama Lengkap
+        rsCode = permData[j][4];  // Kode RS
+        rsName = permData[j][5];  // Nama RS
+        if (!password) {
+          password = permData[j][8]; // Fallback password jika tidak dikirim lewat param
+        }
+        sheet.getRange(j + 1, 11).setValue("TERVERIFIKASI");
+      }
+    }
+    
+    // Sinkronkan ke tab Sheet1 (User Aktif)
     var activeData = activeSheet.getDataRange().getValues();
     var existIdx = -1;
     for (var i = 1; i < activeData.length; i++) {
-      if (activeData[i][0] === username) {
+      if (activeData[i][3] === username) { // USERNAME di kolom D (index 3)
         existIdx = i;
         break;
       }
     }
     
     if (existIdx !== -1) {
-      activeSheet.getRange(existIdx + 1, 2).setValue(password);
-      activeSheet.getRange(existIdx + 1, 3).setValue(formattedExpiry);
+      activeSheet.getRange(existIdx + 1, 1).setValue(rsCode);         // KODE RS (Kolom A)
+      activeSheet.getRange(existIdx + 1, 2).setValue(rsName);         // NAMA RS (Kolom B)
+      activeSheet.getRange(existIdx + 1, 3).setValue(picName);        // PIC RS (Kolom C)
+      activeSheet.getRange(existIdx + 1, 5).setValue(password);       // PASSWORD (Kolom E)
+      activeSheet.getRange(existIdx + 1, 6).setValue(formattedExpiry); // MasaAktif (Kolom F)
     } else {
-      activeSheet.appendRow([username, password, formattedExpiry]);
-    }
-    
-    // Ubah status di tab Permohonan
-    var permData = sheet.getDataRange().getValues();
-    for (var j = 1; j < permData.length; j++) {
-      if (permData[j][7] === username) {
-        sheet.getRange(j + 1, 11).setValue("TERVERIFIKASI");
-      }
+      activeSheet.appendRow([rsCode, rsName, picName, username, password, formattedExpiry]);
     }
     
     return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User approved" }))
@@ -5386,7 +5399,7 @@ export default function App() {
     var username = params.username;
     var activeData = activeSheet.getDataRange().getValues();
     for (var i = 1; i < activeData.length; i++) {
-      if (activeData[i][0] === username) {
+      if (activeData[i][3] === username) { // USERNAME di kolom D (index 3)
         activeSheet.deleteRow(i + 1);
         break;
       }
