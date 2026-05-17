@@ -16,6 +16,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Password Toggle Visibility
+    const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+    togglePasswordButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                btn.innerHTML = '<i data-lucide="eye-off"></i>';
+            } else {
+                passwordInput.type = 'password';
+                btn.innerHTML = '<i data-lucide="eye"></i>';
+            }
+            lucide.createIcons();
+        });
+    });
+
     // Form Submission
     form.addEventListener('submit', (e) => {
         e.preventDefault();
