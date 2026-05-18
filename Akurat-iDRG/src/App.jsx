@@ -4542,13 +4542,23 @@ export default function App() {
 
         {reportSubTab === 'summary' && (
           <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
-            <SectionHeader icon={Table2} title="Laporan Tabel Klaim" desc="Rekapitulasi komprehensif jumlah kasus dan nominal klaim INA-CBG vs iDRG per bulan layanan." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => exportToXlsx('Laporan_Ringkasan', ['Bulan', 'Tarif RS', 'Kasus Rajal (INA)', 'Kasus Ranap (INA)', 'Total Kasus (INA)', 'Tarif Rajal (INA)', 'Tarif Ranap (INA)', 'Total Tarif (INA)', 'Kasus Rajal (iDRG)', 'Kasus Ranap (iDRG)', 'Total Kasus (iDRG)', 'Tarif Rajal (iDRG)', 'Tarif Ranap (iDRG)', 'Total Tarif (iDRG)'], dashData.reportArray.map(m => [m.label, m.tarifRsTotal, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap, m.inaRajal, m.inaRanap, m.inaRajal + m.inaRanap, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap, m.idrgRajal, m.idrgRanap, m.idrgRajal + m.idrgRanap]))} exportText="Ekspor CSV" />
+            <SectionHeader icon={Table2} title="Laporan Tabel Klaim" desc="Rekapitulasi komprehensif jumlah kasus dan nominal klaim INA-CBG vs iDRG per bulan layanan." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => exportToXlsx('Laporan_Ringkasan', ['Bulan', 'Tarif RS', 'Kasus Rajal (INA)', 'Kasus Ranap (INA)', 'Total Kasus (INA)', 'Tarif Rajal (INA)', 'Tarif Ranap (INA)', 'Total Tarif (INA)', 'Kasus Rajal (iDRG)', 'Kasus Ranap (iDRG)', 'Total Kasus (iDRG)', 'Tarif Rajal (iDRG)', 'Tarif Ranap (iDRG)', 'Total Tarif (iDRG)', 'Selisih INACBG - RS', 'Selisih iDRG - RS', 'Selisih iDRG - INACBG'], dashData.reportArray.map(m => {
+              const totIna = (m.inaRajal ?? 0) + (m.inaRanap ?? 0);
+              const totIdrg = (m.idrgRajal ?? 0) + (m.idrgRanap ?? 0);
+              return [
+                m.label, m.tarifRsTotal, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
+                m.inaRajal, m.inaRanap, totIna, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
+                m.idrgRajal, m.idrgRanap, totIdrg, totIna - (m.tarifRsTotal ?? 0), totIdrg - (m.tarifRsTotal ?? 0),
+                totIdrg - totIna
+              ];
+            }))} exportText="Ekspor CSV" />
             <Card className="overflow-x-auto p-2 custom-scrollbar max-h-[600px] border-0 shadow-xl">
               <table className="w-full text-xs text-center border-collapse whitespace-nowrap">
                 <thead className="text-[10px] uppercase font-black tracking-wider sticky top-0 z-40">
                   <tr>
                     <th rowSpan={3} className="bg-slate-900 text-white border-b border-r border-white/10 p-3">NO</th><th rowSpan={3} className="bg-slate-900 text-white border-b border-r border-white/10 p-3">BULAN LAYANAN</th><th rowSpan={3} className="bg-slate-900 text-white border-b border-r border-white/10 p-3">Tarif RS (Cost)</th>
-                    <th colSpan={6} className="bg-teal-800 text-white border-b border-r border-white/10 p-3">Klaim INA CBG</th><th colSpan={6} className="bg-emerald-800 text-white border-b border-white/10 p-3">Klaim iDRG</th>
+                    <th colSpan={6} className="bg-teal-800 text-white border-b border-r border-white/10 p-3">Klaim INA CBG</th><th colSpan={6} className="bg-emerald-800 text-white border-b border-r border-white/10 p-3">Klaim iDRG</th>
+                    <th rowSpan={3} className="bg-indigo-900 text-white border-b border-r border-white/10 p-3">Selisih INACBG - RS</th><th rowSpan={3} className="bg-violet-900 text-white border-b border-r border-white/10 p-3">Selisih iDRG - RS</th><th rowSpan={3} className="bg-purple-900 text-white border-b border-white/10 p-3">Selisih iDRG - INACBG</th>
                   </tr>
                   <tr>
                     <th colSpan={3} className="bg-teal-700/80 text-white border-b border-r border-white/10 p-2">KASUS</th><th colSpan={3} className="bg-teal-700/80 text-white border-b border-r border-white/10 p-2">Penerimaan INACBG (Rp)</th>
@@ -4562,17 +4572,33 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-sm bg-white">
-                  {dashData.reportArray.map((row, i) => (
-                    <tr key={i} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => openDrilldown(`Bulan: ${row.label}`, r => { const dObj = parseDate(r['DISCHARGE_DATE']); return dObj && `${monthNames[dObj.getMonth()]} - ${dObj.getFullYear()}` === row.label; })}>
-                      <td className="border-r border-slate-100 p-3 font-semibold text-slate-400">{i + 1}</td>
-                      <td className="border-r border-slate-100 p-3 font-bold text-slate-700">{row.label}</td>
-                      <td className="border-r border-slate-100 p-3 text-right font-semibold text-slate-600">{formatRpEx(row.tarifRsTotal)}</td>
-                      <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{(row.kasusRajal ?? 0).toLocaleString()}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{(row.kasusRanap ?? 0).toLocaleString()}</td><td className="border-r border-teal-50 p-3 text-right font-black text-teal-600 bg-teal-50/40">{((row.kasusRajal ?? 0) + (row.kasusRanap ?? 0)).toLocaleString()}</td>
-                      <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{formatRpEx(row.inaRajal)}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{formatRpEx(row.inaRanap)}</td><td className="border-r border-teal-100 p-3 text-right font-black text-teal-600 bg-teal-50/40">{formatRpEx((row.inaRajal ?? 0) + (row.inaRanap ?? 0))}</td>
-                      <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{(row.kasusRajal ?? 0).toLocaleString()}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{(row.kasusRanap ?? 0).toLocaleString()}</td><td className="border-r border-emerald-50 p-3 text-right font-black text-emerald-600 bg-emerald-50/40">{((row.kasusRajal ?? 0) + (row.kasusRanap ?? 0)).toLocaleString()}</td>
-                      <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{formatRpEx(row.idrgRajal)}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{formatRpEx(row.idrgRanap)}</td><td className="p-3 text-right font-black text-emerald-600 bg-emerald-50/40">{formatRpEx((row.idrgRajal ?? 0) + (row.idrgRanap ?? 0))}</td>
-                    </tr>
-                  ))}
+                  {dashData.reportArray.map((row, i) => {
+                    const totIna = (row.inaRajal ?? 0) + (row.inaRanap ?? 0);
+                    const totIdrg = (row.idrgRajal ?? 0) + (row.idrgRanap ?? 0);
+                    const diffInaRs = totIna - (row.tarifRsTotal ?? 0);
+                    const diffIdrgRs = totIdrg - (row.tarifRsTotal ?? 0);
+                    const diffIdrgIna = totIdrg - totIna;
+                    return (
+                      <tr key={i} className="hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => openDrilldown(`Bulan: ${row.label}`, r => { const dObj = parseDate(r['DISCHARGE_DATE']); return dObj && `${monthNames[dObj.getMonth()]} - ${dObj.getFullYear()}` === row.label; })}>
+                        <td className="border-r border-slate-100 p-3 font-semibold text-slate-400">{i + 1}</td>
+                        <td className="border-r border-slate-100 p-3 font-bold text-slate-700">{row.label}</td>
+                        <td className="border-r border-slate-100 p-3 text-right font-semibold text-slate-600">{formatRpEx(row.tarifRsTotal)}</td>
+                        <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{(row.kasusRajal ?? 0).toLocaleString()}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{(row.kasusRanap ?? 0).toLocaleString()}</td><td className="border-r border-teal-50 p-3 text-right font-black text-teal-600 bg-teal-50/40">{((row.kasusRajal ?? 0) + (row.kasusRanap ?? 0)).toLocaleString()}</td>
+                        <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{formatRpEx(row.inaRajal)}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-teal-50/10">{formatRpEx(row.inaRanap)}</td><td className="border-r border-teal-100 p-3 text-right font-black text-teal-600 bg-teal-50/40">{formatRpEx(totIna)}</td>
+                        <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{(row.kasusRajal ?? 0).toLocaleString()}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{(row.kasusRanap ?? 0).toLocaleString()}</td><td className="border-r border-emerald-50 p-3 text-right font-black text-emerald-600 bg-emerald-50/40">{((row.kasusRajal ?? 0) + (row.kasusRanap ?? 0)).toLocaleString()}</td>
+                        <td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{formatRpEx(row.idrgRajal)}</td><td className="border-r border-slate-50 p-3 text-right text-slate-600 bg-emerald-50/10">{formatRpEx(row.idrgRanap)}</td><td className="border-r border-emerald-100 p-3 text-right font-black text-emerald-600 bg-emerald-50/40">{formatRpEx(totIdrg)}</td>
+                        <td className={`border-r border-slate-100 p-3 text-right font-black bg-indigo-50/5 ${diffInaRs > 0 ? 'text-emerald-600' : diffInaRs < 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                          {diffInaRs > 0 ? '+' : ''}{formatRpEx(diffInaRs)}
+                        </td>
+                        <td className={`border-r border-slate-100 p-3 text-right font-black bg-violet-50/5 ${diffIdrgRs > 0 ? 'text-emerald-600' : diffIdrgRs < 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                          {diffIdrgRs > 0 ? '+' : ''}{formatRpEx(diffIdrgRs)}
+                        </td>
+                        <td className={`p-3 text-right font-black bg-purple-50/5 ${diffIdrgIna > 0 ? 'text-emerald-600' : diffIdrgIna < 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                          {diffIdrgIna > 0 ? '+' : ''}{formatRpEx(diffIdrgIna)}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </Card>
