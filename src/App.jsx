@@ -1,21 +1,62 @@
-﻿import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet } from 'lucide-react';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 
 export const saveAsPng = async (elementId, fileName) => {
+  console.log('saveAsPng called for ID:', elementId, 'with file name:', fileName);
   const el = document.getElementById(elementId);
-  if (!el) return;
+  if (!el) {
+    console.error('Element not found in DOM with ID:', elementId);
+    alert('⚠️ Error: Elemen grafik "' + elementId + '" tidak ditemukan di halaman! Silakan unggah file Excel terlebih dahulu.');
+    return;
+  }
+  
+  // Tampilkan indikator proses langsung di UI
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.style.position = 'fixed';
+  loadingIndicator.style.top = '30px';
+  loadingIndicator.style.left = '50%';
+  loadingIndicator.style.transform = 'translateX(-50%)';
+  loadingIndicator.style.background = 'rgba(15, 23, 42, 0.95)';
+  loadingIndicator.style.color = '#fff';
+  loadingIndicator.style.padding = '14px 28px';
+  loadingIndicator.style.borderRadius = '12px';
+  loadingIndicator.style.zIndex = '99999';
+  loadingIndicator.style.fontSize = '13px';
+  loadingIndicator.style.fontWeight = 'bold';
+  loadingIndicator.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.4)';
+  loadingIndicator.style.fontFamily = 'sans-serif';
+  loadingIndicator.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+  loadingIndicator.innerText = '⏳ Sedang memproses dan mengunduh gambar PNG... Mohon tunggu sebentar.';
+  document.body.appendChild(loadingIndicator);
+
   try {
-    const canvas = await html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
+    // Tunggu sebentar agar render indicator muncul sebelum JS blocking process
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const canvas = await html2canvas(el, { 
+      backgroundColor: '#ffffff', 
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: true
+    });
+    
     const url = canvas.toDataURL('image/png');
     const link = document.createElement("a");
     link.href = url;
     link.download = `${fileName.replace(/\s+/g, '_')}.png`;
     link.click();
+    console.log('Successfully saved chart as PNG:', fileName);
   } catch (err) {
-    console.error('Failed to save chart', err);
+    console.error('Failed to save chart:', err);
+    alert('⚠️ Gagal menyimpan gambar!\\nDetail Error: ' + err.message + '\\n\\nSilakan periksa console browser (F12) untuk melihat info selengkapnya.');
+  } finally {
+    if (loadingIndicator && loadingIndicator.parentNode) {
+      loadingIndicator.parentNode.removeChild(loadingIndicator);
+    }
   }
 };
 
@@ -7692,7 +7733,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.3.0 (180526)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.3.1 (180526)</p>
               </div>
             </div>
           </div>
@@ -8173,7 +8214,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.3.0 (180526)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.3.1 (180526)</span>
                 </div>
               )}
             </div>
@@ -8353,7 +8394,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.3.0</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.3.1</span>
             </p>
           </footer>
         </div>

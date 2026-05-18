@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { 
   FileSpreadsheet, Upload, CheckCircle2, AlertTriangle, Info, Copy, 
@@ -60,17 +60,58 @@ const maskName = (name) => {
 };
 
 const saveAsPng = async (elementId, fileName) => {
+  console.log("saveAsPng called for ID:", elementId, "with file name:", fileName);
   const el = document.getElementById(elementId);
-  if (!el) return;
+  if (!el) {
+    console.error("Element not found in DOM with ID:", elementId);
+    alert("⚠️ Error: Elemen grafik \"" + elementId + "\" tidak ditemukan di halaman! Silakan unggah file Excel terlebih dahulu.");
+    return;
+  }
+  
+  // Tampilkan indikator proses langsung di UI
+  const loadingIndicator = document.createElement("div");
+  loadingIndicator.style.position = "fixed";
+  loadingIndicator.style.top = "30px";
+  loadingIndicator.style.left = "50%";
+  loadingIndicator.style.transform = "translateX(-50%)";
+  loadingIndicator.style.background = "rgba(15, 23, 42, 0.95)";
+  loadingIndicator.style.color = "#fff";
+  loadingIndicator.style.padding = "14px 28px";
+  loadingIndicator.style.borderRadius = "12px";
+  loadingIndicator.style.zIndex = "99999";
+  loadingIndicator.style.fontSize = "13px";
+  loadingIndicator.style.fontWeight = "bold";
+  loadingIndicator.style.boxShadow = "0 10px 25px -5px rgba(0, 0, 0, 0.4)";
+  loadingIndicator.style.fontFamily = "sans-serif";
+  loadingIndicator.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+  loadingIndicator.innerText = "⏳ Sedang memproses dan mengunduh gambar PNG... Mohon tunggu sebentar.";
+  document.body.appendChild(loadingIndicator);
+
   try {
-    const canvas = await html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
-    const url = canvas.toDataURL('image/png');
+    // Tunggu sebentar agar render indicator muncul sebelum JS blocking process
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const canvas = await html2canvas(el, {
+      backgroundColor: "#ffffff",
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: true
+    });
+    
+    const url = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${fileName.replace(/\s+/g, '_')}.png`;
+    link.download = `${fileName.replace(/\s+/g, "_")}.png`;
     link.click();
+    console.log("Successfully saved chart as PNG:", fileName);
   } catch (err) {
-    console.error('Failed to save chart', err);
+    console.error("Failed to save chart:", err);
+    alert("⚠️ Gagal menyimpan gambar!\\nDetail Error: " + err.message + "\\n\\nSilakan periksa console browser (F12) untuk melihat info selengkapnya.");
+  } finally {
+    if (loadingIndicator && loadingIndicator.parentNode) {
+      loadingIndicator.parentNode.removeChild(loadingIndicator);
+    }
   }
 };
 
@@ -912,7 +953,10 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                     if (newKey) {
                       setGeminiKey(newKey);
                       localStorage.setItem('sak_gemini_key', newKey);
-                      setApiKeyStatus(newKey.trim() === '' ? 'empty' : 'custom');
+                      setApiKeyStatus('custom');
+                      alert('🔑 API Key Gemini berhasil disimpan secara lokal!');
+                    } else {
+                      alert('⚠️ Harap masukkan API Key Gemini yang valid!');
                     }
                   }
                 }}
@@ -929,13 +973,16 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                 const newKey = apiKeyInput.trim();
                 if (newKey) {
                   setGeminiKey(newKey);
-                  localStorage.setItem('sak_gemini_key', newKey);
-                  setApiKeyStatus(newKey.trim() === '' ? 'empty' : 'custom');
+                  localStorage.setItem("sak_gemini_key", newKey);
+                  setApiKeyStatus("custom");
+                  alert("🔑 API Key Gemini berhasil disimpan secara lokal!");
+                } else {
+                  alert("⚠️ Harap masukkan API Key Gemini yang valid terlebih dahulu!");
                 }
               }}
-              style={{ padding: '8px 14px', background: 'rgba(16,185,129,0.25)', border: '1px solid rgba(52,211,153,0.4)', borderRadius: '10px', color: '#6ee7b7', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', cursor: 'pointer', letterSpacing: '0.05em', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
-              onMouseEnter={e => e.target.style.background = 'rgba(16,185,129,0.4)'}
-              onMouseLeave={e => e.target.style.background = 'rgba(16,185,129,0.25)'}
+              style={{ padding: "8px 14px", background: "rgba(16,185,129,0.25)", border: "1px solid rgba(52,211,153,0.4)", borderRadius: "10px", color: "#6ee7b7", fontSize: "10px", fontWeight: "800", textTransform: "uppercase", cursor: "pointer", letterSpacing: "0.05em", whiteSpace: "nowrap", transition: "all 0.2s" }}
+              onMouseEnter={e => e.target.style.background = "rgba(16,185,129,0.4)"}
+              onMouseLeave={e => e.target.style.background = "rgba(16,185,129,0.25)"}
               title="Simpan API Key"
             >
               💾 Simpan
@@ -944,12 +991,13 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             {/* Tombol Reset ke Default */}
             <button 
               onClick={() => {
-                setApiKeyInput('');
-                setGeminiKey('');
-                localStorage.removeItem('sak_gemini_key');
-                setApiKeyStatus('empty');
+                setApiKeyInput("");
+                setGeminiKey("");
+                localStorage.removeItem("sak_gemini_key");
+                setApiKeyStatus("empty");
+                alert("🔄 API Key berhasil di-reset menjadi kosong (default).");
               }}
-              style={{ padding: '8px 10px', background: 'rgba(100,116,139,0.25)', border: '1px solid rgba(148,163,184,0.3)', borderRadius: '10px', color: '#94a3b8', fontSize: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px' }}
+              style={{ padding: "8px 10px", background: "rgba(100,116,139,0.25)", border: "1px solid rgba(148,163,184,0.3)", borderRadius: "10px", color: "#94a3b8", fontSize: "10px", fontWeight: "800", cursor: "pointer", transition: "all 0.2s", display: "flex", alignItems: "center", gap: "4px" }}
               title="Reset ke API Key Default"
             >
               <RefreshCw size={13} /> Default
