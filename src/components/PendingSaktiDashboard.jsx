@@ -682,6 +682,40 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
     };
   }, [processedClaims]);
 
+  // Open the AI analysis modal and automatically load cached results if available
+  const openAiAnalysisModal = (claim) => {
+    if (!claim) return;
+    setAiPatient(claim);
+    setManualClinicalText("");
+    
+    // Check if there is already a cached analysis for this claim in localStorage
+    const cachedAnalysisStr = localStorage.getItem("gemini_analysis_" + claim.sep);
+    if (cachedAnalysisStr) {
+      try {
+        const cached = JSON.parse(cachedAnalysisStr);
+        setAiResponse({
+          saran_perbaikan: cached.saran_perbaikan || claim.aiSaran || "-",
+          kutipan_regulasi: cached.rutipan_regulasi || cached.kutipan_regulasi || claim.aiRegulasi || "-",
+          jawaban_sanggahan_rs: cached.jawaban_sanggahan_rs || claim.aiSanggahan || "-"
+        });
+        return;
+      } catch (e) {
+        console.error("Failed to parse cached analysis", e);
+      }
+    }
+    
+    // Fallback to claim properties if they exist
+    if (claim.aiReviewed && claim.aiSaran) {
+      setAiResponse({
+        saran_perbaikan: claim.aiSaran || "-",
+        kutipan_regulasi: claim.aiRegulasi || "-",
+        jawaban_sanggahan_rs: claim.aiSanggahan || "-"
+      });
+    } else {
+      setAiResponse(null);
+    }
+  };
+
   // Call Gemini AI for Clinical Auditing of Medical Record PDF text
   const analyzeWithGemini = async (claim) => {
     if (!claim) return;
@@ -1593,17 +1627,17 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                         <td className="p-4">
                           <div className="flex flex-col gap-1.5 w-full">
                             
-                            {/* Gemini AI Assessor Action */}
+                                                        {/* Gemini AI Assessor Action */}
                             <button 
-                              onClick={() => analyzeWithGemini(c)}
+                              onClick={() => openAiAnalysisModal(c)}
                               className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-1 w-full uppercase tracking-wider shadow-sm ${
                                 c.aiReviewed 
-                                  ? 'bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white' 
-                                  : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white'
+                                  ? "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white" 
+                                  : "bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
                               }`}
                             >
-                              <Brain size={12} className={c.aiReviewed ? '' : 'animate-pulse'} /> 
-                              {c.aiReviewed ? 'Ulangi Analisis AI' : 'Analisis Gemini AI'}
+                              <Brain size={12} className={c.aiReviewed ? "" : "animate-pulse"} /> 
+                              {c.aiReviewed ? "📋 Lihat Hasil Audit AI" : "✨ Analisis Gemini AI"}
                             </button>
 
                             {/* Standard Copy Triggers */}
@@ -2176,11 +2210,15 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               <button 
                 onClick={() => analyzeWithGemini(aiPatient)}
                 disabled={isAiLoading}
-                className="w-full py-4 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-2xl font-black text-xs transition-all shadow-xl shadow-teal-600/20 uppercase tracking-widest flex items-center justify-center gap-2"
+                className={`w-full py-4 bg-gradient-to-r ${aiResponse ? "from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800" : "from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700"} text-white rounded-2xl font-black text-xs transition-all shadow-xl uppercase tracking-widest flex items-center justify-center gap-2`}
               >
                 {isAiLoading ? (
                   <>
                     <RefreshCw size={14} className="animate-spin" /> Sedang Menelaah Regulasi &amp; Klinis Pasien...
+                  </>
+                ) : aiResponse ? (
+                  <>
+                    <RefreshCw size={14} /> Audit Ulang / Regenerasi Hasil AI
                   </>
                 ) : (
                   <>
