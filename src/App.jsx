@@ -3534,6 +3534,23 @@ export default function App() {
 
 
   const dlDrilldownCSV = () => {
+    if (drilldown.type === 'pending_sakti') {
+      const headers = ['No', 'No SEP', 'Nama Pasien', 'Keterangan Pending', 'Kelompok Kasus', 'Faktor Penyebab', 'DPJP Utama', 'Coder', 'Diaglist', 'Proclist'];
+      const rows = drilldown.data.map((c, i) => [
+        i + 1,
+        c.sep || '-',
+        c.nama || '-',
+        c.keterangan || '-',
+        Array.isArray(c.kategori) ? c.kategori.join(', ') : (c.kategori || '-'),
+        c.faktor || '-',
+        c.dpjp || '-',
+        c.coderName || '-',
+        c.diaglist || '-',
+        c.proclist || '-'
+      ]);
+      exportToXlsx(`Pending_Claims_${drilldown.title}`, headers, rows);
+      return;
+    }
     if (drilldown.type === 'audit_kpi') {
       const headers = ['No', 'SEP', 'Rule ID', 'Temuan', 'Warning', 'Verdict'];
       const rows = drilldown.data.map((f, i) => [i + 1, f.sep, f.ruleId, f.case, f.warning, auditVerdicts[`${f.sep}|${f.ruleId}`] || 'belum']);
@@ -7778,7 +7795,7 @@ export default function App() {
               ) : (
                 <div className="flex flex-col">
                   {/* SCORECARD 18 KOMPONEN */}
-                  {drilldownStats && (
+                  {drilldownStats && drilldown.type !== 'pending_sakti' && (
                     <div className="p-6 bg-white border-b border-slate-100 shadow-sm">
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -7852,7 +7869,54 @@ export default function App() {
                   )}
 
                   <div className="p-0 overflow-x-auto custom-scrollbar">
-                    {drilldown.type === 'audit_kpi' ? (
+                    {drilldown.type === 'pending_sakti' ? (
+                      <table className="w-full text-[11px] text-left whitespace-nowrap">
+                        <thead className="bg-slate-900 text-white sticky top-0 z-30 shadow-sm border-b border-slate-700 text-[10px] font-black uppercase tracking-wider text-center">
+                          <tr>
+                            <th className="px-5 py-4 border-r border-slate-800 w-12">No</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-left min-w-[130px]">No SEP</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-left min-w-[140px]">Nama Pasien</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-left min-w-[200px] whitespace-normal">Keterangan Pending</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-center min-w-[125px]">Kelompok Kasus</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-center min-w-[125px]">Faktor Penyebab</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-left min-w-[140px]">DPJP Utama</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-left min-w-[120px]">Coder</th>
+                            <th className="px-5 py-4 border-r border-slate-800 text-left min-w-[180px] whitespace-normal">Diaglist</th>
+                            <th className="px-5 py-4 text-left min-w-[180px] whitespace-normal">Proclist</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 bg-white font-medium">
+                          {drilldown.data.map((c, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                              <td className="px-5 py-3.5 border-r border-slate-50 text-center font-bold text-slate-400">{idx + 1}</td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 font-mono font-bold text-slate-500">{c.sep || '-'}</td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 font-black text-slate-800">{c.nama || '-'}</td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 text-slate-600 whitespace-normal min-w-[200px] break-words leading-relaxed">{c.keterangan || '-'}</td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 text-center">
+                                <span className="px-2.5 py-1 bg-teal-50 text-teal-700 rounded-full font-black text-[9px] uppercase tracking-wide border border-teal-200 shadow-sm">
+                                  {Array.isArray(c.kategori) ? c.kategori.join(', ') : (c.kategori || '-')}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 text-center">
+                                <span className={`px-2.5 py-1 rounded-full font-black text-[9px] uppercase tracking-wide border shadow-sm ${
+                                  c.faktor === 'Internal RS' 
+                                    ? 'bg-rose-50 border-rose-200 text-rose-700' 
+                                    : c.faktor === 'Eksternal BPJS' 
+                                      ? 'bg-sky-50 border-sky-200 text-sky-700' 
+                                      : 'bg-slate-50 border-slate-200 text-slate-700'
+                                }`}>
+                                  {c.faktor || '-'}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 font-bold text-slate-700">{c.dpjp || '-'}</td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 font-bold text-slate-700">{c.coderName || '-'}</td>
+                              <td className="px-5 py-3.5 border-r border-slate-50 text-slate-500 whitespace-normal min-w-[180px] break-words leading-relaxed font-mono">{c.diaglist || '-'}</td>
+                              <td className="px-5 py-3.5 text-slate-500 whitespace-normal min-w-[180px] break-words leading-relaxed font-mono">{c.proclist || '-'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : drilldown.type === 'audit_kpi' ? (
                       <table className="w-full text-sm text-left whitespace-nowrap">
                         <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
                           <tr>
@@ -8189,6 +8253,7 @@ export default function App() {
                         dept: getDept(ksm, dpjp, ksmOverrides)
                       };
                     }}
+                    openDrilldown={openDrilldown}
                   />
                 </div>
 

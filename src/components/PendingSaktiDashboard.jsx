@@ -57,7 +57,7 @@ const maskName = (name) => {
   return res;
 };
 
-export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], resolveKsmDept }) {
+export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], resolveKsmDept, openDrilldown }) {
   const [fileData, setFileData] = useState([]);
   const [headers, setHeaders] = useState([]);
   const [showMappingModal, setShowMappingModal] = useState(false);
@@ -258,17 +258,22 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         }
 
         // 2. Keyword-based local pending reason categorization
-        let kategori = 'Medis';
+        const kategori = [];
         let faktor = 'Eksternal BPJS';
         
         const lKet = keterangan.toLowerCase();
         // Category classification
         if (lKet.includes('koding') || lKet.includes('kode') || lKet.includes('icd') || lKet.includes('diagnose') || lKet.includes('diagnosis') || lKet.includes('procedure') || lKet.includes('prosedur') || lKet.includes('tindakan')) {
-          kategori = 'Koding';
-        } else if (lKet.includes('admin') || lKet.includes('administrasi') || lKet.includes('kartu') || lKet.includes('ktp') || lKet.includes('rujukan') || lKet.includes('surat') || lKet.includes('kelengkapan') || lKet.includes('berkas')) {
-          kategori = 'Administrasi';
-        } else if (lKet.includes('readmisi') || lKet.includes('rawat kembali') || lKet.includes('pulang') || lKet.includes('kontrol')) {
-          kategori = 'Readmisi';
+          kategori.push('Koding');
+        }
+        if (lKet.includes('admin') || lKet.includes('administrasi') || lKet.includes('kartu') || lKet.includes('ktp') || lKet.includes('rujukan') || lKet.includes('surat') || lKet.includes('kelengkapan') || lKet.includes('berkas') || lKet.includes('sep')) {
+          kategori.push('Administrasi');
+        }
+        if (lKet.includes('readmisi') || lKet.includes('rawat kembali') || lKet.includes('pulang') || lKet.includes('kontrol')) {
+          kategori.push('Readmisi');
+        }
+        if (lKet.includes('medis') || lKet.includes('klinis') || lKet.includes('indikasi') || lKet.includes('terapi') || lKet.includes('dpjp') || lKet.includes('dokter') || lKet.includes('pemeriksaan') || lKet.includes('lab') || lKet.includes('rontgen') || kategori.length === 0) {
+          kategori.push('Medis');
         }
 
         // Factor classification from Excel or fallback keyword-based with default
@@ -307,15 +312,15 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         let rsBenar = 'Sesuai dengan rekam medis pasien terlampir bahwa koding sudah akurat.';
         let rsSalah = 'Kesediaan koding ulang sesuai arahan verifikator.';
 
-        if (kategori === 'Koding') {
+        if (kategori.includes('Koding')) {
           saran = 'Periksa urutan diagnosis utama & diagnosis sekunder berdasarkan ICD-10.';
           rsBenar = 'Koding diagnosis utama sudah sesuai dengan resume medis klinis pasien terlampir.';
           rsSalah = 'Kami telah melakukan koding ulang diagnosis sesuai pedoman ICD-10.';
-        } else if (kategori === 'Administrasi') {
+        } else if (kategori.includes('Administrasi')) {
           saran = 'Lengkapi surat rujukan, SEP, dan berkas administrasi penunjang.';
           rsBenar = 'Seluruh berkas administrasi pendukung yang diminta telah terlampir dengan lengkap.';
           rsSalah = 'Revisi berkas kepesertaan/administrasi yang tidak lengkap sedang diproses.';
-        } else if (kategori === 'Readmisi') {
+        } else if (kategori.includes('Readmisi')) {
           saran = 'Audit Clinical Pathway lama hari rawat (LOS) & indikasi medis pulang.';
           rsBenar = 'Pasien dipulangkan karena kondisi medis sudah stabil dan rawat kembali disebabkan kegawatan baru.';
           rsSalah = 'Mengajukan penggabungan berkas klaim sesuai ketentuan readmisi.';
@@ -346,6 +351,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
           kategori,
           faktor,
           matched: !!matchedPatient,
+          dpjp: matchedPatient ? matchedPatient.DPJP : '-',
           ksm,
           dept,
           diaglist,
@@ -396,8 +402,8 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         'Nomor SEP': c.sep || '-',
         'Nama Pasien': c.nama || '-',
         'Alasan Pending BPJS': c.keterangan || '-',
-        'Nominal Dispute (Rp)': c.nominal,
-        'Kategori Masalah': c.kategori || '-',
+        'Nominal Pending (Rp)': c.nominal,
+        'Kategori Masalah': Array.isArray(c.kategori) ? c.kategori.join(', ') : (c.kategori || '-'),
         'Faktor Penyebab (Root Cause)': c.faktor || '-',
         'DPJP KSM / SMF': c.ksm || '-',
         'DPJP Departemen': c.dept || '-',
@@ -457,7 +463,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       }
 
       // Generate clean filename
-      const cleanName = fileName ? fileName.replace(/\.[^/.]+$/, "") : 'Laporan_Dispute';
+      const cleanName = fileName ? fileName.replace(/\.[^/.]+$/, "") : 'Laporan_Pending';
       const outputName = `${cleanName}_Teranalisis_iDRG.xlsx`;
       
       const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
@@ -499,10 +505,17 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       else if (c.faktor === 'Eksternal BPJS') eksternal++;
       else grey++;
 
-      if (c.kategori === 'Medis') medis++;
-      else if (c.kategori === 'Koding') koding++;
-      else if (c.kategori === 'Administrasi') admin++;
-      else if (c.kategori === 'Readmisi') readmisi++;
+      if (Array.isArray(c.kategori)) {
+        if (c.kategori.includes('Medis')) medis++;
+        if (c.kategori.includes('Koding')) koding++;
+        if (c.kategori.includes('Administrasi')) admin++;
+        if (c.kategori.includes('Readmisi')) readmisi++;
+      } else {
+        if (c.kategori === 'Medis') medis++;
+        else if (c.kategori === 'Koding') koding++;
+        else if (c.kategori === 'Administrasi') admin++;
+        else if (c.kategori === 'Readmisi') readmisi++;
+      }
 
       if (c.matched) matchedCount++;
 
@@ -527,7 +540,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
 
     const activeClaims = processedClaims.filter(c => {
       const matchesLayanan = filterLayanan === 'ALL' || c.layanan === filterLayanan;
-      const matchesCategory = filterCategory === 'ALL' || c.kategori === filterCategory;
+      const matchesCategory = filterCategory === 'ALL' || (Array.isArray(c.kategori) ? c.kategori.includes(filterCategory) : c.kategori === filterCategory);
       const matchesFactor = filterFactor === 'ALL' || c.faktor === filterFactor;
       return matchesLayanan && matchesCategory && matchesFactor;
     });
@@ -540,7 +553,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
           label: c.keterangan,
           frequency: 0,
           totalNominal: 0,
-          category: c.kategori
+          category: Array.isArray(c.kategori) ? c.kategori.join(', ') : c.kategori
         };
       }
       grouped[c.keterangan].frequency++;
@@ -560,7 +573,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         c.ksm.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.coderName.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesCategory = filterCategory === 'ALL' || c.kategori === filterCategory;
+      const matchesCategory = filterCategory === 'ALL' || (Array.isArray(c.kategori) ? c.kategori.includes(filterCategory) : c.kategori === filterCategory);
       const matchesFactor = filterFactor === 'ALL' || c.faktor === filterFactor;
       const matchesLayanan = filterLayanan === 'ALL' || c.layanan === filterLayanan;
       const matchesScatterPoint = !selectedDisputeReason || c.keterangan === selectedDisputeReason;
@@ -574,7 +587,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
     if (processedClaims.length === 0) return { koding: [], medis: [], admin: [], readmisi: [] };
 
     const getTop10ForCategory = (catName) => {
-      const catClaims = processedClaims.filter(c => c.kategori === catName);
+      const catClaims = processedClaims.filter(c => Array.isArray(c.kategori) ? c.kategori.includes(catName) : c.kategori === catName);
       const grouped = {};
       catClaims.forEach(c => {
         if (!grouped[c.keterangan]) {
@@ -613,11 +626,11 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
 
     const promptText = `
 Anda adalah Auditor Medis Senior Rumah Sakit & Pakar Koding JKN.
-Tolong bantu kami menganalisis klaim pending/dispute BPJS berikut:
+Tolong bantu kami menganalisis klaim pending BPJS berikut:
 
 1. Nomor SEP: ${claim.sep}
 2. Nama Pasien: ${claim.nama}
-3. Alasan Dispute BPJS: ${claim.keterangan}
+3. Alasan Pending BPJS: ${claim.keterangan}
 4. Kode Diagnosis Utama/Sekunder (Kondisi Utama): ${claim.diaglist}
 5. Kode Tindakan/Prosedur: ${claim.proclist}
 6. Catatan Resume Medis / Bukti Klinis: ${manualClinicalText || 'Tidak ada catatan klinis tambahan yang diunggah. Analisis berdasarkan koding saja.'}
@@ -779,7 +792,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
             <FileSpreadsheet size={32} />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight uppercase">Analisis Pending & Dispute</h1>
+            <h1 className="text-2xl font-black tracking-tight uppercase">Analisis Pending</h1>
             <p className="text-xs text-teal-200 font-bold uppercase tracking-wider mt-1">Audit, Klasifikasi, & Solusi Sanggahan BPJS Terintegrasi</p>
           </div>
         </div>
@@ -819,9 +832,9 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           <div className="w-20 h-20 bg-teal-50 rounded-3xl flex items-center justify-center mb-6 text-teal-600 shadow-inner">
             <Upload size={36} />
           </div>
-          <h2 className="text-xl font-black text-slate-800 tracking-tight">Unggah Berkas Dispute Pending BPJS</h2>
+          <h2 className="text-xl font-black text-slate-800 tracking-tight">Unggah Berkas Pending BPJS</h2>
           <p className="text-xs text-slate-400 max-w-md mx-auto mt-2 leading-relaxed font-medium">
-            Seret & taruh berkas Excel (.xlsx, .xls) atau CSV laporan dispute pending BPJS Anda ke sini, atau klik tombol di bawah untuk memilih file.
+            Seret & taruh berkas Excel (.xlsx, .xls) atau CSV laporan pending BPJS Anda ke sini, atau klik tombol di bawah untuk memilih file.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4">
             <label className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs transition-all shadow-lg shadow-teal-600/20 cursor-pointer uppercase tracking-widest flex items-center gap-2">
@@ -876,13 +889,33 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
               subtitle={`${stats.rjCount} Rawat Jalan | ${stats.riCount} Rawat Inap`} 
               color="teal" 
               icon={FileSpreadsheet} 
+              onClick={() => {
+                if (openDrilldown && stats.total > 0) {
+                  openDrilldown(
+                    'Seluruh Kasus Pending',
+                    () => true,
+                    'pending_sakti',
+                    processedClaims
+                  );
+                }
+              }}
             />
             <MetricCard 
-              title="Nilai Klaim Dispute" 
+              title="Nilai Klaim Pending" 
               value={formatRp(stats.nominal)} 
               subtitle={`${formatRp(stats.rjNominal)} RJ | ${formatRp(stats.riNominal)} RI`} 
               color="emerald" 
               icon={Download} 
+              onClick={() => {
+                if (openDrilldown && stats.total > 0) {
+                  openDrilldown(
+                    'Seluruh Kasus Pending',
+                    () => true,
+                    'pending_sakti',
+                    processedClaims
+                  );
+                }
+              }}
             />
             <MetricCard 
               title="Penyebab Internal RS" 
@@ -890,6 +923,16 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
               subtitle={`${((stats.internal / stats.total) * 100).toFixed(0)}% Sistemik`} 
               color="amber" 
               icon={AlertTriangle} 
+              onClick={() => {
+                if (openDrilldown && stats.internal > 0) {
+                  openDrilldown(
+                    'Pasien Pending - Penyebab Internal RS',
+                    c => c.faktor === 'Internal RS',
+                    'pending_sakti',
+                    processedClaims
+                  );
+                }
+              }}
             />
             <MetricCard 
               title="Pasien Terintegrasi" 
@@ -897,86 +940,93 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
               subtitle="SEP Cocok di iDRG" 
               color="indigo" 
               icon={UserCheck} 
+              onClick={() => {
+                if (openDrilldown && stats.matchedCount > 0) {
+                  openDrilldown(
+                    'Pasien Pending Terintegrasi iDRG',
+                    c => c.matched === true,
+                    'pending_sakti',
+                    processedClaims
+                  );
+                }
+              }}
             />
           </div>
 
-          {/* VISUAL CHARTS GRID */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            
-            {/* PRIORITY MATRIX PLOT (2 COLUMNS) */}
-            <Card className="p-6 xl:col-span-2 flex flex-col gap-5 bg-white border border-slate-200">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 border-slate-100">
-                <div>
-                  <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                    <Sparkles size={18} className="text-teal-600 animate-pulse" /> Matriks Prioritas Masalah Dispute
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Analisis korelasi nominal biaya dispute terhadap frekuensi masalah. Klik titik untuk memfilter alasan pending.</p>
-                </div>
-                {selectedDisputeReason && (
-                  <button 
-                    onClick={() => setSelectedDisputeReason(null)}
-                    className="text-xs font-black text-teal-600 hover:text-teal-800 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 transition-colors print:hidden"
-                  >
-                    Reset Filter Titik
-                  </button>
-                )}
+          {/* PRIORITY MATRIX PLOT (FULL WIDTH) */}
+          <Card className="p-6 flex flex-col gap-5 bg-white border border-slate-200 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 border-slate-100">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                  <Sparkles size={18} className="text-teal-600 animate-pulse" /> Matriks Prioritas Masalah Pending
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">Analisis korelasi nominal biaya pending terhadap frekuensi masalah. Klik titik untuk memfilter alasan pending.</p>
               </div>
+              {selectedDisputeReason && (
+                <button 
+                  onClick={() => setSelectedDisputeReason(null)}
+                  className="text-xs font-black text-teal-600 hover:text-teal-800 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 transition-colors print:hidden"
+                >
+                  Reset Filter Titik
+                </button>
+              )}
+            </div>
 
-              {chartParams ? (
-                <div className="relative">
-                  {/* Bokeh Floating Tooltip Overlay */}
-                  {hoveredPoint && (
-                    <div 
-                      className="absolute z-40 bg-slate-950/95 backdrop-blur-md text-white border border-slate-700/80 p-3 rounded-xl shadow-2xl pointer-events-none text-left w-56 transition-all duration-75 ease-out select-none"
-                      style={{ 
-                        left: `${hoveredPoint.x}px`, 
-                        top: `${hoveredPoint.y}px`,
-                        transform: 'translate(-50%, -108%)'
-                      }}
-                    >
-                      {/* Arrow indicator pointing to circle */}
-                      <div className="absolute bottom-[-5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-slate-950 border-r border-b border-slate-700/80 transform rotate-45"></div>
-                      
-                      <div className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1.5 flex justify-between">
-                        <span>{hoveredPoint.data.category}</span>
-                        <span className="text-[9px] text-slate-400 font-mono">BOKEH</span>
-                      </div>
-                      <div className="text-[11px] font-extrabold line-clamp-2 text-slate-100 leading-tight mb-2 border-b border-slate-800 pb-2">{hoveredPoint.data.label}</div>
-                      <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-medium text-slate-400">
-                        <span>Kasus:</span>
-                        <span className="font-extrabold text-white text-right">{hoveredPoint.data.frequency}x</span>
-                        <span>Estimasi:</span>
-                        <span className="font-extrabold text-emerald-400 text-right">{formatRp(hoveredPoint.data.totalNominal)}</span>
-                        <span>Avg/Kasus:</span>
-                        <span className="font-extrabold text-white text-right">{formatRp(Math.round(hoveredPoint.data.totalNominal / hoveredPoint.data.frequency))}</span>
-                      </div>
+            {chartParams ? (
+              <div className="relative">
+                {/* Floating Tooltip Overlay */}
+                {hoveredPoint && (
+                  <div 
+                    className="absolute z-40 bg-slate-950/95 backdrop-blur-md text-white border border-slate-700/80 p-3 rounded-xl shadow-2xl pointer-events-none text-left w-56 transition-all duration-75 ease-out select-none"
+                    style={{ 
+                      left: `${hoveredPoint.x}px`, 
+                      top: `${hoveredPoint.y}px`,
+                      transform: 'translate(-50%, -108%)'
+                    }}
+                  >
+                    {/* Arrow indicator pointing to circle */}
+                    <div className="absolute bottom-[-5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-slate-950 border-r border-b border-slate-700/80 transform rotate-45"></div>
+                    
+                    <div className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1.5 flex justify-between">
+                      <span>{hoveredPoint.data.category}</span>
+                      <span></span>
                     </div>
-                  )}
+                    <div className="text-[11px] font-extrabold line-clamp-2 text-slate-100 leading-tight mb-2 border-b border-slate-800 pb-2">{hoveredPoint.data.label}</div>
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-medium text-slate-400">
+                      <span>Kasus:</span>
+                      <span className="font-extrabold text-white text-right">{hoveredPoint.data.frequency}x</span>
+                      <span>Estimasi:</span>
+                      <span className="font-extrabold text-emerald-400 text-right">{formatRp(hoveredPoint.data.totalNominal)}</span>
+                      <span>Avg/Kasus:</span>
+                      <span className="font-extrabold text-white text-right">{formatRp(Math.round(hoveredPoint.data.totalNominal / hoveredPoint.data.frequency))}</span>
+                    </div>
+                  </div>
+                )}
 
-                  {/* Bokeh Toolbar Panel Overlay */}
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 bg-white/90 backdrop-blur-sm border border-slate-200/80 p-1 rounded-lg shadow-md z-30 select-none">
-                    <button className="p-1 rounded-md bg-teal-50 text-teal-600 border border-teal-100 transition-colors" title="Pan Tool (Active)">
-                      <Move size={13} />
-                    </button>
-                    <button className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" title="Box Zoom Tool">
-                      <Search size={13} />
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setSelectedDisputeReason(null);
-                        setCrosshair(null);
-                        setHoveredPoint(null);
-                      }} 
-                      className="p-1 rounded-md text-slate-400 hover:bg-slate-100 hover:text-teal-600 transition-colors" 
-                      title="Reset View"
-                    >
-                      <RefreshCw size={13} />
-                    </button>
-                    <button 
-                      onClick={() => alert('Bokeh Priority Matrix:\n1. Hover over any bubble to see instant ulasan, case count, and financial impact.\n2. Click on a bubble to filter the cases table below for that specific pending reason.\n3. Bubbles in the top-right Red Zone are high impact and high frequency. Prioritize these!')} 
-                      className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" 
-                      title="Bantuan"
-                    >
+                {/* Toolbar Panel Overlay */}
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 bg-white/90 backdrop-blur-sm border border-slate-200/80 p-1 rounded-lg shadow-md z-30 select-none">
+                  <button className="p-1 rounded-md bg-teal-50 text-teal-600 border border-teal-100 transition-colors" title="Pan Tool (Active)">
+                    <Move size={13} />
+                  </button>
+                  <button className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" title="Box Zoom Tool">
+                    <Search size={13} />
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSelectedDisputeReason(null);
+                      setCrosshair(null);
+                      setHoveredPoint(null);
+                    }} 
+                    className="p-1 rounded-md text-slate-400 hover:bg-slate-100 hover:text-teal-600 transition-colors" 
+                    title="Reset View"
+                  >
+                    <RefreshCw size={13} />
+                  </button>
+                  <button 
+                    onClick={() => alert('Matriks Prioritas:\n1. Arahkan kursor ke gelembung untuk melihat ulasan instan, jumlah kasus, dan dampak finansial.\n2. Klik gelembung untuk memfilter tabel kasus di bawah berdasarkan alasan pending tertentu.\n3. Gelembung di Zona Merah (kanan atas) memiliki dampak finansial tinggi dan frekuensi tinggi. Prioritaskan ini!')} 
+                    className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" 
+                    title="Bantuan"
+                  >
                       <HelpCircle size={13} />
                     </button>
                   </div>
@@ -1036,7 +1086,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                     <text x={padding.left + chartParams.innerW * 0.75} y={height - padding.bottom - 12} fontSize="9" fill="#2563eb" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA III (HIGH IMPACT)</text>
 
                     {/* Axis Labels */}
-                    <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Dispute per Masalah)</text>
+                    <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Pending per Masalah)</text>
                     <text x={15} y={height / 2} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>Frekuensi Kejadian (Jumlah Kasus)</text>
 
                     {/* Scatter Dots */}
@@ -1105,74 +1155,87 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
               )}
             </Card>
 
-            {/* SEBARAN KATEGORI & RESET PANEL */}
-            <Card className="p-6 flex flex-col justify-between bg-white border border-slate-200">
-              <div className="space-y-5">
-                <div className="border-b pb-4 border-slate-100">
-                  <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                    <Info size={18} className="text-teal-600" /> Analisis Penyebab Masalah
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Klasifikasi penyebab dispute berdasarkan kriteria audit BPJS & internal RS.</p>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
-                    <span className="text-slate-400 uppercase">Kategori Dispute</span>
-                    <span className="text-slate-600">Frekuensi</span>
+            {/* DUAL CHARTS GRID */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              
+              {/* KELOMPOK KASUS DISPUTE */}
+              <Card className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
+                <div className="space-y-5">
+                  <div className="border-b pb-4 border-slate-100">
+                    <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                      <Info size={18} className="text-teal-600" /> Kelompok Kasus Pending (Case Groups)
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Sebaran kelompok kasus pending berdasarkan kriteria audit BPJS & internal RS.</p>
                   </div>
-                  <CategoryBar label="Koding Medis / Aturan ICD" count={stats.koding} total={stats.total} color="bg-rose-500" />
-                  <CategoryBar label="Administrasi / Berkas" count={stats.admin} total={stats.total} color="bg-amber-500" />
-                  <CategoryBar label="Readmisi / Clinical Pathway" count={stats.readmisi} total={stats.total} color="bg-teal-500" />
-                  <CategoryBar label="Indikasi Medis Klinis" count={stats.medis} total={stats.total} color="bg-sky-500" />
-                </div>
-
-                <div className="space-y-3 border-t pt-4 border-slate-100">
-                  <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
-                    <span className="text-slate-400 uppercase">Faktor Penyebab (Root Cause)</span>
-                    <span className="text-slate-600 font-medium text-[10px]">Klik bar untuk filter</span>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
+                      <span className="text-slate-400 uppercase">Kelompok Kasus</span>
+                      <span className="text-slate-600">Frekuensi</span>
+                    </div>
+                    <CategoryBar label="Koding Medis / Aturan ICD" count={stats.koding} total={stats.total} color="bg-rose-500" />
+                    <CategoryBar label="Administrasi / Berkas" count={stats.admin} total={stats.total} color="bg-amber-500" />
+                    <CategoryBar label="Readmisi / Clinical Pathway" count={stats.readmisi} total={stats.total} color="bg-teal-500" />
+                    <CategoryBar label="Indikasi Medis Klinis" count={stats.medis} total={stats.total} color="bg-sky-500" />
                   </div>
-                  <RootCauseChart 
-                    stats={stats} 
-                    onBarClick={(fac) => {
-                      setFilterFactor(fac === filterFactor ? 'ALL' : fac);
-                    }} 
-                  />
                 </div>
-              </div>
+              </Card>
 
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mt-6 flex flex-col gap-3">
-                <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                  <ShieldCheck size={14} className="text-emerald-500" /> Integrasi SMF SAK-iDRG
+              {/* FAKTOR PENYEBAB & INTEGRASI */}
+              <Card className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
+                <div className="space-y-5">
+                  <div className="border-b pb-4 border-slate-100">
+                    <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                      <ShieldCheck size={18} className="text-teal-600" /> Faktor Penyebab &amp; Aksi Integrasi
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Analisis akar masalah (root cause) dan kontrol manajemen data pending.</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
+                      <span className="text-slate-400 uppercase">Faktor Penyebab (Root Cause)</span>
+                      <span className="text-slate-600 font-medium text-[10px]">Klik bar untuk filter</span>
+                    </div>
+                    <RootCauseChart 
+                      stats={stats} 
+                      onBarClick={(fac) => {
+                        setFilterFactor(fac === filterFactor ? 'ALL' : fac);
+                      }} 
+                    />
+                  </div>
                 </div>
-                <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
-                  Modul ini secara otomatis mencocokkan kode SEP Anda dengan dataset audit klinis SAK-iDRG untuk menarik data **DPJP, SMF/KSM, Coder Coder, dan Ringkasan Diagnosis/Prosedur** secara *real-time*.
-                </p>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => {
-                      setProcessedClaims([]);
-                      setFileData([]);
-                      setSelectedDisputeReason(null);
-                    }}
-                    className="flex-1 text-center py-2.5 bg-white border hover:bg-slate-50 text-rose-600 text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-sm"
-                  >
-                    Bersihkan Data
-                  </button>
-                  <label className="flex-1 text-center py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-md shadow-teal-600/10 cursor-pointer">
-                    Unggah Baru
-                    <input type="file" onChange={handleFileUpload} accept=".xlsx,.xls,.csv" className="hidden" />
-                  </label>
+
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mt-6 flex flex-col gap-3">
+                  <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                    <ShieldCheck size={14} className="text-emerald-500" /> Integrasi SMF SAK-iDRG
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
+                    Modul ini secara otomatis mencocokkan kode SEP Anda dengan dataset audit klinis SAK-iDRG untuk menarik data **DPJP, SMF/KSM, Coder Coder, dan Ringkasan Diagnosis/Prosedur** secara *real-time*.
+                  </p>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        setProcessedClaims([]);
+                        setFileData([]);
+                        setSelectedDisputeReason(null);
+                      }}
+                      className="flex-1 text-center py-2.5 bg-white border hover:bg-slate-50 text-rose-600 text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-sm"
+                    >
+                      Bersihkan Data
+                    </button>
+                    <label className="flex-1 text-center py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-md shadow-teal-600/10 cursor-pointer">
+                      Unggah Baru
+                      <input type="file" onChange={handleFileUpload} accept=".xlsx,.xls,.csv" className="hidden" />
+                    </label>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </div>
 
           {/* PATIENT CLAIMS DETAIL TABLE */}
           <Card className="overflow-hidden bg-white border border-slate-200">
             <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                  <FileText size={18} className="text-teal-600" /> Daftar Kasus Dispute Pending BPJS
+                  <FileText size={18} className="text-teal-600" /> Daftar Kasus Pending BPJS
                 </h3>
                 <p className="text-xs text-slate-400 mt-0.5">Seluruh detail klaim pending dengan opsi draft naskah tanggapan sanggahan.</p>
               </div>
@@ -1262,7 +1325,26 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                         <td className="p-4">
                           <div className="flex flex-col">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-extrabold text-slate-800">{c.nama}</span>
+                              {c.matched ? (
+                                <button 
+                                  onClick={() => {
+                                    if (openDrilldown) {
+                                      openDrilldown(
+                                        `Detail Pasien: ${c.nama} (${c.sep})`,
+                                        row => String(row.sep || row.SEP || row.NO_SEP || row.no_sep || '').trim() === String(c.sep).trim(),
+                                        'pending_sakti',
+                                        processedClaims
+                                      );
+                                    }
+                                  }}
+                                  className="font-extrabold text-slate-800 hover:text-teal-600 cursor-pointer transition-colors flex items-center gap-1 text-left bg-transparent border-none p-0 outline-none"
+                                  title="Klik untuk melihat Detail Drilldown"
+                                >
+                                  {c.nama} <Search size={11} className="text-teal-500 shrink-0" />
+                                </button>
+                              ) : (
+                                <span className="font-extrabold text-slate-800">{c.nama}</span>
+                              )}
                               {c.aiReviewed && (
                                 <span className="px-1.5 py-0.5 bg-teal-50 text-teal-700 rounded-md font-black text-[8px] uppercase tracking-wider border border-teal-200 shadow-sm flex items-center gap-0.5" title="Selesai Diulas Oleh Gemini AI">
                                   <Brain size={8} className="animate-pulse" /> AI Audited
@@ -1280,9 +1362,22 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                         </td>
                         <td className="p-4 text-center">
                           {c.matched ? (
-                            <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full font-black text-[9px] uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 w-fit mx-auto shadow-sm">
+                            <button
+                              onClick={() => {
+                                if (openDrilldown) {
+                                  openDrilldown(
+                                    `Detail Pasien: ${c.nama} (${c.sep})`,
+                                    row => String(row.sep || row.SEP || row.NO_SEP || row.no_sep || '').trim() === String(c.sep).trim(),
+                                    'pending_sakti',
+                                    processedClaims
+                                  );
+                                }
+                              }}
+                              className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 rounded-full font-black text-[9px] uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 w-fit mx-auto shadow-sm cursor-pointer transition-all"
+                              title="Klik untuk melihat Detail Drilldown"
+                            >
                               <CheckCircle2 size={12} strokeWidth={3} /> Cocok (iDRG)
-                            </span>
+                            </button>
                           ) : (
                             <span className="px-2.5 py-1 bg-slate-50 text-slate-400 rounded-full font-black text-[9px] uppercase tracking-wide border border-slate-200 flex items-center gap-1.5 w-fit mx-auto">
                               Mandiri
@@ -1403,7 +1498,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           {/* Report Header */}
           <div className="border-b pb-6 border-slate-200 flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">Laporan Executive Audit Dispute Pending BPJS</h1>
+              <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">Laporan Executive Audit Pending BPJS</h1>
               <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Kementerian Kesehatan Republik Indonesia • Akurat-iDRG Dashboard</p>
             </div>
             <div className="text-right">
@@ -1419,7 +1514,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
               <Brain size={15} /> Executive Insight &amp; Rekomendasi Audit
             </h3>
             <p className="text-xs leading-relaxed text-slate-600 font-medium">
-              Berdasarkan audit klaim dispute pending BPJS yang diunggah dari berkas <strong className="text-slate-800">{fileName || 'laporan_klaim.xlsx'}</strong>, terdapat total sebanyak <strong className="text-slate-800">{stats.total} kasus</strong> pending dengan estimasi nominal biaya dispute tertahan sebesar <strong className="text-emerald-700 font-bold">{formatRp(stats.nominal)}</strong>. 
+              Berdasarkan audit klaim pending BPJS yang diunggah dari berkas <strong className="text-slate-800">{fileName || 'laporan_klaim.xlsx'}</strong>, terdapat total sebanyak <strong className="text-slate-800">{stats.total} kasus</strong> pending dengan estimasi nominal biaya pending tertahan sebesar <strong className="text-emerald-700 font-bold">{formatRp(stats.nominal)}</strong>. 
               Layanan Rawat Jalan Tingkat Lanjut (RJTL) berkontribusi sebesar <strong className="text-slate-800">{stats.rjCount} kasus ({formatRp(stats.rjNominal)})</strong>, sedangkan Rawat Inap Tingkat Lanjut (RITL) menyumbang <strong className="text-slate-800">{stats.riCount} kasus ({formatRp(stats.riNominal)})</strong>.
               Analisis faktor penyebab menunjukkan bahwa <strong className="text-amber-700">{stats.internal} kasus ({((stats.internal / stats.total) * 100).toFixed(0)}%)</strong> disebabkan oleh faktor Internal RS (perbedaan persepsi koding, kelengkapan resume medis, penginputan sistem), yang mana hal ini bersifat sistemik dan dapat diperbaiki secara cepat melalui penguatan edukasi regulasi koding ke komite medis (KSM/SMF).
             </p>
@@ -1452,7 +1547,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           {/* Static view of Bokeh Scatterplot for printing */}
           <div className="border border-slate-200 p-6 rounded-3xl bg-white space-y-4">
             <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest text-center border-b pb-3 border-slate-100">
-              Peta Sebaran Prioritas Masalah Dispute Pending BPJS (Matriks BEP Zoning)
+              Peta Sebaran Prioritas Masalah Pending BPJS (Matriks BEP Zoning)
             </h3>
             <div className="max-w-2xl mx-auto">
               <svg 
@@ -1481,7 +1576,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                 <text x={padding.left + chartParams.innerW * 0.75} y={height - padding.bottom - 12} fontSize="9" fill="#2563eb" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA III (HIGH IMPACT)</text>
 
                 {/* Axis Labels */}
-                <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Dispute per Masalah)</text>
+                <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Pending per Masalah)</text>
                 <text x={15} y={height / 2} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>Frekuensi Kejadian (Jumlah Kasus)</text>
 
                 {/* Scatter Dots */}
@@ -1527,7 +1622,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
                         <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1559,7 +1654,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
                         <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1591,7 +1686,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
                         <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1623,7 +1718,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                     <thead>
                       <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
                         <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Dispute Pending</th>
+                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
                         <th className="pb-2 text-center w-12">Frekuensi</th>
                         <th className="pb-2 text-right w-20">Total Nominal</th>
                       </tr>
@@ -1855,7 +1950,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                   </div>
                 </div>
                 <div className="flex flex-col border-t pt-3 mt-1 border-slate-200/50">
-                  <span className="text-[9px] font-black text-slate-400 uppercase">Alasan Dispute / Pending</span>
+                  <span className="text-[9px] font-black text-slate-400 uppercase">Alasan Pending</span>
                   <span className="font-bold text-rose-700 mt-1 leading-relaxed">{aiPatient.keterangan}</span>
                 </div>
                 <div className="flex flex-col border-t pt-3 mt-1 border-slate-200/50">
