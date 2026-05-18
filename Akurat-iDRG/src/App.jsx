@@ -1144,7 +1144,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
   }
 
   // --- B. CARDIOLOGY & VASCULAR ---
-  if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'BTKV', 'IKKV', 'VAS', 'BVE', 'KKV', 'KARDIOVASKULAR', 'KV', 'JD', 'PRKV', 'BKV', 'PDKKV'])) {
+  if (check(['SPJP', 'JANTUNG', 'SPBTKV', 'BTKV', 'IKKV', 'VAS', 'BVE', 'KKV', 'KARDIOVASKULAR', 'KV', 'JD', 'PRKV', 'BKV', 'PDKKV', 'SUBBVE'])) {
     const dept = 'Department of Cardiology';
     if (check(['SPJP', 'JANTUNG', 'PRKV'])) {
       if (check(['INTERVENSI', 'KI'])) return { ksm: 'Dokter Spesialis Jantung dan Pembuluh Darah Konsultan Kardiologi Intervensi', dept };
@@ -1163,7 +1163,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
       if (check(['JD', 'T'])) return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept };
       return { ksm: 'Dokter Spesialis Bedah Toraks Kardiovaskular', dept };
     }
-    if (check(['SPB', 'BEDAH', 'BKV']) && check(['VASKULAR', 'BVE', 'BKV', 'KV'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept };
+    if (check(['SPB', 'BEDAH', 'BKV']) && check(['VASKULAR', 'BVE', 'BKV', 'KV', 'SUBBVE'])) return { ksm: 'Dokter Spesialis Bedah Konsultan Bedah Vaskular dan Endovaskular', dept };
     if (check(['KKV', 'PDKKV'])) return { ksm: 'Dokter Spesialis Penyakit Dalam Konsultan Kardiovaskular', dept };
   }
   if (check(['SPA', 'ANAK', 'SPAK']) && check(['KARDIO', 'KV'])) return { ksm: 'Dokter Spesialis Anak Konsultan Kardiologi', dept: 'Department of Cardiology' };
@@ -1291,7 +1291,7 @@ const _resolveKsmDept = (dpjp, overrides = {}) => {
   if (check(['SPAN', 'ANESTESI']) && check(['PEDIATRI', 'AP', 'ANPED'])) return { ksm: 'Dokter Spesialis Anestesiologi dan Terapi Intensif Konsultan Anestesi Pediatri', dept: 'Department of Maternal and Child' };
 
   // --- G. ONCOLOGY ---
-  if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD', 'KHOM', 'ONKOLOGI', 'HOK', 'HOM', 'BKONK', 'BK ONK'])) {
+  if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD', 'KHOM', 'ONKOLOGI', 'HOK', 'HOM', 'BKONK', 'BK ONK', 'ONK'])) {
     const dept = 'Department of Oncology';
     if (check(['ONKRAD', 'ONKOLOGI RADIASI', 'SPONKRAD'])) {
       if (check(['ABDOMINO', 'KAP'])) return { ksm: 'Dokter Spesialis Onkologi Radiasi Konsultan Keganasan Abdomino - Pelvik', dept };
