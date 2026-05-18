@@ -1,0 +1,274 @@
+﻿diff --git a/src/App.jsx b/src/App.jsx
+index 3c0fe9c..8d3b2a6 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -1920,7 +1920,7 @@ export default function App() {
+         if (dList[0]) maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] = (maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] || 0) + 1;
+         for (let i = 1; i < dList.length; i++) maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] = (maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] || 0) + 1;
+         for (let p of pList) if (p) maps.inaToIdrg[inaCode].targets[tK].procs[p] = (maps.inaToIdrg[inaCode].targets[tK].procs[p] || 0) + 1;
+-        // Reverse map: iDRG เนยโ€ INA
++        // Reverse map: iDRG -ยโ€ INA
+         if (!maps.idrgToIna[drgCode]) maps.idrgToIna[drgCode] = { desc: String(r['IDRG_DRG_DESCRIPTION'] || '-'), totalCases: 0, sumLos: 0, maxLos: 0, sumIna: 0, sumIdrg: 0, sources: {} };
+         maps.idrgToIna[drgCode].totalCases++;
+         maps.idrgToIna[drgCode].sumLos += curLos;
+@@ -2138,7 +2138,7 @@ export default function App() {
+                 </div>
+               </div>
+               <p className={`text-base font-black mb-1 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-700'}`}>
+-                {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'เนยโ€ฆ Selesai!' : uploadProgress.status === 'error' ? 'เนยย Terjadi Kesalahan' : uploadProgress.status === 'reading' ? 'เนยโ€ย Membaca...' : uploadProgress.status === 'parsing' ? 'เนยยเนเธย Memproses...' : 'เนยเธ“ Menghubungkan...'}
++                {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '-ย... Selesai!' : uploadProgress.status === 'error' ? '-ยย Terjadi Kesalahan' : uploadProgress.status === 'reading' ? 'เนยโ€ย Membaca...' : uploadProgress.status === 'parsing' ? '-ยยเนเธย Memproses...' : '-ยเธ“ Menghubungkan...'}
+               </p>
+               <p className="text-xs text-slate-500 font-medium truncate max-w-[220px] mx-auto mb-4" title={uploadProgress.fileName}>{uploadProgress.fileName || 'Menyelesaikan...'}</p>
+               <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden max-w-[200px] mx-auto">
+@@ -2272,7 +2272,7 @@ export default function App() {
+               {uploadedFiles.map((f) => (
+                 <li key={f.id} className="flex items-center gap-5 text-sm bg-white border border-slate-100 shadow-sm p-5 rounded-[1.5rem] group hover:border-teal-200 transition-all hover:shadow-xl hover:-translate-y-1">
+                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm shadow-emerald-100"><CheckCircle size={24} className="text-emerald-500" /></div>
+-                  <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} เนโฌเธ <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
++                  <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} -โฌเธ <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
+                   <button onClick={() => removeFile(f.id)} className="text-slate-300 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 transition-all hover:rotate-90"><X size={20} /></button>
+                 </li>
+               ))}
+@@ -2298,15 +2298,15 @@ export default function App() {
+ 
+     const insights = [
+       selInaRS < 0
+-        ? { t: 'w', icon: 'เนยย เนเธย', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} เนโฌโ€ potensi defisit klaim.` }
+-        : { t: 's', icon: 'เนยโ€ฆ', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} เนโฌโ€ klaim dalam posisi surplus.` },
++        ? { t: 'w', icon: '-ยย เนเธย', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} -โฌโ€ potensi defisit klaim.` }
++        : { t: 's', icon: '-ย...', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} -โฌโ€ klaim dalam posisi surplus.` },
+       selIdrgRS < 0
+-        ? { t: 'w', icon: 'เนยย เนเธย', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} เนโฌโ€ evaluasi koding CL diperlukan.` }
+-        : { t: 's', icon: 'เนยโ€ฆ', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} เนโฌโ€ koding complexity level sudah optimal.` },
++        ? { t: 'w', icon: '-ยย เนเธย', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} -โฌโ€ evaluasi koding CL diperlukan.` }
++        : { t: 's', icon: '-ย...', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} -โฌโ€ koding complexity level sudah optimal.` },
+       { t: 'i', icon: 'เนยโ€ย', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
+       { t: 'i', icon: 'เนยยเธ…', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
+       ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: 'เนยโ€เธ', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
+-      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: 'เนยโ€ย', txt: `${dashData.auditFindings.length} temuan audit koding เนโฌโ€ segera tinjau di modul Audit.` }] : []),
++      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: 'เนยโ€ย', txt: `${dashData.auditFindings.length} temuan audit koding -โฌโ€ segera tinjau di modul Audit.` }] : []),
+     ];
+ 
+     return (
+@@ -2886,13 +2886,13 @@ export default function App() {
+             onClick={() => setPemetaanTab('inaToIdrg')}
+             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${!isReverse ? 'bg-white text-sky-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
+           >
+-            <GitMerge size={14} /> INA-CBG เนยโ€ iDRG
++            <GitMerge size={14} /> INA-CBG -ยโ€ iDRG
+           </button>
+           <button
+             onClick={() => setPemetaanTab('idrgToIna')}
+             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${isReverse ? 'bg-white text-orange-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
+           >
+-            <GitMerge size={14} className="rotate-180" /> iDRG เนยโ€ INA-CBG
++            <GitMerge size={14} className="rotate-180" /> iDRG -ยโ€ INA-CBG
+           </button>
+         </div>
+ 
+@@ -2905,7 +2905,7 @@ export default function App() {
+               type="text"
+               value={mapFilter}
+               onChange={e => setMapFilter(e.target.value)}
+-              placeholder={isReverse ? "Cari kode iDRG atau deskripsiเนโฌเธ" : "Cari kode INACBG atau deskripsiเนโฌเธ"}
++              placeholder={isReverse ? "Cari kode iDRG atau deskripsi-โฌเธ" : "Cari kode INACBG atau deskripsi-โฌเธ"}
+               className="w-full pl-9 pr-9 py-2 text-sm border border-slate-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition placeholder-slate-400"
+             />
+             {mapFilter && (
+@@ -3067,7 +3067,7 @@ export default function App() {
+             <div className="p-2 bg-teal-100 rounded-xl text-teal-700"><Activity size={18} /></div>
+             <div>
+               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus INA-CBG</h3>
+-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus เนโฌโ€ klik titik untuk drill-down</p>
++              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus -โฌโ€ klik titik untuk drill-down</p>
+             </div>
+           </div>
+           <div className="p-4">
+@@ -3078,10 +3078,10 @@ export default function App() {
+             const data = dashData.inaSummary || [];
+             if (data.length === 0) return null;
+             const avgVol = data.reduce((s, d) => s + d.count, 0) / data.length;
+-            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi เนโฌโ€ KRITIS
+-            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi เนโฌโ€ OPTIMAL
+-            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah เนโฌโ€ WASPADA
+-            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah เนโฌโ€ MONITOR
++            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi -โฌโ€ KRITIS
++            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi -โฌโ€ OPTIMAL
++            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah -โฌโ€ WASPADA
++            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah -โฌโ€ MONITOR
+             const topQ1 = [...q1].sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 3);
+             const topQ2 = [...q2].sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 3);
+             const totalDefisit = data.filter(d => d.totalSelisih < 0).reduce((s, d) => s + d.totalSelisih, 0);
+@@ -3119,7 +3119,7 @@ export default function App() {
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   {topQ1.length > 0 && (
+                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">เนยย เนเธย Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
++                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-ยย เนเธย Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
+                       <div className="space-y-1.5">
+                         {topQ1.map((d, i) => (
+                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
+@@ -3133,7 +3133,7 @@ export default function App() {
+                   )}
+                   {topQ2.length > 0 && (
+                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
+-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">เนยโ€ฆ Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
++                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-ย... Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
+                       <div className="space-y-1.5">
+                         {topQ2.map((d, i) => (
+                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
+@@ -3163,7 +3163,7 @@ export default function App() {
+             <div className="p-2 bg-rose-100 rounded-xl text-rose-700"><Activity size={18} /></div>
+             <div>
+               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus iDRG</h3>
+-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus เนโฌโ€ klik titik untuk drill-down</p>
++              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus -โฌโ€ klik titik untuk drill-down</p>
+             </div>
+           </div>
+           <div className="p-4">
+@@ -3215,7 +3215,7 @@ export default function App() {
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                   {topQ1.length > 0 && (
+                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">เนยย เนเธย Kode iDRG Berdefisit Tinggi (Review CL)</p>
++                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-ยย เนเธย Kode iDRG Berdefisit Tinggi (Review CL)</p>
+                       <div className="space-y-1.5">
+                         {topQ1.map((d, i) => (
+                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
+@@ -3229,7 +3229,7 @@ export default function App() {
+                   )}
+                   {topQ2.length > 0 && (
+                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
+-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">เนยโ€ฆ Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
++                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-ย... Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
+                       <div className="space-y-1.5">
+                         {topQ2.map((d, i) => (
+                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
+@@ -3388,8 +3388,8 @@ export default function App() {
+         {/* DEPT BAR CHARTS */}
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+           {[
+-            { title: 'Top 10 Departemen เนโฌโ€ Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
+-            { title: 'Top 10 Departemen เนโฌโ€ Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
++            { title: 'Top 10 Departemen -โฌโ€ Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
++            { title: 'Top 10 Departemen -โฌโ€ Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
+           ].map((chart, ci) => {
+             const maxVal = Math.max(...chart.data.map(d => Math.abs(d[chart.key])), 1);
+             return (
+@@ -3474,7 +3474,7 @@ export default function App() {
+                       <tr className="bg-slate-100/80 font-black border-y border-slate-200">
+                         <td className="p-4 sticky left-0 z-20 bg-slate-100/90 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setOpenKsm(isDeptOpen ? null : `dept-${di}`)}>
+-                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>เนโ€“เธ–</span>
++                            <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>-โ€“เธ–</span>
+                             <span className="uppercase text-slate-800 tracking-tight">{dept.name}</span>
+                           </div>
+                         </td>
+@@ -3498,7 +3498,7 @@ export default function App() {
+                             >
+                               <td className="p-4 pl-10 border-l-4 border-indigo-500">
+                                 <div className="flex items-center gap-2">
+-                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>เนโ€“เธ–</span>
++                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>-โ€“เธ–</span>
+                                   <span className="font-bold text-indigo-700">{ksm.name}</span>
+                                 </div>
+                               </td>
+@@ -3605,8 +3605,8 @@ export default function App() {
+         {/* DPJP BAR CHARTS */}
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+           {[
+-            { title: 'Top 10 DPJP เนโฌโ€ Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
+-            { title: 'Top 10 DPJP เนโฌโ€ Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
++            { title: 'Top 10 DPJP -โฌโ€ Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
++            { title: 'Top 10 DPJP -โฌโ€ Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
+           ].map((chart, ci) => {
+             const maxVal = Math.max(...chart.items.map(d => Math.abs(chart.getVal(d))), 1);
+             return (
+@@ -3987,10 +3987,10 @@ export default function App() {
+                         <div className="flex gap-2 justify-center">
+                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'sesuai' ? undefined : 'sesuai'); }}
+                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'sesuai' ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-emerald-200 hover:text-emerald-600'}`}
+-                          >เนยโ€ SESUAI</button>
++                          >-ยโ€ SESUAI</button>
+                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'tidak' ? undefined : 'tidak'); }}
+                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'tidak' ? 'bg-rose-600 border-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-rose-200 hover:text-rose-600'}`}
+-                          >เนยโ€ข TIDAK</button>
++                          >-ย- TIDAK</button>
+                         </div>
+                       </td>
+                     </tr>
+@@ -4014,14 +4014,14 @@ export default function App() {
+         }} />
+         <Card className="overflow-x-auto">
+           <MiniTable data={data} columns={[
+-            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} เนยโ€ ${r.akhir}` },
++            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} -ยโ€ ${r.akhir}` },
+             { header: 'Pembayar', className: 'text-xs font-semibold', render: r => r.pembayar },
+             { header: 'Jumlah', className: 'text-right font-bold', render: r => r.count },
+             { header: 'Total Nilai', className: 'text-right font-black text-cyan-600', render: r => formatRp(r.totalNilai) },
+             { header: 'SL1', className: 'text-right', render: r => r.sev1 },
+             { header: 'SL2', className: 'text-right', render: r => r.sev2 },
+             { header: 'SL3', className: 'text-right', render: r => r.sev3 }
+-          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}เนยโ€${r.akhir}`, row => {
++          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}-ยโ€${r.akhir}`, row => {
+             const kAw = String(row['KELAS_RAWAT'] || row['KELAS'] || row['HAK_KELAS'] || '').trim();
+             const matchC2 = String(row['C2'] || '').match(/"selisih_biaya":\s*\{\s*"nilai":\s*"(\d+)"\s*,\s*"pembayar":\s*"([^"]+)"\s*,\s*"naik_kelas":\s*"([^"]+)"/);
+             const kAk = matchC2 ? matchC2[3].toUpperCase() : '';
+@@ -4243,7 +4243,7 @@ export default function App() {
+ 
+               <div className="mt-8 text-center">
+                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
+-                <p className="text-slate-300 text-[9px] mt-2 font-medium">เธขเธ 2026 iDRG Analytics Platform เนโฌเธ Kemenkes Edition</p>
++                <p className="text-slate-300 text-[9px] mt-2 font-medium">เธขเธ 2026 iDRG Analytics Platform -โฌเธ Kemenkes Edition</p>
+               </div>
+             </div>
+           </div>
+@@ -4338,7 +4338,7 @@ export default function App() {
+             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-white shrink-0">
+               <div>
+                 <h3 className="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight"><Table2 size={24} className="text-teal-600" /> Rincian Data Analitik</h3>
+-                <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} เนโฌโ€ {drilldown.data.length.toLocaleString()} Record Terfilter</p>
++                <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} -โฌโ€ {drilldown.data.length.toLocaleString()} Record Terfilter</p>
+               </div>
+               <div className="flex items-center gap-3">
+                 {drilldown.prev && (
+@@ -4727,7 +4727,7 @@ export default function App() {
+ 
+ 
+ 
+-      {/* MAP MODAL เนโฌโ€ INACBGเนยโ€iDRG or iDRGเนยโ€INACBG */}
++      {/* MAP MODAL -โฌโ€ INACBG-ยโ€iDRG or iDRG-ยโ€INACBG */}
+       {mapModal.isOpen && dashData && (
+         <div className="fixed inset-0 z-[160] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
+           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
+@@ -4737,10 +4737,10 @@ export default function App() {
+                 <div className="p-2 bg-sky-100 rounded-xl text-sky-700"><GitMerge size={20} /></div>
+                 <div>
+                   <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">
+-                    {mapModal.type === 'ina' ? `Peta INACBG เนยโ€ iDRG` : `Peta iDRG เนยโ€ INACBG`}
++                    {mapModal.type === 'ina' ? `Peta INACBG -ยโ€ iDRG` : `Peta iDRG -ยโ€ INACBG`}
+                   </h3>
+                   <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
+-                    <span className="text-sky-600">{mapModal.code}</span> เนโฌโ€ {mapModal.desc || '-'}
++                    <span className="text-sky-600">{mapModal.code}</span> -โฌโ€ {mapModal.desc || '-'}
+                   </p>
+                 </div>
+               </div>
+@@ -4768,7 +4768,7 @@ export default function App() {
+                       <span className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{idrg.split(' ')[0]}</span>
+                       <span className="text-sm font-bold text-slate-700 flex-1">{idrg.substring(idrg.indexOf(' ') + 1)}</span>
+                       <button
+-                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} เนยโ€ ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
++                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} -ยโ€ ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
+                         className="flex items-center gap-1.5 text-[11px] font-black uppercase text-sky-700 bg-sky-100 hover:bg-sky-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
+                       >
+                         <Table2 size={11} /> {data.count} Kasus
+@@ -4819,7 +4819,7 @@ export default function App() {
+                       <span className="bg-sky-600 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{inaCode}</span>
+                       <span className="text-sm font-bold text-slate-700 flex-1">{data.desc || '-'}</span>
+                       <button
+-                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} เนยโ€ ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
++                        onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} -ยโ€ ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
+                         className="flex items-center gap-1.5 text-[11px] font-black uppercase text-orange-700 bg-orange-100 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
+                       >
+                         <Table2 size={11} /> {data.count} Kasus

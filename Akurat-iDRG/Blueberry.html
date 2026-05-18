@@ -1,0 +1,1847 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+
+// ==========================================
+// CONFIG SPREADSHEET URL
+// ==========================================
+const SHEET_BASE_URL = 'https://docs.google.com/spreadsheets/d/1VqZROoNe1sr7jHORRdjSEJYOhvQPvW_WXCxrz-y_LQ0/export?format=csv';
+const GID_KERTAS_KERJA = '1696169626'; // Dashboard Utama Belanja
+const GID_TREN_RPD = '1145357549'; // Kertas Kerja Tren
+const GID_PENERIMAAN = '1562954585'; // Kertas Kerja Penerimaan
+const GID_AJUAN = '1813930669'; // Ajuan Masuk
+
+// Logo RS Goenawan Partowidigdo dari GDrive (Rute khusus anti-blokir CORS)
+const LOGO_URL = 'https://lh3.googleusercontent.com/d/1lKFuJ9Q-3oVlVEbIwenQqxb4KxQmj96m';
+
+// ==========================================
+// UTILITIES & FORMATTER (Rupiah Parser Super Akurat)
+// ==========================================
+const parseAngka = (val) => {
+  if (val === undefined || val === null || val === '') return 0;
+  if (typeof val === 'number') return val;
+  
+  let str = String(val).trim();
+  const isNeg = str.includes('-') || (str.startsWith('(') && str.endsWith(')'));
+  
+  // Bersihkan semua karakter selain angka, titik, dan koma
+  str = str.replace(/[^0-9.,]/g, '');
+  if (!str) return 0;
+
+  const lastDot = str.lastIndexOf('.');
+  const lastComma = str.lastIndexOf(',');
+
+  if (lastComma > lastDot && lastDot > -1) {
+      // Format Indo: 1.000.000,00 -> 1000000.00
+      str = str.replace(/\./g, '').replace(',', '.');
+  } else if (lastDot > lastComma && lastComma > -1) {
+      // Format US: 1,000,000.00 -> 1000000.00
+      str = str.replace(/,/g, '');
+  } else {
+      if (lastComma > -1) {
+          // Hanya ada koma. Jika lebih dari 1 koma atau pola ribuan (X,XXX)
+          if (str.split(',').length > 2 || /[0-9]{1,3},[0-9]{3}$/.test(str)) {
+             str = str.replace(/,/g, ''); 
+          } else {
+             str = str.replace(',', '.'); // Koma sebagai desimal
+          }
+      } else if (lastDot > -1) {
+          // Hanya ada titik. Jika pola ribuan Indo (X.XXX)
+          if (str.split('.').length > 2 || /[0-9]{1,3}\.[0-9]{3}$/.test(str)) {
+             str = str.replace(/\./g, '');
+          }
+      }
+  }
+
+  let parsed = parseFloat(str);
+  if (isNeg) parsed = -Math.abs(parsed);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+const formatRp = (val) => {
+  const num = parseAngka(val);
+  if (num === 0) return '0';
+  return new Intl.NumberFormat('id-ID').format(Math.round(num));
+};
+
+const formatShortID = (val) => {
+  const num = parseAngka(val);
+  if (num === 0) return '0';
+  const absNum = Math.abs(num);
+  if (absNum >= 1e12) return (num / 1e12).toFixed(2) + ' T';
+  if (absNum >= 1e9) return (num / 1e9).toFixed(2) + ' M';
+  if (absNum >= 1e6) return (num / 1e6).toFixed(2) + ' jt';
+  return formatRp(num);
+};
+
+const formatTableID = (val) => {
+  const num = parseAngka(val);
+  if (num === 0) return '-';
+  const absNum = Math.abs(num);
+  if (absNum >= 1e12) return (num / 1e12).toFixed(2) + ' T';
+  if (absNum >= 1e9) return (num / 1e9).toFixed(2) + ' M';
+  if (absNum >= 1e6) return (num / 1e6).toFixed(2) + ' jt';
+  return formatRp(num);
+};
+
+const parseCustomDate = (dateStr) => {
+  if (!dateStr || typeof dateStr !== 'string') return null;
+  const str = dateStr.trim().toLowerCase();
+  if (/^[0-9.,]+$/.test(str) && str.length >= 8) return null; 
+
+  const matchISO = str.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if (matchISO) return new Date(parseInt(matchISO[1], 10), parseInt(matchISO[2], 10) - 1, parseInt(matchISO[3], 10));
+  
+  const matchID = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4}|\d{2})$/);
+  if (matchID) {
+    let year = parseInt(matchID[3], 10);
+    if (year < 100) year += 2000; 
+    return new Date(year, parseInt(matchID[2], 10) - 1, parseInt(matchID[1], 10));
+  }
+
+  const months = ['jan', 'feb', 'mar', 'apr', 'mei', 'jun', 'jul', 'agu', 'sep', 'okt', 'nov', 'des'];
+  for (let i = 0; i < months.length; i++) {
+    if (str.includes(months[i])) {
+       const yearMatch = str.match(/(\d{4})/);
+       if (yearMatch) {
+          const dayMatch = str.match(/(\d{1,2})/);
+          const d = dayMatch ? parseInt(dayMatch[1], 10) : 1;
+          return new Date(parseInt(yearMatch[1], 10), i, d);
+       }
+    }
+  }
+  return null;
+};
+
+function parseCSV(str) {
+  const arr = [];
+  let quote = false;
+  let col = 0, row = 0;
+  for (let c = 0; c < str.length; c++) {
+    let cc = str[c], nc = str[c+1];
+    arr[row] = arr[row] || [];
+    arr[row][col] = arr[row][col] || '';
+    if (cc === '"' && quote && nc === '"') { arr[row][col] += '"'; ++c; continue; }
+    if (cc === '"') { quote = !quote; continue; }
+    if (cc === ',' && !quote) { ++col; continue; }
+    if (cc === '\r' && nc === '\n' && !quote) { ++row; col = 0; ++c; continue; }
+    if (cc === '\n' && !quote) { ++row; col = 0; continue; }
+    if (cc === '\r' && !quote) { ++row; col = 0; continue; }
+    arr[row][col] += cc;
+  }
+  return arr.filter(row => row.some(cell => cell && cell.trim() !== ''));
+}
+
+const mapCSVToObject = (csvArray) => {
+  if (!csvArray || csvArray.length < 1) return [];
+  
+  let headerIdx = 0;
+  for(let i = 0; i < Math.min(csvArray.length, 10); i++) {
+      const text = csvArray[i].join('').toUpperCase();
+      if (text.includes('MAK') || text.includes('TANGGAL') || text.includes('REALISASI') || text.includes('PENERIMAAN') || text.includes('SUMBER') || text.includes('AKUN')) {
+          headerIdx = i;
+          break;
+      }
+  }
+
+  const headers = csvArray[headerIdx].map(h => h.trim().toUpperCase());
+  return csvArray.slice(headerIdx + 1).map(row => {
+    let obj = {};
+    let akunCount = 0;
+    headers.forEach((h, i) => { 
+        if (!h) return;
+        if (h === 'AKUN') {
+            if (akunCount === 0) {
+                obj['AKUN_1'] = row[i] || ''; // Kunci "AKUN" pertama
+            } else {
+                obj['AKUN_2'] = row[i] || ''; // Kunci "AKUN" kedua
+            }
+            akunCount++;
+        } else {
+            if (obj[h] !== undefined && row[i] !== '') {
+               obj[`${h}_2`] = row[i];
+            } else if (obj[h] === undefined) {
+               obj[h] = row[i] || ''; 
+            }
+        }
+    });
+    return obj;
+  });
+};
+
+// ==========================================
+// ICONS
+// ==========================================
+const SvgIcon = ({ path, className="w-5 h-5", fill="none" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d={path} />
+  </svg>
+);
+
+const Icons = {
+  Dashboard: "M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z",
+  TrendingUp: "M23 6l-9.5 9.5-5-5L1 18 M17 6h6v6",
+  PieChart: "M21.21 15.89A10 10 0 1 1 8 2.83 M22 12A10 10 0 0 0 12 2v10z",
+  Wallet: "M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4 M4 6v12c0 1.1.9 2 2 2h14v-8H4z M16 14h.01",
+  ChevronDown: "M6 9l6 6 6-6",
+  Filter: "M22 3H2l8 9.46V19l4 2v-8.54L22 3z",
+  Activity: "M22 12h-4l-3 9L9 3l-3 9H2",
+  CheckCircle: "M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4L12 14.01l-3-3",
+  Hospital: "M3 21h18 M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16 M9 21v-5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v5",
+  Clipboard: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2 M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z M12 11h4 M12 16h4 M8 11h.01 M8 16h.01",
+  MinusSquare: "M5 12h14 M3 6h18v12H3z",
+  Menu: "M3 12h18 M3 6h18 M3 18h18",
+  Mountain: "M21 18l-6-10-4 7-3-4-5 7 M2 18h20", 
+  Logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"
+};
+
+const THEME = {
+  emerald: '#059669',
+  teal: '#0d9488',
+  sky: '#0284c7',
+  amber: '#d97706',
+  rose: '#e11d48',
+  slateText: '#334155'
+};
+
+// ==========================================
+// INTERACTIVE CHART COMPONENTS
+// ==========================================
+const InteractiveTooltip = ({ tooltip }) => {
+  if (!tooltip.visible) return null;
+  return (
+    <div 
+      className="fixed bg-slate-900 text-white p-3 rounded-xl shadow-2xl border border-slate-700 pointer-events-none z-[100] transition-opacity duration-150 transform -translate-x-1/2 -translate-y-[120%]"
+      style={{ left: tooltip.x, top: tooltip.y }}
+    >
+      <div className="text-[11px] font-bold mb-2 border-b border-slate-700 pb-1.5 max-w-[250px] whitespace-pre-wrap uppercase tracking-wider">{tooltip.title}</div>
+      {tooltip.data.map((d, i) => (
+        <div key={i} className="flex items-center text-[11px] my-1.5 gap-4 justify-between">
+           <div className="flex items-center">
+              <div className="w-2.5 h-2.5 rounded-sm mr-2 shadow-sm" style={{ backgroundColor: d.color }}></div>
+              <span className="text-slate-300 font-medium">{d.label}</span>
+           </div>
+           <span className="font-bold text-slate-100">{d.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const InteractiveBarChart = ({ data, keys, labels, colors, formatValue=(v)=>v, isHorizontal=false, height=250 }) => {
+  const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, title: '', data: [] });
+  if (!data || data.length === 0) return <div className="h-full w-full flex items-center justify-center text-slate-400 text-sm font-medium italic" style={{height}}>Data tidak tersedia</div>;
+
+  const handleMouseMove = (e, item) => {
+    setTooltip({
+      visible: true, x: e.clientX, y: e.clientY, title: item.ket ? `${item.label} - ${item.ket}` : item.label,
+      data: keys.map((k, i) => ({ label: labels[i], value: formatValue(item[k]), color: colors[i] || colors[0] }))
+    });
+  };
+  const handleMouseLeave = () => setTooltip({ ...tooltip, visible: false });
+
+  const maxVal = Math.max(...data.flatMap(d => keys.map(k => parseAngka(d[k])))) * 1.1 || 1; 
+  
+  return (
+    <div className="relative w-full" style={{ height }}>
+      <svg className="w-full h-full overflow-visible" viewBox={`0 0 100 100`} preserveAspectRatio="none">
+        {!isHorizontal && [0, 0.25, 0.5, 0.75, 1].map(tick => (
+          <line key={tick} x1="0" y1={100 - tick*100} x2="100" y2={100 - tick*100} stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2,2" />
+        ))}
+        {data.map((item, i) => {
+          const groupWidth = 100 / data.length;
+          const barWidth = isHorizontal ? groupWidth * 0.6 : (groupWidth * 0.8) / keys.length;
+          return keys.map((k, j) => {
+             const val = parseAngka(item[k]);
+             const pct = (val / maxVal) * 100;
+             const clr = item.color || colors[j] || colors[0];
+             if (isHorizontal) {
+                const yPos = i * groupWidth + (groupWidth * 0.2) + (j * barWidth);
+                return (
+                  <rect key={`${i}-${j}`} onMouseMove={(e)=>handleMouseMove(e, item)} onMouseLeave={handleMouseLeave} 
+                        x="0" y={yPos} width={Math.max(0, pct)} height={Math.max(0, barWidth)} fill={clr} className="hover:opacity-80 transition-all duration-300 cursor-pointer" rx="1" />
+                );
+             } else {
+                const xPos = i * groupWidth + (groupWidth * 0.1) + (j * barWidth);
+                return (
+                  <g key={`${i}-${j}`}>
+                    <rect onMouseMove={(e)=>handleMouseMove(e, item)} onMouseLeave={handleMouseLeave} 
+                          x={xPos} y={100 - Math.max(0, pct)} width={Math.max(0, barWidth - 1)} height={Math.max(0, pct)} fill={clr} className="hover:opacity-80 transition-all duration-300 cursor-pointer" rx="1" />
+                  </g>
+                );
+             }
+          });
+        })}
+      </svg>
+      {!isHorizontal && (
+        <div className="flex w-full justify-around mt-3">
+          {data.map((d, i) => (
+             <div key={i} className="text-[6px] sm:text-[8px] text-slate-500 font-bold truncate max-w-[50px] text-center leading-tight mt-1" title={d.ket ? `${d.label} - ${d.ket}` : d.label}>{d.shortLabel || d.label}</div>
+          ))}
+        </div>
+      )}
+      <InteractiveTooltip tooltip={tooltip} />
+    </div>
+  );
+};
+
+const EyeCatchingLineChart = ({ data, keys, labels, colors, height=300 }) => {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const svgRef = useRef(null);
+  const chartId = useMemo(() => Math.random().toString(36).substr(2, 9), []);
+
+  if (!data || data.length === 0) return <div className="h-full w-full flex items-center justify-center text-slate-400 text-sm font-medium italic" style={{height}}>Data tidak tersedia</div>;
+
+  const maxVal = Math.max(...data.flatMap(d => keys.map(k => parseAngka(d[k])))) * 1.2 || 1;
+  const stepX = 100 / Math.max(1, (data.length - 1));
+
+  const handleMouseMove = (e) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentageX = (x / rect.width) * 100;
+    const index = Math.round(percentageX / stepX);
+    setActiveIndex(Math.min(data.length - 1, Math.max(0, index)));
+  };
+
+  const handleMouseLeave = () => setActiveIndex(null);
+
+  return (
+    <div className="flex flex-col w-full" style={{ height }}>
+      <div className="flex justify-center gap-6 mb-4">
+         {keys.map((k, i) => (
+            <div key={k} className="flex items-center text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+               <div className="w-3 h-3 rounded-full mr-2 shadow-sm" style={{ backgroundColor: colors[i] }}></div>
+               {labels[i]}
+            </div>
+         ))}
+      </div>
+
+      <div className="relative w-full flex-1 ml-10 mb-6 mt-4">
+        {activeIndex !== null && (
+           <div className="absolute z-50 bg-slate-900/95 backdrop-blur-sm text-white p-3 rounded-xl shadow-2xl border border-slate-700 text-xs transform -translate-x-1/2 -translate-y-full pointer-events-none min-w-[160px] transition-all duration-100 ease-linear"
+                style={{ left: `${activeIndex * stepX}%`, top: `${100 - (Math.max(...keys.map(k => parseAngka(data[activeIndex][k]))) / maxVal * 100)}%`, marginTop: '-15px' }}>
+              <div className="font-black text-slate-300 mb-2 border-b border-slate-600 pb-1.5 uppercase tracking-wider text-center">{data[activeIndex].label}</div>
+              {keys.map((k, i) => (
+                 <div key={k} className="flex items-center justify-between gap-5 my-1.5">
+                    <div className="flex items-center gap-2">
+                       <span className="w-2.5 h-2.5 rounded-full shadow-sm" style={{backgroundColor: colors[i]}}></span>
+                       <span className="text-slate-300 font-medium">{labels[i]}</span>
+                    </div>
+                    <span className="font-bold text-slate-100">{formatShortID(data[activeIndex][k])}</span>
+                 </div>
+              ))}
+           </div>
+        )}
+
+        <svg ref={svgRef} width="100%" height="100%" className="absolute inset-0 overflow-visible" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+          {[0, 0.25, 0.5, 0.75, 1].map(tick => {
+             const y = 100 - tick * 100;
+             return (
+               <g key={`hy-${tick}`}>
+                 <line x1="0%" y1={`${y}%`} x2="100%" y2={`${y}%`} stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4,4" />
+                 <text x="-12" y={`${y}%`} fontSize="10" fill="#64748b" textAnchor="end" alignmentBaseline="middle" fontWeight="600" className="font-sans">
+                   {formatShortID(maxVal * tick).replace(' jt', 'M').replace(' M', 'M')}
+                 </text>
+               </g>
+             )
+          })}
+
+          {data.map((d, j) => {
+             const x = j * stepX;
+             return (
+               <g key={`vx-${j}`}>
+                 <line x1={`${x}%`} y1="0%" x2={`${x}%`} y2="100%" stroke="#e2e8f0" strokeWidth="1" strokeDasharray="4,4" />
+                 <text x={`${x}%`} y="100%" dy="22" fontSize="10" fill={j === activeIndex ? "#059669" : "#64748b"} textAnchor="middle" fontWeight={j === activeIndex ? "800" : "600"} className="font-sans transition-all duration-300">
+                    {d.label}
+                 </text>
+               </g>
+             )
+          })}
+
+          {activeIndex !== null && (
+             <line x1={`${activeIndex * stepX}%`} y1="0%" x2={`${activeIndex * stepX}%`} y2="100%" stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4,4" pointerEvents="none" />
+          )}
+        </svg>
+
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 w-full h-full overflow-visible pointer-events-none">
+          <defs>
+            {keys.map((key, i) => (
+               <linearGradient key={key} id={`grad-${chartId}-${key}`} x1="0" y1="0" x2="0" y2="1">
+                 <stop offset="0%" stopColor={colors[i] || THEME.emerald} stopOpacity="0.15" />
+                 <stop offset="100%" stopColor={colors[i] || THEME.emerald} stopOpacity="0.0" />
+               </linearGradient>
+            ))}
+          </defs>
+
+          {keys.map((key, i) => {
+             const smoothPath = data.reduce((acc, d, j) => {
+               const x = j * stepX;
+               const y = 100 - ((parseAngka(d[key])) / maxVal) * 100;
+               if(j===0) return `M ${x} ${y}`;
+               const prevX = (j-1)*stepX;
+               const prevY = 100 - ((parseAngka(data[j-1][key])) / maxVal) * 100;
+               const cpX = prevX + (x - prevX)/2;
+               return `${acc} C ${cpX} ${prevY}, ${cpX} ${y}, ${x} ${y}`;
+             }, "");
+
+             return (
+               <g key={key}>
+                  <path d={`${smoothPath} L 100 100 L 0 100 Z`} fill={`url(#grad-${chartId}-${key})`} className="transition-all duration-500" />
+                  <path d={smoothPath} fill="none" stroke={colors[i]} strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" className="transition-all duration-500 drop-shadow-sm" />
+               </g>
+             )
+          })}
+        </svg>
+
+        <svg width="100%" height="100%" className="absolute inset-0 overflow-visible pointer-events-none">
+          {keys.map((key, i) => {
+             return data.map((d, j) => {
+               const xP = j * stepX;
+               const yP = 100 - ((parseAngka(d[key])) / maxVal) * 100;
+               const isActive = j === activeIndex;
+               return (
+                 <circle key={`${i}-${j}`} cx={`${xP}%`} cy={`${yP}%`} r={isActive ? "5" : "2"} fill="#fff" stroke={colors[i]} strokeWidth={isActive ? "2.5" : "1.5"} 
+                         className="transition-all duration-300 shadow-sm" />
+               );
+             });
+          })}
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// GAUGE INDICATOR COMPONENT (Speedometer Custom)
+// ==========================================
+const GaugeIndicator = ({ value }) => {
+  const isOver = String(value).includes('>');
+  const numericVal = parseFloat(String(value).replace(/[^0-9.]/g, '')) || 0;
+  
+  const displayPct = isOver ? 100 : Math.min(Math.max(numericVal, 0), 100);
+  
+  const r = 40;
+  const circ = Math.PI * r; 
+  const strokePct = ((100 - displayPct) * circ) / 100;
+  
+  let strokeColor = "#fb7185"; 
+  if (isOver || numericVal >= 100) strokeColor = "#38bdf8"; 
+  else if (numericVal >= 80) strokeColor = "#34d399"; 
+  else if (numericVal >= 50) strokeColor = "#fbbf24"; 
+
+  return (
+    <div className="relative w-32 h-20 flex flex-col items-center justify-end pb-1">
+      <svg viewBox="0 0 100 55" className="absolute top-0 w-full h-full drop-shadow-md">
+        <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#022c22" strokeWidth="9" strokeLinecap="round" />
+        <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke={strokeColor} strokeWidth="9" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={strokePct} className="transition-all duration-1000 ease-out" />
+      </svg>
+      <div className="absolute bottom-0 flex flex-col items-center">
+        <span className="text-xl font-black text-white leading-none drop-shadow-md">{value}</span>
+        <span className="text-[7px] text-emerald-300 font-bold uppercase tracking-widest mt-1">Pencapaian</span>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// KUMPULAN TABEL BERSAMA
+// ==========================================
+const TabelRealisasiSumberJenis = ({ aggData }) => {
+  const s = aggData.sumberBelanja;
+  const renderRow = (label, dataRM, dataBLU) => {
+      const p51 = dataRM['51'].pagu + dataBLU['51'].pagu; const r51 = dataRM['51'].real + dataBLU['51'].real;
+      const p52 = dataRM['52'].pagu + dataBLU['52'].pagu; const r52 = dataRM['52'].real + dataBLU['52'].real;
+      const p53 = dataRM['53'].pagu + dataBLU['53'].pagu; const r53 = dataRM['53'].real + dataBLU['53'].real;
+      const tP = p51 + p52 + p53; const tR = r51 + r52 + r53;
+      return (
+         <tr className="border-b border-slate-100 hover:bg-slate-50 transition duration-150">
+            <td className="px-4 py-3 border-r border-slate-200 text-left font-bold text-slate-700">{label}</td>
+            <td className="px-3 py-3 text-slate-600">{formatTableID(p51)}</td><td className="px-3 py-3 font-semibold text-slate-800">{formatTableID(r51)}</td><td className="px-3 py-3 border-r border-slate-200 font-semibold text-teal-600">{p51 > 0 ? (r51/p51*100).toFixed(2) : '-'}%</td>
+            <td className="px-3 py-3 text-slate-600">{formatTableID(p52)}</td><td className="px-3 py-3 font-semibold text-slate-800">{formatTableID(r52)}</td><td className="px-3 py-3 border-r border-slate-200 font-semibold text-teal-600">{p52 > 0 ? (r52/p52*100).toFixed(2) : '-'}%</td>
+            <td className="px-3 py-3 text-slate-600">{formatTableID(p53)}</td><td className="px-3 py-3 font-semibold text-slate-800">{formatTableID(r53)}</td><td className="px-3 py-3 border-r border-slate-200 font-semibold text-teal-600">{p53 > 0 ? (r53/p53*100).toFixed(2) : '-'}%</td>
+            <td className="px-3 py-3 bg-slate-50 font-bold text-slate-800">{formatTableID(tP)}</td><td className="px-3 py-3 bg-slate-50 font-bold text-emerald-700">{formatTableID(tR)}</td><td className="px-3 py-3 bg-slate-50 font-black text-slate-800">{tP > 0 ? (tR/tP*100).toFixed(2) : '-'}%</td>
+         </tr>
+      );
+  };
+  
+  const tp51 = s['RM']['51'].pagu + s['BLU']['51'].pagu; const tr51 = s['RM']['51'].real + s['BLU']['51'].real;
+  const tp52 = s['RM']['52'].pagu + s['BLU']['52'].pagu; const tr52 = s['RM']['52'].real + s['BLU']['52'].real;
+  const tp53 = s['RM']['53'].pagu + s['BLU']['53'].pagu; const tr53 = s['RM']['53'].real + s['BLU']['53'].real;
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mt-6 overflow-hidden">
+       <h4 className="text-[13px] font-black mb-5 text-emerald-800 uppercase tracking-wider flex items-center">
+          <SvgIcon path={Icons.PieChart} className="w-5 h-5 mr-2" /> Realisasi Per Sumber dan Jenis Belanja
+       </h4>
+       <div className="overflow-x-auto custom-scrollbar pb-2">
+          <table className="min-w-full text-[11px] text-center whitespace-nowrap border-collapse">
+            <thead>
+               <tr>
+                 <th rowSpan="2" className="border-b-2 border-r border-slate-200 bg-slate-50 px-4 py-3 text-left font-bold text-slate-700 uppercase tracking-wider">SUMBER</th>
+                 <th colSpan="3" className="border-b border-r border-slate-200 bg-white px-3 py-2 font-bold text-slate-600">51</th>
+                 <th colSpan="3" className="border-b border-r border-slate-200 bg-white px-3 py-2 font-bold text-slate-600">52</th>
+                 <th colSpan="3" className="border-b border-r border-slate-200 bg-white px-3 py-2 font-bold text-slate-600">53</th>
+                 <th colSpan="3" className="border-b-2 border-slate-200 px-3 py-2 font-black text-emerald-900 bg-emerald-50/50 uppercase tracking-wider">TOTAL</th>
+               </tr>
+               <tr className="border-b-2 border-slate-200 bg-slate-50/50">
+                 {['Pagu', 'Real', '%', 'Pagu', 'Real', '%', 'Pagu', 'Real', '%', 'Pagu', 'Real', '%'].map((hd, i) => (
+                    <th key={i} className={`px-3 py-2 font-bold ${[2,5,8].includes(i) ? 'border-r border-slate-200':''} ${i >= 9 ? 'bg-emerald-50/50 text-emerald-800' : 'text-slate-500'}`}>{hd}</th>
+                 ))}
+               </tr>
+            </thead>
+            <tbody className="bg-white">
+               {renderRow('RM', s['RM'], { '51':{pagu:0,real:0}, '52':{pagu:0,real:0}, '53':{pagu:0,real:0} })}
+               {renderRow('BLU', { '51':{pagu:0,real:0}, '52':{pagu:0,real:0}, '53':{pagu:0,real:0} }, s['BLU'])}
+            </tbody>
+            <tfoot className="bg-slate-100/80 font-black">
+               <tr className="border-t-2 border-slate-300">
+                  <td className="px-4 py-4 border-r border-slate-300 text-left text-slate-800">TOTAL</td>
+                  <td className="px-3 py-4 text-slate-700">{formatTableID(tp51)}</td><td className="px-3 py-4 text-slate-900">{formatTableID(tr51)}</td><td className="px-3 py-4 border-r border-slate-300 text-slate-700">{tp51 > 0 ? (tr51/tp51*100).toFixed(2) : '-'}%</td>
+                  <td className="px-3 py-4 text-slate-700">{formatTableID(tp52)}</td><td className="px-3 py-4 text-slate-900">{formatTableID(tr52)}</td><td className="px-3 py-4 border-r border-slate-300 text-slate-700">{tp52 > 0 ? (tr52/tp52*100).toFixed(2) : '-'}%</td>
+                  <td className="px-3 py-4 text-slate-700">{formatTableID(tp53)}</td><td className="px-3 py-4 text-slate-900">{formatTableID(tr53)}</td><td className="px-3 py-4 border-r border-slate-300 text-slate-700">{tp53 > 0 ? (tr53/tp53*100).toFixed(2) : '-'}%</td>
+                  <td className="px-3 py-4 text-emerald-900 bg-emerald-100/50">{formatTableID(aggData.summary.paguEfektif)}</td>
+                  <td className="px-3 py-4 text-emerald-700 bg-emerald-100/50">{formatTableID(aggData.summary.realisasiTotal)}</td>
+                  <td className="px-3 py-4 text-emerald-900 bg-emerald-100/50">{aggData.summary.paguEfektif > 0 ? (aggData.summary.realisasiTotal/aggData.summary.paguEfektif*100).toFixed(2) : '-'}%</td>
+               </tr>
+            </tfoot>
+          </table>
+       </div>
+    </div>
+  );
+};
+
+// ==========================================
+// TABS CONTENT COMPONENTS
+// ==========================================
+const TabRealisasiAnggaran1 = ({ aggData, sheetStatus }) => {
+  const summary = aggData.summary;
+  const s51Pagu = aggData.sumberBelanja['RM']['51'].pagu + aggData.sumberBelanja['BLU']['51'].pagu;
+  const s51Real = aggData.sumberBelanja['RM']['51'].real + aggData.sumberBelanja['BLU']['51'].real;
+  const s52Pagu = aggData.sumberBelanja['RM']['52'].pagu + aggData.sumberBelanja['BLU']['52'].pagu;
+  const s52Real = aggData.sumberBelanja['RM']['52'].real + aggData.sumberBelanja['BLU']['52'].real;
+  
+  const [filters, setFilters] = useState({ KRO: '', KOMPONEN: '', SUMBER: '', DETIL: '', MAK: '' });
+
+  const getUnique = (key) => [...new Set(aggData.rawData.map(item => item[key] || '-'))].filter(x => x !== '-').sort();
+  const filterOptions = useMemo(() => ({
+     KRO: getUnique('KRO'),
+     KOMPONEN: getUnique('KOMPONEN'),
+     SUMBER: getUnique('SUMBER'),
+     DETIL: getUnique('DETIL'),
+     MAK: getUnique('MAK LENGKAP')
+  }), [aggData.rawData]);
+
+  const filteredTableData = useMemo(() => {
+     return aggData.rawData.filter(row => {
+         if (filters.KRO && row['KRO'] !== filters.KRO) return false;
+         if (filters.KOMPONEN && row['KOMPONEN'] !== filters.KOMPONEN) return false;
+         if (filters.SUMBER && row['SUMBER'] !== filters.SUMBER) return false;
+         if (filters.DETIL && row['DETIL'] !== filters.DETIL) return false;
+         if (filters.MAK && row['MAK LENGKAP'] !== filters.MAK) return false;
+         return true;
+     });
+  }, [aggData.rawData, filters]);
+
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-slate-400"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">PAGU AWAL</div>
+          <div className="text-2xl font-black text-slate-800">{formatRp(summary.paguAwal)}</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">PAGU RM</div>
+          <div className="text-2xl font-black text-slate-800">{formatRp(summary.paguRM)}</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">PAGU BLU</div>
+          <div className="text-2xl font-black text-slate-800">{formatRp(summary.paguBLU)}</div>
+        </div>
+        
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 row-span-2 flex flex-col relative overflow-hidden">
+          <div className="text-[11px] font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2">Realisasi Per Jenis Belanja</div>
+          <div className="w-full flex-1 flex flex-col justify-center space-y-5">
+             <div className="relative">
+                <div className="flex justify-between text-[10px] mb-1.5 font-bold"><span className="text-slate-600">Belanja Pegawai (51)</span> <span className="text-emerald-600">{s51Pagu > 0 ? ((s51Real/s51Pagu)*100).toFixed(2):'0'}%</span></div>
+                <div className="w-full bg-slate-100 h-3 rounded-full flex overflow-hidden shadow-inner">
+                   <div className="bg-teal-600 h-full transition-all duration-1000" style={{width: `${summary.paguEfektif > 0 ? (s51Pagu/summary.paguEfektif)*100 : 0}%`}}></div>
+                   <div className="bg-amber-500 h-full transition-all duration-1000" style={{width: `${s51Pagu > 0 ? (s51Real/s51Pagu)*100 : 0}%`}}></div>
+                </div>
+             </div>
+             <div className="relative">
+                <div className="flex justify-between text-[10px] mb-1.5 font-bold"><span className="text-slate-600">Belanja Barang (52)</span> <span className="text-emerald-600">{s52Pagu > 0 ? ((s52Real/s52Pagu)*100).toFixed(2):'0'}%</span></div>
+                <div className="w-full bg-slate-100 h-3 rounded-full flex overflow-hidden shadow-inner">
+                   <div className="bg-teal-600 h-full transition-all duration-1000" style={{width: `${summary.paguEfektif > 0 ? (s52Pagu/summary.paguEfektif)*100 : 0}%`}}></div>
+                   <div className="bg-amber-500 h-full transition-all duration-1000" style={{width: `${s52Pagu > 0 ? (s52Real/s52Pagu)*100 : 0}%`}}></div>
+                </div>
+             </div>
+          </div>
+          <div className="flex gap-4 text-[9px] font-bold mt-5 justify-center w-full uppercase tracking-wider text-slate-500">
+             <span className="flex items-center"><div className="w-2.5 h-2.5 rounded-sm bg-teal-600 mr-1.5"></div>Pagu Efektif</span>
+             <span className="flex items-center"><div className="w-2.5 h-2.5 rounded-sm bg-amber-500 mr-1.5"></div>Realisasi</span>
+          </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">BLOKIR</div>
+          <div className="text-2xl font-black text-slate-800">{formatRp(summary.blokir)}</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-teal-400"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">REALISASI RM</div>
+          <div className="text-2xl font-black text-slate-800">{formatRp(summary.realisasiRM)}</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">REALISASI BLU</div>
+          <div className="text-2xl font-black text-slate-800">{formatRp(summary.realisasiBLU)}</div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-1 h-full bg-sky-500"></div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">PAGU EFEKTIF</div>
+          <div className="text-2xl font-black text-sky-700">{formatRp(summary.paguEfektif)}</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center items-center relative overflow-hidden">
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">% REALISASI RM</div>
+          <div className="text-3xl font-black text-teal-600">{summary.paguRM > 0 ? ((summary.realisasiRM / summary.paguRM)*100).toFixed(2) : '0.00'}%</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center items-center relative overflow-hidden">
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">% REALISASI BLU</div>
+          <div className="text-3xl font-black text-emerald-600">{summary.paguBLU > 0 ? ((summary.realisasiBLU / summary.paguBLU)*100).toFixed(2) : '0.00'}%</div>
+        </div>
+
+        <div className="bg-emerald-800 p-5 rounded-2xl shadow-md flex flex-col justify-center col-span-1 relative overflow-hidden text-white">
+          <div className="absolute right-[-10%] top-[-10%] opacity-10"><SvgIcon path={Icons.TrendingUp} className="w-24 h-24" /></div>
+          <div className="text-[11px] font-bold text-emerald-200 uppercase tracking-wider mb-1 relative z-10">REALISASI TOTAL</div>
+          <div className="text-2xl font-black relative z-10 transition-all duration-500">{formatRp(summary.realisasiTotal)}</div>
+        </div>
+        <div className="bg-emerald-900 p-5 rounded-2xl shadow-md flex flex-col justify-center items-center col-span-1 relative overflow-hidden text-white">
+          <div className="text-[11px] font-bold text-emerald-200 uppercase tracking-wider mb-1 relative z-10">% REALISASI TOTAL</div>
+          <div className="text-4xl font-black relative z-10 transition-all duration-500 text-amber-400">{summary.paguEfektif > 0 ? ((summary.realisasiTotal / summary.paguEfektif)*100).toFixed(2) : '0.00'}%</div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 col-span-1 flex flex-col items-center justify-center relative">
+           <div className="text-[10px] font-bold text-slate-800 uppercase tracking-wider mb-4 border-b pb-2 w-full text-center">Proporsi Pagu</div>
+           <div className="w-24 h-24 rounded-full shadow-md relative group flex-shrink-0" 
+                style={{ background: `conic-gradient(${THEME.sky} 0% ${summary.paguEfektif > 0 ? (summary.paguBLU/summary.paguEfektif)*100 : 50}%, ${THEME.emerald} ${summary.paguEfektif > 0 ? (summary.paguBLU/summary.paguEfektif)*100 : 50}% 100%)` }}>
+                <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center text-[11px] font-black text-slate-600 shadow-inner">100%</div>
+           </div>
+           <div className="flex gap-3 text-[9px] font-bold mt-4 w-full justify-center uppercase tracking-wider text-slate-600">
+               <span className="flex items-center"><div className="w-2 h-2 rounded-sm mr-1 shadow-sm" style={{backgroundColor: THEME.sky}}></div>BLU</span>
+               <span className="flex items-center"><div className="w-2 h-2 rounded-sm mr-1 shadow-sm" style={{backgroundColor: THEME.emerald}}></div>RM</span>
+           </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+          <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">Realisasi Anggaran Per Sumber</h4>
+          <InteractiveBarChart data={aggData.sumberData} keys={['pagu', 'realisasi']} labels={['Pagu', 'Realisasi']} colors={[THEME.sky, THEME.amber]} formatValue={formatShortID} />
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+          <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">Grafik Realisasi Per Komponen</h4>
+          <InteractiveBarChart data={aggData.komponenData.slice(0, 10)} keys={['pagu', 'realisasi']} labels={['Pagu', 'Realisasi']} colors={[THEME.teal, THEME.amber]} formatValue={formatShortID} isHorizontal={true} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col max-h-[400px]">
+           <h4 className="text-[12px] font-black mb-4 px-1 text-emerald-900 uppercase tracking-wider">Realisasi Per RO</h4>
+           <div className="overflow-auto flex-1 custom-scrollbar pr-2">
+             <table className="min-w-full text-[11px] text-left">
+               <thead className="sticky top-0 bg-slate-50 z-10">
+                 <tr><th className="py-3 px-3 border-b-2 border-slate-200 text-slate-600 font-bold uppercase tracking-wider">RO</th><th className="py-3 px-3 border-b-2 border-slate-200 text-right text-slate-600 font-bold uppercase tracking-wider">PAGU EFEKTIF</th><th className="py-3 px-3 border-b-2 border-slate-200 text-right text-slate-600 font-bold uppercase tracking-wider">REALISASI</th><th className="py-3 px-3 border-b-2 border-slate-200 text-right text-slate-600 font-bold uppercase tracking-wider">%</th></tr>
+               </thead>
+               <tbody className="bg-white">
+                 {aggData.roData.map((row, i) => (
+                   <tr key={i} className="border-b border-slate-100 hover:bg-emerald-50 transition cursor-default">
+                     <td className="py-3 px-3 font-semibold text-slate-700 truncate max-w-[150px]" title={row.label}>{row.label}</td>
+                     <td className="py-3 px-3 text-right text-slate-600">{formatRp(row.pagu)}</td>
+                     <td className="py-3 px-3 text-right font-bold text-slate-800">{formatRp(row.realisasi)}</td>
+                     <td className="py-3 px-3 text-right font-bold text-emerald-600">{row.pagu > 0 ? ((row.realisasi/row.pagu)*100).toFixed(2) : '0.00'}%</td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
+        </div>
+
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col max-h-[400px]">
+           <h4 className="text-[12px] font-black mb-4 px-1 text-emerald-900 uppercase tracking-wider">Realisasi Per PIC</h4>
+           <div className="overflow-auto flex-1 custom-scrollbar pr-2">
+             <table className="min-w-full text-[11px] text-left">
+               <thead className="sticky top-0 bg-slate-50 z-10">
+                 <tr><th className="py-3 px-3 border-b-2 border-slate-200 text-slate-600 font-bold uppercase tracking-wider">PIC</th><th className="py-3 px-3 border-b-2 border-slate-200 text-right text-slate-600 font-bold uppercase tracking-wider">PAGU EFEKTIF</th><th className="py-3 px-3 border-b-2 border-slate-200 text-right text-slate-600 font-bold uppercase tracking-wider">REALISASI</th><th className="py-3 px-3 border-b-2 border-slate-200 text-right text-slate-600 font-bold uppercase tracking-wider">%</th></tr>
+               </thead>
+               <tbody className="bg-white">
+                 {aggData.picData.map((row, i) => (
+                   <tr key={i} className="border-b border-slate-100 hover:bg-emerald-50 transition cursor-default">
+                     <td className="py-3 px-3 font-semibold text-slate-700 truncate max-w-[150px]" title={row.label}>{row.label}</td>
+                     <td className="py-3 px-3 text-right text-slate-600">{formatRp(row.pagu)}</td>
+                     <td className="py-3 px-3 text-right font-bold text-slate-800">{formatRp(row.realisasi)}</td>
+                     <td className="py-3 px-3 text-right font-bold text-emerald-600">{row.pagu > 0 ? ((row.realisasi/row.pagu)*100).toFixed(2) : '0.00'}%</td>
+                   </tr>
+                 ))}
+               </tbody>
+             </table>
+           </div>
+        </div>
+      </div>
+
+      {/* FILTER & TABEL DETAIL BERSARANG */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mt-4 flex flex-col">
+        <div className="flex flex-col mb-4 bg-slate-50/50 p-4 rounded-xl border border-slate-100 gap-4">
+           <div className="flex justify-between items-center">
+              <h4 className="text-[12px] font-black text-emerald-900 flex items-center uppercase tracking-wider">
+                <SvgIcon path={Icons.Filter} className="w-4 h-4 mr-2 text-emerald-600" /> Filter Realisasi Per Detil/MAK
+              </h4>
+              {sheetStatus === 'loading' ? (
+                 <span className="text-[10px] text-sky-600 flex items-center font-bold px-3 py-1 bg-sky-50 rounded-full"><SvgIcon path={Icons.Activity} className="w-3 h-3 mr-1 animate-pulse"/> Memuat Data...</span>
+              ) : (
+                 <span className="text-[10px] text-emerald-600 flex items-center font-bold px-3 py-1 bg-emerald-50 rounded-full"><SvgIcon path={Icons.CheckCircle} className="w-3 h-3 mr-1"/> Data Mutakhir</span>
+              )}
+           </div>
+           
+           <div className="flex flex-wrap gap-3">
+              {['KRO', 'KOMPONEN', 'SUMBER', 'DETIL', 'MAK'].map(f => (
+                 <div key={f} className="relative flex-1 min-w-[140px]">
+                    <select 
+                       value={filters[f]} 
+                       onChange={(e) => setFilters({...filters, [f]: e.target.value})}
+                       className="w-full bg-white border border-slate-300 text-[10px] font-semibold px-3 py-2 pr-8 rounded-lg text-slate-700 appearance-none shadow-sm hover:border-emerald-400 focus:border-emerald-500 focus:ring focus:ring-emerald-200 focus:ring-opacity-50 transition outline-none truncate cursor-pointer"
+                    >
+                       <option value="">Semua {f}</option>
+                       {filterOptions[f].map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                    <SvgIcon path={Icons.ChevronDown} className="w-3 h-3 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-slate-400"/>
+                 </div>
+              ))}
+              <button 
+                 onClick={() => setFilters({ KRO: '', KOMPONEN: '', SUMBER: '', DETIL: '', MAK: '' })} 
+                 className="text-[10px] px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-slate-700 font-bold transition flex-shrink-0"
+              >
+                 Reset Filter
+              </button>
+           </div>
+        </div>
+        
+        <div className="overflow-x-auto max-h-[400px] custom-scrollbar rounded-xl border border-slate-200">
+          <table className="min-w-full text-[11px] text-left border-collapse">
+            <thead className="bg-slate-50 sticky top-0 z-10">
+              <tr>
+                <th className="py-4 px-4 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">DETIL</th>
+                <th className="py-4 px-4 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">MAK</th>
+                <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">PAGU EFEKTIF</th>
+                <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">USULAN</th>
+                <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">KONTRAK</th>
+                <th className="py-4 px-4 text-right text-emerald-700 bg-emerald-50/50 font-bold uppercase tracking-wider border-b-2 border-emerald-200">REALISASI</th>
+                <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">% TOTAL</th>
+                <th className="py-4 px-4 text-right text-amber-700 bg-amber-50/50 font-bold uppercase tracking-wider border-b-2 border-amber-200">SISA ANGGARAN</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-100">
+              {filteredTableData.length > 0 ? filteredTableData.slice(0, 100).map((row, i) => {
+                const pEfek = parseAngka(row['PAGU EFEKTIF']);
+                const usul = row['USULAN_SCALED'] !== undefined ? row['USULAN_SCALED'] : parseAngka(row['USULAN']);
+                const kon = row['KONTRAK_SCALED'] !== undefined ? row['KONTRAK_SCALED'] : parseAngka(row['KONTRAK']);
+                const real = row['REALISASI_SCALED'] !== undefined ? row['REALISASI_SCALED'] : parseAngka(row['REALISASI']);
+                const sisa = row['SISA_ANGGARAN'] !== undefined ? row['SISA_ANGGARAN'] : pEfek - real;
+                const pct = pEfek > 0 ? ((real/pEfek)*100).toFixed(2) : '-';
+                
+                return (
+                  <tr key={i} className="hover:bg-slate-50 transition cursor-default">
+                    <td className="py-3 px-4 font-semibold text-slate-800 truncate max-w-[200px]" title={row['DETIL']}>{row['DETIL'] || '-'}</td>
+                    <td className="py-3 px-4 text-slate-500 font-medium">{row['MAK LENGKAP'] || row['MAK'] || '-'}</td>
+                    <td className="py-3 px-4 text-right text-slate-700 font-medium">{formatRp(pEfek)}</td>
+                    <td className="py-3 px-4 text-right text-slate-500">{formatRp(usul)}</td>
+                    <td className="py-3 px-4 text-right text-slate-500">{formatRp(kon)}</td>
+                    <td className="py-3 px-4 text-right font-bold text-emerald-700 bg-emerald-50/30">{formatRp(real)}</td>
+                    <td className="py-3 px-4 text-right text-slate-700 font-bold">{pct !== '-' ? pct + '%' : '-'}</td>
+                    <td className="py-3 px-4 text-right font-bold text-amber-600 bg-amber-50/30">{formatRp(sisa)}</td>
+                  </tr>
+                )
+              }) : (
+                 <tr><td colSpan="8" className="py-10 text-center text-slate-500 font-semibold italic">Tidak ada data yang sesuai dengan filter kombinasi tersebut.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TabRPD = ({ aggData }) => (
+  <div className="space-y-6 animate-fadeIn">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+       <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">Realisasi Anggaran 2026 Per Komponen</h4>
+       <div className="overflow-x-auto custom-scrollbar">
+         <table className="min-w-full text-[11px] text-left border-collapse">
+           <thead className="bg-slate-50 border-b-2 border-slate-200">
+             <tr><th className="py-3 px-4 text-slate-600 font-bold uppercase tracking-wider">KOMPONEN</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">PAGU EFEKTIF</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">USULAN</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">KONTRAK</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">REALISASI</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">% Realisasi Total</th></tr>
+           </thead>
+           <tbody className="divide-y divide-slate-100">
+             {aggData.komponenData.map((row, i) => (
+               <tr key={i} className="hover:bg-slate-50 transition-colors group">
+                 <td className="py-3 px-4 font-bold text-slate-700">{row.label}</td>
+                 <td className="py-3 px-4 text-right text-slate-600">{formatRp(row.pagu)}</td>
+                 <td className="py-3 px-4 text-right text-slate-500">{formatRp(row.usulan)}</td>
+                 <td className="py-3 px-4 text-right text-slate-500">{formatRp(row.kontrak)}</td>
+                 <td className="py-3 px-4 text-right font-bold text-emerald-700">{formatRp(row.realisasi)}</td>
+                 <td className="py-3 px-4 text-right font-bold text-slate-600">{row.pagu > 0 ? ((row.realisasi/row.pagu)*100).toFixed(2) : '0.00'}%</td>
+               </tr>
+             ))}
+           </tbody>
+         </table>
+       </div>
+    </div>
+    
+    <TabelRealisasiSumberJenis aggData={aggData} />
+
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition mt-6">
+       <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">GAP RPD BELANJA TOTAL (Data Kertas Kerja)</h4>
+       <EyeCatchingLineChart data={aggData.trenData} keys={['rpd', 'realisasi']} labels={['RPD TOTAL', 'REALISASI TOTAL']} colors={[THEME.sky, THEME.emerald]} />
+    </div>
+
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition mt-6">
+       <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">TREN PELAKSANAAN ANGGARAN 2026</h4>
+       <EyeCatchingLineChart data={aggData.trenData} keys={['usulan', 'kontrak', 'realisasi']} labels={['USULAN', 'KONTRAK', 'REALISASI']} colors={[THEME.amber, THEME.sky, THEME.emerald]} />
+    </div>
+
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition mt-6">
+       <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">KUMULATIF PELAKSANAAN ANGGARAN 2026</h4>
+       <EyeCatchingLineChart data={aggData.kumulatifData} keys={['usulan', 'kontrak', 'realisasi']} labels={['USULAN', 'KONTRAK', 'REALISASI']} colors={[THEME.amber, THEME.sky, THEME.emerald]} />
+    </div>
+  </div>
+);
+
+const TabIKU = ({ aggData }) => {
+   const p51 = aggData.sumberBelanja['RM']['51'].pagu + aggData.sumberBelanja['BLU']['51'].pagu;
+   const p52 = aggData.sumberBelanja['RM']['52'].pagu + aggData.sumberBelanja['BLU']['52'].pagu;
+   const p53 = aggData.sumberBelanja['RM']['53'].pagu + aggData.sumberBelanja['BLU']['53'].pagu;
+   const total = p51 + p52 + p53 || 1;
+
+   const totalIKUPaguAwal = aggData.ikuData.reduce((sum, row) => sum + row.paguAwal, 0);
+   const totalIKUPaguEfektif = aggData.ikuData.reduce((sum, row) => sum + row.pagu, 0);
+   const totalIKURealisasi = aggData.ikuData.reduce((sum, row) => sum + row.realisasi, 0);
+   const totalIKUPersentase = totalIKUPaguEfektif > 0 ? (totalIKURealisasi / totalIKUPaguEfektif * 100) : 0;
+
+   return (
+    <div className="space-y-6 animate-fadeIn">
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center hover:shadow-md transition">
+            <h4 className="text-[12px] font-black mb-6 w-full text-left text-emerald-900 uppercase tracking-wider">PROPORSI PAGU PER JENIS BELANJA</h4>
+            <div className="w-48 h-48 rounded-full shadow-lg border-[6px] border-white relative group cursor-pointer" 
+                 style={{ background: `conic-gradient(${THEME.emerald} 0% ${(p52/total)*100}%, ${THEME.sky} ${(p52/total)*100}% ${((p52+p51)/total)*100}%, ${THEME.amber} ${((p52+p51)/total)*100}% 100%)` }}>
+                 <div className="absolute inset-2 bg-white rounded-full flex items-center justify-center text-[12px] font-black text-slate-500 shadow-inner">Total</div>
+            </div>
+            <div className="flex gap-5 text-[10px] font-bold mt-8 w-full justify-center uppercase tracking-wider text-slate-600">
+               <span className="flex items-center hover:scale-105 transition"><div className="w-3 h-3 rounded-sm mr-2 shadow-sm" style={{backgroundColor: THEME.emerald}}></div>52 ({(p52/total*100).toFixed(1)}%)</span>
+               <span className="flex items-center hover:scale-105 transition"><div className="w-3 h-3 rounded-sm mr-2 shadow-sm" style={{backgroundColor: THEME.sky}}></div>51 ({(p51/total*100).toFixed(1)}%)</span>
+               <span className="flex items-center hover:scale-105 transition"><div className="w-3 h-3 rounded-sm mr-2 shadow-sm" style={{backgroundColor: THEME.amber}}></div>53 ({(p53/total*100).toFixed(1)}%)</span>
+            </div>
+         </div>
+
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition flex flex-col">
+            <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">PAGU PER JENIS BELANJA DAN SUMBER DANA</h4>
+            <div className="overflow-x-auto custom-scrollbar pb-2 flex-1">
+                <table className="min-w-full text-[11px] text-center whitespace-nowrap border-collapse">
+                    <thead className="bg-slate-50 border-b-2 border-slate-200">
+                        <tr>
+                            <th className="px-4 py-3 text-left font-bold text-slate-700 uppercase tracking-wider border-r border-slate-200">SUMBER / JENIS</th>
+                            <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider">BLU</th>
+                            <th className="px-4 py-3 font-bold text-slate-600 uppercase tracking-wider border-r border-slate-200">RM</th>
+                            <th className="px-4 py-3 font-black text-emerald-900 bg-emerald-50/50 uppercase tracking-wider">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                        {['51', '52', '53'].map(jb => {
+                            const pBLU = aggData.sumberBelanja['BLU'][jb].pagu;
+                            const pRM = aggData.sumberBelanja['RM'][jb].pagu;
+                            const tP = pBLU + pRM;
+                            return (
+                                <tr key={jb} className="hover:bg-slate-50 transition duration-150">
+                                    <td className="px-4 py-4 border-r border-slate-200 text-left font-bold text-slate-700">{jb}</td>
+                                    <td className="px-4 py-4 text-slate-600">{formatTableID(pBLU)}</td>
+                                    <td className="px-4 py-4 text-slate-600 border-r border-slate-200">{formatTableID(pRM)}</td>
+                                    <td className="px-4 py-4 font-bold text-slate-800 bg-slate-50">{formatTableID(tP)}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                    <tfoot className="bg-slate-100/80 font-black">
+                        <tr className="border-t-2 border-slate-300">
+                            <td className="px-4 py-4 border-r border-slate-300 text-left text-slate-800">TOTAL</td>
+                            <td className="px-4 py-4 text-slate-800">{formatTableID(aggData.summary.paguBLU)}</td>
+                            <td className="px-4 py-4 text-slate-800 border-r border-slate-300">{formatTableID(aggData.summary.paguRM)}</td>
+                            <td className="px-4 py-4 text-emerald-900 bg-emerald-100/50">{formatTableID(aggData.summary.paguEfektif)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+         </div>
+       </div>
+
+       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+         <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">REALISASI ANGGARAN PER IKU RSB (Urut Persentase Terbesar)</h4>
+         <div className="overflow-x-auto custom-scrollbar">
+           <table className="min-w-full text-[11px] text-left border-collapse">
+             <thead className="bg-slate-50 border-b-2 border-slate-200">
+               <tr><th className="py-3 px-4 text-slate-600 font-bold uppercase tracking-wider">IKU</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">PAGU AWAL</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">PAGU EFEKTIF</th><th className="py-3 px-4 text-right text-emerald-700 bg-emerald-50/50 font-bold uppercase tracking-wider">REALISASI</th><th className="py-3 px-4 text-right text-slate-600 font-bold uppercase tracking-wider">PERSENTASE</th></tr>
+             </thead>
+             <tbody className="divide-y divide-slate-100">
+               {aggData.ikuData.map((row, i) => {
+                 const pct = row.pagu > 0 ? (row.realisasi/row.pagu*100) : 0;
+                 return (
+                   <tr key={i} className="hover:bg-slate-50 transition-colors cursor-default">
+                     <td className="py-3 px-4 text-slate-800 font-bold">{row.label}</td>
+                     <td className="py-3 px-4 text-right text-slate-600">{formatRp(row.paguAwal)}</td>
+                     <td className="py-3 px-4 text-right text-slate-600">{formatRp(row.pagu)}</td>
+                     <td className="py-3 px-4 text-right font-black text-emerald-700 bg-emerald-50/30">{formatRp(row.realisasi)}</td>
+                     <td className="py-3 px-4 text-right font-black text-sky-600">{pct.toFixed(2)}%</td>
+                   </tr>
+                 )
+               })}
+             </tbody>
+             <tfoot className="border-t-2 border-slate-300 bg-slate-100/80">
+               <tr className="font-black text-slate-800">
+                 <td className="py-4 px-4">TOTAL</td>
+                 <td className="py-4 px-4 text-right">{formatRp(totalIKUPaguAwal)}</td>
+                 <td className="py-4 px-4 text-right">{formatRp(totalIKUPaguEfektif)}</td>
+                 <td className="py-4 px-4 text-right text-emerald-700 bg-emerald-100/50">{formatRp(totalIKURealisasi)}</td>
+                 <td className="py-4 px-4 text-right text-sky-700">{totalIKUPersentase.toFixed(2)}%</td>
+               </tr>
+             </tfoot>
+           </table>
+         </div>
+      </div>
+    </div>
+   );
+};
+
+const TabPenerimaan = ({ aggPen, filterSumber, setFilterSumber }) => {
+  const sum = aggPen.summary;
+  const targetPct = sum.target > 0 ? ((sum.real / sum.target)*100).toFixed(2) : (sum.real > 0 ? '>100.00' : '0.00');
+
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      {/* KARTU HEADER & FILTER */}
+      <div className="flex flex-col md:flex-row justify-between items-center bg-emerald-900 p-6 rounded-2xl shadow-md border border-emerald-800 transition-all duration-500 text-white">
+         <div className="flex items-center space-x-5">
+            <div className="w-12 h-12 bg-emerald-800 rounded-full flex items-center justify-center shadow-inner border border-emerald-700">
+               <SvgIcon path={Icons.Wallet} className="w-6 h-6 text-emerald-300"/>
+            </div>
+            <div>
+               <h3 className="text-sm font-black uppercase tracking-widest text-emerald-100">STATUS PENERIMAAN BLU</h3>
+               <div className="relative mt-2">
+                 <select value={filterSumber} onChange={(e) => setFilterSumber(e.target.value)}
+                    className="bg-emerald-950 border border-emerald-700 text-[11px] font-bold px-4 py-2 rounded-lg text-white shadow-sm hover:bg-emerald-800 focus:border-emerald-500 transition cursor-pointer outline-none appearance-none pr-8">
+                   <option value="Semua">Semua Sumber</option>
+                   {aggPen.sumberOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                 </select>
+                 <SvgIcon path={Icons.ChevronDown} className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-emerald-400"/>
+               </div>
+            </div>
+         </div>
+         <div className="flex items-center space-x-8 mt-5 md:mt-0">
+            <div className="text-right">
+               <p className="text-[11px] text-emerald-300 font-bold uppercase tracking-wider">TARGET</p>
+               <p className="text-xl font-black text-white">Rp {formatShortID(sum.target)}</p>
+            </div>
+            <div className="text-right">
+               <p className="text-[11px] text-emerald-300 font-bold uppercase tracking-wider">REALISASI</p>
+               <p className="text-xl font-black text-amber-400">Rp {formatShortID(sum.real)}</p>
+            </div>
+            <GaugeIndicator value={targetPct} />
+         </div>
+      </div>
+
+      {/* 3 CARDS KAS BASIS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Penerimaan (Pengesahan)</div>
+            <div className="text-3xl font-black text-slate-800 mt-2">{formatRp(sum.pengesahan)}</div>
+         </div>
+         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-sky-500"></div>
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Penerimaan Unregistered (PNBP)</div>
+            <div className="text-3xl font-black text-slate-800 mt-2">{formatRp(sum.pnbp)}</div>
+         </div>
+         <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Penerimaan Bersih (BLU)</div>
+            <div className="text-3xl font-black text-slate-800 mt-2">{formatRp(sum.blu)}</div>
+         </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col hover:shadow-md transition">
+            <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">PENERIMAAN BLU KAS BASIS PER AKUN</h4>
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-5 max-h-[300px]">
+               {aggPen.bluData.length > 0 ? aggPen.bluData.slice(0,10).map((item, i) => (
+                  <div key={i} className="flex flex-col group cursor-default">
+                     <div className="flex justify-between mb-2 text-[11px]">
+                        <span className="font-bold text-slate-800 truncate" title={item.label}>{item.shortLabel} <span className="font-medium text-slate-500 ml-1">- {item.ket}</span></span>
+                     </div>
+                     <div className="flex items-center w-full">
+                        <div className="flex-1 bg-slate-100 h-3 rounded-full flex items-center relative overflow-hidden shadow-inner">
+                           <div className="h-full transition-all duration-1000" style={{ width: `${(item.val/aggPen.bluData[0].val)*100}%`, backgroundColor: item.color }}></div>
+                        </div>
+                        <span className="text-slate-700 font-black ml-3 w-20 text-right">{formatShortID(item.val)}</span>
+                     </div>
+                  </div>
+               )) : <div className="text-[11px] text-slate-500 font-medium italic text-center py-6">Data BLU / Layanan tidak tersedia untuk filter saat ini.</div>}
+            </div>
+         </div>
+
+         <div className="grid grid-rows-2 gap-5">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col hover:shadow-md transition">
+               <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">JENIS PENERIMAAN BLU</h4>
+               <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4 max-h-[140px]">
+                  {aggPen.kelompokData.length > 0 ? aggPen.kelompokData.map((item, i) => (
+                     <div key={i} className="flex items-center group cursor-default">
+                        <span className="font-bold text-slate-700 text-[10px] truncate w-28 uppercase tracking-wider" title={item.label}>{item.label}</span>
+                        <div className="flex-1 bg-slate-100 h-2.5 rounded-full flex items-center relative overflow-hidden mx-3 shadow-inner">
+                           <div className="h-full transition-all duration-1000" style={{ width: `${(item.val/aggPen.kelompokData[0].val)*100}%`, backgroundColor: THEME.teal }}></div>
+                        </div>
+                        <span className="text-slate-700 font-black text-[11px] text-right w-20">{formatShortID(item.val)}</span>
+                     </div>
+                  )) : <div className="text-[11px] text-slate-500 font-medium italic text-center py-4">Data Kelompok tidak tersedia.</div>}
+               </div>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col hover:shadow-md transition">
+               <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">PENERIMAAN PNBP KAS BASIS PER AKUN</h4>
+               <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4 max-h-[140px]">
+                  {aggPen.pnbpData.length > 0 ? aggPen.pnbpData.slice(0, 10).map((item, i) => (
+                     <div key={i} className="flex items-center group cursor-default">
+                        <span className="font-bold text-slate-700 text-[10px] truncate w-28 uppercase tracking-wider" title={item.label}>{item.shortLabel}</span>
+                        <div className="flex-1 bg-slate-100 h-2.5 rounded-full flex items-center relative overflow-hidden mx-3 shadow-inner">
+                           <div className="h-full transition-all duration-1000" style={{ width: `${(item.val/aggPen.pnbpData[0].val)*100}%`, backgroundColor: THEME.sky }}></div>
+                        </div>
+                        <span className="text-slate-700 font-black text-[11px] text-right w-20">{formatShortID(item.val)}</span>
+                     </div>
+                  )) : <div className="flex-1 flex items-center justify-center text-[10px] text-slate-400 italic pb-4">Data PNBP Kosong/Terfilter</div>}
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+         <h4 className="text-[13px] font-black italic text-emerald-800 uppercase border-b-2 border-slate-100 pb-3 mb-4 flex items-center">
+             <SvgIcon path={Icons.Clipboard} className="w-5 h-5 mr-2" /> TOTAL PENERIMAAN KAS BASIS
+         </h4>
+         <div className="overflow-x-auto custom-scrollbar max-h-[400px]">
+            <table className="min-w-full text-[11px] text-left border-collapse">
+             <thead className="bg-slate-50 sticky top-0 z-10">
+               <tr>
+                 <th className="py-4 px-3 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">AKUN</th>
+                 <th className="py-4 px-3 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">KETERANGAN</th>
+                 <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">TARGET</th>
+                 <th className="py-4 px-4 text-right text-emerald-700 bg-emerald-50/50 font-bold uppercase tracking-wider border-b-2 border-emerald-200">REALISASI</th>
+                 <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">PERSENTASE</th>
+               </tr>
+             </thead>
+             <tbody className="bg-white divide-y divide-slate-100">
+               {(aggPen.tableData || []).map((row, i) => {
+                   const t = row.target || 0;
+                   const r = row.realisasi || 0;
+                   const p = t > 0 ? (r / t * 100).toFixed(2) + '%' : (r > 0 ? '>100.00%' : '-');
+                   return (
+                   <tr key={i} className="hover:bg-slate-50 transition-colors cursor-default">
+                      <td className="py-3 px-3 font-bold text-slate-800">{row.akun || '-'}</td>
+                      <td className={`py-3 px-3 font-medium ${row.akun === '425911' ? 'text-amber-700 font-bold' : 'text-slate-600'}`}>{row.ket || '-'}</td>
+                      <td className="py-3 px-4 text-right text-slate-600 font-medium">{t > 0 ? formatRp(t) : '-'}</td>
+                      <td className="py-3 px-4 text-right font-black text-emerald-700 bg-emerald-50/30">{r !== 0 ? formatRp(r) : '-'}</td>
+                      <td className="py-3 px-4 text-right font-bold text-sky-600">{p}</td>
+                   </tr>
+                 )
+               })}
+             </tbody>
+             <tfoot className="bg-slate-100/80 sticky bottom-0">
+               <tr className="font-black text-slate-800 border-t-2 border-slate-300">
+                 <td className="py-4 px-3" colSpan={2}>TOTAL</td>
+                 <td className="py-4 px-4 text-right">{aggPen.tableTargetTotal > 0 ? formatRp(aggPen.tableTargetTotal) : '-'}</td>
+                 <td className="py-4 px-4 text-right text-emerald-800 bg-emerald-100/50">{formatRp(aggPen.tableRealisasiTotal)}</td>
+                 <td className="py-4 px-4 text-right text-sky-700">{aggPen.tableTargetTotal > 0 ? (aggPen.tableRealisasiTotal / aggPen.tableTargetTotal * 100).toFixed(2) + '%' : (aggPen.tableRealisasiTotal > 0 ? '>100.00%' : '-')}</td>
+               </tr>
+             </tfoot>
+           </table>
+         </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition">
+         <h4 className="text-[12px] font-black mb-5 text-emerald-900 uppercase tracking-wider">TREN PENERIMAAN BLU (CASH BASE)</h4>
+         <EyeCatchingLineChart data={aggPen.trenData} keys={['val']} labels={['Penerimaan']} colors={[THEME.emerald]} />
+      </div>
+    </div>
+  );
+};
+
+const TabPemantauanUsulan = ({ aggAjuan }) => {
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      {/* SCORECARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden flex flex-col justify-center">
+           <div className="absolute top-0 left-0 w-1.5 h-full bg-sky-500"></div>
+           <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Usulan Masuk</div>
+           <div className="text-3xl font-black text-slate-800 mt-1">{aggAjuan.totalUsulan} <span className="text-sm font-semibold text-slate-400">Berkas</span></div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden flex flex-col justify-center">
+           <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+           <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Nilai Usulan</div>
+           <div className="text-2xl font-black text-amber-600 mt-1">{formatShortID(aggAjuan.totalNilai)}</div>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden flex flex-col justify-center">
+           <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+           <div className="text-[10px] font-bold text-emerald-800 opacity-80 uppercase tracking-wider">Anggaran Tersedia (Aman)</div>
+           <div className="text-3xl font-black text-emerald-600 mt-1">{aggAjuan.amanCount} <span className="text-sm font-semibold text-emerald-400">Usulan</span></div>
+        </div>
+        <div className="bg-rose-50 p-5 rounded-2xl shadow-sm border border-rose-100 relative overflow-hidden flex flex-col justify-center">
+           <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500"></div>
+           <div className="text-[10px] font-bold text-rose-800 opacity-80 uppercase tracking-wider">Defisit (Kurang Anggaran)</div>
+           <div className="text-3xl font-black text-rose-600 mt-1">{aggAjuan.defisitCount} <span className="text-sm font-semibold text-rose-400">Usulan</span></div>
+        </div>
+      </div>
+
+      {/* TABLE AJUAN */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+         <h4 className="text-[13px] font-black italic text-emerald-800 uppercase border-b-2 border-slate-100 pb-3 mb-4 flex items-center tracking-wider">
+            <SvgIcon path={Icons.Clipboard} className="w-5 h-5 mr-2" /> DETAIL PEMANTAUAN USULAN VS SISA ANGGARAN
+         </h4>
+         <div className="overflow-x-auto custom-scrollbar max-h-[500px]">
+            <table className="min-w-full text-[11px] text-left border-collapse">
+             <thead className="bg-slate-50 sticky top-0 z-10 shadow-sm">
+               <tr>
+                 <th className="py-4 px-4 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">TANGGAL</th>
+                 <th className="py-4 px-4 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">DETIL USULAN</th>
+                 <th className="py-4 px-4 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">PIC KEGIATAN</th>
+                 <th className="py-4 px-4 text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">MAK</th>
+                 <th className="py-4 px-4 text-right text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200 bg-white">PAGU ANGGARAN</th>
+                 <th className="py-4 px-4 text-right text-amber-700 bg-amber-50/50 font-bold uppercase tracking-wider border-b-2 border-amber-200">NILAI USULAN</th>
+                 <th className="py-4 px-4 text-right text-emerald-700 border-b-2 border-emerald-300 bg-emerald-50/50 font-bold uppercase tracking-wider">SISA ANGGARAN</th>
+                 <th className="py-4 px-4 text-center text-slate-600 font-bold uppercase tracking-wider border-b-2 border-slate-200">STATUS</th>
+               </tr>
+             </thead>
+             <tbody className="bg-white divide-y divide-slate-100">
+               {aggAjuan.tableData.map((row, i) => (
+                   <tr key={i} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4 text-slate-600 whitespace-nowrap font-medium">{row.tanggal}</td>
+                      <td className="py-3 px-4 font-bold text-slate-800 max-w-[200px] truncate" title={row.detil}>{row.detil}</td>
+                      <td className="py-3 px-4 text-slate-600 font-medium">{row.pic}</td>
+                      <td className="py-3 px-4 text-slate-500 font-semibold">{row.mak}</td>
+                      <td className="py-3 px-4 text-right font-bold text-slate-700">{formatRp(row.pagu)}</td>
+                      <td className="py-3 px-4 text-right font-black text-amber-600 bg-amber-50/20">{formatRp(row.nilai)}</td>
+                      <td className="py-3 px-4 text-right font-black text-emerald-600 bg-emerald-50/20">{formatRp(row.sisa)}</td>
+                      <td className="py-3 px-4 text-center">
+                          <span className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${row.status === 'Aman' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-200'}`}>
+                             {row.status}
+                          </span>
+                      </td>
+                   </tr>
+               ))}
+               {aggAjuan.tableData.length === 0 && (
+                  <tr><td colSpan={8} className="py-10 text-center text-slate-500 font-semibold italic">Tidak ada usulan pada rentang tanggal ini.</td></tr>
+               )}
+             </tbody>
+           </table>
+         </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// MAIN APP LAYOUT
+// ==========================================
+function App({ onLogout }) {
+  const [activeMenu, setActiveMenu] = useState('Penerimaan');
+  const [dataObjects, setDataObjects] = useState([]);
+  const [kertasKerjaObjects, setKertasKerjaObjects] = useState([]);
+  const [penerimaanObjects, setPenerimaanObjects] = useState([]); 
+  const [ajuanObjects, setAjuanObjects] = useState([]);
+  const [sheetStatus, setSheetStatus] = useState('loading'); 
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [filterSumberPen, setFilterSumberPen] = useState('Semua');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const fetchSheetData = async () => {
+      setSheetStatus('loading');
+      try {
+        const urlDashboard = `${SHEET_BASE_URL}&gid=${GID_KERTAS_KERJA}`;
+        const urlKK = `${SHEET_BASE_URL}&gid=${GID_TREN_RPD}`;
+        const urlPenerimaan = `${SHEET_BASE_URL}&gid=${GID_PENERIMAAN}`;
+        const urlAjuan = `${SHEET_BASE_URL}&gid=${GID_AJUAN}`;
+        
+        const [resDash, resKK, resPen, resAjuan] = await Promise.all([
+           fetch(urlDashboard).catch(() => null),
+           fetch(urlKK).catch(() => null),
+           fetch(urlPenerimaan).catch(() => null),
+           fetch(urlAjuan).catch(() => null)
+        ]);
+
+        if (resDash && resDash.ok) {
+           const text = await resDash.text();
+           const mappedData = mapCSVToObject(parseCSV(text));
+           if (mappedData.length > 0) setDataObjects(mappedData);
+        }
+
+        if (resKK && resKK.ok) {
+           const textKK = await resKK.text();
+           const mappedKK = mapCSVToObject(parseCSV(textKK));
+           if (mappedKK.length > 0) setKertasKerjaObjects(mappedKK);
+        }
+
+        if (resPen && resPen.ok) {
+            const textPen = await resPen.text();
+            const mappedPen = mapCSVToObject(parseCSV(textPen));
+            if (mappedPen.length > 0) setPenerimaanObjects(mappedPen);
+        }
+
+        if (resAjuan && resAjuan.ok) {
+            const textAjuan = await resAjuan.text();
+            const mappedAjuan = mapCSVToObject(parseCSV(textAjuan));
+            if (mappedAjuan.length > 0) setAjuanObjects(mappedAjuan);
+        }
+
+        setSheetStatus('success');
+      } catch (error) {
+        setSheetStatus('error');
+      }
+    };
+    fetchSheetData();
+  }, []);
+
+  const aggregatedData = useMemo(() => {
+     let sum = { paguAwal: 0, blokir: 0, paguEfektif: 0, realisasiTotal: 0, paguRM: 0, realisasiRM: 0, paguBLU: 0, realisasiBLU: 0 };
+     let maps = { 
+        komp: {}, ro: {}, pic: {}, sumber: {}, iku: {}, 
+        sumberBelanja: { 'RM': {'51':{pagu:0, real:0}, '52':{pagu:0, real:0}, '53':{pagu:0, real:0}}, 'BLU': {'51':{pagu:0, real:0}, '52':{pagu:0, real:0}, '53':{pagu:0, real:0}} } 
+     };
+
+     let timeMultiplier = 1;
+     const start = dateRange.start ? new Date(dateRange.start) : new Date('2000-01-01');
+     const end = dateRange.end ? new Date(dateRange.end) : new Date('2100-01-01');
+     end.setHours(23, 59, 59, 999);
+
+     if ((dateRange.start || dateRange.end) && kertasKerjaObjects.length > 0) {
+        let totalRealKK = 0;
+        let filteredRealKK = 0;
+        kertasKerjaObjects.forEach(row => {
+            const r = parseAngka(row['REALISASI']);
+            totalRealKK += r;
+            const d = parseCustomDate(row['TANGGAL']);
+            if (d && d >= start && d <= end) {
+                filteredRealKK += r;
+            }
+        });
+        if (totalRealKK > 0) timeMultiplier = filteredRealKK / totalRealKK;
+        else timeMultiplier = 0;
+     }
+
+     let filteredRaw = [];
+     const anggaranMap = {};
+
+     dataObjects.forEach(row => {
+        const pAwal = parseAngka(row['PAGU AWAL']);
+        const blk = parseAngka(row['BLOKIR']);
+        const pEfek = parseAngka(row['PAGU EFEKTIF']);
+        
+        let isRowInDateRange = true;
+        if (dateRange.start || dateRange.end) {
+            const rowDate = parseCustomDate(row['TANGGAL'] || '');
+            if (rowDate && (rowDate < start || rowDate > end)) {
+               isRowInDateRange = false;
+            }
+        }
+        
+        const sisaKey = Object.keys(row).find(k => k.toUpperCase().includes('SISA'));
+        const paguKey = Object.keys(row).find(k => k.toUpperCase().includes('PAGU EFEK'));
+        const realKey = Object.keys(row).find(k => k.toUpperCase() === 'REALISASI' || k.toUpperCase().includes('REALISASI'));
+
+        const pEfekVal = paguKey ? parseAngka(row[paguKey]) : 0;
+        let sisaVal = 0;
+        if (sisaKey && row[sisaKey] !== '') {
+            sisaVal = parseAngka(row[sisaKey]);
+        } else if (paguKey && realKey) {
+            sisaVal = pEfekVal - parseAngka(row[realKey]);
+        }
+
+        const makLengkap = (row['MAK LENGKAP'] || '').trim();
+        const makPendek = (row['MAK'] || '').trim();
+        const detil = (row['DETIL'] || '').trim();
+
+        const keysCheck = [makLengkap, makPendek, detil];
+        keysCheck.forEach(key => {
+            if (key) {
+                const cleanKey = key.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                if (cleanKey) {
+                    if (!anggaranMap[cleanKey]) {
+                        anggaranMap[cleanKey] = { sisa: 0, pagu: 0 };
+                    }
+                    anggaranMap[cleanKey].sisa += sisaVal;
+                    anggaranMap[cleanKey].pagu += pEfekVal;
+                }
+            }
+        });
+
+        if (isRowInDateRange) {
+           filteredRaw.push({
+              ...row,
+              'REALISASI_SCALED': parseAngka(row['REALISASI']) * timeMultiplier,
+              'USULAN_SCALED': parseAngka(row['USULAN']) * timeMultiplier,
+              'KONTRAK_SCALED': parseAngka(row['KONTRAK']) * timeMultiplier,
+              'SISA_ANGGARAN': sisaVal 
+           });
+        }
+
+        const real = parseAngka(row['REALISASI']) * timeMultiplier;
+        const usul = parseAngka(row['USULAN']) * timeMultiplier;
+        const kon = parseAngka(row['KONTRAK']) * timeMultiplier;
+        
+        sum.paguAwal += pAwal; sum.blokir += blk; sum.paguEfektif += pEfek; sum.realisasiTotal += real;
+        
+        const sumberRaw = (row['SUMBER'] || '').toUpperCase();
+        const isRM = sumberRaw.includes('RM') || sumberRaw.includes('RUPIAH');
+        const sKey = isRM ? 'RM' : 'BLU';
+        if (isRM) { sum.paguRM += pEfek; sum.realisasiRM += real; } else { sum.paguBLU += pEfek; sum.realisasiBLU += real; }
+
+        if (!maps.sumber[sKey]) maps.sumber[sKey] = { label: sKey, pagu: 0, realisasi: 0 };
+        maps.sumber[sKey].pagu += pEfek; maps.sumber[sKey].realisasi += real;
+
+        const jb = (row['JENIS BELANJA'] || row['MAK'] || '').includes('51') ? '51' : (row['JENIS BELANJA'] || row['MAK'] || '').includes('53') ? '53' : '52';
+        maps.sumberBelanja[sKey][jb].pagu += pEfek; maps.sumberBelanja[sKey][jb].real += real;
+
+        const k = row['KOMPONEN'] || 'Tanpa Komponen';
+        if (!maps.komp[k]) maps.komp[k] = { label: k, pagu: 0, usulan: 0, kontrak: 0, realisasi: 0 };
+        maps.komp[k].pagu += pEfek; maps.komp[k].usulan += usul; maps.komp[k].kontrak += kon; maps.komp[k].realisasi += real;
+
+        const ro = row['RO'] || '-';
+        if (!maps.ro[ro]) maps.ro[ro] = { label: ro, pagu: 0, realisasi: 0 };
+        maps.ro[ro].pagu += pEfek; maps.ro[ro].realisasi += real;
+
+        const p = row['PIC'] || '-';
+        if (!maps.pic[p]) maps.pic[p] = { label: p, pagu: 0, realisasi: 0 };
+        maps.pic[p].pagu += pEfek; maps.pic[p].realisasi += real;
+
+        const iku = row['IKU'] || '-';
+        if (!maps.iku[iku]) maps.iku[iku] = { label: iku, paguAwal: 0, pagu: 0, realisasi: 0 };
+        maps.iku[iku].paguAwal += pAwal; maps.iku[iku].pagu += pEfek; maps.iku[iku].realisasi += real;
+     });
+
+     let rpdTrenData = Array(12).fill(0).map((_, i) => ({ label: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][i], usulan: 0, kontrak: 0, realisasi: 0, rpd: 0 }));
+     let totalPaguTren = 0;
+     const dataForTrends = kertasKerjaObjects.length > 0 ? kertasKerjaObjects : dataObjects;
+
+     dataForTrends.forEach(row => {
+        const pEfek = parseAngka(row['PAGU EFEKTIF']);
+        totalPaguTren += pEfek;
+
+        const rowDate = parseCustomDate(row['TANGGAL'] || '');
+        if ((dateRange.start || dateRange.end) && rowDate) {
+           if (rowDate < start || rowDate > end) return;
+        }
+
+        const usul = parseAngka(row['USULAN']);
+        const kon = parseAngka(row['KONTRAK']);
+        const real = parseAngka(row['REALISASI']);
+
+        if (rowDate) {
+            const m = rowDate.getMonth();
+            if (m >= 0 && m < 12) {
+                rpdTrenData[m].usulan += usul;
+                rpdTrenData[m].kontrak += kon;
+                rpdTrenData[m].realisasi += real;
+            }
+        }
+     });
+
+     const rpdBulanan = totalPaguTren / 12;
+     rpdTrenData.forEach(t => t.rpd = rpdBulanan);
+
+     let cU = 0, cK = 0, cR = 0;
+     const kumulatifData = rpdTrenData.map(t => {
+         cU += t.usulan; cK += t.kontrak; cR += t.realisasi;
+         return { label: t.label, usulan: cU, kontrak: cK, realisasi: cR };
+     });
+
+     return { 
+         summary: sum, 
+         sumberData: Object.values(maps.sumber).sort((a,b) => b.pagu - a.pagu), 
+         komponenData: Object.values(maps.komp).sort((a,b) => b.realisasi - a.realisasi), 
+         roData: Object.values(maps.ro).sort((a,b) => b.realisasi - a.realisasi), 
+         picData: Object.values(maps.pic).sort((a,b) => b.realisasi - a.realisasi), 
+         ikuData: Object.values(maps.iku).sort((a,b) => {
+             const pctA = a.pagu > 0 ? (a.realisasi / a.pagu) : 0;
+             const pctB = b.pagu > 0 ? (b.realisasi / b.pagu) : 0;
+             return pctB - pctA; 
+         }),
+         trenData: rpdTrenData, kumulatifData, rawData: filteredRaw, sumberBelanja: maps.sumberBelanja,
+         anggaranMap 
+     };
+  }, [dataObjects, dateRange, kertasKerjaObjects]);
+
+  const aggregatedPen = useMemo(() => {
+     let sum = { target: 0, real: 0, pengesahan: 0, pnbp: 0, blu: 0 }; 
+     let maps = { kelompok: {}, blu: {}, pnbp: {}, tableData: {} };
+     let penTrenData = Array(12).fill(0).map((_, i) => ({ label: ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][i], val: 0 }));
+
+     const start = dateRange.start ? new Date(dateRange.start) : new Date('2000-01-01');
+     const end = dateRange.end ? new Date(dateRange.end) : new Date('2100-01-01');
+     end.setHours(23, 59, 59, 999);
+
+     let uniqueSumber = new Set(['BLU', 'PNBP']); 
+     let filtered = [];
+     
+     // PASS 1: TARGET (Kiri) - Kebal Filter Tanggal
+     penerimaanObjects.forEach(row => {
+        const keys = Object.keys(row);
+        
+        let akunTarget = '';
+        const ketIdx = keys.findIndex(k => k.trim().toUpperCase() === 'KETERANGAN');
+        if (ketIdx > 0 && keys[ketIdx - 1].toUpperCase().includes('AKUN')) {
+            akunTarget = String(row[keys[ketIdx - 1]]).trim();
+        } else {
+            akunTarget = String(row['AKUN_1'] || row['AKUN'] || '').trim();
+        }
+        const safeAkunTarget = akunTarget.replace(/\s+/g, '');
+
+        let colJenisPen = keys.find(k => k.trim().toUpperCase() === 'JENIS PENERIMAAN' || k.includes('JENIS'));
+        const jenisPenTarget = colJenisPen ? String(row[colJenisPen]).trim().toUpperCase() : '';
+        
+        let colTarget = keys.find(k => k.trim().toUpperCase() === 'TARGET' || k.includes('TARGET'));
+        const targetVal = colTarget ? parseAngka(row[colTarget]) : 0;
+        
+        const ketTarget = String(row['KETERANGAN'] || '').trim();
+
+        if (targetVal > 0 && safeAkunTarget) {
+            let katTarget = 'BLU';
+            if (jenisPenTarget.includes('PNBP')) katTarget = 'PNBP';
+            
+            if (filterSumberPen === 'Semua' || filterSumberPen.toUpperCase() === katTarget) {
+                sum.target += targetVal;
+                
+                if (!maps.tableData[safeAkunTarget]) {
+                    maps.tableData[safeAkunTarget] = { akun: akunTarget, ket: ketTarget, target: 0, realisasi: 0 };
+                }
+                maps.tableData[safeAkunTarget].target += targetVal;
+                if(maps.tableData[safeAkunTarget].ket === '' || maps.tableData[safeAkunTarget].ket === '-') {
+                   maps.tableData[safeAkunTarget].ket = ketTarget;
+                }
+            }
+        }
+     });
+
+     // PASS 2: REALISASI (Kanan) - Patuh pada Filter Tanggal
+     penerimaanObjects.forEach(row => {
+        const keys = Object.keys(row);
+
+        let akunReal = '';
+        const namaAkunIdx = keys.findIndex(k => k.trim().toUpperCase() === 'NAMA AKUN');
+        if (namaAkunIdx > 0 && keys[namaAkunIdx - 1].toUpperCase().includes('AKUN')) {
+            akunReal = String(row[keys[namaAkunIdx - 1]]).trim();
+        } else {
+            akunReal = String(row['AKUN_2'] || row['AKUN_1'] || row['AKUN'] || '').trim();
+        }
+        const safeAkunReal = akunReal.replace(/\s+/g, '');
+
+        let colSumber = keys.find(k => k.trim().toUpperCase() === 'SUMBER' || k.includes('SUMBER'));
+        const sumberReal = colSumber ? String(row[colSumber]).trim().toUpperCase() : '';
+
+        let colPen = keys.find(k => k.trim().toUpperCase() === 'PENERIMAAN' || k.includes('PENERIMAAN'));
+        let colReal = keys.find(k => k.trim().toUpperCase() === 'REALISASI' || k.includes('REALISASI'));
+        
+        let realVal = 0;
+        // PENGEMBALIAN LOGIKA: Semua mutlak membaca PENERIMAAN (Tidak ada override 424111/424112)
+        if (colPen && row[colPen] !== '') realVal = parseAngka(row[colPen]);
+        else if (colReal && row[colReal] !== '') realVal = parseAngka(row[colReal]);
+
+        const namaAkunReal = String(row['NAMA AKUN'] || '').trim();
+
+        if (realVal !== 0) {
+            let katReal = 'BLU';
+            if (sumberReal.includes('PNBP')) katReal = 'PNBP';
+
+            if (filterSumberPen === 'Semua' || filterSumberPen.toUpperCase() === katReal) {
+                const rowDate = parseCustomDate(row['TANGGAL'] || '');
+                let inRange = true;
+                if (dateRange.start || dateRange.end) {
+                    if (!rowDate) inRange = false;
+                    else {
+                        if (dateRange.start && rowDate < start) inRange = false;
+                        if (dateRange.end && rowDate > end) inRange = false;
+                    }
+                }
+
+                if (inRange) {
+                    filtered.push(row);
+                    
+                    sum.pengesahan += realVal;
+                    if (katReal === 'PNBP') sum.pnbp += realVal;
+                    if (katReal === 'BLU') sum.blu += realVal;
+
+                    if (safeAkunReal) {
+                        if (!maps.tableData[safeAkunReal]) {
+                            maps.tableData[safeAkunReal] = { akun: akunReal, ket: namaAkunReal, target: 0, realisasi: 0 };
+                        } else if (maps.tableData[safeAkunReal].ket === '-' || maps.tableData[safeAkunReal].ket === '') {
+                            maps.tableData[safeAkunReal].ket = namaAkunReal;
+                        }
+                        maps.tableData[safeAkunReal].realisasi += realVal;
+                    }
+
+                    const kelompok = String(row['KELOMPOK PENERIMAAN'] || row['KELOMPOK'] || '-').trim();
+                    if (realVal > 0) {
+                        if (!maps.kelompok[kelompok]) maps.kelompok[kelompok] = { label: kelompok, val: 0 };
+                        maps.kelompok[kelompok].val += realVal;
+
+                        const ketToUse = namaAkunReal || maps.tableData[safeAkunReal]?.ket || '-';
+                        const labelFull = `${akunReal} - ${ketToUse}`;
+                        if (katReal === 'PNBP') {
+                            if (!maps.pnbp[safeAkunReal]) maps.pnbp[safeAkunReal] = { label: labelFull, ket: ketToUse, val: 0, shortLabel: akunReal, color: THEME.sky };
+                            maps.pnbp[safeAkunReal].val += realVal;
+                        } else {
+                            if (!maps.blu[safeAkunReal]) maps.blu[safeAkunReal] = { label: labelFull, ket: ketToUse, val: 0, shortLabel: akunReal, color: THEME.emerald };
+                            maps.blu[safeAkunReal].val += realVal;
+                        }
+                    }
+
+                    if (rowDate) {
+                        const m = rowDate.getMonth();
+                        if (m >= 0 && m < 12) penTrenData[m].val += realVal;
+                    }
+                }
+            }
+        }
+     });
+
+     sum.real = sum.pengesahan;
+
+     const finalTableData = Object.values(maps.tableData).filter(item => item.akun !== '-' && item.akun !== '');
+     finalTableData.sort((a,b) => a.akun.localeCompare(b.akun));
+
+     let tableTargetTotal = 0;
+     let tableRealisasiTotal = 0;
+     finalTableData.forEach(item => {
+         tableTargetTotal += item.target;
+         tableRealisasiTotal += item.realisasi;
+     });
+
+     return {
+         summary: sum,
+         sumberOptions: Array.from(uniqueSumber).sort(),
+         kelompokData: Object.values(maps.kelompok).sort((a,b) => b.val - a.val),
+         bluData: Object.values(maps.blu).sort((a,b) => b.val - a.val),
+         pnbpData: Object.values(maps.pnbp).sort((a,b) => b.val - a.val),
+         trenData: penTrenData,
+         rawData: filtered,
+         tableData: finalTableData,
+         tableTargetTotal,
+         tableRealisasiTotal
+     };
+  }, [penerimaanObjects, dateRange, filterSumberPen]);
+
+  const aggregatedAjuan = useMemo(() => {
+     let totalUsulan = 0;
+     let totalNilai = 0;
+     let amanCount = 0;
+     let defisitCount = 0;
+
+     const start = dateRange.start ? new Date(dateRange.start) : new Date('2000-01-01');
+     const end = dateRange.end ? new Date(dateRange.end) : new Date('2100-01-01');
+     end.setHours(23, 59, 59, 999);
+
+     let filtered = [];
+
+     ajuanObjects.forEach(row => {
+        const rowDate = parseCustomDate(row['TANGGAL BERKAS KE STAFF PPK'] || row['TANGGAL'] || '');
+        if ((dateRange.start || dateRange.end) && rowDate) {
+           if (rowDate < start || rowDate > end) return;
+        }
+
+        const nilaiKey = Object.keys(row).find(k => k.toUpperCase().includes('NILAI'));
+        const nilai = parseAngka(nilaiKey ? row[nilaiKey] : 0);
+
+        const makKey = Object.keys(row).find(k => k.toUpperCase().includes('MAK'));
+        const makAjuan = makKey ? (row[makKey] || '').trim() : '';
+
+        const detilKey = Object.keys(row).find(k => k.toUpperCase().includes('DETIL') || k.toUpperCase().includes('USULAN'));
+        const detilAjuan = detilKey ? (row[detilKey] || '').trim() : '';
+
+        let sisa = 0;
+        let pagu = 0;
+        
+        const cleanMak = makAjuan.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        const cleanDetil = detilAjuan.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+        if (cleanMak && aggregatedData.anggaranMap[cleanMak] !== undefined) {
+            sisa = aggregatedData.anggaranMap[cleanMak].sisa;
+            pagu = aggregatedData.anggaranMap[cleanMak].pagu;
+        } else if (cleanDetil && aggregatedData.anggaranMap[cleanDetil] !== undefined) {
+            sisa = aggregatedData.anggaranMap[cleanDetil].sisa;
+            pagu = aggregatedData.anggaranMap[cleanDetil].pagu;
+        } else {
+             const foundKey = Object.keys(aggregatedData.anggaranMap).find(k => k.length > 5 && (cleanMak.includes(k) || k.includes(cleanMak)));
+             if (foundKey) {
+                sisa = aggregatedData.anggaranMap[foundKey].sisa;
+                pagu = aggregatedData.anggaranMap[foundKey].pagu;
+             }
+        }
+
+        const status = (sisa >= nilai) ? 'Aman' : 'Defisit';
+
+        totalUsulan++;
+        totalNilai += nilai;
+        if (status === 'Aman') amanCount++; else defisitCount++;
+
+        filtered.push({
+            tanggal: row['TANGGAL BERKAS KE STAFF PPK'] || row['TANGGAL'] || '-',
+            detil: detilAjuan || row['KETERANGAN'] || '-',
+            pic: row['PIC KEGIATAN'] || row['PIC'] || '-',
+            mak: makAjuan,
+            pagu: pagu,
+            nilai: nilai,
+            sisa: sisa,
+            status: status
+        });
+     });
+
+     return { totalUsulan, totalNilai, amanCount, defisitCount, tableData: filtered };
+
+  }, [ajuanObjects, dateRange, aggregatedData.anggaranMap]);
+
+  const renderContent = () => {
+    switch (activeMenu) {
+      case 'Realisasi Anggaran 1': return <TabRealisasiAnggaran1 aggData={aggregatedData} sheetStatus={sheetStatus} />;
+      case 'Realisasi Anggaran & RPD': return <TabRPD aggData={aggregatedData} />;
+      case 'Realisasi anggaran Per IKU': return <TabIKU aggData={aggregatedData} />;
+      case 'Penerimaan': return <TabPenerimaan aggPen={aggregatedPen} filterSumber={filterSumberPen} setFilterSumber={setFilterSumberPen} />;
+      case 'Pemantauan Usulan': return <TabPemantauanUsulan aggAjuan={aggregatedAjuan} />;
+      default: return <TabRealisasiAnggaran1 aggData={aggregatedData} sheetStatus={sheetStatus} />;
+    }
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row h-screen bg-[#eff2f5] font-sans text-gray-800 selection:bg-blue-200">
+      <aside className={`${isSidebarOpen ? 'w-full md:w-64' : 'w-0 md:w-20'} bg-white border-b md:border-b-0 md:border-r border-gray-200 flex flex-col flex-shrink-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out overflow-hidden hidden md:flex`}>
+        <div className="h-16 flex items-center px-5 bg-[#0f172a] shadow-md">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mr-3 shadow-inner relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-3 h-3 bg-teal-400 rounded-bl-full"></div>
+             <img src={LOGO_URL} alt="Logo" className="w-full h-full object-contain relative z-10" />
+          </div>
+          <div className="flex flex-col">
+             <span className="text-[13px] font-black text-white tracking-widest uppercase">BLUEBERRY</span>
+          </div>
+        </div>
+        <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto flex-1 p-3 gap-2 bg-white custom-scrollbar">
+          {[
+            { name: 'Realisasi Anggaran 1', icon: Icons.Dashboard }, 
+            { name: 'Realisasi Anggaran & RPD', icon: Icons.TrendingUp },
+            { name: 'Realisasi anggaran Per IKU', icon: Icons.PieChart },
+            { name: 'Penerimaan', icon: Icons.Wallet },
+            { name: 'Pemantauan Usulan', icon: Icons.Clipboard }
+          ].map((item) => {
+            const isActive = activeMenu === item.name;
+            return (
+              <button key={item.name} onClick={() => setActiveMenu(item.name)}
+                className={`flex items-center px-4 py-3 rounded-lg transition-all text-left flex-shrink-0 md:w-full group ${isActive ? 'bg-blue-50 text-blue-700 shadow-sm border border-blue-100 font-bold' : 'text-gray-500 hover:bg-gray-50 font-medium'}`}
+              >
+                <SvgIcon path={item.icon} className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                <span className="text-[12px] whitespace-nowrap">{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      <main className="flex-1 flex flex-col overflow-hidden w-full relative bg-[#f8fafc]">
+        <header className="h-16 bg-[#0f172a] text-white flex items-center justify-between px-6 z-10 shadow-md flex-shrink-0">
+          <div className="flex items-center">
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 mr-3 hover:bg-slate-800 rounded transition-colors hidden md:block">
+               <SvgIcon path={Icons.Menu} className="w-5 h-5 text-white" />
+            </button>
+            <img src={LOGO_URL} alt="Logo" className="w-10 h-10 object-contain mr-4 drop-shadow-md hidden sm:block bg-white rounded-md p-1" />
+            <div className="flex flex-col justify-center">
+              <h1 className="text-[11px] md:text-sm font-black italic tracking-wide drop-shadow-sm text-blue-100">BLUEBERRY | BLU E-BUDGETING EVALUATION of REALIZATION YTD</h1>
+              <span className="text-[9px] md:text-[10px] text-green-400 font-bold uppercase tracking-wider">RSP Goenawan Partowidigdo</span>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 md:hidden hover:bg-slate-800 rounded transition-colors mr-2">
+                <SvgIcon path={Icons.Menu} className="w-5 h-5 text-white" />
+            </button>
+            <button onClick={onLogout} className="flex items-center px-3 py-1.5 bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white rounded-lg transition-colors border border-rose-500/30 text-[10px] font-bold tracking-wider uppercase ml-2">
+                <SvgIcon path={Icons.Logout} className="w-3.5 h-3.5 md:mr-1.5" />
+                <span className="hidden md:inline">Keluar</span>
+            </button>
+          </div>
+        </header>
+
+        {/* MOBILE NAVIGATION DROPDOWN */}
+        {!isSidebarOpen && (
+           <div className="md:hidden bg-white border-b shadow-sm w-full absolute z-50 animate-fadeIn top-16">
+              <nav className="flex flex-col p-2">
+                {[
+                  { name: 'Realisasi Anggaran 1', icon: Icons.Dashboard }, 
+                  { name: 'Realisasi Anggaran & RPD', icon: Icons.TrendingUp },
+                  { name: 'Realisasi anggaran Per IKU', icon: Icons.PieChart },
+                  { name: 'Penerimaan', icon: Icons.Wallet },
+                  { name: 'Pemantauan Usulan', icon: Icons.Clipboard }
+                ].map(item => (
+                   <button key={item.name} onClick={() => { setActiveMenu(item.name); setIsSidebarOpen(true); }} className={`flex items-center px-4 py-3 rounded-lg w-full text-left ${activeMenu === item.name ? 'bg-blue-50 text-blue-700 font-bold' : 'text-gray-600'}`}>
+                      <SvgIcon path={item.icon} className="w-5 h-5 mr-3" />
+                      <span className="text-[12px]">{item.name}</span>
+                   </button>
+                ))}
+              </nav>
+           </div>
+        )}
+
+        <div className="flex-1 overflow-auto p-4 md:p-6 pb-24 custom-scrollbar">
+          <div className="max-w-[1400px] mx-auto">
+             <div className="mb-5 flex flex-col sm:flex-row justify-between sm:items-end border-b-2 border-gray-200 pb-3 gap-3">
+               <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">{activeMenu}</h2>
+               <div className="relative z-50">
+                 <button 
+                    onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
+                    className="bg-white border-2 border-blue-400 text-[11px] font-black px-4 py-2 rounded-md text-blue-800 shadow-sm hover:bg-blue-50 hover:border-blue-500 transition cursor-pointer flex items-center"
+                 >
+                   {dateRange.start || dateRange.end 
+                     ? `${dateRange.start ? dateRange.start : 'Awal'} s/d ${dateRange.end ? dateRange.end : 'Akhir'}` 
+                     : 'Pilih Rentang Tanggal (Semua Data)'}
+                   <SvgIcon path={Icons.ChevronDown} className="w-3 h-3 ml-2 text-blue-800"/>
+                 </button>
+                 
+                 {isDatePickerOpen && (
+                   <div className="absolute right-0 mt-2 p-4 bg-white border border-gray-200 shadow-xl rounded-lg w-72 transform origin-top-right transition-all">
+                      <div className="text-[11px] font-bold text-gray-700 mb-3 border-b pb-2">Filter Rentang Waktu</div>
+                      <div className="flex flex-col space-y-3 mb-4">
+                         <div>
+                           <label className="text-[10px] text-gray-500 font-bold mb-1 block">Dari Tanggal:</label>
+                           <input type="date" value={dateRange.start} onChange={(e) => setDateRange({...dateRange, start: e.target.value})} className="w-full border border-gray-300 rounded p-1.5 text-[11px] text-gray-700 outline-none focus:border-blue-500" />
+                         </div>
+                         <div>
+                           <label className="text-[10px] text-gray-500 font-bold mb-1 block">Sampai Tanggal:</label>
+                           <input type="date" value={dateRange.end} onChange={(e) => setDateRange({...dateRange, end: e.target.value})} className="w-full border border-gray-300 rounded p-1.5 text-[11px] text-gray-700 outline-none focus:border-blue-500" />
+                         </div>
+                      </div>
+                      <div className="flex space-x-2">
+                         <button onClick={() => { setDateRange({start: '', end: ''}); setIsDatePickerOpen(false); }} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-bold py-2 rounded transition">Reset</button>
+                         <button onClick={() => setIsDatePickerOpen(false)} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold py-2 rounded transition">Terapkan</button>
+                      </div>
+                   </div>
+                 )}
+               </div>
+             </div>
+             {renderContent()}
+          </div>
+        </div>
+        <style dangerouslySetInnerHTML={{__html: `.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; } .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; } .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; } .animate-fadeIn { animation: fadeIn 0.3s ease-in-out; } @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }`}} />
+      </main>
+    </div>
+  );
+}
+
+// ==========================================
+// LOGIN SCREEN COMPONENT
+// ==========================================
+const LoginScreen = ({ onLogin }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (username === 'rspg' && password === 'rspg123') {
+      onLogin();
+    } else {
+      setError('Username atau Password salah!');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4 font-sans selection:bg-emerald-200">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-fadeIn">
+        <div className="bg-emerald-900 p-10 flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-teal-500 rounded-bl-full opacity-20"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500 rounded-tr-full opacity-20"></div>
+          
+          <div className="w-44 h-44 bg-white rounded-[32px] flex items-center justify-center shadow-2xl relative overflow-hidden mb-8 border-[8px] border-emerald-800/30 p-4 transition-transform hover:scale-105">
+             <div className="absolute top-0 right-0 w-16 h-16 bg-teal-500 rounded-bl-full"></div>
+             <img src={LOGO_URL} alt="Logo" className="w-full h-full object-contain relative z-10 drop-shadow-xl" />
+          </div>
+          <h1 className="text-3xl font-black text-white tracking-widest uppercase text-center drop-shadow-md">Blueberry</h1>
+          <p className="text-[13px] text-teal-400 font-bold uppercase tracking-widest mt-2 flex items-center">
+             <SvgIcon path={Icons.Mountain} className="w-4 h-4 mr-2" />
+             RSP Goenawan Partowidigdo
+          </p>
+        </div>
+        
+        <div className="p-8">
+          <h2 className="text-lg font-bold text-slate-800 mb-6 text-center uppercase tracking-wider">Login Sistem</h2>
+          
+          {error && (
+            <div className="bg-rose-50 text-rose-600 p-3.5 rounded-lg text-[11px] font-bold mb-5 text-center border border-rose-200 uppercase tracking-wider flex items-center justify-center">
+               <SvgIcon path={Icons.Activity} className="w-4 h-4 mr-2" />
+               {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Username</label>
+              <input 
+                type="text" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-[13px] font-medium text-slate-800 outline-none focus:border-emerald-500 focus:ring focus:ring-emerald-100 transition shadow-inner"
+                placeholder="Masukkan username..."
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-[13px] font-medium text-slate-800 outline-none focus:border-emerald-500 focus:ring focus:ring-emerald-100 transition shadow-inner"
+                placeholder="••••••••"
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl transition-all shadow-md mt-6 uppercase tracking-wider text-[13px] hover:shadow-lg hover:-translate-y-0.5"
+            >
+              Masuk Dashboard
+            </button>
+          </form>
+        </div>
+        
+        <div className="bg-slate-50 p-5 text-center border-t border-slate-100">
+           <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">E-Budgeting Evaluation YTD © 2026</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// ROOT WRAPPER COMPONENT
+// ==========================================
+export default function Root() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  if (!isAuthenticated) {
+    return <LoginScreen onLogin={() => setIsAuthenticated(true)} />;
+  }
+
+  return <App onLogout={() => setIsAuthenticated(false)} />;
+}

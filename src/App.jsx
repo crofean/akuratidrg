@@ -2980,7 +2980,50 @@ export default function App() {
   const [icdSyncStatus, setIcdSyncStatus] = useState("");
   const [icdSearchQuery, setIcdSearchQuery] = useState("");
   const [autoSyncStatus, setAutoSyncStatus] = useState(""); // "syncing", "done", "failed"
-  const [excludeProcCodes, setExcludeProcCodes] = useState(false);
+  const [excludeCodes, setExcludeCodes] = useState({
+    '89': true,
+    '90_91': true,
+    '99': true,
+    '87.44_87.49': true,
+    '57.94': true,
+    '93.57': true,
+    '93.96': true,
+    '99.21': true,
+    '96.07': true,
+    '99.290': true
+  });
+
+  const excludeProcCodes = useMemo(() => Object.values(excludeCodes).some(v => v), [excludeCodes]);
+
+  const activeExclusionCodes = useMemo(() => {
+    const list = [];
+    if (excludeCodes['89']) list.push('89');
+    if (excludeCodes['90_91']) { list.push('90'); list.push('91'); }
+    if (excludeCodes['99']) list.push('99');
+    if (excludeCodes['87.44_87.49']) { list.push('87.44'); list.push('87.49'); }
+    if (excludeCodes['57.94']) list.push('57.94');
+    if (excludeCodes['93.57']) list.push('93.57');
+    if (excludeCodes['93.96']) list.push('93.96');
+    if (excludeCodes['99.21']) list.push('99.21');
+    if (excludeCodes['96.07']) list.push('96.07');
+    if (excludeCodes['99.290']) list.push('99.290');
+    return list;
+  }, [excludeCodes]);
+
+  const handleToggleAllExclusions = (checked) => {
+    setExcludeCodes({
+      '89': checked,
+      '90_91': checked,
+      '99': checked,
+      '87.44_87.49': checked,
+      '57.94': checked,
+      '93.57': checked,
+      '93.96': checked,
+      '99.21': checked,
+      '96.07': checked,
+      '99.290': checked
+    });
+  };
 
   const [showAdOverlay, setShowAdOverlay] = useState(true);
   const [initialAdDone, setInitialAdDone] = useState(false);
@@ -3735,28 +3778,14 @@ export default function App() {
         for (let i = 1; i < dList.length; i++) { maps.diagS[dList[i]] = (maps.diagS[dList[i]] || 0) + 1; stats.totalDiagSCount++; }
       }
       pList.forEach(p => {
-        if (excludeProcCodes) {
-          const clean = String(p).trim();
-          const cleanNoDot = clean.replace(/\./g, '');
-          if (
-            clean.startsWith("89") ||
-            clean.startsWith("90") ||
-            clean.startsWith("91") ||
-            clean.startsWith("99") ||
-            clean.startsWith("87.44") ||
-            clean.startsWith("87.49") ||
-            clean.startsWith("57.94") ||
-            clean.startsWith("93.57") ||
-            clean.startsWith("93.96") ||
-            cleanNoDot.startsWith("8744") ||
-            cleanNoDot.startsWith("8749") ||
-            cleanNoDot.startsWith("5794") ||
-            cleanNoDot.startsWith("9357") ||
-            cleanNoDot.startsWith("9396")
-          ) {
-            return;
-          }
-        }
+        const clean = String(p).trim();
+        const cleanNoDot = clean.replace(/\./g, '');
+        const isExcluded = activeExclusionCodes.some(exc => {
+          const cleanExc = String(exc).trim().toUpperCase();
+          const noDotExc = cleanExc.replace(/\./g, '');
+          return clean.startsWith(cleanExc) || cleanNoDot.startsWith(noDotExc);
+        });
+        if (isExcluded) return;
         maps.proc[p] = (maps.proc[p] || 0) + 1;
         stats.totalProcCount++;
       });
@@ -3835,10 +3864,7 @@ export default function App() {
       // Hitung skor hanya untuk baris yang memiliki data iDRG
       const hasIdrgData = String(r['IDRG_DRG_CODE'] || '').trim() !== '' && String(r['IDRG_DRG_CODE'] || '').trim() !== '-';
       const sDiag = checkMatchList(dList, idrgDList, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']);
-      const procExclusions = excludeProcCodes 
-        ? ['99.290', '89', '90', '91', '99', '87.44', '87.49', '57.94', '93.57', '93.96'] 
-        : ['99.290'];
-      const sProc = checkMatchList(pList, idrgPList, procExclusions);
+      const sProc = checkMatchList(pList, idrgPList, activeExclusionCodes);
       if (hasIdrgData) { stats.totalScoreDiag += sDiag; stats.totalScoreProc += sProc; stats.scoredCount++; }
 
       const rawCoderId = String(r['CODER_ID'] || r['USER_CODER'] || r['CODER'] || 'UNKNOWN').trim();
@@ -3951,7 +3977,7 @@ export default function App() {
       auditFindings: maps.audit, kpiCoderArray: Object.values(maps.coder).sort((a, b) => b.cases - a.cases), naikKelasStats: Object.values(maps.naikKelas).sort((a, b) => b.totalNilai - a.totalNilai), icuStats: maps.icu,
       topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai }
     };
-  }, [uploadedFiles, globalFilter, ksmOverrides, excludeProcCodes]);
+  }, [uploadedFiles, globalFilter, ksmOverrides, excludeCodes]);
 
   const { totalReviewed, totalSesuai, totalTidak } = useMemo(() => {
     const findings = dashData?.auditFindings || [];
@@ -4432,10 +4458,10 @@ export default function App() {
                   <input 
                     type="checkbox"
                     checked={excludeProcCodes}
-                    onChange={(e) => setExcludeProcCodes(e.target.checked)}
+                    onChange={(e) => handleToggleAllExclusions(e.target.checked)}
                     className="w-3 h-3 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded cursor-pointer"
                   />
-                  <span>Kecualikan 57.94,93.57,93.96</span>
+                  <span>Kecualikan Kode Umum</span>
                 </label>
               </div>
               <MiniTable data={dashData.topProc} columns={[{ header: 'No', className: 'w-8 text-center text-slate-400 font-bold', render: (r, i) => i + 1 }, { header: 'Kode', className: 'font-extrabold text-slate-700', render: (r) => r[0] }, { header: 'Deskripsi', className: 'text-[10px] text-slate-500 max-w-[150px] truncate', render: (r) => getIcdDescription(r[0]) || '-' }, { header: 'Kasus', className: 'text-right font-black text-emerald-600', render: (r) => r[1].toLocaleString() }]} />
@@ -4704,25 +4730,51 @@ export default function App() {
           <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
             <SectionHeader icon={Scissors} title="Laporan Tindakan" desc={`Daftar tindakan (procedure) terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-purple-50 text-purple-600" highlightClass="bg-purple-500/5" exportAction={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'], dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]))} />
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-purple-50/40 border border-purple-100/60 p-4 rounded-3xl backdrop-blur-md shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100/80 text-purple-700 rounded-2xl">
-                  <Scissors size={18} />
+            <div className="bg-purple-50/40 border border-purple-100/60 p-5 rounded-3xl backdrop-blur-md shadow-sm space-y-4">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-100/80 text-purple-700 rounded-2xl"><Scissors size={18} /></div>
+                  <div>
+                    <span className="text-xs font-black text-slate-800 uppercase tracking-wider block">Filter Pengecualian Kode Tindakan</span>
+                    <span className="text-[10px] font-bold text-slate-400">Centang kode tindakan non-operatif / diagnostik yang ingin dikecualikan dari analisis.</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-xs font-black text-slate-800 uppercase tracking-wider block">Filter Khusus Tindakan</span>
-                  <span className="text-[10px] font-bold text-slate-400">Pengecualian kode tindakan non-operatif / diagnostik.</span>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleToggleAllExclusions(true)} className="text-[10px] font-black px-3 py-1.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all shadow-sm hover:-translate-y-0.5">✅ Pilih Semua</button>
+                  <button onClick={() => handleToggleAllExclusions(false)} className="text-[10px] font-black px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-sm hover:-translate-y-0.5">🗑️ Hapus Semua</button>
                 </div>
               </div>
-              <label className="flex items-center gap-2 cursor-pointer select-none bg-white border border-purple-100 hover:border-purple-300 px-4 py-2.5 rounded-2xl hover:bg-purple-50/30 transition-all shadow-sm">
-                <input 
-                  type="checkbox" 
-                  checked={excludeProcCodes} 
-                  onChange={(e) => setExcludeProcCodes(e.target.checked)}
-                  className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 cursor-pointer"
-                />
-                <span className="text-xs font-extrabold text-slate-700">🚫 Kecualikan Kode Medis Umum (89, 90, 91, 99, 87.44, 87.49, 57.94, 93.57, 93.96)</span>
-              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                {[
+                  { key: '89', label: 'Bab 89', desc: 'Pemeriksaan & Evaluasi' },
+                  { key: '90_91', label: 'Bab 90–91', desc: 'Lab & Diagnostik' },
+                  { key: '99', label: 'Bab 99', desc: 'Tindakan Lain-lain' },
+                  { key: '87.44_87.49', label: '87.44 / 87.49', desc: 'Pencitraan Toraks' },
+                  { key: '57.94', label: '57.94', desc: 'Instilasi Kandung Kemih' },
+                  { key: '93.57', label: '93.57', desc: 'Terapi Fisik Klinik' },
+                  { key: '93.96', label: '93.96', desc: 'Terapi Oksigen' },
+                  { key: '99.21', label: '99.21', desc: 'Injeksi Insulin' },
+                  { key: '96.07', label: '96.07', desc: 'Insersi Nasogastric Tube' },
+                  { key: '99.290', label: '99.290', desc: 'Injeksi Lain-lain' },
+                ].map(({ key, label, desc }) => (
+                  <label key={key} className={`flex items-start gap-2 cursor-pointer select-none p-2.5 rounded-2xl border transition-all ${
+                    excludeCodes[key]
+                      ? 'bg-purple-100/60 border-purple-300 shadow-sm'
+                      : 'bg-white border-slate-200 hover:border-purple-200 hover:bg-purple-50/20'
+                  }`}>
+                    <input
+                      type="checkbox"
+                      checked={!!excludeCodes[key]}
+                      onChange={(e) => setExcludeCodes(prev => ({ ...prev, [key]: e.target.checked }))}
+                      className="mt-0.5 w-3.5 h-3.5 rounded text-purple-600 focus:ring-purple-400 border-slate-300 cursor-pointer shrink-0"
+                    />
+                    <div>
+                      <span className={`text-[11px] font-black block leading-tight ${ excludeCodes[key] ? 'text-purple-800' : 'text-slate-700' }`}>{label}</span>
+                      <span className="text-[9px] font-semibold text-slate-400 leading-tight block mt-0.5">{desc}</span>
+                    </div>
+                  </label>
+                ))}
+              </div>
             </div>
 
             <Card className="overflow-hidden border border-slate-200 shadow-xl bg-white rounded-3xl p-0">
@@ -6969,9 +7021,7 @@ export default function App() {
                                 const p1 = String(row['PROCLIST'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
                                 const d2 = String(row['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
                                 const p2 = String(row['IDRG_PROC_LISTS'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
-                                const procEx = excludeProcCodes 
-                                  ? ['99.290', '89', '90', '91', '99', '87.44', '87.49', '57.94', '93.57', '93.96'] 
-                                  : ['99.290'];
+                                const procEx = activeExclusionCodes;
                                 return checkMatchList(d1, d2, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']) < 100 || checkMatchList(p1, p2, procEx) < 100;
                               });
 
@@ -6983,9 +7033,7 @@ export default function App() {
 
                                 // Calculate specific differences, excluding certain medical codes
                                 const EXCLUDED_DIAGS = ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84'];
-                                const EXCLUDED_PROCS = excludeProcCodes 
-                                  ? ['99.290', '89', '90', '91', '99', '87.44', '87.49', '57.94', '93.57', '93.96'] 
-                                  : ['99.290'];
+                                const EXCLUDED_PROCS = activeExclusionCodes;
 
                                 const dOnlyInIna = d1.filter(c => !d2.includes(c) && !EXCLUDED_DIAGS.includes(c));
                                 const dOnlyInIdrg = d2.filter(c => !d1.includes(c) && !EXCLUDED_DIAGS.includes(c));
@@ -8442,7 +8490,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.4.2 (180526-20:05)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.4.3 (180526-20:10)</p>
               </div>
             </div>
           </div>
@@ -8923,7 +8971,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.4.2 (180526-20:05)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.4.3 (180526-20:10)</span>
                 </div>
               )}
             </div>
@@ -9104,7 +9152,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.4.2</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.4.3</span>
             </p>
           </footer>
         </div>

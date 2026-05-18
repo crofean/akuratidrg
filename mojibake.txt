@@ -1,0 +1,54 @@
+1923:         // Reverse map: iDRG -’ INA
+2141:                 {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '-... Selesai!' : uploadProgress.status === 'error' ? '- Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '๐“ Membaca...' : uploadProgress.status === 'parsing' ? '-๏ธ Memproses...' : '-ณ Menghubungkan...'}
+2275:                   <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} -€ข <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
+2301:         ? { t: 'w', icon: '- ๏ธ', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} -€” potensi defisit klaim.` }
+2302:         : { t: 's', icon: '-...', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} -€” klaim dalam posisi surplus.` },
+2304:         ? { t: 'w', icon: '- ๏ธ', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} -€” evaluasi koding CL diperlukan.` }
+2305:         : { t: 's', icon: '-...', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} -€” koding complexity level sudah optimal.` },
+2306:       { t: 'i', icon: '๐“', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
+2307:       { t: 'i', icon: '๐ฅ', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
+2308:       ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '๐’ก', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
+2309:       ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '๐”', txt: `${dashData.auditFindings.length} temuan audit koding -€” segera tinjau di modul Audit.` }] : []),
+2889:             <GitMerge size={14} /> INA-CBG -’ iDRG
+2895:             <GitMerge size={14} className="rotate-180" /> iDRG -’ INA-CBG
+2908:               placeholder={isReverse ? "Cari kode iDRG atau deskripsi-€ฆ" : "Cari kode INACBG atau deskripsi-€ฆ"}
+3070:               <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus -€” klik titik untuk drill-down</p>
+3081:             const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi -€” KRITIS
+3082:             const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi -€” OPTIMAL
+3083:             const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah -€” WASPADA
+3084:             const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah -€” MONITOR
+3093:                     { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'Prioritas perbaikan koding' },
+3094:                     { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'Kode unggulan, pertahankan' },
+3095:                     { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau efisiensi koding' },
+3096:                     { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '๐”ต', note: 'Potensi pengembangan layanan' },
+3122:                       <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">- ๏ธ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
+3136:                       <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-... Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
+3166:               <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus -€” klik titik untuk drill-down</p>
+3189:                     { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'CL terlalu rendah, review koding' },
+3190:                     { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'CL optimal, pertahankan' },
+3191:                     { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau & evaluasi per kasus' },
+3192:                     { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '๐”ต', note: 'Efisien, kembangkan layanan' },
+3218:                       <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">- ๏ธ Kode iDRG Berdefisit Tinggi (Review CL)</p>
+3232:                       <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">-... Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
+3391:             { title: 'Top 10 Departemen -€” Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
+3392:             { title: 'Top 10 Departemen -€” Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
+3477:                             <span className={`w-5 h-5 rounded flex items-center justify-center transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>-–ถ</span>
+3501:                                   <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>-–ถ</span>
+3608:             { title: 'Top 10 DPJP -€” Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
+3609:             { title: 'Top 10 DPJP -€” Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
+3990:                           >-“ SESUAI</button>
+3993:                           >-- TIDAK</button>
+4017:             { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} -’ ${r.akhir}` },
+4024:           ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}-’${r.akhir}`, row => {
+4150:     { icon: '๐“', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
+4151:     { icon: '๐”ฌ', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
+4152:     { icon: '๐’ฐ', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
+4153:     { icon: '๐ฉบ', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
+4154:     { icon: '๐“', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
+4246:                 <p className="text-slate-300 text-[9px] mt-2 font-medium">ยฉ 2026 iDRG Analytics Platform -€ข Kemenkes Edition</p>
+4341:                 <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} -€” {drilldown.data.length.toLocaleString()} Record Terfilter</p>
+4730:       {/* MAP MODAL -€” INACBG-’iDRG or iDRG-’INACBG */}
+4740:                     {mapModal.type === 'ina' ? `Peta INACBG -’ iDRG` : `Peta iDRG -’ INACBG`}
+4743:                     <span className="text-sky-600">{mapModal.code}</span> -€” {mapModal.desc || '-'}
+4771:                         onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} -’ ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
+4822:                         onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} -’ ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
