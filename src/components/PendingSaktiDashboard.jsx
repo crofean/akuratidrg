@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+﻿import React, { useState, useMemo, useCallback, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { 
   FileSpreadsheet, Upload, CheckCircle2, AlertTriangle, Info, Copy, 
@@ -8,7 +8,8 @@ import {
 import html2canvas from 'html2canvas';
 
 // Default API Key for Gemini AI
-const DEFAULT_GEMINI_KEY = 'AIzaSyBzHsc7VxQHseNjuriKRw0uovNJyPQGkxs';
+// API Key default dikosongkan untuk keamanan - masukkan key Anda di kolom input
+const DEFAULT_GEMINI_KEY = '';
 
 // Helper to format currency
 const formatRp = (val) => {
@@ -98,9 +99,9 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
   // 'default' | 'custom' | 'valid' | 'invalid' | 'quota'
   const [apiKeyStatus, setApiKeyStatus] = useState(() => {
     const saved = localStorage.getItem('sak_gemini_key');
-    return (!saved || saved === DEFAULT_GEMINI_KEY) ? 'default' : 'custom';
+    return (!saved || saved.trim() === '') ? 'empty' : 'custom';
   });
-  const [apiKeyInput, setApiKeyInput] = useState(() => localStorage.getItem('sak_gemini_key') || DEFAULT_GEMINI_KEY);
+  const [apiKeyInput, setApiKeyInput] = useState(() => localStorage.getItem('sak_gemini_key') || '');
   const [showKeyPlain, setShowKeyPlain] = useState(false);
 
   // AI State
@@ -727,7 +728,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
         return c;
       }));
       // Mark as valid on success
-      setApiKeyStatus(geminiKey === DEFAULT_GEMINI_KEY ? 'default' : 'valid');
+      setApiKeyStatus('valid');
     } catch (err) {
       console.error(err);
       if (err.message === 'QUOTA_EXHAUSTED' || String(err).includes('429') || String(err).includes('quota') || String(err).includes('exhausted')) {
@@ -862,7 +863,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             border: '1.5px solid',
             width: 'fit-content',
             alignSelf: 'flex-end',
-            ...(apiKeyStatus === 'default' ? { background: 'rgba(100,116,139,0.25)', borderColor: 'rgba(148,163,184,0.4)', color: '#94a3b8' } :
+            ...(apiKeyStatus === 'empty' ? { background: 'rgba(239,68,68,0.3)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' } :
                apiKeyStatus === 'custom' ? { background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(96,165,250,0.5)', color: '#93c5fd' } :
                apiKeyStatus === 'valid' ? { background: 'rgba(16,185,129,0.25)', borderColor: 'rgba(52,211,153,0.5)', color: '#6ee7b7' } :
                apiKeyStatus === 'invalid' ? { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' } :
@@ -870,7 +871,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                { background: 'rgba(100,116,139,0.25)', borderColor: 'rgba(148,163,184,0.4)', color: '#94a3b8' })
           }}>
             <span style={{ width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block',
-              background: apiKeyStatus === 'default' ? '#94a3b8' :
+              background: apiKeyStatus === 'empty' ? '#f87171' :
                           apiKeyStatus === 'custom' ? '#60a5fa' :
                           apiKeyStatus === 'valid' ? '#34d399' :
                           apiKeyStatus === 'invalid' ? '#f87171' :
@@ -903,7 +904,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                 value={apiKeyInput}
                 onChange={(e) => {
                   setApiKeyInput(e.target.value);
-                  setApiKeyStatus(e.target.value === DEFAULT_GEMINI_KEY ? 'default' : 'custom');
+                  setApiKeyStatus(e.target.value.trim() === '' ? 'empty' : 'custom');
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -911,7 +912,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                     if (newKey) {
                       setGeminiKey(newKey);
                       localStorage.setItem('sak_gemini_key', newKey);
-                      setApiKeyStatus(newKey === DEFAULT_GEMINI_KEY ? 'default' : 'custom');
+                      setApiKeyStatus(newKey.trim() === '' ? 'empty' : 'custom');
                     }
                   }
                 }}
@@ -929,7 +930,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                 if (newKey) {
                   setGeminiKey(newKey);
                   localStorage.setItem('sak_gemini_key', newKey);
-                  setApiKeyStatus(newKey === DEFAULT_GEMINI_KEY ? 'default' : 'custom');
+                  setApiKeyStatus(newKey.trim() === '' ? 'empty' : 'custom');
                 }
               }}
               style={{ padding: '8px 14px', background: 'rgba(16,185,129,0.25)', border: '1px solid rgba(52,211,153,0.4)', borderRadius: '10px', color: '#6ee7b7', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', cursor: 'pointer', letterSpacing: '0.05em', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
@@ -943,10 +944,10 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             {/* Tombol Reset ke Default */}
             <button 
               onClick={() => {
-                setApiKeyInput(DEFAULT_GEMINI_KEY);
-                setGeminiKey(DEFAULT_GEMINI_KEY);
-                localStorage.setItem('sak_gemini_key', DEFAULT_GEMINI_KEY);
-                setApiKeyStatus('default');
+                setApiKeyInput('');
+                setGeminiKey('');
+                localStorage.removeItem('sak_gemini_key');
+                setApiKeyStatus('empty');
               }}
               style={{ padding: '8px 10px', background: 'rgba(100,116,139,0.25)', border: '1px solid rgba(148,163,184,0.3)', borderRadius: '10px', color: '#94a3b8', fontSize: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px' }}
               title="Reset ke API Key Default"
