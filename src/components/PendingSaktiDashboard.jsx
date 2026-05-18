@@ -8,7 +8,7 @@ import {
 import html2canvas from 'html2canvas';
 
 // Default API Key for Gemini AI
-const DEFAULT_GEMINI_KEY = 'AIzaSyAEX-AtP0ABYEcgVbj0JICN7KE6eyhzh2c';
+const DEFAULT_GEMINI_KEY = 'AIzaSyBzHsc7VxQHseNjuriKRw0uovNJyPQGkxs';
 
 // Helper to format currency
 const formatRp = (val) => {
