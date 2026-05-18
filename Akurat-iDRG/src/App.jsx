@@ -8294,10 +8294,20 @@ export default function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {data.slice(0, 6).map((item, i) => (
-            <Card key={i} className="p-6 border-0 shadow-xl hover:-translate-y-1 transition-all group cursor-pointer" onClick={() => openDrilldown(`Potensi TopUp: ${item.item}`, r => {
-              const ina_norm = normalize_c(String(r['INACBG'] || '').trim());
-              const diag_norm = normalize_c(r['DIAGNOSA'] || '');
-              const all_codes = (String(r['DIAGLIST'] || '') + " " + String(r['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
+            <Card key={i} className="p-6 border-0 shadow-xl hover:-translate-y-1 transition-all group cursor-pointer" onClick={() => openDrilldown(`Potensi TopUp: ${item.item}`, row => {
+              const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
+              let billing_detected = false;
+              for (let col of billCols) {
+                let v = String(row[col] || row[col.toLowerCase()] || '').trim().toUpperCase();
+                if (v && !["-", "0", "0.0", "NONE", "NAN", ""].includes(v)) { billing_detected = true; break; }
+              }
+              if (billing_detected) return false;
+              
+              if (item.layanan && String(item.layanan) !== String(row['PTD'] || '').trim()) return false;
+
+              const ina_norm = normalize_c(String(row['INACBG'] || '').trim());
+              const diag_norm = normalize_c(row['DIAGNOSA'] || '');
+              const all_codes = (String(row['DIAGLIST'] || '') + " " + String(row['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
               const cbg_ok = item.n_cbgs.length === 0 || item.n_cbgs.some(c => ina_norm === c);
               const diag_ok = item.n_diags.length === 0 || (item.primaryOnly ? item.n_diags.some(c => diag_norm === c) : item.n_diags.some(c => all_codes.includes(c)));
               const proc_ok = item.n_procs.length === 0 || item.n_procs.some(c => all_codes.includes(c));
@@ -8331,6 +8341,16 @@ export default function App() {
             { header: 'Nilai Satuan', className: 'text-right text-slate-400', render: r => formatRp(r.tarif) },
             { header: 'Total Potensi', className: 'text-right font-black text-emerald-600', render: r => formatRp(r.totalPotensi) }
           ]} onRowClick={r => openDrilldown(`Potensi TopUp: ${r.item}`, row => {
+            const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
+            let billing_detected = false;
+            for (let col of billCols) {
+              let v = String(row[col] || row[col.toLowerCase()] || '').trim().toUpperCase();
+              if (v && !["-", "0", "0.0", "NONE", "NAN", ""].includes(v)) { billing_detected = true; break; }
+            }
+            if (billing_detected) return false;
+            
+            if (r.layanan && String(r.layanan) !== String(row['PTD'] || '').trim()) return false;
+
             const ina_norm = normalize_c(String(row['INACBG'] || '').trim());
             const diag_norm = normalize_c(row['DIAGNOSA'] || '');
             const all_codes = (String(row['DIAGLIST'] || '') + " " + String(row['PROCLIST'] || '')).split(/[;, ]/).map(c => normalize_c(c)).filter(c => c);
@@ -8353,10 +8373,39 @@ export default function App() {
           exportToXlsx('Anomali_ICU', ['MRN', 'SEP', 'Ventilator Hour', 'Issue'], csv);
         }} exportText="Ekspor Anomali" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <Card className="p-6 bg-white cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('Seluruh Kasus ICU', r => String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5') || String(r['IDRG_DRG_CODE'] || '').includes('ICU'))}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">Total Kasus ICU</h4><p className="text-4xl font-black text-red-600">{data.total || 0}</p></Card>
-          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 1', r => { const sl = String(r['INACBG'] || '').slice(-1); return sl === '1' && (String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5')); })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 1</h4><p className="text-2xl font-black">{data.sev1 || 0}</p></Card>
-          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 2', r => { const sl = String(r['INACBG'] || '').slice(-1); return sl === '2' && (String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5')); })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 2</h4><p className="text-2xl font-black">{data.sev2 || 0}</p></Card>
-          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 3', r => { const sl = String(r['INACBG'] || '').slice(-1); return sl === '3' && (String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5')); })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 3</h4><p className="text-2xl font-black">{data.sev3 || 0}</p></Card>
+          <Card className="p-6 bg-white cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('Seluruh Kasus ICU', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            return icuInd === '1' || icuLos > 0 || ventHour > 0;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">Total Kasus ICU</h4><p className="text-4xl font-black text-red-600">{data.total || 0}</p></Card>
+          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 1', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            const isIcu = icuInd === '1' || icuLos > 0 || ventHour > 0;
+            const inaCode = String(r['INACBG'] || '').trim();
+            const sev = inaCode.endsWith('-I') ? 1 : inaCode.endsWith('-II') ? 2 : inaCode.endsWith('-III') ? 3 : 0;
+            return isIcu && sev === 1;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 1</h4><p className="text-2xl font-black">{data.sev1 || 0}</p></Card>
+          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 2', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            const isIcu = icuInd === '1' || icuLos > 0 || ventHour > 0;
+            const inaCode = String(r['INACBG'] || '').trim();
+            const sev = inaCode.endsWith('-I') ? 1 : inaCode.endsWith('-II') ? 2 : inaCode.endsWith('-III') ? 3 : 0;
+            return isIcu && sev === 2;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 2</h4><p className="text-2xl font-black">{data.sev2 || 0}</p></Card>
+          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 3', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            const isIcu = icuInd === '1' || icuLos > 0 || ventHour > 0;
+            const inaCode = String(r['INACBG'] || '').trim();
+            const sev = inaCode.endsWith('-I') ? 1 : inaCode.endsWith('-II') ? 2 : inaCode.endsWith('-III') ? 3 : 0;
+            return isIcu && sev === 3;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 3</h4><p className="text-2xl font-black">{data.sev3 || 0}</p></Card>
         </div>
         {data.anomalies?.length > 0 && (
           <Card>
@@ -8367,7 +8416,7 @@ export default function App() {
               { header: 'Vent Hour', className: 'text-right', render: r => r.ventHour },
               { header: 'Issue', className: 'text-orange-600 font-medium', render: r => r.issue },
               { header: 'Severity', render: r => r.severity }
-            ]} />
+            ]} onRowClick={r => openDrilldown('Pasien: SEP ' + r.sep, row => String(row.SEP || row.sep || row.NO_SEP || row.no_sep || '').trim() === String(r.sep).trim())} />
           </Card>
         )}
       </div>
