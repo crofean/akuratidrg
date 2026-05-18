@@ -93,12 +93,22 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
   const [activeSubTab, setActiveSubTab] = useState('dashboard');
   const [isMappingLoading, setIsMappingLoading] = useState(false);
   
-  // AI State
+  // API Key state dengan status visual pembeda
   const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('sak_gemini_key') || DEFAULT_GEMINI_KEY);
+  // 'default' | 'custom' | 'valid' | 'invalid' | 'quota'
+  const [apiKeyStatus, setApiKeyStatus] = useState(() => {
+    const saved = localStorage.getItem('sak_gemini_key');
+    return (!saved || saved === DEFAULT_GEMINI_KEY) ? 'default' : 'custom';
+  });
+  const [apiKeyInput, setApiKeyInput] = useState(() => localStorage.getItem('sak_gemini_key') || DEFAULT_GEMINI_KEY);
+  const [showKeyPlain, setShowKeyPlain] = useState(false);
+
+  // AI State
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiPatient, setAiPatient] = useState(null);
   const [aiResponse, setAiResponse] = useState(null);
   const [manualClinicalText, setManualClinicalText] = useState('');
+  const [showRiwayat, setShowRiwayat] = useState(false);
 
   // Selected Scatter Point Filter
   const [selectedDisputeReason, setSelectedDisputeReason] = useState(null);
@@ -641,24 +651,33 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
 
     const promptText = `
-Anda adalah Auditor Medis Senior Rumah Sakit & Pakar Koding JKN.
-Tolong bantu kami menganalisis klaim pending BPJS berikut:
+ACT AS: Kamu adalah seorang Ahli Koding Klinis (Clinical Coder) Senior, Verifikator Casemix, dan Praktisi INA-CBG tingkat lanjut di Indonesia. Kamu memiliki keahlian mendalam dalam audit klaim rumah sakit, Utilization Review, dan penyelesaian dispute atau pending klaim JKN.
 
+TASK: Tugasmu adalah menganalisis kasus klaim JKN yang berstatus Pending dari BPJS Kesehatan, memverifikasi kesesuaian koding diagnosis dan prosedur, serta memberikan argumen sanggahan (jika koding RS sudah benar) atau rekomendasi perbaikan (jika terdapat coding error).
+
+CONSTRAINT & REFERENCE RULES (WAJIB DIPATUHI):
+Dalam memberikan analisis dan kesimpulan, kamu DILARANG menggunakan referensi medis umum atau versi ICD terbaru. Kamu WAJIB secara ketat merujuk dan melandaskan argumenmu HANYA pada:
+- PMK No. 26 Tahun 2021 (Pedoman INA-CBG dalam Pelaksanaan Jaminan Kesehatan)
+- PMK No. 3 Tahun 2023 (Standar Tarif Pelayanan Kesehatan dalam Penyelenggaraan Program JKN)
+- Berita Acara Kesepakatan (BAK) Kemenkes dan BPJS Kesehatan yang relevan dengan kasus
+- ICD-10 (WHO Edition, Tahun 2010) untuk validasi Rule of Morbidity (MB1-MB5) dan penentuan Diagnosis Utama/Sekunder
+- ICD-9-CM (Tahun 2010) untuk validasi koding tindakan/prosedur
+- PNPK (Pedoman Nasional Pelayanan Kedokteran) Terbaru yang relevan
+
+DATA KLAIM YANG DIANALISIS:
 1. Nomor SEP: ${claim.sep}
 2. Nama Pasien: ${claim.nama}
 3. Alasan Pending BPJS: ${claim.keterangan}
-4. Kode Diagnosis Utama/Sekunder (Kondisi Utama): ${claim.diaglist}
-5. Kode Tindakan/Prosedur: ${claim.proclist}
-6. Catatan Resume Medis / Bukti Klinis: ${manualClinicalText || 'Tidak ada catatan klinis tambahan yang diunggah. Analisis berdasarkan koding saja.'}
+4. Kode Diagnosis Utama/Sekunder (ICD-10): ${claim.diaglist}
+5. Kode Tindakan/Prosedur (ICD-9-CM): ${claim.proclist}
+6. Catatan Resume Medis / Bukti Klinis Tambahan: ${manualClinicalText || 'Tidak ada catatan klinis tambahan. Analisis berdasarkan koding dan alasan pending saja.'}
 
-Tolong berikan jawaban audit komprehensif dalam format JSON dengan key berikut:
+Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, tanpa markdown triple backticks):
 {
-  "saran_perbaikan": "Langkah logis yang harus diambil coder/dokter untuk memperbaiki status klaim (maksimal 2 kalimat)",
-  "kutipan_regulasi": "Dasar hukum / PMK / Pedoman Koding ICD-10 yang mendukung argumen rumah sakit (sebutkan pasal/pedoman spesifik jika ada)",
-  "jawaban_sanggahan_rs": "Draft naskah formal sanggahan sanggar / surat balasan verifikator BPJS yang profesional, logis secara klinis, dan tegas agar klaim disetujui."
-}
-Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
-`;
+  "saran_perbaikan": "Langkah konkret yang harus diambil coder/DPJP berdasarkan regulasi INA-CBG dan ICD-10/ICD-9-CM (maksimal 3 poin)",
+  "kutipan_regulasi": "Dasar hukum spesifik dari PMK 26/2021, PMK 3/2023, BAK Kemenkes-BPJS, atau PNPK yang mendukung argumen RS (sebutkan pasal/klausul/halaman jika tersedia)",
+  "jawaban_sanggahan_rs": "Draft naskah formal sanggahan kepada verifikator BPJS yang profesional, berbasis regulasi, logis secara klinis, dan berpotensi tinggi diterima. Sertakan dasar hukum yang dikutip."
+}`;
 
     try {
       const response = await fetch(url, {
@@ -707,27 +726,31 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
         }
         return c;
       }));
+      // Mark as valid on success
+      setApiKeyStatus(geminiKey === DEFAULT_GEMINI_KEY ? 'default' : 'valid');
     } catch (err) {
       console.error(err);
       if (err.message === 'QUOTA_EXHAUSTED' || String(err).includes('429') || String(err).includes('quota') || String(err).includes('exhausted')) {
+        setApiKeyStatus('quota');
         setAiResponse({
           saran_perbaikan: '⚠️ KUOTA TOKEN GEMINI HABIS / TERCAPAI BATAS LIMIT (HTTP 429).',
           kutipan_regulasi: 'Peringatan Quota Limit: Penggunaan API Key Anda telah melampaui batas kuota gratis atau berbayar Google AI Studio.',
-          jawaban_sanggahan_rs: 'Tindakan Direkomendasikan:\n1. Ganti API Key Gemini Anda di bagian pojok kanan atas halaman pada kotak input "Gemini API Key".\n2. Anda bisa mendapatkan API Key gratis baru di Google AI Studio (https://aistudio.google.com/).\n3. Tempel API Key baru tersebut pada kolom input di atas untuk melanjutkan analisis klaim secara otomatis.'
+          jawaban_sanggahan_rs: 'Tindakan Direkomendasikan:\n1. Ganti API Key Gemini Anda di bagian kanan atas halaman.\n2. Dapatkan API Key gratis baru di Google AI Studio: https://aistudio.google.com/\n3. Tempel API Key baru, tekan ENTER atau klik tombol SIMPAN KEY.'
         });
-        alert('⚠️ Kuota API Key Gemini Habis!\n\nSilakan ganti API Key Anda di bagian atas halaman dengan kunci baru yang masih aktif atau buat API Key gratis baru di Google AI Studio.');
+        alert('⚠️ Kuota API Key Gemini Habis!\n\nSilakan ganti API Key Anda di bagian atas halaman.');
       } else if (err.message === 'INVALID_API_KEY' || String(err).includes('403') || String(err).includes('Forbidden')) {
+        setApiKeyStatus('invalid');
         setAiResponse({
           saran_perbaikan: '⚠️ API KEY GEMINI TIDAK VALID / KUNCI TIDAK AKTIF (HTTP 403).',
-          kutipan_regulasi: 'Kunci API Default Telah Ditangguhkan oleh Google karena Keamanan / Limit Penggunaan Publik.',
-          jawaban_sanggahan_rs: 'Tindakan Direkomendasikan:\n1. Masukkan API Key Pribadi Anda pada kotak input di bagian atas halaman (Google Gemini API Key).\n2. Dapatkan API Key Gemini 100% GRATIS dan instan dari Google AI Studio: https://aistudio.google.com/ \n3. Salin kunci dari AI Studio, tempel ke kotak input di dasbor ini, dan klik tombol analisis lagi. Aplikasi akan langsung memproses analisis klaim secara real-time!'
+          kutipan_regulasi: 'Kunci API Ditangguhkan oleh Google. Gunakan kunci pribadi dari Google AI Studio.',
+          jawaban_sanggahan_rs: 'Tindakan:\n1. Masukkan API Key baru di kotak input atas.\n2. Dapatkan GRATIS dari: https://aistudio.google.com/\n3. Setelah diisi, tekan Enter atau klik SIMPAN KEY.'
         });
-        alert('⚠️ API Key Gemini Tidak Valid / Forbidden (403)!\n\nKunci API default telah dinonaktifkan oleh Google. Silakan masukkan API Key pribadi Anda yang aktif dari Google AI Studio (bisa didapatkan secara gratis).');
+        alert('⚠️ API Key Tidak Valid (403)!\n\nSilakan masukkan API Key pribadi Anda yang aktif.');
       } else {
         setAiResponse({
-          saran_perbaikan: 'Gagal menghubungi Gemini AI. Hubungkan koneksi internet Anda atau periksa API Key Anda.',
+          saran_perbaikan: 'Gagal menghubungi Gemini AI. Periksa koneksi internet dan API Key Anda.',
           kutipan_regulasi: 'PMK No. 26 Tahun 2021 / ICD-10 Pedoman Koding.',
-          jawaban_sanggahan_rs: 'Draft tanggapan manual: Terjadi kendala teknis saat melakukan peninjauan AI.'
+          jawaban_sanggahan_rs: 'Terjadi kendala teknis. Pastikan koneksi internet aktif dan API Key valid.'
         });
       }
     } finally {
@@ -823,32 +846,114 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           </div>
         </div>
 
-        {/* API Key settings panel */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto relative z-10 shrink-0">
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10">
-            <Brain size={16} className="text-teal-300" />
-            <input 
-              type="password" 
-              placeholder="Google Gemini API Key..." 
-              value={geminiKey}
-              onChange={(e) => {
-                setGeminiKey(e.target.value);
-                localStorage.setItem('sak_gemini_key', e.target.value);
-              }}
-              className="bg-transparent border-none outline-none text-xs text-white placeholder-slate-400 w-44 font-mono font-bold"
-            />
+        {/* API Key settings panel - dengan visual pembeda status */}
+        <div className="flex flex-col gap-2 w-full md:w-auto relative z-10 shrink-0">
+          {/* Status Badge */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '10px',
+            fontWeight: '800',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            padding: '3px 10px',
+            borderRadius: '999px',
+            border: '1.5px solid',
+            width: 'fit-content',
+            alignSelf: 'flex-end',
+            ...(apiKeyStatus === 'default' ? { background: 'rgba(100,116,139,0.25)', borderColor: 'rgba(148,163,184,0.4)', color: '#94a3b8' } :
+               apiKeyStatus === 'custom' ? { background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(96,165,250,0.5)', color: '#93c5fd' } :
+               apiKeyStatus === 'valid' ? { background: 'rgba(16,185,129,0.25)', borderColor: 'rgba(52,211,153,0.5)', color: '#6ee7b7' } :
+               apiKeyStatus === 'invalid' ? { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' } :
+               apiKeyStatus === 'quota' ? { background: 'rgba(245,158,11,0.25)', borderColor: 'rgba(252,211,77,0.5)', color: '#fde68a' } :
+               { background: 'rgba(100,116,139,0.25)', borderColor: 'rgba(148,163,184,0.4)', color: '#94a3b8' })
+          }}>
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block',
+              background: apiKeyStatus === 'default' ? '#94a3b8' :
+                          apiKeyStatus === 'custom' ? '#60a5fa' :
+                          apiKeyStatus === 'valid' ? '#34d399' :
+                          apiKeyStatus === 'invalid' ? '#f87171' :
+                          apiKeyStatus === 'quota' ? '#fbbf24' : '#94a3b8'
+            }} />
+            {apiKeyStatus === 'default' ? '🔑 API Key: Default (Bawaan)' :
+             apiKeyStatus === 'custom' ? '🔵 API Key: Kustom (Belum Terverifikasi)' :
+             apiKeyStatus === 'valid' ? '✅ API Key: Aktif & Valid' :
+             apiKeyStatus === 'invalid' ? '❌ API Key: Tidak Valid (403)' :
+             apiKeyStatus === 'quota' ? '⚠️ API Key: Kuota Habis (429)' : '🔑 API Key: Default'}
           </div>
-          <button 
-            onClick={() => {
-              setGeminiKey(DEFAULT_GEMINI_KEY);
-              localStorage.setItem('sak_gemini_key', DEFAULT_GEMINI_KEY);
-              alert('Kunci API default dipulihkan.');
-            }}
-            className="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 transition-colors text-xs font-black uppercase tracking-wider border border-slate-700/50"
-            title="Gunakan API Key Default"
-          >
-            <RefreshCw size={14} />
-          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px',
+              background: apiKeyStatus === 'invalid' ? 'rgba(239,68,68,0.2)' :
+                          apiKeyStatus === 'quota' ? 'rgba(245,158,11,0.2)' :
+                          apiKeyStatus === 'valid' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(8px)',
+              padding: '8px 12px',
+              borderRadius: '12px',
+              border: apiKeyStatus === 'invalid' ? '1px solid rgba(239,68,68,0.4)' :
+                      apiKeyStatus === 'quota' ? '1px solid rgba(245,158,11,0.4)' :
+                      apiKeyStatus === 'valid' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.1)',
+              transition: 'all 0.3s'
+            }}>
+              <Brain size={16} style={{ color: apiKeyStatus === 'valid' ? '#6ee7b7' : '#5eead4', flexShrink: 0 }} />
+              <input 
+                type={showKeyPlain ? 'text' : 'password'}
+                placeholder="Masukkan Gemini API Key..."
+                value={apiKeyInput}
+                onChange={(e) => {
+                  setApiKeyInput(e.target.value);
+                  setApiKeyStatus(e.target.value === DEFAULT_GEMINI_KEY ? 'default' : 'custom');
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const newKey = apiKeyInput.trim();
+                    if (newKey) {
+                      setGeminiKey(newKey);
+                      localStorage.setItem('sak_gemini_key', newKey);
+                      setApiKeyStatus(newKey === DEFAULT_GEMINI_KEY ? 'default' : 'custom');
+                    }
+                  }
+                }}
+                style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: '11px', color: 'white', width: '180px', fontFamily: 'monospace', fontWeight: '700' }}
+              />
+              <button onClick={() => setShowKeyPlain(p => !p)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '0', fontSize: '11px' }} title={showKeyPlain ? 'Sembunyikan' : 'Tampilkan'}>
+                {showKeyPlain ? '🙈' : '👁️'}
+              </button>
+            </div>
+
+            {/* Tombol SIMPAN KEY */}
+            <button 
+              onClick={() => {
+                const newKey = apiKeyInput.trim();
+                if (newKey) {
+                  setGeminiKey(newKey);
+                  localStorage.setItem('sak_gemini_key', newKey);
+                  setApiKeyStatus(newKey === DEFAULT_GEMINI_KEY ? 'default' : 'custom');
+                }
+              }}
+              style={{ padding: '8px 14px', background: 'rgba(16,185,129,0.25)', border: '1px solid rgba(52,211,153,0.4)', borderRadius: '10px', color: '#6ee7b7', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', cursor: 'pointer', letterSpacing: '0.05em', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+              onMouseEnter={e => e.target.style.background = 'rgba(16,185,129,0.4)'}
+              onMouseLeave={e => e.target.style.background = 'rgba(16,185,129,0.25)'}
+              title="Simpan API Key"
+            >
+              💾 Simpan
+            </button>
+
+            {/* Tombol Reset ke Default */}
+            <button 
+              onClick={() => {
+                setApiKeyInput(DEFAULT_GEMINI_KEY);
+                setGeminiKey(DEFAULT_GEMINI_KEY);
+                localStorage.setItem('sak_gemini_key', DEFAULT_GEMINI_KEY);
+                setApiKeyStatus('default');
+              }}
+              style={{ padding: '8px 10px', background: 'rgba(100,116,139,0.25)', border: '1px solid rgba(148,163,184,0.3)', borderRadius: '10px', color: '#94a3b8', fontSize: '10px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '4px' }}
+              title="Reset ke API Key Default"
+            >
+              <RefreshCw size={13} /> Default
+            </button>
+          </div>
         </div>
       </div>
 
@@ -2183,13 +2288,37 @@ const RootCauseChart = React.memo(({ stats, onBarClick }) => {
 
 // Generic UI Card
 const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => (
-  <div id={id} className={`bg-white rounded-3xl border border-slate-100 shadow-md relative group ${className}`}>
+  <div id={id} style={{ position: 'relative' }} className={`bg-white rounded-3xl border border-slate-100 shadow-md ${className}`}>
     {downloadTitle && id && (
       <button 
         onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} 
-        className="absolute top-4 right-4 text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1 z-[60] print:hidden"
+        style={{
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          zIndex: 60,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+          background: 'linear-gradient(135deg, #0ea5e9, #0284c7)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '6px 12px',
+          fontSize: '11px',
+          fontWeight: '800',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(14,165,233,0.35)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'}
+        title={`Unduh ${downloadTitle} sebagai gambar PNG`}
+        className="print-hidden"
       >
-        <Download size={14} /> Simpan PNG
+        <Download size={13} /> Simpan PNG
       </button>
     )}
     {children}
