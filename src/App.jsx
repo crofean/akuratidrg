@@ -724,8 +724,36 @@ const TABS = [
 
 const normDpjp = (name) => {
   if (!name || name.trim() === '' || name.trim() === '-') return 'UNKNOWN';
-  let n = String(name).toUpperCase().replace(/[,.]/g, ' ').replace(/\s+/g, ' ').trim();
-  if (n.startsWith('DRG ')) n = n.substring(4).trim(); else if (n.startsWith('DR ')) n = n.substring(3).trim();
+  
+  // 1. Clean the string: replace punctuation with spaces, trim, uppercase
+  let n = String(name).toUpperCase()
+    .replace(/[.,/()\-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // 2. Strip professional prefixes at the start
+  n = n.replace(/^\b(DRG|DR|PROF|KMN)\b\s*/g, '');
+  
+  // 3. Strip professional/academic suffixes (degrees) at the end
+  n = n.replace(/\b(SP\s*[A-Z]+([\s-]*[A-Z]+)*)\b/g, '');
+  n = n.replace(/\b(M\s*KES|M\s*SC|PH\s*D|MARS|MMRS|MH|M\s*KED|MKM|FIHA|FACS|FICS|FISQUA|FINS|FINA|FAPSR)\b/g, '');
+
+  // Reclean double spaces
+  n = n.replace(/\s+/g, ' ').trim();
+
+  // 4. Canonical typo mapping (smart grouping dictionary)
+  const aliasMap = {
+    'TITO PORBA': 'TITO PURBA',
+    'TITO PURBAA': 'TITO PURBA',
+    'TITO PARBA': 'TITO PURBA',
+    'TITO PURBA SP B': 'TITO PURBA',
+    'TITO PORBA SP B': 'TITO PURBA'
+  };
+
+  if (aliasMap[n]) {
+    n = aliasMap[n];
+  }
+
   return n || 'UNKNOWN';
 };
 
