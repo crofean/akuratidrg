@@ -5,6 +5,7 @@ import {
   Move, Search, Check, RefreshCw, Sparkles, Brain, Download, HelpCircle, 
   ChevronDown, ChevronUp, FileText, UserCheck, ShieldCheck, Stethoscope
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 
 // Default API Key for Gemini AI
 const DEFAULT_GEMINI_KEY = 'AIzaSyAEX-AtP0ABYEcgVbj0JICN7KE6eyhzh2c';
@@ -61,16 +62,7 @@ const saveAsPng = async (elementId, fileName) => {
   const el = document.getElementById(elementId);
   if (!el) return;
   try {
-    if (!window.html2canvas) {
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-        script.onload = resolve;
-        script.onerror = () => reject(new Error('Failed to load html2canvas'));
-        document.head.appendChild(script);
-      });
-    }
-    const canvas = await window.html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
+    const canvas = await html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
     const url = canvas.toDataURL('image/png');
     const link = document.createElement("a");
     link.href = url;
@@ -681,6 +673,9 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
         if (response.status === 429) {
           throw new Error('QUOTA_EXHAUSTED');
         }
+        if (response.status === 403) {
+          throw new Error('INVALID_API_KEY');
+        }
         throw new Error(`API Error (${response.status})`);
       }
 
@@ -721,6 +716,13 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           jawaban_sanggahan_rs: 'Tindakan Direkomendasikan:\n1. Ganti API Key Gemini Anda di bagian pojok kanan atas halaman pada kotak input "Gemini API Key".\n2. Anda bisa mendapatkan API Key gratis baru di Google AI Studio (https://aistudio.google.com/).\n3. Tempel API Key baru tersebut pada kolom input di atas untuk melanjutkan analisis klaim secara otomatis.'
         });
         alert('⚠️ Kuota API Key Gemini Habis!\n\nSilakan ganti API Key Anda di bagian atas halaman dengan kunci baru yang masih aktif atau buat API Key gratis baru di Google AI Studio.');
+      } else if (err.message === 'INVALID_API_KEY' || String(err).includes('403') || String(err).includes('Forbidden')) {
+        setAiResponse({
+          saran_perbaikan: '⚠️ API KEY GEMINI TIDAK VALID / KUNCI TIDAK AKTIF (HTTP 403).',
+          kutipan_regulasi: 'Kunci API Default Telah Ditangguhkan oleh Google karena Keamanan / Limit Penggunaan Publik.',
+          jawaban_sanggahan_rs: 'Tindakan Direkomendasikan:\n1. Masukkan API Key Pribadi Anda pada kotak input di bagian atas halaman (Google Gemini API Key).\n2. Dapatkan API Key Gemini 100% GRATIS dan instan dari Google AI Studio: https://aistudio.google.com/ \n3. Salin kunci dari AI Studio, tempel ke kotak input di dasbor ini, dan klik tombol analisis lagi. Aplikasi akan langsung memproses analisis klaim secara real-time!'
+        });
+        alert('⚠️ API Key Gemini Tidak Valid / Forbidden (403)!\n\nKunci API default telah dinonaktifkan oleh Google. Silakan masukkan API Key pribadi Anda yang aktif dari Google AI Studio (bisa didapatkan secara gratis).');
       } else {
         setAiResponse({
           saran_perbaikan: 'Gagal menghubungi Gemini AI. Hubungkan koneksi internet Anda atau periksa API Key Anda.',

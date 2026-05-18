@@ -2,21 +2,13 @@ import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet } from 'lucide-react';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
+import html2canvas from 'html2canvas';
 
 export const saveAsPng = async (elementId, fileName) => {
   const el = document.getElementById(elementId);
   if (!el) return;
   try {
-    if (!window.html2canvas) {
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-        script.onload = resolve;
-        script.onerror = () => reject(new Error('Failed to load html2canvas'));
-        document.head.appendChild(script);
-      });
-    }
-    const canvas = await window.html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
+    const canvas = await html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
     const url = canvas.toDataURL('image/png');
     const link = document.createElement("a");
     link.href = url;
