@@ -2314,7 +2314,7 @@ const InsightSosialisasiComponent = React.memo(({
     if (code === '-' || code.toLowerCase() === 'none') return;
 
     if (!diagGroups[code]) {
-      diagGroups[code] = { code, desc: String(r.DESKRIPSI_DIAGNOSA || r.DESKRIPSI || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
+      diagGroups[code] = { code, desc: getIcdDescription(code) || String(r.DESKRIPSI_DIAGNOSA || r.DESKRIPSI || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
     }
     const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
     const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
@@ -2344,7 +2344,7 @@ const InsightSosialisasiComponent = React.memo(({
     }
     if (code === '-' || code === '') return;
     if (!procGroups[code]) {
-      procGroups[code] = { code, desc: String(r.DESKRIPSI_PROSEDUR || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
+      procGroups[code] = { code, desc: getIcdDescription(code) || String(r.DESKRIPSI_PROSEDUR || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
     }
     const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
     const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
@@ -6161,7 +6161,7 @@ export default function App() {
       if (code === '-' || code.toLowerCase() === 'none') return;
 
       if (!diagGroups[code]) {
-        diagGroups[code] = { code, desc: String(r.DESKRIPSI_DIAGNOSA || r.DESKRIPSI || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
+        diagGroups[code] = { code, desc: getIcdDescription(code) || String(r.DESKRIPSI_DIAGNOSA || r.DESKRIPSI || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
       }
       const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
       const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
@@ -6173,10 +6173,25 @@ export default function App() {
     // 8. Top 5 Tindakan Utama Berdefisit (Primary Procedures ICD-9-CM)
     const procGroups = {};
     deficitRows.forEach(r => {
-      const code = String(r.PROSEDUR || r.PROSEDUR_UTAMA || r.PROCLIST || '-').trim().split(/[;, ]/)[0] || '-';
+      const rawProcs = String(r.PROSEDUR || r.PROSEDUR_UTAMA || r.PROCLIST || '-').split(/[;,]/).map(p => p.trim()).filter(Boolean);
+      let code = '-';
+      for (let p of rawProcs) {
+        if (p === '-' || p.toLowerCase() === 'none') continue;
+        const cleanP = p.trim().toUpperCase();
+        const noDotP = cleanP.replace(/\./g, '');
+        const isExcluded = (activeExclusionCodes || []).some(exc => {
+          const cleanExc = String(exc).trim().toUpperCase();
+          const noDotExc = cleanExc.replace(/\./g, '');
+          return cleanP === cleanExc || cleanP.startsWith(cleanExc) || noDotP.startsWith(noDotExc);
+        });
+        if (!isExcluded) {
+          code = p;
+          break;
+        }
+      }
       if (code === '-' || code === '') return;
       if (!procGroups[code]) {
-        procGroups[code] = { code, desc: String(r.DESKRIPSI_PROSEDUR || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
+        procGroups[code] = { code, desc: getIcdDescription(code) || String(r.DESKRIPSI_PROSEDUR || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
       }
       const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
       const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
