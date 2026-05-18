@@ -57,6 +57,30 @@ const maskName = (name) => {
   return res;
 };
 
+const saveAsPng = async (elementId, fileName) => {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  try {
+    if (!window.html2canvas) {
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('Failed to load html2canvas'));
+        document.head.appendChild(script);
+      });
+    }
+    const canvas = await window.html2canvas(el, { backgroundColor: '#ffffff', scale: 2 });
+    const url = canvas.toDataURL('image/png');
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${fileName.replace(/\s+/g, '_')}.png`;
+    link.click();
+  } catch (err) {
+    console.error('Failed to save chart', err);
+  }
+};
+
 export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], resolveKsmDept, openDrilldown }) {
   const [fileData, setFileData] = useState([]);
   const [headers, setHeaders] = useState([]);
@@ -954,7 +978,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           </div>
 
           {/* PRIORITY MATRIX PLOT (FULL WIDTH) */}
-          <Card className="p-6 flex flex-col gap-5 bg-white border border-slate-200 mb-6">
+          <Card id="priority-matrix-card" downloadTitle="Matriks Prioritas Masalah Pending" className="p-6 flex flex-col gap-5 bg-white border border-slate-200 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 border-slate-100">
               <div>
                 <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
@@ -1159,7 +1183,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               
               {/* KELOMPOK KASUS DISPUTE */}
-              <Card className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
+              <Card id="case-groups-card" downloadTitle="Kelompok Kasus Pending" className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
                 <div className="space-y-5">
                   <div className="border-b pb-4 border-slate-100">
                     <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
@@ -1181,7 +1205,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
               </Card>
 
               {/* FAKTOR PENYEBAB & INTEGRASI */}
-              <Card className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
+              <Card id="root-cause-card" downloadTitle="Faktor Penyebab dan Aksi Integrasi" className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
                 <div className="space-y-5">
                   <div className="border-b pb-4 border-slate-100">
                     <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
@@ -1545,7 +1569,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
           </div>
 
           {/* Static view of Bokeh Scatterplot for printing */}
-          <div className="border border-slate-200 p-6 rounded-3xl bg-white space-y-4">
+          <Card id="print-matrix-zoning" downloadTitle="Matriks BEP Zoning (Laporan)" className="p-6 space-y-4">
             <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest text-center border-b pb-3 border-slate-100">
               Peta Sebaran Prioritas Masalah Pending BPJS (Matriks BEP Zoning)
             </h3>
@@ -1602,7 +1626,7 @@ Pastikan hanya mengembalikan JSON murni tanpa markdown triple backticks.
                 })}
               </svg>
             </div>
-          </div>
+          </Card>
 
           {/* Top 10 Dispute Reasons by Category (Medis, Koding, Administrasi, Readmisi) */}
           <div className="print-page-break space-y-6">
@@ -2156,8 +2180,16 @@ const RootCauseChart = React.memo(({ stats, onBarClick }) => {
 });
 
 // Generic UI Card
-const Card = React.memo(({ children, className = '' }) => (
-  <div className={`bg-white rounded-3xl border border-slate-100 shadow-md ${className}`}>
+const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => (
+  <div id={id} className={`bg-white rounded-3xl border border-slate-100 shadow-md relative group ${className}`}>
+    {downloadTitle && id && (
+      <button 
+        onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} 
+        className="absolute top-4 right-4 text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1 z-[60] print:hidden"
+      >
+        <Download size={14} /> Simpan PNG
+      </button>
+    )}
     {children}
   </div>
 ));
