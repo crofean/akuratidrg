@@ -3446,8 +3446,18 @@ export default function App() {
   }, []);
 
   const checkMatchList = (arrIna, arrIdrg, exclusions) => {
-    const cleanIna = Array.from(new Set(arrIna.map(c => String(c).trim().toUpperCase()).filter(c => c && c !== '-')));
-    const cleanIdrg = Array.from(new Set(arrIdrg.map(c => String(c).trim().toUpperCase()).filter(c => c && c !== '-' && !exclusions.includes(c))));
+    const filterFn = c => {
+      if (!c || c === '-') return false;
+      return !exclusions.some(exc => {
+        const cleanExc = String(exc).trim().toUpperCase();
+        const cleanC = String(c).trim().toUpperCase();
+        const noDotExc = cleanExc.replace(/\./g, '');
+        const noDotC = cleanC.replace(/\./g, '');
+        return cleanC === cleanExc || cleanC.startsWith(cleanExc) || noDotC.startsWith(noDotExc);
+      });
+    };
+    const cleanIna = Array.from(new Set(arrIna.map(c => String(c).trim().toUpperCase()).filter(filterFn)));
+    const cleanIdrg = Array.from(new Set(arrIdrg.map(c => String(c).trim().toUpperCase()).filter(filterFn)));
     if (cleanIna.length === 0 && cleanIdrg.length === 0) return 100;
     if (cleanIna.length === 0 || cleanIdrg.length === 0) return 0;
     let mIna = 0, mIdrg = 0;
@@ -3729,9 +3739,17 @@ export default function App() {
           const clean = String(p).trim();
           const cleanNoDot = clean.replace(/\./g, '');
           if (
+            clean.startsWith("89") ||
+            clean.startsWith("90") ||
+            clean.startsWith("91") ||
+            clean.startsWith("99") ||
+            clean.startsWith("87.44") ||
+            clean.startsWith("87.49") ||
             clean.startsWith("57.94") ||
             clean.startsWith("93.57") ||
             clean.startsWith("93.96") ||
+            cleanNoDot.startsWith("8744") ||
+            cleanNoDot.startsWith("8749") ||
             cleanNoDot.startsWith("5794") ||
             cleanNoDot.startsWith("9357") ||
             cleanNoDot.startsWith("9396")
@@ -3818,7 +3836,7 @@ export default function App() {
       const hasIdrgData = String(r['IDRG_DRG_CODE'] || '').trim() !== '' && String(r['IDRG_DRG_CODE'] || '').trim() !== '-';
       const sDiag = checkMatchList(dList, idrgDList, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']);
       const procExclusions = excludeProcCodes 
-        ? ['99.290', '57.94', '5794', '93.57', '9357', '93.96', '9396'] 
+        ? ['99.290', '89', '90', '91', '99', '87.44', '87.49', '57.94', '93.57', '93.96'] 
         : ['99.290'];
       const sProc = checkMatchList(pList, idrgPList, procExclusions);
       if (hasIdrgData) { stats.totalScoreDiag += sDiag; stats.totalScoreProc += sProc; stats.scoredCount++; }
@@ -4703,7 +4721,7 @@ export default function App() {
                   onChange={(e) => setExcludeProcCodes(e.target.checked)}
                   className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 cursor-pointer"
                 />
-                <span className="text-xs font-extrabold text-slate-700">🚫 Kecualikan Kode Medis Umum (57.94, 93.57, 93.96)</span>
+                <span className="text-xs font-extrabold text-slate-700">🚫 Kecualikan Kode Medis Umum (89, 90, 91, 99, 87.44, 87.49, 57.94, 93.57, 93.96)</span>
               </label>
             </div>
 
@@ -6952,7 +6970,7 @@ export default function App() {
                                 const d2 = String(row['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
                                 const p2 = String(row['IDRG_PROC_LISTS'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
                                 const procEx = excludeProcCodes 
-                                  ? ['99.290', '57.94', '5794', '93.57', '9357', '93.96', '9396'] 
+                                  ? ['99.290', '89', '90', '91', '99', '87.44', '87.49', '57.94', '93.57', '93.96'] 
                                   : ['99.290'];
                                 return checkMatchList(d1, d2, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']) < 100 || checkMatchList(p1, p2, procEx) < 100;
                               });
@@ -6966,13 +6984,21 @@ export default function App() {
                                 // Calculate specific differences, excluding certain medical codes
                                 const EXCLUDED_DIAGS = ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84'];
                                 const EXCLUDED_PROCS = excludeProcCodes 
-                                  ? ['99.290', '57.94', '5794', '93.57', '9357', '93.96', '9396'] 
+                                  ? ['99.290', '89', '90', '91', '99', '87.44', '87.49', '57.94', '93.57', '93.96'] 
                                   : ['99.290'];
 
                                 const dOnlyInIna = d1.filter(c => !d2.includes(c) && !EXCLUDED_DIAGS.includes(c));
                                 const dOnlyInIdrg = d2.filter(c => !d1.includes(c) && !EXCLUDED_DIAGS.includes(c));
-                                const pOnlyInIna = p1.filter(c => !p2.includes(c) && !EXCLUDED_PROCS.includes(c));
-                                const pOnlyInIdrg = p2.filter(c => !p1.includes(c) && !EXCLUDED_PROCS.includes(c));
+
+                                const isExcludedProc = c => EXCLUDED_PROCS.some(exc => {
+                                  const cleanExc = String(exc).trim().toUpperCase();
+                                  const cleanC = String(c).trim().toUpperCase();
+                                  const noDotExc = cleanExc.replace(/\./g, '');
+                                  const noDotC = cleanC.replace(/\./g, '');
+                                  return cleanC === cleanExc || cleanC.startsWith(cleanExc) || noDotC.startsWith(noDotExc);
+                                });
+                                const pOnlyInIna = p1.filter(c => !p2.includes(c) && !isExcludedProc(c));
+                                const pOnlyInIdrg = p2.filter(c => !p1.includes(c) && !isExcludedProc(c));
 
                                 const hasAnyDiff = dOnlyInIna.length > 0 || dOnlyInIdrg.length > 0 || pOnlyInIna.length > 0 || pOnlyInIdrg.length > 0;
 
@@ -8416,7 +8442,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.4.1 (180526-19:53)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.4.2 (180526-20:05)</p>
               </div>
             </div>
           </div>
@@ -8897,7 +8923,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.4.1 (180526-19:53)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.4.2 (180526-20:05)</span>
                 </div>
               )}
             </div>
@@ -9078,7 +9104,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.4.1</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.4.2</span>
             </p>
           </footer>
         </div>
