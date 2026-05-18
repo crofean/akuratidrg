@@ -2124,7 +2124,8 @@ const InsightSosialisasiComponent = React.memo(({
   setSocializationScatterMode,
   isSlideMode,
   setIsSlideMode,
-  openDrilldown
+  openDrilldown,
+  activeExclusionCodes
 }) => {
   const allRows = dashData?.rawRows || [];
 
@@ -2325,7 +2326,22 @@ const InsightSosialisasiComponent = React.memo(({
   // 8. Top 5 Tindakan Utama Berdefisit (Primary Procedures ICD-9-CM)
   const procGroups = {};
   deficitRows.forEach(r => {
-    const code = String(r.PROSEDUR || r.PROSEDUR_UTAMA || r.PROCLIST || '-').trim().split(/[;, ]/)[0] || '-';
+    const rawProcs = String(r.PROSEDUR || r.PROSEDUR_UTAMA || r.PROCLIST || '-').split(/[;,]/).map(p => p.trim()).filter(Boolean);
+    let code = '-';
+    for (let p of rawProcs) {
+      if (p === '-' || p.toLowerCase() === 'none') continue;
+      const cleanP = p.trim().toUpperCase();
+      const noDotP = cleanP.replace(/\./g, '');
+      const isExcluded = (activeExclusionCodes || []).some(exc => {
+        const cleanExc = String(exc).trim().toUpperCase();
+        const noDotExc = cleanExc.replace(/\./g, '');
+        return cleanP === cleanExc || cleanP.startsWith(cleanExc) || noDotP.startsWith(noDotExc);
+      });
+      if (!isExcluded) {
+        code = p;
+        break;
+      }
+    }
     if (code === '-' || code === '') return;
     if (!procGroups[code]) {
       procGroups[code] = { code, desc: String(r.DESKRIPSI_PROSEDUR || 'Tanpa Deskripsi'), count: 0, totalDefisit: 0 };
@@ -9127,6 +9143,7 @@ export default function App() {
                             isSlideMode={isSlideMode}
                             setIsSlideMode={setIsSlideMode}
                             openDrilldown={openDrilldown}
+                            activeExclusionCodes={activeExclusionCodes}
                           />
                         )}
                         {subTab === 'settings_ksm' && renderKsmMappingSettings()}
