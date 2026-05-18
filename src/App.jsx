@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
+﻿import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet } from 'lucide-react';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
@@ -1454,11 +1454,12 @@ const parseDate = (dateStr) => {
 // --- REUSABLE UI COMPONENTS ---
 const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => {
   const hasBg = className.split(' ').some(c => c.startsWith('bg-'));
+  const btnStyle = { position: 'absolute', top: '12px', right: '12px', zIndex: 60, display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 11px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 8px rgba(14,165,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'all 0.2s' };
   return (
-    <div id={id} className={`${hasBg ? '' : 'bg-white'} rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 relative group ${className}`}>
+    <div id={id} style={{ position: 'relative' }} className={`${hasBg ? '' : 'bg-white'} rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 ${className}`}>
       {downloadTitle && id && (
-        <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} className="absolute top-4 right-4 text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1 z-[60] print:hidden">
-          <Download size={14} /> Simpan PNG
+        <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} style={btnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} className="print:hidden" title={`Unduh ${downloadTitle} sebagai PNG`}>
+          <Download size={13} /> Simpan PNG
         </button>
       )}
       {children}
@@ -1624,14 +1625,16 @@ const ScatterChart = React.memo(({ data, xKey, yKey, rKey, color, xLabel, yLabel
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
 
-  const chartId = useId();
+  const chartIdRef = React.useRef('chart-' + Math.random().toString(36).slice(2, 8));
+  const chartId = chartIdRef.current;
+  const scatterBtnStyle = { position: 'absolute', top: '10px', right: '10px', zIndex: 10, display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 11px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 8px rgba(14,165,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'all 0.2s' };
 
   return (
-    <div id={chartId} className="relative w-full bg-white border border-slate-200 rounded-xl shadow-sm group">
+    <div id={chartId} style={{ position: 'relative' }} className="w-full bg-white border border-slate-200 rounded-xl shadow-sm">
       <div className="absolute top-4 left-4 font-bold text-slate-700">{title}</div>
-      {data.length > 500 && <div className="absolute top-4 right-20 text-xs text-slate-400">Sampled {processedData.length} of {data.length} points</div>}
-      <button onClick={() => saveAsPng(chartId, title)} className="absolute top-4 right-4 text-slate-400 hover:text-sky-600 bg-slate-50 hover:bg-sky-50 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors opacity-0 group-hover:opacity-100 flex items-center gap-1 z-10 print:hidden">
-        <Download size={14} /> Simpan PNG
+      {data.length > 500 && <div className="absolute top-4 right-28 text-xs text-slate-400">Sampled {processedData.length} of {data.length} points</div>}
+      <button onClick={() => saveAsPng(chartId, title)} style={scatterBtnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} className="print:hidden" title={`Unduh ${title} sebagai PNG`}>
+        <Download size={13} /> Simpan PNG
       </button>
       <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-sm bg-white" xmlns="http://www.w3.org/2000/svg" onMouseLeave={() => setHovered(null)}>
         <rect x={padding.left} y={padding.top} width={innerW / 2} height={scaleY(yAvg) - padding.top} fill="#fef2f2" opacity="0.4" />
