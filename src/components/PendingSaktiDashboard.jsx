@@ -622,7 +622,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
     setAiResponse(null);
 
     const key = geminiKey.trim() || DEFAULT_GEMINI_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
 
     const promptText = `
 Anda adalah Auditor Medis Senior Rumah Sakit & Pakar Koding JKN.
