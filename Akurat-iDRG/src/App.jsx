@@ -2914,7 +2914,6 @@ export default function App() {
   });
   const [isScrolled, setIsScrolled] = useState(false);
   const [reportSubTab, setReportSubTab] = useState('summary');
-  const [excludeProcFilter, setExcludeProcFilter] = useState(() => localStorage.getItem('sak_exclude_proc_filter') === 'true');
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [auditFilter, setAuditFilter] = useState('');
   const [auditRuleFilter, setAuditRuleFilter] = useState('');
