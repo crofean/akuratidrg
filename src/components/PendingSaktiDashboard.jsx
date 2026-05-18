@@ -5,7 +5,7 @@ import {
   Move, Search, Check, RefreshCw, Sparkles, Brain, Download, HelpCircle, 
   ChevronDown, ChevronUp, FileText, UserCheck, ShieldCheck, Stethoscope
 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 
 // Default API Key for Gemini AI
 // API Key default dikosongkan untuk keamanan - masukkan key Anda di kolom input
