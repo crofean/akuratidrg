@@ -9,7 +9,131 @@ import html2canvas from 'html2canvas-pro';
 
 // Default API Key for Gemini AI
 // API Key default dikosongkan untuk keamanan - masukkan key Anda di kolom input
-const DEFAULT_GEMINI_KEY = '';
+const DEFAULT_GEMINI_KEY = "";
+
+// Kamus Offline ICD-10 & ICD-9-CM Terpopuler di Indonesia (Untuk BPJS Pending)
+const ICD_DICTIONARY = {
+  // ICD-10 Diagnosis
+  "A09": "Gastroenteritis / Diare Akut (Infectious Origin)",
+  "A09.9": "Gastroenteritis / Diare Akut Tidak Spesifik",
+  "A01": "Demam Tifoid / Paratifoid (Typhoid Fever)",
+  "A01.0": "Demam Tifoid (Typhoid Fever)",
+  "I10": "Hipertensi Esensial / Primer (Darah Tinggi)",
+  "E11": "Diabetes Melitus Tipe 2 (Kencing Manis)",
+  "E11.9": "Diabetes Melitus Tipe 2 Tanpa Komplikasi",
+  "J45": "Asma Bronkial (Asthma)",
+  "J45.9": "Asma Bronkial Tidak Spesifik",
+  "K35": "Apendisitis Akut (Operasi Usus Buntu)",
+  "K35.8": "Apendisitis Akut Lainnya / Tanpa Peritonitis",
+  "K29": "Gastritis dan Duodenitis (Maag / Asam Lambung)",
+  "K29.7": "Gastritis Tidak Spesifik (Sakit Maag)",
+  "N18": "Penyakit Ginjal Kronis (CKD - Chronic Kidney Disease)",
+  "N18.9": "Penyakit Ginjal Kronis Stadium Akhir / Tidak Spesifik",
+  "O82": "Persalinan Sectio Caesarea (Sesar)",
+  "O82.9": "Persalinan Sesar Tunggal / Melalui Bedah Sesar",
+  "I64": "Stroke Infark / Stroke Non-Hemorrhagic (SNH)",
+  "H25": "Katarak Senilis (Senile Cataract)",
+  "H25.9": "Katarak Senilis Tidak Spesifik",
+  "J18": "Pneumonia (Infeksi Paru-paru)",
+  "J18.9": "Pneumonia Tidak Spesifik",
+  "Z49": "Perawatan Dialisis (Hemodialisis / HD)",
+  "Z49.1": "Hemodialisis Ekstra-Korporeal (Prosedur Cuci Darah)",
+  "M54": "Low Back Pain / Dorsalgia (Nyeri Punggung Bawah)",
+  "M54.5": "Low Back Pain (Nyeri Pinggang)",
+  "I21": "Infark Miokard Akut (Serangan Jantung Akut / IMA)",
+  "I21.9": "Infark Miokard Akut Tidak Spesifik",
+  "I50": "Gagal Jantung (Heart Failure)",
+  "I50.9": "Gagal Jantung Kongestif / Tidak Spesifik",
+  "K30": "Dispepsia / Nyeri Ulu Hati (Dyspepsia)",
+  "R50": "Demam yang Tidak Diketahui Penyebabnya (Fever of Unknown Origin)",
+  "R50.9": "Demam Tidak Spesifik",
+  "J06": "Infeksi Saluran Pernapasan Akut / ISPA",
+  "J06.9": "Infeksi Saluran Pernapasan Akut Tidak Spesifik",
+  "E10": "Diabetes Melitus Tipe 1",
+  "N20": "Batu Ginjal dan Ureter (Nephrolithiasis)",
+  "K80": "Batu Empedu (Cholelithiasis)",
+  "I25": "Penyakit Jantung Koroner Kronis (CAD)",
+  "B24": "Penyakit HIV/AIDS",
+  "C50": "Kanker Payudara (Breast Cancer)",
+  "C18": "Kanker Usus Besar (Colon Cancer)",
+  "A15": "Tuberkulosis Paru (TBC) Terkonfirmasi Bakteriologis/Histologis",
+  "A16": "Tuberkulosis Paru (TBC) Klinis Tanpa Konfirmasi",
+
+  // ICD-9-CM Procedures
+  "74.1": "Sectio Caesarea Rendah (Bedah Sesar)",
+  "39.95": "Hemodialisis (Prosedur Cuci Darah / HD)",
+  "93.54": "Terapi Fisik / Fisioterapi / Rehabilitasi Medik",
+  "13.1": "Ekstraksi Katarak Intrakapsular",
+  "13.7": "Pemasangan Lensa Intraokular (IOL / Pseudofakia)",
+  "13.71": "Pemasangan Lensa IOL Tipe Monofokal/Lainnya",
+  "47.0": "Apendektomi (Operasi Pengangkatan Usus Buntu)",
+  "47.09": "Apendektomi Akut Lainnya",
+  "99.25": "Injeksi / Infus Kemoterapi Kanker (Chemotherapy)",
+  "99.18": "Injeksi / Infus Obat Elektrolit / Nutrisi Khusus",
+  "88.76": "Ultrasonografi (USG) Abdomen / Kandungan",
+  "87.44": "Foto Rontgen Dada (Chest X-Ray / Toraks)",
+  "38.93": "Pemasangan Kateter Vena Sentral (CVC / Akses Vaskuler)",
+  "54.51": "Adhesiolisis Peritoneum (Pelepasan Perlengketan Usus)",
+  "03.31": "Spinal Tap / Lumbal Pungsi (Pengambilan Cairan Otak)",
+  "96.7": "Ventilasi Mekanis Kontinu (Alat Bantu Napas / Ventilator)",
+  "96.71": "Ventilasi Mekanis Kurang dari 96 Jam",
+  "96.72": "Ventilasi Mekanis 96 Jam atau Lebih",
+  "99.04": "Transfusi Sel Darah Merah (PRC / Packed Red Cells)",
+  "99.05": "Transfusi Platelet / Trombosit",
+  "99.07": "Transfusi Faktor Pembekuan / FFP (Fresh Frozen Plasma)",
+  "88.38": "CT-Scan Kepala / Otak",
+  "89.52": "Elektrokardiogram (EKG Jantung)",
+  "90.59": "Pemeriksaan Laboratorium Darah Rutin / Lengkap"
+};
+
+// Helper function to resolve ICD codes into readable descriptions
+const getIcdDescription = (code) => {
+  if (!code || code === "-") return "";
+  const cleanCode = String(code).trim().toUpperCase();
+  
+  // 1. Exact match
+  if (ICD_DICTIONARY[cleanCode]) return ICD_DICTIONARY[cleanCode];
+  
+  // 2. Base code match (e.g. A09.9 -> A09)
+  if (cleanCode.includes(".")) {
+    const baseCode = cleanCode.split(".")[0];
+    if (ICD_DICTIONARY[baseCode]) {
+      return ICD_DICTIONARY[baseCode];
+    }
+  }
+  return "";
+};
+
+// Helper function to render detected ICD codes as clean interactive badges
+const renderIcdPills = (codeListStr) => {
+  if (!codeListStr || codeListStr === "-") return <span className="text-slate-400 font-medium italic text-[10px]">Tidak ada kode</span>;
+  
+  // Split by comma, semicolon, or space
+  const codes = codeListStr.split(/[\\s,;]+/).map(c => c.trim()).filter(c => c.length > 0 && c !== "-");
+  if (codes.length === 0) return <span className="text-slate-400 font-medium italic text-[10px]">Tidak ada kode</span>;
+  
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      {codes.map((code, idx) => {
+        const desc = getIcdDescription(code);
+        return (
+          <div 
+            key={idx} 
+            className="group relative flex items-center gap-1 bg-slate-100 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 px-2 py-0.5 rounded-md text-[10px] font-bold text-slate-700 hover:text-teal-800 transition-all cursor-help"
+            title={desc || "Kode ICD BPJS"}
+          >
+            <span className="font-mono text-teal-600 group-hover:text-teal-700">{code}</span>
+            {desc && (
+              <span className="text-[9px] text-slate-500 font-medium border-l pl-1 border-slate-300 group-hover:border-teal-300 max-w-[120px] truncate">
+                {desc}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 // Helper to format currency
 const formatRp = (val) => {
@@ -482,6 +606,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         'Saran Perbaikan (Gemini AI)': c.aiSaran || 'Belum diaudit AI',
         'Dasar Regulasi/Hukum (Gemini AI)': c.aiRegulasi || 'Belum diaudit AI',
         'Draft Jawaban Sanggahan RS (Gemini AI)': c.aiSanggahan || 'Belum diaudit AI',
+        'Terjemahan Kode ICD (Gemini AI)': c.aiIcdTransl || 'Belum diaudit AI',
         'Status Integrasi iDRG': c.matched ? 'TERINTEGRASI' : 'TIDAK COCOK',
         'Status Review AI': c.aiReviewed ? 'SUDAH DIAUDIT' : 'BELUM DIAUDIT'
       };
@@ -696,7 +821,8 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         setAiResponse({
           saran_perbaikan: cached.saran_perbaikan || claim.aiSaran || "-",
           kutipan_regulasi: cached.rutipan_regulasi || cached.kutipan_regulasi || claim.aiRegulasi || "-",
-          jawaban_sanggahan_rs: cached.jawaban_sanggahan_rs || claim.aiSanggahan || "-"
+          jawaban_sanggahan_rs: cached.jawaban_sanggahan_rs || claim.aiSanggahan || "-",
+          terjemahan_icd: cached.terjemahan_icd || claim.aiIcdTransl || ""
         });
         return;
       } catch (e) {
@@ -709,7 +835,8 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       setAiResponse({
         saran_perbaikan: claim.aiSaran || "-",
         kutipan_regulasi: claim.aiRegulasi || "-",
-        jawaban_sanggahan_rs: claim.aiSanggahan || "-"
+        jawaban_sanggahan_rs: claim.aiSanggahan || "-",
+        terjemahan_icd: claim.aiIcdTransl || ""
       });
     } else {
       setAiResponse(null);
@@ -752,7 +879,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
 {
   "saran_perbaikan": "Langkah konkret yang harus diambil coder/DPJP berdasarkan regulasi INA-CBG dan ICD-10/ICD-9-CM (maksimal 3 poin)",
   "kutipan_regulasi": "Dasar hukum spesifik dari PMK 26/2021, PMK 3/2023, BAK Kemenkes-BPJS, atau PNPK yang mendukung argumen RS (sebutkan pasal/klausul/halaman jika tersedia)",
-  "jawaban_sanggahan_rs": "Draft naskah formal sanggahan kepada verifikator BPJS yang profesional, berbasis regulasi, logis secara klinis, dan berpotensi tinggi diterima. Sertakan dasar hukum yang dikutip."
+  "jawaban_sanggahan_rs": "Draft naskah formal sanggahan kepada verifikator BPJS yang profesional, berbasis regulasi, logis secara klinis, dan berpotensi tinggi diterima. Sertakan dasar hukum yang dikutip.",
+  "terjemahan_icd": "Daftar arti/deskripsi ringkas untuk semua kode ICD-10 & ICD-9-CM yang tertera dalam data klaim ini. Contoh: 'A09.9: Diare akut, 99.25: Terapi kemoterapi'"
 }`;
 
     try {
@@ -789,7 +917,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
           localStorage.setItem("gemini_analysis_" + c.sep, JSON.stringify({
             saran_perbaikan: parsed.saran_perbaikan || '-',
             rutipan_regulasi: parsed.kutipan_regulasi || '-',
-            jawaban_sanggahan_rs: parsed.jawaban_sanggahan_rs || '-'
+            jawaban_sanggahan_rs: parsed.jawaban_sanggahan_rs || '-',
+            terjemahan_icd: parsed.terjemahan_icd || '-'
           }));
 
           return {
@@ -797,6 +926,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             aiSaran: parsed.saran_perbaikan || '-',
             aiRegulasi: parsed.kutipan_regulasi || '-',
             aiSanggahan: parsed.jawaban_sanggahan_rs || '-',
+            aiIcdTransl: parsed.terjemahan_icd || '-',
             aiReviewed: true
           };
         }
@@ -2156,11 +2286,11 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[9px] font-black text-slate-400 uppercase">Kode Diagnosis (Diaglist)</span>
-                    <span className="font-bold text-slate-800 mt-0.5 bg-slate-100 px-2 py-0.5 rounded w-fit">{aiPatient.diaglist}</span>
+                    {renderIcdPills(aiPatient.diaglist)}
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[9px] font-black text-slate-400 uppercase">Kode Prosedur (Proclist)</span>
-                    <span className="font-bold text-slate-800 mt-0.5 bg-slate-100 px-2 py-0.5 rounded w-fit">{aiPatient.proclist}</span>
+                    {renderIcdPills(aiPatient.proclist)}
                   </div>
                 </div>
                 <div className="flex flex-col border-t pt-3 mt-1 border-slate-200/50">
@@ -2231,6 +2361,16 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {aiResponse && (
                 <div className="space-y-6 pt-4 animate-in fade-in duration-500">
                   
+                  {/* Kamus Kode ICD Card (Gemini AI) */}
+                  {aiResponse.terjemahan_icd && aiResponse.terjemahan_icd !== "-" && aiResponse.terjemahan_icd.trim() !== "" && (
+                    <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/70 space-y-2">
+                      <span className="text-[10px] font-black text-emerald-800 uppercase tracking-widest flex items-center gap-1.5">
+                        <Stethoscope size={14} className="text-emerald-600" /> Arti &amp; Terjemahan Kode ICD (Gemini AI)
+                      </span>
+                      <p className="text-xs leading-relaxed font-bold text-slate-700 whitespace-pre-line">{aiResponse.terjemahan_icd}</p>
+                    </div>
+                  )}
+
                   {/* Saran Perbaikan Card */}
                   <div className="bg-teal-50 p-5 rounded-3xl border border-teal-100 space-y-2.5">
                     <span className="text-[10px] font-black text-teal-800 uppercase tracking-widest flex items-center gap-1.5">
