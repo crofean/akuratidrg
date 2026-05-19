@@ -7575,10 +7575,6 @@ export default function App() {
               >
                 {isSyncingIcd ? `⏳ ${icdSyncStatus}` : "⚡ Sinkronkan Sekarang"}
               </button>
-              
-              <div className="text-[10px] text-slate-400 font-bold leading-normal">
-                Spreadsheet default: <a href="https://docs.google.com/spreadsheets/d/19Fqy6_e_j9_cuH43as9pB_5gJjWnPO3Eb2EIfX1or-w/edit?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-teal-600 hover:underline">Akurat ICD Dictionary</a>
-              </div>
             </div>
           </Card>
         </div>
