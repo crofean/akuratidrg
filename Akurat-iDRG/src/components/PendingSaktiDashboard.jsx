@@ -532,13 +532,30 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
             layanan = 'Rawat Jalan';
           }
 
+          // Cari kolom RI/RJ atau RIRJ di sheetHeaders
+          const rirjColIndex = sheetHeaders.findIndex(h => {
+            const lh = String(h || '').toLowerCase().replace(/[^a-z0-9/]/g, '');
+            return lh === 'ri/rj' || lh === 'rirj' || lh === 'ri_rj' || lh === 'jenispelayanan' || lh === 'jenisrawat' || lh === 'layanan';
+          });
+
           // Map rows from this sheet starting after the detected header row
           sheetData.slice(headerRowIndex + 1).forEach(r => {
             // ensure it has content
             if (r.some(cell => cell !== null && cell !== undefined && cell !== '')) {
+              let barisLayanan = layanan; // Fallback ke deteksi sheet
+              
+              if (rirjColIndex !== -1 && r[rirjColIndex] !== undefined && r[rirjColIndex] !== null) {
+                const val = String(r[rirjColIndex]).trim().toUpperCase();
+                if (val === 'RI' || val.includes('RAWAT INAP') || val.includes('RANAP') || val.includes('INAP') || val.includes('RITL')) {
+                  barisLayanan = 'Rawat Inap';
+                } else if (val === 'RJ' || val.includes('RAWAT JALAN') || val.includes('RAJAL') || val.includes('JALAN') || val.includes('RJTL')) {
+                  barisLayanan = 'Rawat Jalan';
+                }
+              }
+              
               allRows.push({
                 rawRow: r,
-                layanan: layanan
+                layanan: barisLayanan
               });
             }
           });
