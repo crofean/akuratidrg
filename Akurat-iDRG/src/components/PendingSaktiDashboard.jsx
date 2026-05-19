@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import * as XLSX from 'xlsx';
-import { 
-  FileSpreadsheet, Upload, CheckCircle2, AlertTriangle, Info, Copy, 
-  Move, Search, Check, RefreshCw, Sparkles, Brain, Download, HelpCircle, 
-  ChevronDown, ChevronUp, FileText, UserCheck, ShieldCheck, Stethoscope
+import {
+  FileSpreadsheet, Upload, CheckCircle2, AlertTriangle, Info, Copy,
+  Move, Search, Check, RefreshCw, Sparkles, Brain, Download, HelpCircle,
+  ChevronDown, ChevronUp, FileText, UserCheck, ShieldCheck, Stethoscope, Layers
 } from 'lucide-react';
 import html2canvas from 'html2canvas-pro';
 
@@ -33,7 +33,7 @@ const getGoogleSheetCsvUrl = (url) => {
   if (!url) return "";
   let cleanUrl = url.trim();
   if (cleanUrl.includes("/export")) return cleanUrl;
-  
+
   const matches = cleanUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
   if (matches && matches[1]) {
     const id = matches[1];
@@ -90,7 +90,7 @@ const BASE_ICD_FALLBACK = {
   "Z51": "Perawatan medis lainnya",
   "Z51.0": "Sesi radioterapi / kemoterapi",
   "Z510": "Sesi radioterapi / kemoterapi",
-  
+
   // Hospital specific high-frequency Diagnostics Fallback
   "J96.0": "Gagal napas akut (Acute respiratory failure)",
   "J960": "Gagal napas akut (Acute respiratory failure)",
@@ -124,7 +124,7 @@ const BASE_ICD_FALLBACK = {
   "E876": "Hipokalemia / penurunan kadar kalium darah",
   "E83.5": "Gangguan metabolisme kalsium",
   "E835": "Gangguan metabolisme kalsium",
-  
+
   // ICD-9 Procedures
   "99.18": "Injeksi atau infus elektrolit / cairan infus umum",
   "9918": "Injeksi atau infus elektrolit / cairan infus umum",
@@ -178,7 +178,7 @@ const loadIcdDictFromDb = async () => {
         const code = String(item.code).trim().toUpperCase();
         const desc = String(item.desc).trim();
         map[code] = desc;
-        
+
         // Save without dot to handle non-dotted queries
         const noDot = code.replace(/\./g, '');
         if (noDot !== code) {
@@ -198,24 +198,24 @@ const loadIcdDictFromDb = async () => {
 const parseCSV = (text) => {
   const lines = text.split(/\r?\n/);
   if (lines.length < 2) return [];
-  
+
   const headers = parseCSVLine(lines[0]).map(h => h.trim().toUpperCase().replace(/[^\w]/g, ''));
   const codeIdx = headers.indexOf("CODE");
   const strIdx = headers.indexOf("STR");
-  
+
   if (codeIdx === -1 || strIdx === -1) {
     throw new Error("Format spreadsheet tidak valid. Kolom 'CODE' dan 'STR' tidak ditemukan.");
   }
-  
+
   const result = [];
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-    
+
     const columns = parseCSVLine(line);
     const code = columns[codeIdx];
     const desc = columns[strIdx];
-    
+
     if (code && desc) {
       result.push({
         code: String(code).trim().toUpperCase(),
@@ -230,7 +230,7 @@ const parseCSVLine = (line) => {
   const result = [];
   let current = "";
   let inQuotes = false;
-  
+
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
     if (char === '"') {
@@ -250,43 +250,43 @@ const parseCSVLine = (line) => {
 const getIcdDescription = (code) => {
   if (!code || code === "-") return "";
   let cleaned = String(code).trim().toUpperCase();
-  
+
   // Extract the first alphanumeric/dot token (the actual ICD code) if combined with description
   const codeMatch = cleaned.match(/^([A-Z0-9.]+)/);
   if (codeMatch) {
     cleaned = codeMatch[1];
   }
-  
+
   const map = window.sakIcdMap || {};
-  
+
   if (map[cleaned]) return map[cleaned];
-  
+
   const noDot = cleaned.replace(/\./g, '');
   if (map[noDot]) return map[noDot];
-  
+
   if (cleaned.includes(".")) {
     const baseCode = cleaned.split(".")[0];
     if (map[baseCode]) return map[baseCode];
   }
-  
+
   return "";
 };
 
 // Helper function to render detected ICD codes as clean interactive badges
 const renderIcdPills = (codeListStr) => {
   if (!codeListStr || codeListStr === "-") return <span className="text-slate-400 font-medium italic text-[10px]">Tidak ada kode</span>;
-  
+
   // Split by comma, semicolon, or space
   const codes = codeListStr.split(/[\\s,;]+/).map(c => c.trim()).filter(c => c.length > 0 && c !== "-");
   if (codes.length === 0) return <span className="text-slate-400 font-medium italic text-[10px]">Tidak ada kode</span>;
-  
+
   return (
     <div className="flex flex-wrap gap-1 mt-1">
       {codes.map((code, idx) => {
         const desc = getIcdDescription(code);
         return (
-          <div 
-            key={idx} 
+          <div
+            key={idx}
             className="group relative flex items-center gap-1 bg-slate-100 hover:bg-teal-50 border border-slate-200 hover:border-teal-200 px-2 py-0.5 rounded-md text-[10px] font-bold text-slate-700 hover:text-teal-800 transition-all cursor-help"
             title={desc || "Kode ICD BPJS"}
           >
@@ -331,7 +331,7 @@ const maskName = (name) => {
     if (upper === 'ENJANG') return 'EN***G';
     if (upper === 'NURDIANSYAH') return 'NU****S*H';
     if (word.length <= 2) return word.toUpperCase();
-    
+
     let chars = upper.split('');
     const keepStart = chars.length > 5 ? 2 : 1;
     for (let i = keepStart; i < chars.length - 1; i++) {
@@ -359,7 +359,7 @@ const saveAsPng = async (elementId, fileName) => {
     alert("⚠️ Error: Elemen grafik \"" + elementId + "\" tidak ditemukan di halaman! Silakan unggah file Excel terlebih dahulu.");
     return;
   }
-  
+
   // Tampilkan indikator proses langsung di UI
   const loadingIndicator = document.createElement("div");
   loadingIndicator.style.position = "fixed";
@@ -382,7 +382,7 @@ const saveAsPng = async (elementId, fileName) => {
   try {
     // Tunggu sebentar agar render indicator muncul sebelum JS blocking process
     await new Promise(resolve => setTimeout(resolve, 300));
-    
+
     const canvas = await html2canvas(el, {
       backgroundColor: "#ffffff",
       scale: 2,
@@ -390,7 +390,7 @@ const saveAsPng = async (elementId, fileName) => {
       allowTaint: true,
       logging: true
     });
-    
+
     const url = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = url;
@@ -409,7 +409,7 @@ const saveAsPng = async (elementId, fileName) => {
 
 export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], resolveKsmDept, openDrilldown }) {
   const [fileData, setFileData] = useState([]);
-  
+
   // Google Sheets ICD Dictionary States
   const [icdSheetUrl, setIcdSheetUrl] = useState(() => localStorage.getItem("sak_icd_sheet_url") || "https://docs.google.com/spreadsheets/d/19Fqy6_e_j9_cuH43as9pB_5gJjWnPO3Eb2EIfX1or-w/edit?usp=sharing");
   const [customIcdMap, setCustomIcdMap] = useState({});
@@ -426,7 +426,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         console.error("Gagal memuat database IndexedDB ICD kustom:", err);
       }
     };
-    
+
     const handleSyncComplete = (e) => {
       console.log('[SAK-iDRG] (Pending) ICD sync complete event received. Refreshing component map...');
       setCustomIcdMap(e.detail || window.sakIcdMap);
@@ -450,12 +450,13 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
   const [fileName, setFileName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('ALL');
+  const [filterCategoryCombo, setFilterCategoryCombo] = useState('ALL');
   const [filterFactor, setFilterFactor] = useState('ALL');
   const [copiedId, setCopiedId] = useState(null);
   const [filterLayanan, setFilterLayanan] = useState('ALL');
   const [activeSubTab, setActiveSubTab] = useState('dashboard');
   const [isMappingLoading, setIsMappingLoading] = useState(false);
-  
+
   // API Key state dengan status visual pembeda
   const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('sak_gemini_key') || DEFAULT_GEMINI_KEY);
   // 'default' | 'custom' | 'valid' | 'invalid' | 'quota'
@@ -493,7 +494,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         const allRows = [];
         let detectedHeaders = [];
         let detectedHeaderRowIndex = 0;
-        
+
         wb.SheetNames.forEach((sheetName) => {
           const ws = wb.Sheets[sheetName];
           const sheetData = XLSX.utils.sheet_to_json(ws, { header: 1 });
@@ -509,7 +510,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
               const hasNama = rowText.includes('nama') || rowText.includes('pasien') || rowText.includes('name') || rowText.includes('peserta');
               const hasNo = rowText.includes('no') || rowText.includes('nomor');
               const hasKet = rowText.includes('keterangan') || rowText.includes('alasan') || rowText.includes('dispute') || rowText.includes('pending') || rowText.includes('masalah');
-              
+
               if ((hasSep && hasNama) || (hasSep && hasKet) || (hasNama && hasKet) || (hasSep && hasNo)) {
                 headerRowIndex = i;
                 break;
@@ -543,7 +544,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
             // ensure it has content
             if (r.some(cell => cell !== null && cell !== undefined && cell !== '')) {
               let barisLayanan = layanan; // Fallback ke deteksi sheet
-              
+
               if (rirjColIndex !== -1 && r[rirjColIndex] !== undefined && r[rirjColIndex] !== null) {
                 const val = String(r[rirjColIndex]).trim().toUpperCase();
                 if (val === 'RI' || val.includes('RAWAT INAP') || val.includes('RANAP') || val.includes('INAP') || val.includes('RITL')) {
@@ -552,7 +553,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
                   barisLayanan = 'Rawat Jalan';
                 }
               }
-              
+
               allRows.push({
                 rawRow: r,
                 layanan: barisLayanan
@@ -570,7 +571,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
 
         // Auto-detect columns
         const mapping = { sep: '', nama: '', keterangan: '', nominal: '', faktor: '' };
-        
+
         detectedHeaders.forEach(h => {
           const lh = h.toLowerCase();
           if (lh.includes('sep') || lh.includes('kartu') || lh.includes('no_sep') || lh.includes('nomor_sep') || lh.includes('no sep') || lh.includes('no. sep')) {
@@ -655,7 +656,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
           proclist = matchedPatient.PROSEDUR || matchedPatient.PROSEDUR_UTAMA || matchedPatient.TINDAKAN || matchedPatient.PROCLIST || '-';
           const rawCoder = matchedPatient.CODER_ID || matchedPatient.USER_CODER || matchedPatient.CODER || '-';
           coderName = maskName(String(rawCoder).split(';')[0].trim()) || '-';
-          
+
           if (resolveKsmDept && matchedPatient.DPJP) {
             const res = resolveKsmDept(matchedPatient.DPJP);
             ksm = res.ksm || '-';
@@ -666,7 +667,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         // 2. Keyword-based local pending reason categorization
         const kategori = [];
         let faktor = 'Eksternal BPJS';
-        
+
         const lKet = keterangan.toLowerCase();
         // Category classification
         if (lKet.includes('koding') || lKet.includes('kode') || lKet.includes('icd') || lKet.includes('diagnose') || lKet.includes('diagnosis') || lKet.includes('procedure') || lKet.includes('prosedur') || lKet.includes('tindakan')) {
@@ -745,7 +746,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
             aiRegulasi = cached.kutipan_regulasi || '-';
             aiSanggahan = cached.jawaban_sanggahan_rs || '-';
             aiReviewed = true;
-          } catch(e) {}
+          } catch (e) { }
         }
 
         return {
@@ -800,7 +801,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
   // Download Excel sheet with all claim details and AI analysis results
   const downloadExcelWithAnalysis = () => {
     if (processedClaims.length === 0) return;
-    
+
     // Helper to map claims to exportable row structure
     const mapClaimToExportRow = (c, index) => {
       return {
@@ -839,7 +840,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       // Helper to auto-fit and append sheet
       const appendWorksheet = (rows, sheetName) => {
         const worksheet = XLSX.utils.json_to_sheet(rows);
-        
+
         // Auto-fit column widths nicely
         const maxLens = {};
         rows.forEach(row => {
@@ -872,7 +873,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       // Generate clean filename
       const cleanName = fileName ? fileName.replace(/\.[^/.]+$/, "") : 'Laporan_Pending';
       const outputName = `${cleanName}_Teranalisis_iDRG.xlsx`;
-      
+
       const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
       const link = document.createElement('a');
       link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
@@ -935,9 +936,28 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       }
     });
 
-    return { 
+    // Calculate category combos
+    const comboMap = {};
+    processedClaims.forEach(c => {
+      const cats = Array.isArray(c.kategori) ? c.kategori : (c.kategori ? [c.kategori] : []);
+      const sortedCats = [...cats].sort();
+      const comboKey = sortedCats.join(' + ') || 'Tanpa Kategori';
+
+      if (!comboMap[comboKey]) {
+        comboMap[comboKey] = {
+          combo: comboKey,
+          count: 0,
+          nominal: 0
+        };
+      }
+      comboMap[comboKey].count++;
+      comboMap[comboKey].nominal += c.nominal;
+    });
+    const categoryCombos = Object.values(comboMap).sort((a, b) => b.count - a.count);
+
+    return {
       total, nominal, internal, eksternal, grey, medis, koding, admin, readmisi, matchedCount,
-      rjCount, rjNominal, riCount, riNominal
+      rjCount, rjNominal, riCount, riNominal, categoryCombos
     };
   }, [processedClaims]);
 
@@ -973,7 +993,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
   // Filtered Claims
   const filteredClaims = useMemo(() => {
     return processedClaims.filter(c => {
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = searchQuery === '' ||
         c.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.sep.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.keterangan.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -985,9 +1005,14 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
       const matchesLayanan = filterLayanan === 'ALL' || c.layanan === filterLayanan;
       const matchesScatterPoint = !selectedDisputeReason || c.keterangan === selectedDisputeReason;
 
-      return matchesSearch && matchesCategory && matchesFactor && matchesScatterPoint && matchesLayanan;
+      const cats = Array.isArray(c.kategori) ? c.kategori : (c.kategori ? [c.kategori] : []);
+      const sortedCats = [...cats].sort();
+      const comboKey = sortedCats.join(' + ') || 'Tanpa Kategori';
+      const matchesCombo = filterCategoryCombo === 'ALL' || comboKey === filterCategoryCombo;
+
+      return matchesSearch && matchesCategory && matchesFactor && matchesScatterPoint && matchesLayanan && matchesCombo;
     });
-  }, [processedClaims, searchQuery, filterCategory, filterFactor, filterLayanan, selectedDisputeReason]);
+  }, [processedClaims, searchQuery, filterCategory, filterFactor, filterLayanan, selectedDisputeReason, filterCategoryCombo]);
 
   // Top 10 Dispute Reasons grouped by clinical categories
   const top10Stats = useMemo(() => {
@@ -1007,7 +1032,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         grouped[c.keterangan].frequency++;
         grouped[c.keterangan].totalNominal += c.nominal;
       });
-      
+
       return Object.values(grouped)
         .sort((a, b) => b.frequency - a.frequency)
         .slice(0, 10);
@@ -1026,7 +1051,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
     if (!claim) return;
     setAiPatient(claim);
     setManualClinicalText("");
-    
+
     // Check if there is already a cached analysis for this claim in localStorage
     const cachedAnalysisStr = localStorage.getItem("gemini_analysis_" + claim.sep);
     if (cachedAnalysisStr) {
@@ -1043,7 +1068,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
         console.error("Failed to parse cached analysis", e);
       }
     }
-    
+
     // Fallback to claim properties if they exist
     if (claim.aiReviewed && claim.aiSaran) {
       setAiResponse({
@@ -1116,7 +1141,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
 
       const data = await response.json();
       const rawText = data.candidates[0].content.parts[0].text;
-      
+
       // Clean JSON delimiters if returned
       const cleanJson = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
       const parsed = JSON.parse(cleanJson);
@@ -1246,12 +1271,12 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
 
   return (
     <div className="space-y-8 pb-10">
-      
+
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-teal-800 via-teal-900 to-emerald-950 p-8 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden border border-white/10">
         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
         <div className="absolute bottom-0 left-1/3 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-        
+
         <div className="flex items-center gap-4.5 relative z-10">
           <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg shadow-teal-500/10 text-teal-400">
             <FileSpreadsheet size={32} />
@@ -1264,7 +1289,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
 
         {/* SETTINGS CONTROLS (API KEY & GOOGLE SHEETS SYNC) */}
         <div className="flex flex-col lg:flex-row gap-6 w-full md:w-auto relative z-10 shrink-0">
-          
+
           {/* API Key settings panel - dengan visual pembeda status */}
           <div className="flex flex-col gap-2 w-full lg:w-auto">
             {/* Status Badge */}
@@ -1282,41 +1307,43 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               width: 'fit-content',
               alignSelf: 'flex-start',
               ...(apiKeyStatus === 'empty' ? { background: 'rgba(239,68,68,0.3)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' } :
-                 apiKeyStatus === 'custom' ? { background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(96,165,250,0.5)', color: '#93c5fd' } :
-                 apiKeyStatus === 'valid' ? { background: 'rgba(16,185,129,0.25)', borderColor: 'rgba(52,211,153,0.5)', color: '#6ee7b7' } :
-                 apiKeyStatus === 'invalid' ? { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' } :
-                 apiKeyStatus === 'quota' ? { background: 'rgba(245,158,11,0.25)', borderColor: 'rgba(252,211,77,0.5)', color: '#fde68a' } :
-                 { background: 'rgba(100,116,139,0.25)', borderColor: 'rgba(148,163,184,0.4)', color: '#94a3b8' })
+                apiKeyStatus === 'custom' ? { background: 'rgba(59,130,246,0.25)', borderColor: 'rgba(96,165,250,0.5)', color: '#93c5fd' } :
+                  apiKeyStatus === 'valid' ? { background: 'rgba(16,185,129,0.25)', borderColor: 'rgba(52,211,153,0.5)', color: '#6ee7b7' } :
+                    apiKeyStatus === 'invalid' ? { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' } :
+                      apiKeyStatus === 'quota' ? { background: 'rgba(245,158,11,0.25)', borderColor: 'rgba(252,211,77,0.5)', color: '#fde68a' } :
+                        { background: 'rgba(100,116,139,0.25)', borderColor: 'rgba(148,163,184,0.4)', color: '#94a3b8' })
             }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block',
+              <span style={{
+                width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block',
                 background: apiKeyStatus === 'empty' ? '#f87171' :
-                            apiKeyStatus === 'custom' ? '#60a5fa' :
-                            apiKeyStatus === 'valid' ? '#34d399' :
-                            apiKeyStatus === 'invalid' ? '#f87171' :
-                            apiKeyStatus === 'quota' ? '#fbbf24' : '#94a3b8'
+                  apiKeyStatus === 'custom' ? '#60a5fa' :
+                    apiKeyStatus === 'valid' ? '#34d399' :
+                      apiKeyStatus === 'invalid' ? '#f87171' :
+                        apiKeyStatus === 'quota' ? '#fbbf24' : '#94a3b8'
               }} />
               {apiKeyStatus === 'default' ? '🔑 API Key: Default (Bawaan)' :
-               apiKeyStatus === 'custom' ? '🔵 API Key: Kustom (Belum Terverifikasi)' :
-               apiKeyStatus === 'valid' ? '✅ API Key: Aktif & Valid' :
-               apiKeyStatus === 'invalid' ? '❌ API Key: Tidak Valid (403)' :
-               apiKeyStatus === 'quota' ? '⚠️ API Key: Kuota Habis (429)' : '🔑 API Key: Default'}
+                apiKeyStatus === 'custom' ? '🔵 API Key: Kustom (Belum Terverifikasi)' :
+                  apiKeyStatus === 'valid' ? '✅ API Key: Aktif & Valid' :
+                    apiKeyStatus === 'invalid' ? '❌ API Key: Tidak Valid (403)' :
+                      apiKeyStatus === 'quota' ? '⚠️ API Key: Kuota Habis (429)' : '🔑 API Key: Default'}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px',
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
                 background: apiKeyStatus === 'invalid' ? 'rgba(239,68,68,0.2)' :
-                            apiKeyStatus === 'quota' ? 'rgba(245,158,11,0.2)' :
-                            apiKeyStatus === 'valid' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.1)',
+                  apiKeyStatus === 'quota' ? 'rgba(245,158,11,0.2)' :
+                    apiKeyStatus === 'valid' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.1)',
                 backdropFilter: 'blur(8px)',
                 padding: '8px 12px',
                 borderRadius: '12px',
                 border: apiKeyStatus === 'invalid' ? '1px solid rgba(239,68,68,0.4)' :
-                        apiKeyStatus === 'quota' ? '1px solid rgba(245,158,11,0.4)' :
-                        apiKeyStatus === 'valid' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                  apiKeyStatus === 'quota' ? '1px solid rgba(245,158,11,0.4)' :
+                    apiKeyStatus === 'valid' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(255,255,255,0.1)',
                 transition: 'all 0.3s'
               }}>
                 <Brain size={16} style={{ color: apiKeyStatus === 'valid' ? '#6ee7b7' : '#5eead4', flexShrink: 0 }} />
-                <input 
+                <input
                   type={showKeyPlain ? 'text' : 'password'}
                   placeholder="Masukkan Gemini API Key..."
                   value={apiKeyInput}
@@ -1345,7 +1372,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               </div>
 
               {/* Tombol SIMPAN KEY */}
-              <button 
+              <button
                 onClick={() => {
                   const newKey = apiKeyInput.trim();
                   if (newKey) {
@@ -1366,7 +1393,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               </button>
 
               {/* Tombol Reset ke Default */}
-              <button 
+              <button
                 onClick={() => {
                   setApiKeyInput("");
                   setGeminiKey("");
@@ -1399,17 +1426,18 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               width: 'fit-content',
               alignSelf: 'flex-start',
               ...(Object.keys(customIcdMap).length > 0
-                 ? { background: 'rgba(16,185,129,0.25)', borderColor: 'rgba(52,211,153,0.5)', color: '#6ee7b7' }
-                 : { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' })
+                ? { background: 'rgba(16,185,129,0.25)', borderColor: 'rgba(52,211,153,0.5)', color: '#6ee7b7' }
+                : { background: 'rgba(239,68,68,0.25)', borderColor: 'rgba(252,165,165,0.5)', color: '#fca5a5' })
             }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block',
+              <span style={{
+                width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block',
                 background: Object.keys(customIcdMap).length > 0 ? '#34d399' : '#f87171'
               }} />
               {Object.keys(customIcdMap).length > 0
-                 ? `📊 Kamus Aktif (${Object.keys(customIcdMap).length.toLocaleString()} Kode)`
-                 : '⚪ Kamus Lokal Standar'}
+                ? `📊 Kamus Aktif (${Object.keys(customIcdMap).length.toLocaleString()} Kode)`
+                : '⚪ Kamus Lokal Standar'}
             </div>
-            
+
             <div className="text-[10px] text-teal-200/70 font-semibold max-w-[200px] leading-relaxed">
               Pengaturan kamus dan sinkronisasi otomatis kini berada di menu utama <b>Kamus ICD</b>.
             </div>
@@ -1444,17 +1472,17 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
       {/* DASHBOARD ANALYSIS */}
       {processedClaims.length > 0 && stats && (
         <div className="space-y-8 animate-in fade-in duration-500">
-          
+
           {/* SUB-TABS SELECTOR */}
           <div className="flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-200 shadow-sm print:hidden">
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => setActiveSubTab('dashboard')}
                 className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 ${activeSubTab === 'dashboard' ? 'bg-teal-600 text-white shadow-md shadow-teal-600/10' : 'text-slate-500 hover:bg-slate-50'}`}
               >
                 <Sparkles size={14} /> Dashboard Kerja
               </button>
-              <button 
+              <button
                 onClick={() => setActiveSubTab('report')}
                 className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 ${activeSubTab === 'report' ? 'bg-teal-600 text-white shadow-md shadow-teal-600/10' : 'text-slate-500 hover:bg-slate-50'}`}
               >
@@ -1462,7 +1490,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               </button>
             </div>
             {activeSubTab === 'report' && (
-              <button 
+              <button
                 onClick={() => window.print()}
                 className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-emerald-600/10 flex items-center gap-1.5"
               >
@@ -1475,450 +1503,541 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             <>
               {/* METRICS ROW */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <MetricCard 
-              title="Total Kasus Pending" 
-              value={stats.total} 
-              subtitle={`${stats.rjCount} Rawat Jalan | ${stats.riCount} Rawat Inap`} 
-              color="teal" 
-              icon={FileSpreadsheet} 
-              onClick={() => {
-                if (openDrilldown && stats.total > 0) {
-                  openDrilldown(
-                    'Seluruh Kasus Pending',
-                    () => true,
-                    'pending_sakti',
-                    processedClaims
-                  );
-                }
-              }}
-            />
-            <MetricCard 
-              title="Nilai Klaim Pending" 
-              value={formatRp(stats.nominal)} 
-              subtitle={`${formatRp(stats.rjNominal)} RJ | ${formatRp(stats.riNominal)} RI`} 
-              color="emerald" 
-              icon={Download} 
-              onClick={() => {
-                if (openDrilldown && stats.total > 0) {
-                  openDrilldown(
-                    'Seluruh Kasus Pending',
-                    () => true,
-                    'pending_sakti',
-                    processedClaims
-                  );
-                }
-              }}
-            />
-            <MetricCard 
-              title="Penyebab Internal RS" 
-              value={`${stats.internal} kasus`} 
-              subtitle={`${((stats.internal / stats.total) * 100).toFixed(0)}% Sistemik`} 
-              color="amber" 
-              icon={AlertTriangle} 
-              onClick={() => {
-                if (openDrilldown && stats.internal > 0) {
-                  openDrilldown(
-                    'Pasien Pending - Penyebab Internal RS',
-                    c => c.faktor === 'Internal RS',
-                    'pending_sakti',
-                    processedClaims
-                  );
-                }
-              }}
-            />
-            <MetricCard 
-              title="Pasien Terintegrasi" 
-              value={`${stats.matchedCount} Kasus`} 
-              subtitle="SEP Cocok di iDRG" 
-              color="indigo" 
-              icon={UserCheck} 
-              onClick={() => {
-                if (openDrilldown && stats.matchedCount > 0) {
-                  openDrilldown(
-                    'Pasien Pending Terintegrasi iDRG',
-                    c => c.matched === true,
-                    'pending_sakti',
-                    processedClaims
-                  );
-                }
-              }}
-            />
-          </div>
-
-          {/* PRIORITY MATRIX PLOT (FULL WIDTH) */}
-          <Card id="priority-matrix-card" downloadTitle="Matriks Prioritas Masalah Pending" className="p-6 flex flex-col gap-5 bg-white border border-slate-200 mb-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 border-slate-100">
-              <div>
-                <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                  <Sparkles size={18} className="text-teal-600 animate-pulse" /> Matriks Prioritas Masalah Pending
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Analisis korelasi nominal biaya pending terhadap frekuensi masalah. Klik titik untuk memfilter alasan pending.</p>
+                <MetricCard
+                  title="Total Kasus Pending"
+                  value={stats.total}
+                  subtitle={`${stats.rjCount} Rawat Jalan | ${stats.riCount} Rawat Inap`}
+                  color="teal"
+                  icon={FileSpreadsheet}
+                  onClick={() => {
+                    if (openDrilldown && stats.total > 0) {
+                      openDrilldown(
+                        'Seluruh Kasus Pending',
+                        () => true,
+                        'pending_sakti',
+                        processedClaims
+                      );
+                    }
+                  }}
+                />
+                <MetricCard
+                  title="Nilai Klaim Pending"
+                  value={formatRp(stats.nominal)}
+                  subtitle={`${formatRp(stats.rjNominal)} RJ | ${formatRp(stats.riNominal)} RI`}
+                  color="emerald"
+                  icon={Download}
+                  onClick={() => {
+                    if (openDrilldown && stats.total > 0) {
+                      openDrilldown(
+                        'Seluruh Kasus Pending',
+                        () => true,
+                        'pending_sakti',
+                        processedClaims
+                      );
+                    }
+                  }}
+                />
+                <MetricCard
+                  title="Penyebab Internal RS"
+                  value={`${stats.internal} kasus`}
+                  subtitle={`${((stats.internal / stats.total) * 100).toFixed(0)}% Sistemik`}
+                  color="amber"
+                  icon={AlertTriangle}
+                  onClick={() => {
+                    if (openDrilldown && stats.internal > 0) {
+                      openDrilldown(
+                        'Pasien Pending - Penyebab Internal RS',
+                        c => c.faktor === 'Internal RS',
+                        'pending_sakti',
+                        processedClaims
+                      );
+                    }
+                  }}
+                />
+                <MetricCard
+                  title="Pasien Terintegrasi"
+                  value={`${stats.matchedCount} Kasus`}
+                  subtitle="SEP Cocok di iDRG"
+                  color="indigo"
+                  icon={UserCheck}
+                  onClick={() => {
+                    if (openDrilldown && stats.matchedCount > 0) {
+                      openDrilldown(
+                        'Pasien Pending Terintegrasi iDRG',
+                        c => c.matched === true,
+                        'pending_sakti',
+                        processedClaims
+                      );
+                    }
+                  }}
+                />
               </div>
-              {selectedDisputeReason && (
-                <button 
-                  onClick={() => setSelectedDisputeReason(null)}
-                  className="text-xs font-black text-teal-600 hover:text-teal-800 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 transition-colors print:hidden"
-                >
-                  Reset Filter Titik
-                </button>
-              )}
-            </div>
 
-            {chartParams ? (
-              <div className="relative">
-                {/* Floating Tooltip Overlay */}
-                {hoveredPoint && (
-                  <div 
-                    className="absolute z-40 bg-slate-950/95 backdrop-blur-md text-white border border-slate-700/80 p-3 rounded-xl shadow-2xl pointer-events-none text-left w-56 transition-all duration-75 ease-out select-none"
-                    style={{ 
-                      left: `${hoveredPoint.x}px`, 
-                      top: `${hoveredPoint.y}px`,
-                      transform: 'translate(-50%, -108%)'
-                    }}
-                  >
-                    {/* Arrow indicator pointing to circle */}
-                    <div className="absolute bottom-[-5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-slate-950 border-r border-b border-slate-700/80 transform rotate-45"></div>
-                    
-                    <div className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1.5 flex justify-between">
-                      <span>{hoveredPoint.data.category}</span>
-                      <span></span>
-                    </div>
-                    <div className="text-[11px] font-extrabold line-clamp-2 text-slate-100 leading-tight mb-2 border-b border-slate-800 pb-2">{hoveredPoint.data.label}</div>
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-medium text-slate-400">
-                      <span>Kasus:</span>
-                      <span className="font-extrabold text-white text-right">{hoveredPoint.data.frequency}x</span>
-                      <span>Estimasi:</span>
-                      <span className="font-extrabold text-emerald-400 text-right">{formatRp(hoveredPoint.data.totalNominal)}</span>
-                      <span>Avg/Kasus:</span>
-                      <span className="font-extrabold text-white text-right">{formatRp(Math.round(hoveredPoint.data.totalNominal / hoveredPoint.data.frequency))}</span>
-                    </div>
+              {/* PRIORITY MATRIX PLOT (FULL WIDTH) */}
+              <Card id="priority-matrix-card" downloadTitle="Matriks Prioritas Masalah Pending" className="p-6 flex flex-col gap-5 bg-white border border-slate-200 mb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 border-slate-100">
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                      <Sparkles size={18} className="text-teal-600 animate-pulse" /> Matriks Prioritas Masalah Pending
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Analisis korelasi nominal biaya pending terhadap frekuensi masalah. Klik titik untuk memfilter alasan pending.</p>
                   </div>
-                )}
-
-                {/* Toolbar Panel Overlay */}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 bg-white/90 backdrop-blur-sm border border-slate-200/80 p-1 rounded-lg shadow-md z-30 select-none">
-                  <button className="p-1 rounded-md bg-teal-50 text-teal-600 border border-teal-100 transition-colors" title="Pan Tool (Active)">
-                    <Move size={13} />
-                  </button>
-                  <button className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" title="Box Zoom Tool">
-                    <Search size={13} />
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setSelectedDisputeReason(null);
-                      setCrosshair(null);
-                      setHoveredPoint(null);
-                    }} 
-                    className="p-1 rounded-md text-slate-400 hover:bg-slate-100 hover:text-teal-600 transition-colors" 
-                    title="Reset View"
-                  >
-                    <RefreshCw size={13} />
-                  </button>
-                  <button 
-                    onClick={() => alert('Matriks Prioritas:\n1. Arahkan kursor ke gelembung untuk melihat ulasan instan, jumlah kasus, dan dampak finansial.\n2. Klik gelembung untuk memfilter tabel kasus di bawah berdasarkan alasan pending tertentu.\n3. Gelembung di Zona Merah (kanan atas) memiliki dampak finansial tinggi dan frekuensi tinggi. Prioritaskan ini!')} 
-                    className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" 
-                    title="Bantuan"
-                  >
-                      <HelpCircle size={13} />
+                  {selectedDisputeReason && (
+                    <button
+                      onClick={() => setSelectedDisputeReason(null)}
+                      className="text-xs font-black text-teal-600 hover:text-teal-800 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 transition-colors print:hidden"
+                    >
+                      Reset Filter Titik
                     </button>
-                  </div>
+                  )}
+                </div>
 
-                  <svg 
-                    ref={svgRef}
-                    viewBox={`0 0 ${width} ${height}`} 
-                    className="w-full h-auto bg-white select-none rounded-2xl border border-slate-100 shadow-inner" 
-                    xmlns="http://www.w3.org/2000/svg"
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    {/* Quadrant Background Shading */}
-                    <rect x={padding.left} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#ecfdf5" opacity="0.3" /> {/* Top-Left: Sistemik (Amber) */}
-                    <rect x={padding.left + chartParams.innerW / 2} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#fef2f2" opacity="0.35" /> {/* Top-Right: Prioritas Utama (Red) */}
-                    <rect x={padding.left} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#f8fafc" opacity="0.4" /> {/* Bottom-Left: Monitoring (Grey) */}
-                    <rect x={padding.left + chartParams.innerW / 2} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#eff6ff" opacity="0.35" /> {/* Bottom-Right: High Impact (Indigo) */}
+                {chartParams ? (
+                  <div className="relative">
+                    {/* Floating Tooltip Overlay */}
+                    {hoveredPoint && (
+                      <div
+                        className="absolute z-40 bg-slate-950/95 backdrop-blur-md text-white border border-slate-700/80 p-3 rounded-xl shadow-2xl pointer-events-none text-left w-56 transition-all duration-75 ease-out select-none"
+                        style={{
+                          left: `${hoveredPoint.x}px`,
+                          top: `${hoveredPoint.y}px`,
+                          transform: 'translate(-50%, -108%)'
+                        }}
+                      >
+                        {/* Arrow indicator pointing to circle */}
+                        <div className="absolute bottom-[-5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-slate-950 border-r border-b border-slate-700/80 transform rotate-45"></div>
 
-                    {/* Chart Axes */}
-                    <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
-                    <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
-
-                    {/* Average lines (BEP style boundaries) */}
-                    <line x1={chartParams.scaleX(chartParams.avgNom)} y1={padding.top} x2={chartParams.scaleX(chartParams.avgNom)} y2={height - padding.bottom} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1={padding.left} y1={chartParams.scaleY(chartParams.avgFreq)} x2={width - padding.right} y2={chartParams.scaleY(chartParams.avgFreq)} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-
-                    {/* Crosshair Grids */}
-                    {crosshair && (
-                      <g pointerEvents="none">
-                        <line 
-                          x1={padding.left} 
-                          y1={crosshair.y} 
-                          x2={width - padding.right} 
-                          y2={crosshair.y} 
-                          stroke="#64748b" 
-                          strokeWidth="0.8" 
-                          strokeDasharray="2 2" 
-                          opacity="0.6"
-                        />
-                        <line 
-                          x1={crosshair.x} 
-                          y1={padding.top} 
-                          x2={crosshair.x} 
-                          y2={height - padding.bottom} 
-                          stroke="#64748b" 
-                          strokeWidth="0.8" 
-                          strokeDasharray="2 2" 
-                          opacity="0.6"
-                        />
-                      </g>
+                        <div className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1.5 flex justify-between">
+                          <span>{hoveredPoint.data.category}</span>
+                          <span></span>
+                        </div>
+                        <div className="text-[11px] font-extrabold line-clamp-2 text-slate-100 leading-tight mb-2 border-b border-slate-800 pb-2">{hoveredPoint.data.label}</div>
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] font-medium text-slate-400">
+                          <span>Kasus:</span>
+                          <span className="font-extrabold text-white text-right">{hoveredPoint.data.frequency}x</span>
+                          <span>Estimasi:</span>
+                          <span className="font-extrabold text-emerald-400 text-right">{formatRp(hoveredPoint.data.totalNominal)}</span>
+                          <span>Avg/Kasus:</span>
+                          <span className="font-extrabold text-white text-right">{formatRp(Math.round(hoveredPoint.data.totalNominal / hoveredPoint.data.frequency))}</span>
+                        </div>
+                      </div>
                     )}
 
-                    {/* Zone Labels */}
-                    <text x={padding.left + chartParams.innerW * 0.25} y={padding.top + 18} fontSize="9" fill="#d97706" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA II (SISTEMIK)</text>
-                    <text x={padding.left + chartParams.innerW * 0.75} y={padding.top + 18} fontSize="9" fill="#dc2626" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA I (PRIORITAS UTAMA)</text>
-                    <text x={padding.left + chartParams.innerW * 0.25} y={height - padding.bottom - 12} fontSize="9" fill="#64748b" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA IV (MONITORING)</text>
-                    <text x={padding.left + chartParams.innerW * 0.75} y={height - padding.bottom - 12} fontSize="9" fill="#2563eb" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA III (HIGH IMPACT)</text>
-
-                    {/* Axis Labels */}
-                    <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Pending per Masalah)</text>
-                    <text x={15} y={height / 2} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>Frekuensi Kejadian (Jumlah Kasus)</text>
-
-                    {/* Scatter Dots */}
-                    {scatterData.map((d, i) => {
-                      const x = chartParams.scaleX(d.totalNominal);
-                      const y = chartParams.scaleY(d.frequency);
-                      const isSelected = selectedDisputeReason === d.label;
-
-                      // Color based on Quadrant
-                      let color = '#94a3b8';
-                      if (d.totalNominal >= chartParams.avgNom) {
-                        color = d.frequency >= chartParams.avgFreq ? '#ef4444' : '#2563eb';
-                      } else {
-                        color = d.frequency >= chartParams.avgFreq ? '#f59e0b' : '#64748b';
-                      }
-
-                      return (
-                        <g 
-                          key={i} 
-                          className="cursor-pointer" 
-                          onClick={() => setSelectedDisputeReason(isSelected ? null : d.label)}
-                          onMouseEnter={(e) => {
-                            if (!svgRef.current) return;
-                            const rect = svgRef.current.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const clickY = e.clientY - rect.top;
-                            setHoveredPoint({
-                              data: d,
-                              x: clickX,
-                              y: clickY - 8
-                            });
-                          }}
-                          onMouseLeave={() => setHoveredPoint(null)}
-                        >
-                          <circle 
-                            cx={x} 
-                            cy={y} 
-                            r={isSelected ? 11 : 8} 
-                            fill={color} 
-                            fillOpacity={isSelected ? 0.95 : 0.7} 
-                            stroke="#fff" 
-                            strokeWidth={isSelected ? 3.5 : 1.8} 
-                            className="transition-all duration-150 hover:fill-opacity-100 hover:stroke-[3.5px] hover:stroke-teal-400"
-                          />
-                          {/* Circle Pulse for Selected */}
-                          {isSelected && (
-                            <circle 
-                              cx={x} 
-                              cy={y} 
-                              r={16} 
-                              fill="none" 
-                              stroke={color} 
-                              strokeWidth="1" 
-                              strokeDasharray="2 2"
-                              className="animate-spin"
-                              style={{ transformOrigin: `${x}px ${y}px`, animationDuration: '4s' }}
-                            />
-                          )}
-                        </g>
-                      );
-                    })}
-                  </svg>
-                </div>
-              ) : (
-                <div className="h-64 flex items-center justify-center text-slate-400 font-bold">Menyiapkan grafik prioritas...</div>
-              )}
-            </Card>
-
-            {/* DUAL CHARTS GRID */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              
-              {/* KELOMPOK KASUS DISPUTE */}
-              <Card id="case-groups-card" downloadTitle="Kelompok Kasus Pending" className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
-                <div className="space-y-5">
-                  <div className="border-b pb-4 border-slate-100">
-                    <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                      <Info size={18} className="text-teal-600" /> Kelompok Kasus Pending (Case Groups)
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Sebaran kelompok kasus pending berdasarkan kriteria audit BPJS & internal RS.</p>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
-                      <span className="text-slate-400 uppercase">Kelompok Kasus</span>
-                      <span className="text-slate-600">Frekuensi</span>
+                    {/* Toolbar Panel Overlay */}
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 bg-white/90 backdrop-blur-sm border border-slate-200/80 p-1 rounded-lg shadow-md z-30 select-none">
+                      <button className="p-1 rounded-md bg-teal-50 text-teal-600 border border-teal-100 transition-colors" title="Pan Tool (Active)">
+                        <Move size={13} />
+                      </button>
+                      <button className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors" title="Box Zoom Tool">
+                        <Search size={13} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedDisputeReason(null);
+                          setCrosshair(null);
+                          setHoveredPoint(null);
+                        }}
+                        className="p-1 rounded-md text-slate-400 hover:bg-slate-100 hover:text-teal-600 transition-colors"
+                        title="Reset View"
+                      >
+                        <RefreshCw size={13} />
+                      </button>
+                      <button
+                        onClick={() => alert('Matriks Prioritas:\n1. Arahkan kursor ke gelembung untuk melihat ulasan instan, jumlah kasus, dan dampak finansial.\n2. Klik gelembung untuk memfilter tabel kasus di bawah berdasarkan alasan pending tertentu.\n3. Gelembung di Zona Merah (kanan atas) memiliki dampak finansial tinggi dan frekuensi tinggi. Prioritaskan ini!')}
+                        className="p-1 rounded-md text-slate-400 hover:bg-slate-100 transition-colors"
+                        title="Bantuan"
+                      >
+                        <HelpCircle size={13} />
+                      </button>
                     </div>
-                    <CategoryBar label="Koding Medis / Aturan ICD" count={stats.koding} total={stats.total} color="bg-rose-500" />
-                    <CategoryBar label="Administrasi / Berkas" count={stats.admin} total={stats.total} color="bg-amber-500" />
-                    <CategoryBar label="Readmisi / Clinical Pathway" count={stats.readmisi} total={stats.total} color="bg-teal-500" />
-                    <CategoryBar label="Indikasi Medis Klinis" count={stats.medis} total={stats.total} color="bg-sky-500" />
-                  </div>
-                </div>
-              </Card>
 
-              {/* FAKTOR PENYEBAB & INTEGRASI */}
-              <Card id="root-cause-card" downloadTitle="Faktor Penyebab dan Aksi Integrasi" className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
-                <div className="space-y-5">
-                  <div className="border-b pb-4 border-slate-100">
-                    <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                      <ShieldCheck size={18} className="text-teal-600" /> Faktor Penyebab &amp; Aksi Integrasi
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Analisis akar masalah (root cause) dan kontrol manajemen data pending.</p>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
-                      <span className="text-slate-400 uppercase">Faktor Penyebab (Root Cause)</span>
-                      <span className="text-slate-600 font-medium text-[10px]">Klik bar untuk filter</span>
-                    </div>
-                    <RootCauseChart 
-                      stats={stats} 
-                      onBarClick={(fac) => {
-                        setFilterFactor(fac === filterFactor ? 'ALL' : fac);
-                      }} 
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mt-6 flex flex-col gap-3">
-                  <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                    <ShieldCheck size={14} className="text-emerald-500" /> Integrasi SMF SAK-iDRG
-                  </div>
-                  <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
-                    Modul ini secara otomatis mencocokkan kode SEP Anda dengan dataset audit klinis SAK-iDRG untuk menarik data **DPJP, SMF/KSM, Coder Coder, dan Ringkasan Diagnosis/Prosedur** secara *real-time*.
-                  </p>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => {
-                        setProcessedClaims([]);
-                        setFileData([]);
-                        setSelectedDisputeReason(null);
-                      }}
-                      className="flex-1 text-center py-2.5 bg-white border hover:bg-slate-50 text-rose-600 text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-sm"
+                    <svg
+                      ref={svgRef}
+                      viewBox={`0 0 ${width} ${height}`}
+                      className="w-full h-auto bg-white select-none rounded-2xl border border-slate-100 shadow-inner"
+                      xmlns="http://www.w3.org/2000/svg"
+                      onMouseMove={handleMouseMove}
+                      onMouseLeave={handleMouseLeave}
                     >
-                      Bersihkan Data
+                      {/* Quadrant Background Shading */}
+                      <rect x={padding.left} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#ecfdf5" opacity="0.3" /> {/* Top-Left: Sistemik (Amber) */}
+                      <rect x={padding.left + chartParams.innerW / 2} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#fef2f2" opacity="0.35" /> {/* Top-Right: Prioritas Utama (Red) */}
+                      <rect x={padding.left} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#f8fafc" opacity="0.4" /> {/* Bottom-Left: Monitoring (Grey) */}
+                      <rect x={padding.left + chartParams.innerW / 2} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#eff6ff" opacity="0.35" /> {/* Bottom-Right: High Impact (Indigo) */}
+
+                      {/* Chart Axes */}
+                      <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
+                      <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
+
+                      {/* Average lines (BEP style boundaries) */}
+                      <line x1={chartParams.scaleX(chartParams.avgNom)} y1={padding.top} x2={chartParams.scaleX(chartParams.avgNom)} y2={height - padding.bottom} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                      <line x1={padding.left} y1={chartParams.scaleY(chartParams.avgFreq)} x2={width - padding.right} y2={chartParams.scaleY(chartParams.avgFreq)} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+
+                      {/* Crosshair Grids */}
+                      {crosshair && (
+                        <g pointerEvents="none">
+                          <line
+                            x1={padding.left}
+                            y1={crosshair.y}
+                            x2={width - padding.right}
+                            y2={crosshair.y}
+                            stroke="#64748b"
+                            strokeWidth="0.8"
+                            strokeDasharray="2 2"
+                            opacity="0.6"
+                          />
+                          <line
+                            x1={crosshair.x}
+                            y1={padding.top}
+                            x2={crosshair.x}
+                            y2={height - padding.bottom}
+                            stroke="#64748b"
+                            strokeWidth="0.8"
+                            strokeDasharray="2 2"
+                            opacity="0.6"
+                          />
+                        </g>
+                      )}
+
+                      {/* Zone Labels */}
+                      <text x={padding.left + chartParams.innerW * 0.25} y={padding.top + 18} fontSize="9" fill="#d97706" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA II (SISTEMIK)</text>
+                      <text x={padding.left + chartParams.innerW * 0.75} y={padding.top + 18} fontSize="9" fill="#dc2626" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA I (PRIORITAS UTAMA)</text>
+                      <text x={padding.left + chartParams.innerW * 0.25} y={height - padding.bottom - 12} fontSize="9" fill="#64748b" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA IV (MONITORING)</text>
+                      <text x={padding.left + chartParams.innerW * 0.75} y={height - padding.bottom - 12} fontSize="9" fill="#2563eb" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA III (HIGH IMPACT)</text>
+
+                      {/* Axis Labels */}
+                      <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Pending per Masalah)</text>
+                      <text x={15} y={height / 2} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>Frekuensi Kejadian (Jumlah Kasus)</text>
+
+                      {/* Scatter Dots */}
+                      {scatterData.map((d, i) => {
+                        const x = chartParams.scaleX(d.totalNominal);
+                        const y = chartParams.scaleY(d.frequency);
+                        const isSelected = selectedDisputeReason === d.label;
+
+                        // Color based on Quadrant
+                        let color = '#94a3b8';
+                        if (d.totalNominal >= chartParams.avgNom) {
+                          color = d.frequency >= chartParams.avgFreq ? '#ef4444' : '#2563eb';
+                        } else {
+                          color = d.frequency >= chartParams.avgFreq ? '#f59e0b' : '#64748b';
+                        }
+
+                        return (
+                          <g
+                            key={i}
+                            className="cursor-pointer"
+                            onClick={() => setSelectedDisputeReason(isSelected ? null : d.label)}
+                            onMouseEnter={(e) => {
+                              if (!svgRef.current) return;
+                              const rect = svgRef.current.getBoundingClientRect();
+                              const clickX = e.clientX - rect.left;
+                              const clickY = e.clientY - rect.top;
+                              setHoveredPoint({
+                                data: d,
+                                x: clickX,
+                                y: clickY - 8
+                              });
+                            }}
+                            onMouseLeave={() => setHoveredPoint(null)}
+                          >
+                            <circle
+                              cx={x}
+                              cy={y}
+                              r={isSelected ? 11 : 8}
+                              fill={color}
+                              fillOpacity={isSelected ? 0.95 : 0.7}
+                              stroke="#fff"
+                              strokeWidth={isSelected ? 3.5 : 1.8}
+                              className="transition-all duration-150 hover:fill-opacity-100 hover:stroke-[3.5px] hover:stroke-teal-400"
+                            />
+                            {/* Circle Pulse for Selected */}
+                            {isSelected && (
+                              <circle
+                                cx={x}
+                                cy={y}
+                                r={16}
+                                fill="none"
+                                stroke={color}
+                                strokeWidth="1"
+                                strokeDasharray="2 2"
+                                className="animate-spin"
+                                style={{ transformOrigin: `${x}px ${y}px`, animationDuration: '4s' }}
+                              />
+                            )}
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="h-64 flex items-center justify-center text-slate-400 font-bold">Menyiapkan grafik prioritas...</div>
+                )}
+              </Card>
+
+              {/* DUAL CHARTS GRID */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+                {/* KELOMPOK KASUS DISPUTE */}
+                <Card id="case-groups-card" downloadTitle="Kelompok Kasus Pending" className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
+                  <div className="space-y-5">
+                    <div className="border-b pb-4 border-slate-100">
+                      <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                        <Info size={18} className="text-teal-600" /> Kelompok Kasus Pending (Case Groups)
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5">Sebaran kelompok kasus pending berdasarkan kombinasi kriteria audit BPJS & internal RS.</p>
+                    </div>
+                    <div className="space-y-4 max-h-[320px] overflow-y-auto custom-scrollbar pr-1">
+                      <div className="flex justify-between items-center text-xs font-bold border-b pb-2 sticky top-0 bg-white z-10">
+                        <span className="text-slate-400 uppercase">Kelompok Kasus / Kombinasi</span>
+                        <span className="text-slate-600">Frekuensi</span>
+                      </div>
+                      {stats.categoryCombos.map((item, idx) => {
+                        const colors = {
+                          'Medis': 'bg-rose-500',
+                          'Koding': 'bg-amber-500',
+                          'Administrasi': 'bg-sky-500',
+                          'Readmisi': 'bg-purple-500'
+                        };
+                        const primaryCat = item.combo.split(' + ')[0];
+                        const barColor = colors[primaryCat] || 'bg-slate-400';
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={() => setFilterCategoryCombo(item.combo === filterCategoryCombo ? 'ALL' : item.combo)}
+                            className={`p-1.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer border ${item.combo === filterCategoryCombo ? 'border-teal-400 bg-teal-50/20' : 'border-transparent'}`}
+                            title={`Klik untuk menyaring: ${item.combo}`}
+                          >
+                            <CategoryBar 
+                              label={item.combo} 
+                              count={item.count} 
+                              total={stats.total} 
+                              color={barColor} 
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </Card>
+
+                {/* FAKTOR PENYEBAB & INTEGRASI */}
+                <Card id="root-cause-card" downloadTitle="Faktor Penyebab dan Aksi Integrasi" className="p-6 bg-white border border-slate-200 flex flex-col justify-between">
+                  <div className="space-y-5">
+                    <div className="border-b pb-4 border-slate-100">
+                      <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                        <ShieldCheck size={18} className="text-teal-600" /> Faktor Penyebab &amp; Aksi Integrasi
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-0.5">Analisis akar masalah (root cause) dan kontrol manajemen data pending.</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center text-xs font-bold border-b pb-2">
+                        <span className="text-slate-400 uppercase">Faktor Penyebab (Root Cause)</span>
+                        <span className="text-slate-600 font-medium text-[10px]">Klik bar untuk filter</span>
+                      </div>
+                      <RootCauseChart
+                        stats={stats}
+                        onBarClick={(fac) => {
+                          setFilterFactor(fac === filterFactor ? 'ALL' : fac);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 mt-6 flex flex-col gap-3">
+                    <div className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                      <ShieldCheck size={14} className="text-emerald-500" /> Integrasi SMF SAK-iDRG
+                    </div>
+                    <p className="text-[11px] leading-relaxed text-slate-500 font-medium">
+                      Modul ini secara otomatis mencocokkan kode SEP Anda dengan dataset audit klinis SAK-iDRG untuk menarik data **DPJP, SMF/KSM, Coder Coder, dan Ringkasan Diagnosis/Prosedur** secara *real-time*.
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setProcessedClaims([]);
+                          setFileData([]);
+                          setSelectedDisputeReason(null);
+                        }}
+                        className="flex-1 text-center py-2.5 bg-white border hover:bg-slate-50 text-rose-600 text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-sm"
+                      >
+                        Bersihkan Data
+                      </button>
+                      <label className="flex-1 text-center py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-md shadow-teal-600/10 cursor-pointer">
+                        Unggah Baru
+                        <input type="file" onChange={handleFileUpload} accept=".xlsx,.xls,.csv" className="hidden" />
+                      </label>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* CATEGORY COMBO TABLE */}
+              <Card id="category-combo-card" downloadTitle="Rincian Kombinasi Kategori Masalah" className="p-6 bg-white border border-slate-200 mb-6">
+                <div className="flex justify-between items-center border-b pb-4 border-slate-100 mb-4">
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                      <Layers size={18} className="text-teal-600" /> Rincian Kombinasi Kategori Masalah
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Kelompok kategori yang muncul bersamaan dalam satu berkas pending.</p>
+                  </div>
+                  {filterCategoryCombo !== 'ALL' && (
+                    <button
+                      onClick={() => setFilterCategoryCombo('ALL')}
+                      className="text-xs font-black text-teal-600 hover:text-teal-800 bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-100 transition-colors print:hidden cursor-pointer"
+                    >
+                      Reset Filter Kombinasi ({filterCategoryCombo})
                     </button>
-                    <label className="flex-1 text-center py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl transition-all uppercase tracking-wider shadow-md shadow-teal-600/10 cursor-pointer">
-                      Unggah Baru
-                      <input type="file" onChange={handleFileUpload} accept=".xlsx,.xls,.csv" className="hidden" />
-                    </label>
+                  )}
+                </div>
+                <CategoryComboTable
+                  combos={stats.categoryCombos}
+                  totalClaims={stats.total}
+                  totalNominal={stats.nominal}
+                  onRowClick={(combo) => {
+                    setFilterCategoryCombo(combo.combo === filterCategoryCombo ? 'ALL' : combo.combo);
+                  }}
+                />
+              </Card>
+
+              {/* PATIENT CLAIMS DETAIL TABLE */}
+              <Card className="overflow-hidden bg-white border border-slate-200">
+                <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-800 flex flex-wrap items-center gap-2">
+                      <FileText size={18} className="text-teal-600" /> Daftar Kasus Pending BPJS
+                      {filterCategoryCombo !== 'ALL' && (
+                        <span className="px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-100 rounded-md text-[10px] uppercase font-black tracking-wider animate-pulse inline-flex items-center gap-1">
+                          Filter Kombinasi: {filterCategoryCombo}
+                          <span onClick={(e) => { e.stopPropagation(); setFilterCategoryCombo('ALL'); }} className="cursor-pointer font-bold ml-1 hover:text-rose-600">×</span>
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">Seluruh detail klaim pending dengan opsi draft naskah tanggapan sanggahan.</p>
+                  </div>
+
+                  {/* SEARCH & FILTERS */}
+                  <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <div className="relative flex-1 sm:flex-none">
+                      <input
+                        type="text"
+                        placeholder="Cari pasien, SEP, koder..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9 pr-4 py-2 border rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 w-full sm:w-64 bg-slate-50/50"
+                      />
+                      <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                    </div>
+
+                    <select
+                      value={filterLayanan}
+                      onChange={(e) => setFilterLayanan(e.target.value)}
+                      className="px-3.5 py-2 border rounded-xl text-xs font-bold outline-none bg-white cursor-pointer"
+                    >
+                      <option value="ALL">Semua Layanan</option>
+                      <option value="Rawat Jalan">Rawat Jalan (RJ)</option>
+                      <option value="Rawat Inap">Rawat Inap (RI)</option>
+                    </select>
+
+                    <select
+                      value={filterCategory}
+                      onChange={(e) => setFilterCategory(e.target.value)}
+                      className="px-3.5 py-2 border rounded-xl text-xs font-bold outline-none bg-white cursor-pointer"
+                    >
+                      <option value="ALL">Semua Kategori</option>
+                      <option value="Medis">Medis</option>
+                      <option value="Koding">Koding</option>
+                      <option value="Administrasi">Administrasi</option>
+                      <option value="Readmisi">Readmisi</option>
+                    </select>
+
+                    <select
+                      value={filterFactor}
+                      onChange={(e) => setFilterFactor(e.target.value)}
+                      className="px-3.5 py-2 border rounded-xl text-xs font-bold outline-none bg-white cursor-pointer"
+                    >
+                      <option value="ALL">Semua Faktor</option>
+                      <option value="Internal RS">Internal RS</option>
+                      <option value="Eksternal BPJS">Eksternal BPJS</option>
+                      <option value="Grey Area">Grey Area</option>
+                    </select>
+
+                    <button
+                      onClick={downloadExcelWithAnalysis}
+                      className="px-3.5 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-teal-600/10 flex items-center gap-1.5 shrink-0"
+                      title="Unduh Hasil Pemetaan & Analisis Gemini AI ke Excel"
+                    >
+                      <Download size={14} /> Unduh Hasil (.xlsx)
+                    </button>
                   </div>
                 </div>
-              </Card>
-            </div>
 
-          {/* PATIENT CLAIMS DETAIL TABLE */}
-          <Card className="overflow-hidden bg-white border border-slate-200">
-            <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                  <FileText size={18} className="text-teal-600" /> Daftar Kasus Pending BPJS
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Seluruh detail klaim pending dengan opsi draft naskah tanggapan sanggahan.</p>
-              </div>
-
-              {/* SEARCH & FILTERS */}
-              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <div className="relative flex-1 sm:flex-none">
-                  <input
-                    type="text"
-                    placeholder="Cari pasien, SEP, koder..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 pr-4 py-2 border rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 w-full sm:w-64 bg-slate-50/50"
-                  />
-                  <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                </div>
-                
-                <select 
-                  value={filterLayanan} 
-                  onChange={(e) => setFilterLayanan(e.target.value)}
-                  className="px-3.5 py-2 border rounded-xl text-xs font-bold outline-none bg-white cursor-pointer"
-                >
-                  <option value="ALL">Semua Layanan</option>
-                  <option value="Rawat Jalan">Rawat Jalan (RJ)</option>
-                  <option value="Rawat Inap">Rawat Inap (RI)</option>
-                </select>
-
-                <select 
-                  value={filterCategory} 
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                  className="px-3.5 py-2 border rounded-xl text-xs font-bold outline-none bg-white cursor-pointer"
-                >
-                  <option value="ALL">Semua Kategori</option>
-                  <option value="Medis">Medis</option>
-                  <option value="Koding">Koding</option>
-                  <option value="Administrasi">Administrasi</option>
-                  <option value="Readmisi">Readmisi</option>
-                </select>
-
-                <select 
-                  value={filterFactor} 
-                  onChange={(e) => setFilterFactor(e.target.value)}
-                  className="px-3.5 py-2 border rounded-xl text-xs font-bold outline-none bg-white cursor-pointer"
-                >
-                  <option value="ALL">Semua Faktor</option>
-                  <option value="Internal RS">Internal RS</option>
-                  <option value="Eksternal BPJS">Eksternal BPJS</option>
-                  <option value="Grey Area">Grey Area</option>
-                </select>
-
-                <button
-                  onClick={downloadExcelWithAnalysis}
-                  className="px-3.5 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-teal-600/10 flex items-center gap-1.5 shrink-0"
-                  title="Unduh Hasil Pemetaan & Analisis Gemini AI ke Excel"
-                >
-                  <Download size={14} /> Unduh Hasil (.xlsx)
-                </button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
-              <table className="w-full text-xs text-left whitespace-nowrap">
-                <thead className="sticky top-0 bg-slate-900 text-white z-20 text-[10px] font-black uppercase tracking-wider text-center">
-                  <tr>
-                    <th className="p-4 text-center w-8">No</th>
-                    <th className="p-4 text-left min-w-[130px]">Pasien / SEP</th>
-                    <th className="p-4 text-left min-w-[200px]">Alasan Pending BPJS</th>
-                    <th className="p-4 text-right min-w-[100px]">Nominal Klaim</th>
-                    <th className="p-4 text-center min-w-[80px]">Status Integrasi</th>
-                    <th className="p-4 text-center min-w-[120px]">Faktor Penyebab</th>
-                    <th className="p-4 text-left min-w-[120px]">SMF / KSM</th>
-                    <th className="p-4 text-left min-w-[100px]">Coder Coder</th>
-                    <th className="p-4 min-w-[140px]">Solusi &amp; Sanggahan</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredClaims.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="p-16 text-center text-slate-400 font-bold bg-slate-50/50">
-                        Tidak ada berkas klaim pending yang cocok dengan filter.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredClaims.map((c, i) => (
-                      <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="p-4 text-center font-bold text-slate-400">{i + 1}</td>
-                        <td className="p-4">
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
+                  <table className="w-full text-xs text-left whitespace-nowrap">
+                    <thead className="sticky top-0 bg-slate-900 text-white z-20 text-[10px] font-black uppercase tracking-wider text-center">
+                      <tr>
+                        <th className="p-4 text-center w-8">No</th>
+                        <th className="p-4 text-left min-w-[130px]">Pasien / SEP</th>
+                        <th className="p-4 text-left min-w-[200px]">Alasan Pending BPJS</th>
+                        <th className="p-4 text-right min-w-[100px]">Nominal Klaim</th>
+                        <th className="p-4 text-center min-w-[80px]">Status Integrasi</th>
+                        <th className="p-4 text-center min-w-[120px]">Faktor Penyebab</th>
+                        <th className="p-4 text-left min-w-[120px]">SMF / KSM</th>
+                        <th className="p-4 text-left min-w-[100px]">Coder Coder</th>
+                        <th className="p-4 min-w-[140px]">Solusi &amp; Sanggahan</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredClaims.length === 0 ? (
+                        <tr>
+                          <td colSpan={9} className="p-16 text-center text-slate-400 font-bold bg-slate-50/50">
+                            Tidak ada berkas klaim pending yang cocok dengan filter.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredClaims.map((c, i) => (
+                          <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
+                            <td className="p-4 text-center font-bold text-slate-400">{i + 1}</td>
+                            <td className="p-4">
+                              <div className="flex flex-col">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  {c.matched ? (
+                                    <button
+                                      onClick={() => {
+                                        if (openDrilldown) {
+                                          openDrilldown(
+                                            `Detail Pasien: ${c.nama} (${c.sep})`,
+                                            row => String(row.sep || row.SEP || row.NO_SEP || row.no_sep || '').trim() === String(c.sep).trim(),
+                                            'pending_sakti',
+                                            processedClaims
+                                          );
+                                        }
+                                      }}
+                                      className="font-extrabold text-slate-800 hover:text-teal-600 cursor-pointer transition-colors flex items-center gap-1 text-left bg-transparent border-none p-0 outline-none"
+                                      title="Klik untuk melihat Detail Drilldown"
+                                    >
+                                      {c.nama} <Search size={11} className="text-teal-500 shrink-0" />
+                                    </button>
+                                  ) : (
+                                    <span className="font-extrabold text-slate-800">{c.nama}</span>
+                                  )}
+                                  {c.aiReviewed && (
+                                    <span className="px-1.5 py-0.5 bg-teal-50 text-teal-700 rounded-md font-black text-[8px] uppercase tracking-wider border border-teal-200 shadow-sm flex items-center gap-0.5" title="Selesai Diulas Oleh Gemini AI">
+                                      <Brain size={8} className="animate-pulse" /> AI Audited
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-[10px] font-mono font-bold text-slate-400 mt-0.5">{c.sep}</span>
+                              </div>
+                            </td>
+                            <td className="p-4 font-semibold text-slate-700 max-w-sm whitespace-normal break-words leading-relaxed">
+                              {c.keterangan}
+                            </td>
+                            <td className="p-4 text-right font-mono font-black text-rose-600">
+                              {formatRp(c.nominal)}
+                            </td>
+                            <td className="p-4 text-center">
                               {c.matched ? (
-                                <button 
+                                <button
                                   onClick={() => {
                                     if (openDrilldown) {
                                       openDrilldown(
@@ -1929,146 +2048,109 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                                       );
                                     }
                                   }}
-                                  className="font-extrabold text-slate-800 hover:text-teal-600 cursor-pointer transition-colors flex items-center gap-1 text-left bg-transparent border-none p-0 outline-none"
+                                  className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 rounded-full font-black text-[9px] uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 w-fit mx-auto shadow-sm cursor-pointer transition-all"
                                   title="Klik untuk melihat Detail Drilldown"
                                 >
-                                  {c.nama} <Search size={11} className="text-teal-500 shrink-0" />
+                                  <CheckCircle2 size={12} strokeWidth={3} /> Cocok (iDRG)
                                 </button>
                               ) : (
-                                <span className="font-extrabold text-slate-800">{c.nama}</span>
-                              )}
-                              {c.aiReviewed && (
-                                <span className="px-1.5 py-0.5 bg-teal-50 text-teal-700 rounded-md font-black text-[8px] uppercase tracking-wider border border-teal-200 shadow-sm flex items-center gap-0.5" title="Selesai Diulas Oleh Gemini AI">
-                                  <Brain size={8} className="animate-pulse" /> AI Audited
+                                <span className="px-2.5 py-1 bg-slate-50 text-slate-400 rounded-full font-black text-[9px] uppercase tracking-wide border border-slate-200 flex items-center gap-1.5 w-fit mx-auto">
+                                  Mandiri
                                 </span>
                               )}
-                            </div>
-                            <span className="text-[10px] font-mono font-bold text-slate-400 mt-0.5">{c.sep}</span>
-                          </div>
-                        </td>
-                        <td className="p-4 font-semibold text-slate-700 max-w-sm whitespace-normal break-words leading-relaxed">
-                          {c.keterangan}
-                        </td>
-                        <td className="p-4 text-right font-mono font-black text-rose-600">
-                          {formatRp(c.nominal)}
-                        </td>
-                        <td className="p-4 text-center">
-                          {c.matched ? (
-                            <button
-                              onClick={() => {
-                                if (openDrilldown) {
-                                  openDrilldown(
-                                    `Detail Pasien: ${c.nama} (${c.sep})`,
-                                    row => String(row.sep || row.SEP || row.NO_SEP || row.no_sep || '').trim() === String(c.sep).trim(),
-                                    'pending_sakti',
-                                    processedClaims
-                                  );
-                                }
-                              }}
-                              className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 rounded-full font-black text-[9px] uppercase tracking-wide border border-emerald-200 flex items-center gap-1.5 w-fit mx-auto shadow-sm cursor-pointer transition-all"
-                              title="Klik untuk melihat Detail Drilldown"
-                            >
-                              <CheckCircle2 size={12} strokeWidth={3} /> Cocok (iDRG)
-                            </button>
-                          ) : (
-                            <span className="px-2.5 py-1 bg-slate-50 text-slate-400 rounded-full font-black text-[9px] uppercase tracking-wide border border-slate-200 flex items-center gap-1.5 w-fit mx-auto">
-                              Mandiri
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-4 text-center">
-                          <select
-                            value={c.faktor}
-                            onChange={(e) => updateClaimFactor(c.id, e.target.value)}
-                            className={`px-2.5 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-wide border outline-none cursor-pointer transition-all shadow-sm ${
-                              c.faktor === 'Internal RS' 
-                                ? 'bg-rose-50 border-rose-200 text-rose-700 focus:ring-1 focus:ring-rose-300' 
-                                : c.faktor === 'Eksternal BPJS' 
-                                  ? 'bg-sky-50 border-sky-200 text-sky-700 focus:ring-1 focus:ring-sky-300' 
-                                  : 'bg-slate-50 border-slate-200 text-slate-700 focus:ring-1 focus:ring-slate-300'
-                            }`}
-                          >
-                            <option value="Internal RS">Internal RS</option>
-                            <option value="Eksternal BPJS">Eksternal BPJS</option>
-                            <option value="Grey Area">Grey Area</option>
-                          </select>
-                        </td>
-                        <td className="p-4">
-                          <div className="flex flex-col">
-                            <span className="font-bold text-slate-700">{c.ksm}</span>
-                            <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider mt-0.5">{c.dept}</span>
-                          </div>
-                        </td>
-                        <td className="p-4 font-extrabold text-slate-700 uppercase">
-                          {c.coderName}
-                        </td>
-                        <td className="p-4">
-                          <div className="flex flex-col gap-1.5 w-full">
-                            
-                                                        {/* Gemini AI Assessor Action */}
-                            <button 
-                              onClick={() => openAiAnalysisModal(c)}
-                              className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-1 w-full uppercase tracking-wider shadow-sm ${
-                                c.aiReviewed 
-                                  ? "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white" 
-                                  : "bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
-                              }`}
-                            >
-                              <Brain size={12} className={c.aiReviewed ? "" : "animate-pulse"} /> 
-                              {c.aiReviewed ? "📋 Lihat Hasil Audit AI" : "✨ Analisis Gemini AI"}
-                            </button>
-
-                            {/* Standard Copy Triggers */}
-                            <div className="flex gap-1">
-                              <button 
-                                onClick={() => handleCopy(c.saran, `sar-${c.id}`)}
-                                className={`flex-1 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${copiedId === `sar-${c.id}` ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-50 text-slate-500'}`}
-                                title="Salin Saran Tindakan Coder"
+                            </td>
+                            <td className="p-4 text-center">
+                              <select
+                                value={c.faktor}
+                                onChange={(e) => updateClaimFactor(c.id, e.target.value)}
+                                className={`px-2.5 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-wide border outline-none cursor-pointer transition-all shadow-sm ${c.faktor === 'Internal RS'
+                                    ? 'bg-rose-50 border-rose-200 text-rose-700 focus:ring-1 focus:ring-rose-300'
+                                    : c.faktor === 'Eksternal BPJS'
+                                      ? 'bg-sky-50 border-sky-200 text-sky-700 focus:ring-1 focus:ring-sky-300'
+                                      : 'bg-slate-50 border-slate-200 text-slate-700 focus:ring-1 focus:ring-slate-300'
+                                  }`}
                               >
-                                {copiedId === `sar-${c.id}` ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
-                                Saran
-                              </button>
-                              
-                              <button 
-                                onClick={() => handleCopy(c.rsBenar, `ben-${c.id}`)}
-                                className={`flex-1 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${copiedId === `ben-${c.id}` ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-50 text-slate-500'}`}
-                                title="Salin Draft Sanggahan (Jika RS Benar)"
-                              >
-                                {copiedId === `ben-${c.id}` ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
-                                Sanggah
-                              </button>
+                                <option value="Internal RS">Internal RS</option>
+                                <option value="Eksternal BPJS">Eksternal BPJS</option>
+                                <option value="Grey Area">Grey Area</option>
+                              </select>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex flex-col">
+                                <span className="font-bold text-slate-700">{c.ksm}</span>
+                                <span className="text-[9px] text-slate-400 uppercase font-bold tracking-wider mt-0.5">{c.dept}</span>
+                              </div>
+                            </td>
+                            <td className="p-4 font-extrabold text-slate-700 uppercase">
+                              {c.coderName}
+                            </td>
+                            <td className="p-4">
+                              <div className="flex flex-col gap-1.5 w-full">
 
-                              <button 
-                                onClick={() => handleCopy(c.rsSalah, `sal-${c.id}`)}
-                                className={`flex-1 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${copiedId === `sal-${c.id}` ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-50 text-slate-500'}`}
-                                title="Salin Draft Kesediaan Revisi (Jika RS Salah)"
-                              >
-                                {copiedId === `sal-${c.id}` ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
-                                Revisi
-                              </button>
-                            </div>
+                                {/* Gemini AI Assessor Action */}
+                                <button
+                                  onClick={() => openAiAnalysisModal(c)}
+                                  className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black transition-all flex items-center justify-center gap-1 w-full uppercase tracking-wider shadow-sm ${c.aiReviewed
+                                      ? "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white"
+                                      : "bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white"
+                                    }`}
+                                >
+                                  <Brain size={12} className={c.aiReviewed ? "" : "animate-pulse"} />
+                                  {c.aiReviewed ? "📋 Lihat Hasil Audit AI" : "✨ Analisis Gemini AI"}
+                                </button>
 
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-            {filteredClaims.length > 0 && (
-              <div className="p-4 bg-slate-50/50 border-t border-slate-100 text-right text-slate-400 font-bold text-[10px] uppercase tracking-wider">
-                Menampilkan {filteredClaims.length} dari {processedClaims.length} berkas klaim pending.
-              </div>
-            )}
-          </Card>
-        </>
-      )}
+                                {/* Standard Copy Triggers */}
+                                <div className="flex gap-1">
+                                  <button
+                                    onClick={() => handleCopy(c.saran, `sar-${c.id}`)}
+                                    className={`flex-1 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${copiedId === `sar-${c.id}` ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-50 text-slate-500'}`}
+                                    title="Salin Saran Tindakan Coder"
+                                  >
+                                    {copiedId === `sar-${c.id}` ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
+                                    Saran
+                                  </button>
 
-      {activeSubTab === 'report' && (
-        <div id="print-report-area" className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-md space-y-8 text-slate-800">
-          {/* Custom CSS to enforce perfect print layout */}
-          <style dangerouslySetInnerHTML={{__html: `
+                                  <button
+                                    onClick={() => handleCopy(c.rsBenar, `ben-${c.id}`)}
+                                    className={`flex-1 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${copiedId === `ben-${c.id}` ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-50 text-slate-500'}`}
+                                    title="Salin Draft Sanggahan (Jika RS Benar)"
+                                  >
+                                    {copiedId === `ben-${c.id}` ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
+                                    Sanggah
+                                  </button>
+
+                                  <button
+                                    onClick={() => handleCopy(c.rsSalah, `sal-${c.id}`)}
+                                    className={`flex-1 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${copiedId === `sal-${c.id}` ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-50 text-slate-500'}`}
+                                    title="Salin Draft Kesediaan Revisi (Jika RS Salah)"
+                                  >
+                                    {copiedId === `sal-${c.id}` ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
+                                    Revisi
+                                  </button>
+                                </div>
+
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {filteredClaims.length > 0 && (
+                  <div className="p-4 bg-slate-50/50 border-t border-slate-100 text-right text-slate-400 font-bold text-[10px] uppercase tracking-wider">
+                    Menampilkan {filteredClaims.length} dari {processedClaims.length} berkas klaim pending.
+                  </div>
+                )}
+              </Card>
+            </>
+          )}
+
+          {activeSubTab === 'report' && (
+            <div id="print-report-area" className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-md space-y-8 text-slate-800">
+              {/* Custom CSS to enforce perfect print layout */}
+              <style dangerouslySetInnerHTML={{
+                __html: `
             @media print {
               body {
                 background: white !important;
@@ -2087,305 +2169,320 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             }
           `}} />
 
-          {/* Report Header */}
-          <div className="border-b pb-6 border-slate-200 flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">Laporan Executive Audit Pending BPJS</h1>
-              <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Kementerian Kesehatan Republik Indonesia • Akurat-iDRG Dashboard</p>
-            </div>
-            <div className="text-right">
-              <div className="text-xs font-black text-slate-700 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm">
-                Tanggal: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </div>
-            </div>
-          </div>
-
-          {/* Textual Executive Summary Insight */}
-          <div className="bg-teal-50/50 border border-teal-100/80 p-6 rounded-3xl">
-            <h3 className="text-xs font-black text-teal-800 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-              <Brain size={15} /> Executive Insight &amp; Rekomendasi Audit
-            </h3>
-            <p className="text-xs leading-relaxed text-slate-600 font-medium">
-              Berdasarkan audit klaim pending BPJS yang diunggah dari berkas <strong className="text-slate-800">{fileName || 'laporan_klaim.xlsx'}</strong>, terdapat total sebanyak <strong className="text-slate-800">{stats.total} kasus</strong> pending dengan estimasi nominal biaya pending tertahan sebesar <strong className="text-emerald-700 font-bold">{formatRp(stats.nominal)}</strong>. 
-              Layanan Rawat Jalan Tingkat Lanjut (RJTL) berkontribusi sebesar <strong className="text-slate-800">{stats.rjCount} kasus ({formatRp(stats.rjNominal)})</strong>, sedangkan Rawat Inap Tingkat Lanjut (RITL) menyumbang <strong className="text-slate-800">{stats.riCount} kasus ({formatRp(stats.riNominal)})</strong>.
-              Analisis faktor penyebab menunjukkan bahwa <strong className="text-amber-700">{stats.internal} kasus ({((stats.internal / stats.total) * 100).toFixed(0)}%)</strong> disebabkan oleh faktor Internal RS (perbedaan persepsi koding, kelengkapan resume medis, penginputan sistem), yang mana hal ini bersifat sistemik dan dapat diperbaiki secara cepat melalui penguatan edukasi regulasi koding ke komite medis (KSM/SMF).
-            </p>
-          </div>
-
-          {/* Metrics cards for print */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Kasus</div>
-              <div className="text-lg font-black text-slate-800 mt-1">{stats.total}</div>
-              <div className="text-[9px] text-slate-500 font-bold mt-0.5">{stats.rjCount} RJTL | {stats.riCount} RITL</div>
-            </div>
-            <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Estimasi Nominal</div>
-              <div className="text-lg font-black text-emerald-600 mt-1">{formatRp(stats.nominal)}</div>
-              <div className="text-[9px] text-slate-500 font-bold mt-0.5">{formatRp(stats.rjNominal)} RJTL | {formatRp(stats.riNominal)} RITL</div>
-            </div>
-            <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Penyebab Internal RS</div>
-              <div className="text-lg font-black text-amber-600 mt-1">{stats.internal} Kasus</div>
-              <div className="text-[9px] text-slate-500 font-bold mt-0.5">{((stats.internal / stats.total) * 100).toFixed(0)}% Sistemik RS</div>
-            </div>
-            <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cocok Data iDRG</div>
-              <div className="text-lg font-black text-indigo-600 mt-1">{stats.matchedCount} Kasus</div>
-              <div className="text-[9px] text-slate-500 font-bold mt-0.5">DPJP &amp; KSM Terintegrasi</div>
-            </div>
-          </div>
-
-          {/* Static view of Bokeh Scatterplot for printing */}
-          <Card id="print-matrix-zoning" downloadTitle="Matriks BEP Zoning (Laporan)" className="p-6 space-y-4">
-            <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest text-center border-b pb-3 border-slate-100">
-              Peta Sebaran Prioritas Masalah Pending BPJS (Matriks BEP Zoning)
-            </h3>
-            <div className="max-w-2xl mx-auto">
-              <svg 
-                viewBox={`0 0 ${width} ${height}`} 
-                className="w-full h-auto bg-white select-none border rounded-2xl" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* Quadrant Background Shading */}
-                <rect x={padding.left} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#ecfdf5" opacity="0.3" />
-                <rect x={padding.left + chartParams.innerW / 2} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#fef2f2" opacity="0.35" />
-                <rect x={padding.left} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#f8fafc" opacity="0.4" />
-                <rect x={padding.left + chartParams.innerW / 2} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#eff6ff" opacity="0.35" />
-
-                {/* Chart Axes */}
-                <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
-                <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
-
-                {/* Average lines */}
-                <line x1={chartParams.scaleX(chartParams.avgNom)} y1={padding.top} x2={chartParams.scaleX(chartParams.avgNom)} y2={height - padding.bottom} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-                <line x1={padding.left} y1={chartParams.scaleY(chartParams.avgFreq)} x2={width - padding.right} y2={chartParams.scaleY(chartParams.avgFreq)} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
-
-                {/* Zone Labels */}
-                <text x={padding.left + chartParams.innerW * 0.25} y={padding.top + 18} fontSize="9" fill="#d97706" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA II (SISTEMIK)</text>
-                <text x={padding.left + chartParams.innerW * 0.75} y={padding.top + 18} fontSize="9" fill="#dc2626" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA I (PRIORITAS UTAMA)</text>
-                <text x={padding.left + chartParams.innerW * 0.25} y={height - padding.bottom - 12} fontSize="9" fill="#64748b" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA IV (MONITORING)</text>
-                <text x={padding.left + chartParams.innerW * 0.75} y={height - padding.bottom - 12} fontSize="9" fill="#2563eb" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA III (HIGH IMPACT)</text>
-
-                {/* Axis Labels */}
-                <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Pending per Masalah)</text>
-                <text x={15} y={height / 2} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>Frekuensi Kejadian (Jumlah Kasus)</text>
-
-                {/* Scatter Dots */}
-                {scatterData.map((d, i) => {
-                  const x = chartParams.scaleX(d.totalNominal);
-                  const y = chartParams.scaleY(d.frequency);
-
-                  let color = '#94a3b8';
-                  if (d.totalNominal >= chartParams.avgNom) {
-                    color = d.frequency >= chartParams.avgFreq ? '#ef4444' : '#2563eb';
-                  } else {
-                    color = d.frequency >= chartParams.avgFreq ? '#f59e0b' : '#64748b';
-                  }
-
-                  return (
-                    <g key={i}>
-                      <circle cx={x} cy={y} r={7} fill={color} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
-                      <text x={x} y={y - 11} fontSize="8" fontWeight="black" fill="#0f172a" textAnchor="middle">
-                        {d.frequency}x
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-            </div>
-          </Card>
-
-          {/* Top 10 Dispute Reasons by Category (Medis, Koding, Administrasi, Readmisi) */}
-          <div className="print-page-break space-y-6">
-            <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
-              <FileSpreadsheet size={16} className="text-teal-600" /> Permasalahan Pending Top 10 Berdasarkan Kategori
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Category 1: Medis */}
-              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
-                <h3 className="text-xs font-black text-amber-700 bg-amber-50 border border-amber-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
-                  <span>Top 10 Pending Medis</span>
-                  <span className="text-[10px] font-black">{top10Stats.medis.length} Masalah</span>
-                </h3>
-                {top10Stats.medis.length > 0 ? (
-                  <table className="w-full text-[10px] border-collapse">
-                    <thead>
-                      <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
-                        <th className="pb-2 text-center w-12">Frekuensi</th>
-                        <th className="pb-2 text-right w-20">Total Nominal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {top10Stats.medis.map((d, index) => (
-                        <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
-                          <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
-                          <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
-                          <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
-                          <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Medis.</div>
-                )}
-              </div>
-
-              {/* Category 2: Koding */}
-              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
-                <h3 className="text-xs font-black text-teal-700 bg-teal-50 border border-teal-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
-                  <span>Top 10 Pending Koding</span>
-                  <span className="text-[10px] font-black">{top10Stats.koding.length} Masalah</span>
-                </h3>
-                {top10Stats.koding.length > 0 ? (
-                  <table className="w-full text-[10px] border-collapse">
-                    <thead>
-                      <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
-                        <th className="pb-2 text-center w-12">Frekuensi</th>
-                        <th className="pb-2 text-right w-20">Total Nominal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {top10Stats.koding.map((d, index) => (
-                        <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
-                          <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
-                          <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
-                          <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
-                          <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Koding.</div>
-                )}
-              </div>
-
-              {/* Category 3: Administrasi */}
-              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
-                <h3 className="text-xs font-black text-indigo-700 bg-indigo-50 border border-indigo-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
-                  <span>Top 10 Pending Administrasi</span>
-                  <span className="text-[10px] font-black">{top10Stats.admin.length} Masalah</span>
-                </h3>
-                {top10Stats.admin.length > 0 ? (
-                  <table className="w-full text-[10px] border-collapse">
-                    <thead>
-                      <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
-                        <th className="pb-2 text-center w-12">Frekuensi</th>
-                        <th className="pb-2 text-right w-20">Total Nominal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {top10Stats.admin.map((d, index) => (
-                        <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
-                          <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
-                          <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
-                          <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
-                          <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Administrasi.</div>
-                )}
-              </div>
-
-              {/* Category 4: Readmisi */}
-              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
-                <h3 className="text-xs font-black text-rose-700 bg-rose-50 border border-rose-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
-                  <span>Top 10 Pending Readmisi</span>
-                  <span className="text-[10px] font-black">{top10Stats.readmisi.length} Masalah</span>
-                </h3>
-                {top10Stats.readmisi.length > 0 ? (
-                  <table className="w-full text-[10px] border-collapse">
-                    <thead>
-                      <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
-                        <th className="pb-2 w-8">No.</th>
-                        <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
-                        <th className="pb-2 text-center w-12">Frekuensi</th>
-                        <th className="pb-2 text-right w-20">Total Nominal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {top10Stats.readmisi.map((d, index) => (
-                        <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
-                          <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
-                          <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
-                          <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
-                          <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Readmisi.</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Persentase Distribusi Kategori & Faktor Penyebab Pending (NEW USER REQUEST) */}
-          <div className="print-page-break space-y-6">
-            <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
-              <Brain size={16} className="text-teal-600" /> Analisis Distribusi Kategori &amp; Faktor Penyebab Pending
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Kategori Permasalahan */}
-              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm">
-                <h3 className="text-xs font-black text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between">
-                  <span>Kategori Permasalahan</span>
-                  <span className="text-[10px] text-teal-600 font-extrabold">Persentase</span>
-                </h3>
-                <div className="space-y-4">
-                  <CategoryBar label="Indikasi Medis Klinis (Medis)" count={stats.medis} total={stats.total} color="bg-sky-500" />
-                  <CategoryBar label="Koding Medis / Aturan ICD (Koding)" count={stats.koding} total={stats.total} color="bg-rose-500" />
-                  <CategoryBar label="Administrasi / Kelengkapan Berkas (Administrasi)" count={stats.admin} total={stats.total} color="bg-amber-500" />
-                  <CategoryBar label="Readmisi / Clinical Pathway (Readmisi)" count={stats.readmisi} total={stats.total} color="bg-teal-500" />
+              {/* Report Header */}
+              <div className="border-b pb-6 border-slate-200 flex justify-between items-center">
+                <div>
+                  <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">Laporan Executive Audit Pending BPJS</h1>
+                  <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Kementerian Kesehatan Republik Indonesia • Akurat-iDRG Dashboard</p>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-black text-slate-700 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm">
+                    Tanggal: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
                 </div>
               </div>
 
-              {/* Faktor Penyebab */}
-              <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm">
-                <h3 className="text-xs font-black text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between">
-                  <span>Faktor Penyebab (Causal Factors)</span>
-                  <span className="text-[10px] text-teal-600 font-extrabold">Persentase</span>
+              {/* Textual Executive Summary Insight */}
+              <div className="bg-teal-50/50 border border-teal-100/80 p-6 rounded-3xl">
+                <h3 className="text-xs font-black text-teal-800 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <Brain size={15} /> Executive Insight &amp; Rekomendasi Audit
                 </h3>
-                <div className="space-y-4">
-                  <CategoryBar label="Internal RS (Edukasi Koding, Resume Medis, Sistem)" count={stats.internal} total={stats.total} color="bg-rose-500" />
-                  <CategoryBar label="Eksternal BPJS (Perbedaan Interpretasi Klaim)" count={stats.eksternal} total={stats.total} color="bg-sky-500" />
-                  <CategoryBar label="Grey Area (Butuh Konsensus Bersama)" count={stats.grey} total={stats.total} color="bg-slate-400" />
+                <p className="text-xs leading-relaxed text-slate-600 font-medium">
+                  Berdasarkan audit klaim pending BPJS yang diunggah dari berkas <strong className="text-slate-800">{fileName || 'laporan_klaim.xlsx'}</strong>, terdapat total sebanyak <strong className="text-slate-800">{stats.total} kasus</strong> pending dengan estimasi nominal biaya pending tertahan sebesar <strong className="text-emerald-700 font-bold">{formatRp(stats.nominal)}</strong>.
+                  Layanan Rawat Jalan Tingkat Lanjut (RJTL) berkontribusi sebesar <strong className="text-slate-800">{stats.rjCount} kasus ({formatRp(stats.rjNominal)})</strong>, sedangkan Rawat Inap Tingkat Lanjut (RITL) menyumbang <strong className="text-slate-800">{stats.riCount} kasus ({formatRp(stats.riNominal)})</strong>.
+                  Analisis faktor penyebab menunjukkan bahwa <strong className="text-amber-700">{stats.internal} kasus ({((stats.internal / stats.total) * 100).toFixed(0)}%)</strong> disebabkan oleh faktor Internal RS (perbedaan persepsi koding, kelengkapan resume medis, penginputan sistem), yang mana hal ini bersifat sistemik dan dapat diperbaiki secara cepat melalui penguatan edukasi regulasi koding ke komite medis (KSM/SMF).
+                </p>
+              </div>
+
+              {/* Metrics cards for print */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Kasus</div>
+                  <div className="text-lg font-black text-slate-800 mt-1">{stats.total}</div>
+                  <div className="text-[9px] text-slate-500 font-bold mt-0.5">{stats.rjCount} RJTL | {stats.riCount} RITL</div>
+                </div>
+                <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Estimasi Nominal</div>
+                  <div className="text-lg font-black text-emerald-600 mt-1">{formatRp(stats.nominal)}</div>
+                  <div className="text-[9px] text-slate-500 font-bold mt-0.5">{formatRp(stats.rjNominal)} RJTL | {formatRp(stats.riNominal)} RITL</div>
+                </div>
+                <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Penyebab Internal RS</div>
+                  <div className="text-lg font-black text-amber-600 mt-1">{stats.internal} Kasus</div>
+                  <div className="text-[9px] text-slate-500 font-bold mt-0.5">{((stats.internal / stats.total) * 100).toFixed(0)}% Sistemik RS</div>
+                </div>
+                <div className="border border-slate-200 p-4 rounded-2xl text-center bg-slate-50/50">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cocok Data iDRG</div>
+                  <div className="text-lg font-black text-indigo-600 mt-1">{stats.matchedCount} Kasus</div>
+                  <div className="text-[9px] text-slate-500 font-bold mt-0.5">DPJP &amp; KSM Terintegrasi</div>
+                </div>
+              </div>
+
+              {/* Static view of Bokeh Scatterplot for printing */}
+              <Card id="print-matrix-zoning" downloadTitle="Matriks BEP Zoning (Laporan)" className="p-6 space-y-4">
+                <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest text-center border-b pb-3 border-slate-100">
+                  Peta Sebaran Prioritas Masalah Pending BPJS (Matriks BEP Zoning)
+                </h3>
+                <div className="max-w-2xl mx-auto">
+                  <svg
+                    viewBox={`0 0 ${width} ${height}`}
+                    className="w-full h-auto bg-white select-none border rounded-2xl"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Quadrant Background Shading */}
+                    <rect x={padding.left} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#ecfdf5" opacity="0.3" />
+                    <rect x={padding.left + chartParams.innerW / 2} y={padding.top} width={chartParams.innerW / 2} height={chartParams.scaleY(chartParams.avgFreq) - padding.top} fill="#fef2f2" opacity="0.35" />
+                    <rect x={padding.left} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#f8fafc" opacity="0.4" />
+                    <rect x={padding.left + chartParams.innerW / 2} y={chartParams.scaleY(chartParams.avgFreq)} width={chartParams.innerW / 2} height={height - padding.bottom - chartParams.scaleY(chartParams.avgFreq)} fill="#eff6ff" opacity="0.35" />
+
+                    {/* Chart Axes */}
+                    <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
+                    <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1.5" />
+
+                    {/* Average lines */}
+                    <line x1={chartParams.scaleX(chartParams.avgNom)} y1={padding.top} x2={chartParams.scaleX(chartParams.avgNom)} y2={height - padding.bottom} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+                    <line x1={padding.left} y1={chartParams.scaleY(chartParams.avgFreq)} x2={width - padding.right} y2={chartParams.scaleY(chartParams.avgFreq)} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+
+                    {/* Zone Labels */}
+                    <text x={padding.left + chartParams.innerW * 0.25} y={padding.top + 18} fontSize="9" fill="#d97706" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA II (SISTEMIK)</text>
+                    <text x={padding.left + chartParams.innerW * 0.75} y={padding.top + 18} fontSize="9" fill="#dc2626" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA I (PRIORITAS UTAMA)</text>
+                    <text x={padding.left + chartParams.innerW * 0.25} y={height - padding.bottom - 12} fontSize="9" fill="#64748b" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA IV (MONITORING)</text>
+                    <text x={padding.left + chartParams.innerW * 0.75} y={height - padding.bottom - 12} fontSize="9" fill="#2563eb" fontWeight="black" textAnchor="middle" letterSpacing="1">ZONA III (HIGH IMPACT)</text>
+
+                    {/* Axis Labels */}
+                    <text x={width / 2} y={height - 12} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle">Dampak Finansial (Total Nominal Pending per Masalah)</text>
+                    <text x={15} y={height / 2} fontSize="10" fontWeight="extrabold" fill="#475569" textAnchor="middle" transform={`rotate(-90 15 ${height / 2})`}>Frekuensi Kejadian (Jumlah Kasus)</text>
+
+                    {/* Scatter Dots */}
+                    {scatterData.map((d, i) => {
+                      const x = chartParams.scaleX(d.totalNominal);
+                      const y = chartParams.scaleY(d.frequency);
+
+                      let color = '#94a3b8';
+                      if (d.totalNominal >= chartParams.avgNom) {
+                        color = d.frequency >= chartParams.avgFreq ? '#ef4444' : '#2563eb';
+                      } else {
+                        color = d.frequency >= chartParams.avgFreq ? '#f59e0b' : '#64748b';
+                      }
+
+                      return (
+                        <g key={i}>
+                          <circle cx={x} cy={y} r={7} fill={color} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
+                          <text x={x} y={y - 11} fontSize="8" fontWeight="black" fill="#0f172a" textAnchor="middle">
+                            {d.frequency}x
+                          </text>
+                        </g>
+                      );
+                    })}
+                  </svg>
+                </div>
+              </Card>
+
+              {/* Top 10 Dispute Reasons by Category (Medis, Koding, Administrasi, Readmisi) */}
+              <div className="print-page-break space-y-6">
+                <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
+                  <FileSpreadsheet size={16} className="text-teal-600" /> Permasalahan Pending Top 10 Berdasarkan Kategori
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Category 1: Medis */}
+                  <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
+                    <h3 className="text-xs font-black text-amber-700 bg-amber-50 border border-amber-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
+                      <span>Top 10 Pending Medis</span>
+                      <span className="text-[10px] font-black">{top10Stats.medis.length} Masalah</span>
+                    </h3>
+                    {top10Stats.medis.length > 0 ? (
+                      <table className="w-full text-[10px] border-collapse">
+                        <thead>
+                          <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
+                            <th className="pb-2 w-8">No.</th>
+                            <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
+                            <th className="pb-2 text-center w-12">Frekuensi</th>
+                            <th className="pb-2 text-right w-20">Total Nominal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {top10Stats.medis.map((d, index) => (
+                            <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
+                              <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
+                              <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
+                              <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
+                              <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Medis.</div>
+                    )}
+                  </div>
+
+                  {/* Category 2: Koding */}
+                  <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
+                    <h3 className="text-xs font-black text-teal-700 bg-teal-50 border border-teal-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
+                      <span>Top 10 Pending Koding</span>
+                      <span className="text-[10px] font-black">{top10Stats.koding.length} Masalah</span>
+                    </h3>
+                    {top10Stats.koding.length > 0 ? (
+                      <table className="w-full text-[10px] border-collapse">
+                        <thead>
+                          <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
+                            <th className="pb-2 w-8">No.</th>
+                            <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
+                            <th className="pb-2 text-center w-12">Frekuensi</th>
+                            <th className="pb-2 text-right w-20">Total Nominal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {top10Stats.koding.map((d, index) => (
+                            <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
+                              <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
+                              <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
+                              <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
+                              <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Koding.</div>
+                    )}
+                  </div>
+
+                  {/* Category 3: Administrasi */}
+                  <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
+                    <h3 className="text-xs font-black text-indigo-700 bg-indigo-50 border border-indigo-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
+                      <span>Top 10 Pending Administrasi</span>
+                      <span className="text-[10px] font-black">{top10Stats.admin.length} Masalah</span>
+                    </h3>
+                    {top10Stats.admin.length > 0 ? (
+                      <table className="w-full text-[10px] border-collapse">
+                        <thead>
+                          <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
+                            <th className="pb-2 w-8">No.</th>
+                            <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
+                            <th className="pb-2 text-center w-12">Frekuensi</th>
+                            <th className="pb-2 text-right w-20">Total Nominal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {top10Stats.admin.map((d, index) => (
+                            <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
+                              <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
+                              <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
+                              <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
+                              <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Administrasi.</div>
+                    )}
+                  </div>
+
+                  {/* Category 4: Readmisi */}
+                  <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-3 shadow-sm">
+                    <h3 className="text-xs font-black text-rose-700 bg-rose-50 border border-rose-100 px-3.5 py-2 rounded-xl flex justify-between items-center uppercase tracking-wide">
+                      <span>Top 10 Pending Readmisi</span>
+                      <span className="text-[10px] font-black">{top10Stats.readmisi.length} Masalah</span>
+                    </h3>
+                    {top10Stats.readmisi.length > 0 ? (
+                      <table className="w-full text-[10px] border-collapse">
+                        <thead>
+                          <tr className="border-b text-slate-400 text-left font-black uppercase tracking-wider text-[8px]">
+                            <th className="pb-2 w-8">No.</th>
+                            <th className="pb-2 pl-2">Ringkasan Alasan Pending</th>
+                            <th className="pb-2 text-center w-12">Frekuensi</th>
+                            <th className="pb-2 text-right w-20">Total Nominal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {top10Stats.readmisi.map((d, index) => (
+                            <tr key={index} className="border-b last:border-0 hover:bg-slate-50/50">
+                              <td className="py-2.5 text-slate-500 font-bold">{index + 1}</td>
+                              <td className="py-2.5 font-bold text-slate-700 pr-2 max-w-[200px] truncate" title={d.label}>{d.label}</td>
+                              <td className="py-2.5 text-center text-slate-800 font-black">{d.frequency}x</td>
+                              <td className="py-2.5 text-right text-emerald-600 font-black">{formatRp(d.totalNominal)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-slate-400 text-center py-6 text-xs font-bold">Tidak ada data pending Readmisi.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Persentase Distribusi Kategori & Faktor Penyebab Pending (NEW USER REQUEST) */}
+              <div className="print-page-break space-y-6">
+                <h2 className="text-xs font-black text-slate-800 uppercase tracking-widest border-b pb-2 flex items-center gap-2">
+                  <Brain size={16} className="text-teal-600" /> Analisis Distribusi Kategori &amp; Faktor Penyebab Pending
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Kategori Permasalahan */}
+                  <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm">
+                    <h3 className="text-xs font-black text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between">
+                      <span>Kategori Permasalahan (Single &amp; Combo)</span>
+                      <span className="text-[10px] text-teal-600 font-extrabold">Persentase</span>
+                    </h3>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                      {stats.categoryCombos.map((item, idx) => {
+                        const colors = {
+                          'Medis': 'bg-rose-500',
+                          'Koding': 'bg-amber-500',
+                          'Administrasi': 'bg-sky-500',
+                          'Readmisi': 'bg-purple-500'
+                        };
+                        const primaryCat = item.combo.split(' + ')[0];
+                        const barColor = colors[primaryCat] || 'bg-slate-400';
+                        return (
+                          <CategoryBar 
+                            key={idx} 
+                            label={item.combo} 
+                            count={item.count} 
+                            total={stats.total} 
+                            color={barColor} 
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Faktor Penyebab */}
+                  <div className="border border-slate-200 rounded-3xl p-5 bg-white space-y-4 shadow-sm">
+                    <h3 className="text-xs font-black text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between">
+                      <span>Faktor Penyebab (Causal Factors)</span>
+                      <span className="text-[10px] text-teal-600 font-extrabold">Persentase</span>
+                    </h3>
+                    <div className="space-y-4">
+                      <CategoryBar label="Internal RS (Edukasi Koding, Resume Medis, Sistem)" count={stats.internal} total={stats.total} color="bg-rose-500" />
+                      <CategoryBar label="Eksternal BPJS (Perbedaan Interpretasi Klaim)" count={stats.eksternal} total={stats.total} color="bg-sky-500" />
+                      <CategoryBar label="Grey Area (Butuh Konsensus Bersama)" count={stats.grey} total={stats.total} color="bg-slate-400" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Signatures / Approval block for legal audit report */}
+              <div className="pt-12 flex justify-between text-xs font-semibold text-slate-500 border-t border-dashed border-slate-200">
+                <div className="text-center w-48 space-y-12">
+                  <span>Dibuat Oleh,<br /><strong>Ketua Tim Verifikator RS</strong></span>
+                  <div className="border-b border-slate-300 w-32 mx-auto"></div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">NIP. __________________</span>
+                </div>
+                <div className="text-center w-48 space-y-12">
+                  <span>Menyetujui,<br /><strong>Direktur Pelayanan Medik</strong></span>
+                  <div className="border-b border-slate-300 w-32 mx-auto"></div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">NIP. __________________</span>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Signatures / Approval block for legal audit report */}
-          <div className="pt-12 flex justify-between text-xs font-semibold text-slate-500 border-t border-dashed border-slate-200">
-            <div className="text-center w-48 space-y-12">
-              <span>Dibuat Oleh,<br /><strong>Ketua Tim Verifikator RS</strong></span>
-              <div className="border-b border-slate-300 w-32 mx-auto"></div>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">NIP. __________________</span>
-            </div>
-            <div className="text-center w-48 space-y-12">
-              <span>Menyetujui,<br /><strong>Direktur Pelayanan Medik</strong></span>
-              <div className="border-b border-slate-300 w-32 mx-auto"></div>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">NIP. __________________</span>
-            </div>
-          </div>
+          )}
         </div>
       )}
-    </div>
-  )}
 
       {/* COLUMN MAPPING DIALOG MODAL */}
       {showMappingModal && (
@@ -2398,7 +2495,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                 <p className="text-[10px] text-teal-200 font-bold uppercase tracking-widest mt-0.5">Sesuaikan struktur data Anda</p>
               </div>
             </div>
-            
+
             <div className="p-8 space-y-5 overflow-y-auto flex-1 custom-scrollbar">
               <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-[11px] leading-relaxed text-slate-500 font-medium">
                 Pilih nama kolom di file spreadsheet Anda yang mewakili data-data di bawah ini agar sistem dapat memproses secara akurat.
@@ -2407,8 +2504,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {/* SEP Column */}
               <div>
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Kolom Nomor SEP (SEP / No. Kartu)</label>
-                <select 
-                  value={columnMapping.sep} 
+                <select
+                  value={columnMapping.sep}
                   onChange={(e) => setColumnMapping({ ...columnMapping, sep: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer"
                 >
@@ -2419,8 +2516,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {/* Name Column */}
               <div>
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Kolom Nama Pasien</label>
-                <select 
-                  value={columnMapping.nama} 
+                <select
+                  value={columnMapping.nama}
                   onChange={(e) => setColumnMapping({ ...columnMapping, nama: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer"
                 >
@@ -2431,8 +2528,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {/* Keterangan Column */}
               <div>
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Kolom Alasan Pending BPJS (Keterangan / Masalah)</label>
-                <select 
-                  value={columnMapping.keterangan} 
+                <select
+                  value={columnMapping.keterangan}
                   onChange={(e) => setColumnMapping({ ...columnMapping, keterangan: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer"
                 >
@@ -2443,8 +2540,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {/* Nominal Column */}
               <div>
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Kolom Nominal Biaya (Tarif Klaim)</label>
-                <select 
-                  value={columnMapping.nominal} 
+                <select
+                  value={columnMapping.nominal}
                   onChange={(e) => setColumnMapping({ ...columnMapping, nominal: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer"
                 >
@@ -2455,8 +2552,8 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {/* Faktor Column */}
               <div>
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Kolom Faktor Penyebab (Internal / Eksternal / Grey Area)</label>
-                <select 
-                  value={columnMapping.faktor} 
+                <select
+                  value={columnMapping.faktor}
                   onChange={(e) => setColumnMapping({ ...columnMapping, faktor: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 outline-none cursor-pointer"
                 >
@@ -2467,7 +2564,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
             </div>
 
             <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
-              <button 
+              <button
                 onClick={() => {
                   setShowMappingModal(false);
                   setFileData([]);
@@ -2477,7 +2574,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               >
                 Batalkan
               </button>
-              <button 
+              <button
                 onClick={confirmMapping}
                 className="flex-1 py-3 bg-teal-600 hover:bg-teal-700 text-white text-xs font-black rounded-xl uppercase tracking-wider transition-all shadow-md shadow-teal-600/10"
               >
@@ -2492,7 +2589,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
       {aiPatient && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[2000] flex justify-end">
           <div className="bg-white w-full max-w-2xl h-full shadow-2xl flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-300">
-            
+
             {/* Header */}
             <div className="p-6 bg-gradient-to-r from-teal-800 to-emerald-950 text-white flex justify-between items-center shrink-0">
               <div className="flex items-center gap-3">
@@ -2502,7 +2599,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                   <p className="text-[10px] text-teal-200 font-bold uppercase tracking-widest mt-0.5">Penilai &amp; Penyusun Sanggahan Cerdas</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => {
                   setAiPatient(null);
                   setAiResponse(null);
@@ -2516,7 +2613,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
 
             {/* Content Container */}
             <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar">
-              
+
               {/* Patient Profile Card */}
               <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 flex flex-col gap-3">
                 <div className="flex items-center gap-2 border-b pb-2 border-slate-200/50">
@@ -2554,13 +2651,12 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                       setAiPatient(prev => ({ ...prev, faktor: newFak }));
                       updateClaimFactor(aiPatient.id, newFak);
                     }}
-                    className={`px-3 py-2.5 border rounded-xl text-xs font-bold outline-none cursor-pointer w-full transition-all ${
-                      aiPatient.faktor === 'Internal RS' 
-                        ? 'bg-rose-50 border-rose-200 text-rose-700 focus:ring-1 focus:ring-rose-300' 
-                        : aiPatient.faktor === 'Eksternal BPJS' 
-                          ? 'bg-sky-50 border-sky-200 text-sky-700 focus:ring-1 focus:ring-sky-300' 
+                    className={`px-3 py-2.5 border rounded-xl text-xs font-bold outline-none cursor-pointer w-full transition-all ${aiPatient.faktor === 'Internal RS'
+                        ? 'bg-rose-50 border-rose-200 text-rose-700 focus:ring-1 focus:ring-rose-300'
+                        : aiPatient.faktor === 'Eksternal BPJS'
+                          ? 'bg-sky-50 border-sky-200 text-sky-700 focus:ring-1 focus:ring-sky-300'
                           : 'bg-slate-50 border-slate-200 text-slate-700 focus:ring-1 focus:ring-slate-300'
-                    }`}
+                      }`}
                   >
                     <option value="Internal RS">Internal RS (Penyebab Rumah Sakit)</option>
                     <option value="Eksternal BPJS">Eksternal BPJS (Kriteria Verifikator)</option>
@@ -2585,7 +2681,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               </div>
 
               {/* Analyze Button */}
-              <button 
+              <button
                 onClick={() => analyzeWithGemini(aiPatient)}
                 disabled={isAiLoading}
                 className={`w-full py-4 bg-gradient-to-r ${aiResponse ? "from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800" : "from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700"} text-white rounded-2xl font-black text-xs transition-all shadow-xl uppercase tracking-widest flex items-center justify-center gap-2`}
@@ -2608,7 +2704,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
               {/* AI Results Block */}
               {aiResponse && (
                 <div className="space-y-6 pt-4 animate-in fade-in duration-500">
-                  
+
                   {/* Kamus Kode ICD Card (Gemini AI) */}
                   {aiResponse.terjemahan_icd && aiResponse.terjemahan_icd !== "-" && aiResponse.terjemahan_icd.trim() !== "" && (
                     <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/70 space-y-2">
@@ -2641,7 +2737,7 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
                       <span className="text-[10px] font-black text-teal-800 uppercase tracking-widest flex items-center gap-1.5">
                         <FileText size={14} /> Draft Resmi Sanggahan RS
                       </span>
-                      <button 
+                      <button
                         onClick={() => handleCopy(aiResponse.jawaban_sanggahan_rs || aiResponse.jawaban_sanggahan || '', 'ai-copy')}
                         className={`px-3 py-1.5 border rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all ${copiedId === 'ai-copy' ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'bg-white hover:bg-slate-100 text-slate-600'}`}
                       >
@@ -2765,8 +2861,8 @@ const RootCauseChart = React.memo(({ stats, onBarClick }) => {
 const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => (
   <div id={id} style={{ position: 'relative' }} className={`bg-white rounded-3xl border border-slate-100 shadow-md ${className}`}>
     {downloadTitle && id && (
-      <button 
-        onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} 
+      <button
+        onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }}
         style={{
           position: 'absolute',
           top: '12px',
@@ -2799,3 +2895,57 @@ const Card = React.memo(({ children, className = '', id = null, downloadTitle = 
     {children}
   </div>
 ));
+
+const CategoryComboTable = React.memo(({ combos, totalClaims, totalNominal, onRowClick }) => {
+  if (!combos || combos.length === 0) return null;
+  return (
+    <div className="overflow-x-auto custom-scrollbar -mx-4">
+      <table className="w-full text-left border-collapse min-w-[600px]">
+        <thead>
+          <tr className="border-b border-slate-100">
+            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Kombinasi Kategori</th>
+            <th className="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Jumlah</th>
+            <th className="px-6 py-4 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Persentase</th>
+            <th className="px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Nominal</th>
+            <th className="px-6 py-4"></th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-50">
+          {combos.map((c, i) => (
+            <tr key={i} className="group hover:bg-slate-50/50 transition-colors">
+              <td className="px-6 py-4">
+                <div className="flex flex-wrap gap-2">
+                  {c.combo.split(' + ').map((cat, idx) => {
+                    const colors = {
+                      'Medis': 'bg-rose-50 text-rose-600 border-rose-100',
+                      'Koding': 'bg-amber-50 text-amber-600 border-amber-100',
+                      'Administrasi': 'bg-sky-50 text-sky-600 border-sky-100',
+                      'Readmisi': 'bg-purple-50 text-purple-600 border-purple-100'
+                    };
+                    const colorClass = colors[cat] || 'bg-slate-50 text-slate-600 border-slate-100';
+                    return (
+                      <span key={idx} className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${colorClass}`}>{cat}</span>
+                    );
+                  })}
+                </div>
+              </td>
+              <td className="px-6 py-4 text-center text-xs font-black text-slate-700">{c.count}</td>
+              <td className="px-6 py-4 text-center">
+                <div className="text-[10px] font-black text-slate-500 mb-1">{((c.count / totalClaims) * 100).toFixed(1)}%</div>
+                <div className="w-20 h-1 bg-slate-100 rounded-full mx-auto overflow-hidden">
+                  <div className="h-full bg-teal-500" style={{ width: `${(c.count / totalClaims) * 100}%` }}></div>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-right text-xs font-mono font-black text-emerald-600">{formatRp(c.nominal)}</td>
+              <td className="px-6 py-4 text-right">
+                <button onClick={() => onRowClick(c)} className="p-2 text-slate-300 hover:text-teal-600 transition-colors cursor-pointer" title="Saring Tabel Berdasarkan Kombinasi Ini">
+                  <Search size={14} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+});
