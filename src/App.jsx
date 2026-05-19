@@ -7302,8 +7302,8 @@ export default function App() {
               <thead className="bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest sticky top-0 z-50">
                 <tr>
                   <th className="px-6 py-5">Nama Dokter (DPJP)</th>
-                  <th className="px-6 py-5">KSM Saat Ini (Auto/Manual)</th>
-                  <th className="px-6 py-5">Departemen</th>
+                  <th className="px-6 py-5 min-w-[380px]">KSM Saat Ini (Auto/Manual)</th>
+                  <th className="px-6 py-5 min-w-[280px]">Departemen</th>
                   <th className="px-6 py-5 text-center">Status</th>
                   <th className="px-6 py-5 text-right">Aksi Manual</th>
                 </tr>
@@ -7342,9 +7342,10 @@ export default function App() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 min-w-[380px]">
                         <select 
                           value={current.ksm} 
+                          title={current.ksm}
                           onChange={(e) => updateOverride(d.norm, e.target.value, current.dept)}
                           className={`w-full bg-white border rounded-lg px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-sky-500/20 outline-none transition-all cursor-pointer ${isOverridden ? 'border-sky-300 text-sky-700' : 'border-slate-200 text-slate-600'}`}
                         >
@@ -7355,9 +7356,10 @@ export default function App() {
                           ))}
                         </select>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 min-w-[280px]">
                         <select 
                           value={current.dept} 
+                          title={current.dept}
                           onChange={(e) => updateOverride(d.norm, current.ksm, e.target.value)}
                           className={`w-full bg-white border rounded-lg px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-sky-500/20 outline-none transition-all cursor-pointer ${isOverridden ? 'border-sky-300 text-sky-700' : 'border-slate-200 text-slate-600'}`}
                         >
