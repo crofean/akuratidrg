@@ -1095,12 +1095,16 @@ const resolveCache = new Map();
 const resolveKsmDept = (dpjp, overrides = {}) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
   
-  if (resolveCache.has(dpjp)) {
-    return resolveCache.get(dpjp);
+  // Cache key menyertakan overrides agar perubahan manual KSM langsung diterapkan
+  const overridesSig = Object.keys(overrides).length > 0 ? JSON.stringify(overrides) : '';
+  const cacheKey = dpjp + '||' + overridesSig;
+  
+  if (resolveCache.has(cacheKey)) {
+    return resolveCache.get(cacheKey);
   }
   
   const res = _resolveKsmDept(dpjp, overrides);
-  resolveCache.set(dpjp, res);
+  resolveCache.set(cacheKey, res);
   return res;
 };
 
@@ -7212,9 +7216,13 @@ export default function App() {
 
     const saveChanges = () => {
       if (draftKsmOverrides !== null) {
+        // Bersihkan cache SYNCHRONOUSLY sebelum state update agar re-render pakai data baru
+        resolveCache.clear();
+        // Simpan langsung ke localStorage tanpa nunggu useEffect
+        localStorage.setItem('sak_ksm_overrides', JSON.stringify(draftKsmOverrides));
         setKsmOverrides(draftKsmOverrides);
         setDraftKsmOverrides(null);
-        setUserManagementSuccess("Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
+        setUserManagementSuccess("✅ Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
         setTimeout(() => setUserManagementSuccess(""), 4000);
       }
     };
