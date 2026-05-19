@@ -7304,8 +7304,14 @@ export default function App() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredDpjps.slice(0, 100).map((d, i) => {
-                  const current = resolveKsmDept(d.disp, activeOverrides);
-                  const isOverridden = !!activeOverrides[d.norm];
+                  // Gunakan activeOverrides[d.norm] secara langsung karena d.disp sudah di-mask
+                  // sehingga normalisasi dari d.disp tidak akan cocok dengan key override
+                  const overrideVal = activeOverrides[d.norm];
+                  const autoResolved = resolveKsmDept(d.norm, {}); // resolve dari nama asli tanpa overrides
+                  const current = overrideVal
+                    ? (typeof overrideVal === 'string' ? { ksm: overrideVal, dept: 'Override' } : overrideVal)
+                    : autoResolved;
+                  const isOverridden = !!overrideVal;
                   
                   return (
                     <tr key={d.norm} className={`transition-colors ${isOverridden ? 'bg-sky-50/50' : 'hover:bg-slate-50'}`}>
