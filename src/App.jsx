@@ -1095,12 +1095,16 @@ const resolveCache = new Map();
 const resolveKsmDept = (dpjp, overrides = {}) => {
   if (!dpjp || dpjp.trim() === '' || dpjp.trim() === '-') return { ksm: 'Kedokteran Umum', dept: 'Department of Medicine' };
   
-  if (resolveCache.has(dpjp)) {
-    return resolveCache.get(dpjp);
+  // Cache key menyertakan overrides agar perubahan manual KSM langsung diterapkan
+  const overridesSig = Object.keys(overrides).length > 0 ? JSON.stringify(overrides) : '';
+  const cacheKey = dpjp + '||' + overridesSig;
+  
+  if (resolveCache.has(cacheKey)) {
+    return resolveCache.get(cacheKey);
   }
   
   const res = _resolveKsmDept(dpjp, overrides);
-  resolveCache.set(dpjp, res);
+  resolveCache.set(cacheKey, res);
   return res;
 };
 
@@ -7195,12 +7199,15 @@ export default function App() {
     }
 
     const updateOverride = (norm, ksm, dept) => {
+      console.log('[SAK-iDRG] updateOverride called:', { norm, ksm, dept });
       setDraftKsmOverrides(prev => {
         const base = prev !== null ? prev : ksmOverrides;
-        return {
+        const next = {
           ...base,
           [norm]: { ksm, dept }
         };
+        console.log('[SAK-iDRG] Next draftKsmOverrides:', next);
+        return next;
       });
     };
 
@@ -7215,9 +7222,13 @@ export default function App() {
 
     const saveChanges = () => {
       if (draftKsmOverrides !== null) {
+        // Bersihkan cache SYNCHRONOUSLY sebelum state update agar re-render pakai data baru
+        resolveCache.clear();
+        // Simpan langsung ke localStorage tanpa nunggu useEffect
+        localStorage.setItem('sak_ksm_overrides', JSON.stringify(draftKsmOverrides));
         setKsmOverrides(draftKsmOverrides);
         setDraftKsmOverrides(null);
-        setUserManagementSuccess("Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
+        setUserManagementSuccess("✅ Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
         setTimeout(() => setUserManagementSuccess(""), 4000);
       }
     };
@@ -7299,8 +7310,24 @@ export default function App() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredDpjps.slice(0, 100).map((d, i) => {
-                  const current = resolveKsmDept(d.disp, activeOverrides);
-                  const isOverridden = !!activeOverrides[d.norm];
+                  // Gunakan activeOverrides[d.norm] secara langsung karena d.disp sudah di-mask
+                  // sehingga normalisasi dari d.disp tidak akan cocok dengan key override
+                  const overrideVal = activeOverrides[d.norm];
+                  const autoResolved = resolveKsmDept(d.disp, {}); // Gunakan d.disp agar gelar medis terdeteksi!
+                  const current = overrideVal
+                    ? (typeof overrideVal === 'string' ? { ksm: overrideVal, dept: 'Override' } : overrideVal)
+                    : autoResolved;
+                  const isOverridden = !!overrideVal;
+
+                  if (d.norm && (d.norm.includes('AHMAD') || d.norm.includes('FITRAH'))) {
+                    console.log('[SAK-iDRG] Render row debug for:', d.norm, {
+                      overrideVal,
+                      autoResolved,
+                      current,
+                      isOverridden,
+                      activeOverridesKeys: Object.keys(activeOverrides)
+                    });
+                  }
                   
                   return (
                     <tr key={d.norm} className={`transition-colors ${isOverridden ? 'bg-sky-50/50' : 'hover:bg-slate-50'}`}>
