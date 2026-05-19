@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
-import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send } from 'lucide-react';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas-pro';
@@ -3341,6 +3341,11 @@ export default function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [validUsers, setValidUsers] = useState([{ username: 'Admin', password: 'Admin17' }]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotIdentity, setForgotIdentity] = useState('');
+  const [isProcessingForgot, setIsProcessingForgot] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [forgotError, setForgotError] = useState('');
 
   // URL Google Apps Script untuk Manajemen Sesi (Ganti dengan URL hasil Deployment Anda)
   const SESSION_API_URL = "https://script.google.com/macros/s/AKfycbwqWGsGReCHmKwWdWcaBGX_0BK96dY-u8_8LtIDsbhckfXOEoKdRrSA7TEAOTziXbO8/exec";
@@ -3435,6 +3440,27 @@ export default function App() {
     setActiveTab('upload');
     setIsLoggedIn(true);
     setShowDisclaimer(false);
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!forgotIdentity.trim()) {
+      setForgotError('Harap masukkan Username atau Email Anda.');
+      return;
+    }
+    setIsProcessingForgot(true);
+    setForgotError('');
+    setForgotSuccess('');
+    try {
+      const url = `${registrationScriptUrl}?action=forgot_password&identity=${encodeURIComponent(forgotIdentity.trim())}`;
+      await fetch(url, { mode: 'no-cors' });
+      setForgotSuccess('Permintaan reset berhasil dikirim! Silakan periksa kotak masuk email Anda beberapa saat lagi.');
+      setForgotIdentity('');
+    } catch (err) {
+      setForgotError('Gagal memproses permintaan lupa password: ' + err.message);
+    } finally {
+      setIsProcessingForgot(false);
+    }
   };
 
   const handleLogout = () => {
@@ -8610,6 +8636,20 @@ export default function App() {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                  <div className="flex justify-end mt-2 ml-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgotPassword(true);
+                        setForgotError('');
+                        setForgotSuccess('');
+                        setForgotIdentity('');
+                      }}
+                      className="text-teal-500 hover:text-teal-600 text-[10px] font-black tracking-wider uppercase transition-colors"
+                    >
+                      Lupa Password?
+                    </button>
+                  </div>
                 </div>
 
                 {/* Slider CAPTCHA */}
@@ -8638,6 +8678,71 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {showForgotPassword && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="max-w-md w-full p-8 shadow-2xl border border-white/20 bg-white relative rounded-[2rem] animate-in zoom-in-95 duration-300">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+              
+              <button 
+                onClick={() => setShowForgotPassword(false)}
+                className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-rose-600 hover:scale-105 transition-all outline-none"
+              >
+                <X size={16} />
+              </button>
+
+              <div className="text-center space-y-4">
+                <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center shadow-inner mx-auto mb-2">
+                  <Key size={32} className="text-teal-600" />
+                </div>
+                <h3 className="text-xl font-black text-slate-800 tracking-tight">Lupa Password Sistem?</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-bold">
+                  Masukkan Username atau Email terdaftar Anda. Kami akan mencari kredensial Anda dan mengirimkannya secara otomatis via email.
+                </p>
+              </div>
+
+              <form onSubmit={handleForgotPassword} className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Username atau Email</label>
+                  <input
+                    type="text"
+                    value={forgotIdentity}
+                    onChange={e => { setForgotIdentity(e.target.value); setForgotError(''); setForgotSuccess(''); }}
+                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold shadow-sm"
+                    placeholder="Contoh: user123 atau user@email.com"
+                    required
+                  />
+                </div>
+
+                {forgotError && (
+                  <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-700 font-bold text-xs animate-in shake duration-300">
+                    <AlertCircle size={16} className="shrink-0" />
+                    <span>{forgotError}</span>
+                  </div>
+                )}
+
+                {forgotSuccess && (
+                  <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-700 font-bold text-xs animate-in fade-in duration-300">
+                    <CheckCircle size={16} className="shrink-0" />
+                    <span>{forgotSuccess}</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isProcessingForgot}
+                  className={`w-full font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 text-xs tracking-[0.1em] uppercase ${!isProcessingForgot
+                    ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20 hover:-translate-y-0.5'
+                    : 'bg-slate-100 text-slate-300 cursor-not-allowed border-2 border-slate-50'
+                    }`}
+                >
+                  {isProcessingForgot ? <Activity size={16} className="animate-spin" /> : <Send size={16} />}
+                  {isProcessingForgot ? 'MEMPROSES...' : 'KIRIM PASSWORD SAYA'}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {showDisclaimer && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
