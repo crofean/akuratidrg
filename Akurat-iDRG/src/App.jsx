@@ -2994,7 +2994,7 @@ export default function App() {
   const [icdSyncVersion, setIcdSyncVersion] = useState(0);
 
   // Kamus ICD States
-  const [icdSheetUrl, setIcdSheetUrl] = useState(() => localStorage.getItem("sak_icd_sheet_url") || "https://docs.google.com/spreadsheets/d/19Fqy6_e_j9_cuH43as9pB_5gJjWnPO3Eb2EIfX1or-w/edit?usp=sharing");
+  const [icdSheetUrl, setIcdSheetUrl] = useState(() => localStorage.getItem("sak_icd_sheet_url") || "");
   const [isSyncingIcd, setIsSyncingIcd] = useState(false);
   const [icdSyncStatus, setIcdSyncStatus] = useState("");
   const [icdSearchQuery, setIcdSearchQuery] = useState("");
@@ -7425,14 +7425,11 @@ export default function App() {
     }
 
     const handleManualSync = async () => {
-      if (!icdSheetUrl.trim()) {
-        alert("⚠️ Harap masukkan link Google Sheets yang valid!");
-        return;
-      }
+      const urlToUse = icdSheetUrl.trim() || "https://docs.google.com/spreadsheets/d/19Fqy6_e_j9_cuH43as9pB_5gJjWnPO3Eb2EIfX1or-w/edit?usp=sharing";
       setIsSyncingIcd(true);
       setIcdSyncStatus("Mengunduh...");
       try {
-        const exportUrl = getGoogleSheetCsvUrl(icdSheetUrl.trim());
+        const exportUrl = getGoogleSheetCsvUrl(urlToUse);
         const res = await fetch(exportUrl);
         if (!res.ok) throw new Error(`Gagal mengunduh: status ${res.status}`);
         
@@ -7465,7 +7462,11 @@ export default function App() {
         // Dispatch sync event
         window.dispatchEvent(new CustomEvent('sak_icd_sync_complete', { detail: window.sakIcdMap }));
         
-        localStorage.setItem("sak_icd_sheet_url", icdSheetUrl.trim());
+        if (icdSheetUrl.trim()) {
+          localStorage.setItem("sak_icd_sheet_url", icdSheetUrl.trim());
+        } else {
+          localStorage.removeItem("sak_icd_sheet_url");
+        }
         alert(`✅ Kamus ICD Berhasil Disinkronkan!\n\n${dictArray.length.toLocaleString()} kode berhasil dimuat secara lokal.`);
       } catch (err) {
         console.error(err);
@@ -7558,7 +7559,7 @@ export default function App() {
                   <FileSpreadsheet className="text-slate-400 shrink-0" size={16} />
                   <input 
                     type="text" 
-                    placeholder="Masukkan tautan spreadsheet shareable..." 
+                    placeholder="Menggunakan Kamus Default (Terproteksi)" 
                     value={icdSheetUrl}
                     onChange={(e) => setIcdSheetUrl(e.target.value)}
                     className="bg-transparent border-none outline-none text-xs text-slate-700 font-bold w-full placeholder:text-slate-400 placeholder:font-medium"

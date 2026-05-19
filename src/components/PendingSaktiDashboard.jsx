@@ -411,7 +411,7 @@ export default function PendingSaktiDashboard({ isDarkMode, mainDataset = [], re
   const [fileData, setFileData] = useState([]);
 
   // Google Sheets ICD Dictionary States
-  const [icdSheetUrl, setIcdSheetUrl] = useState(() => localStorage.getItem("sak_icd_sheet_url") || "https://docs.google.com/spreadsheets/d/19Fqy6_e_j9_cuH43as9pB_5gJjWnPO3Eb2EIfX1or-w/edit?usp=sharing");
+  const [icdSheetUrl, setIcdSheetUrl] = useState(() => localStorage.getItem("sak_icd_sheet_url") || "");
   const [customIcdMap, setCustomIcdMap] = useState({});
   const [isSyncingIcd, setIsSyncingIcd] = useState(false);
   const [icdSyncStatus, setIcdSyncStatus] = useState("");
