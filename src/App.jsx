@@ -2989,9 +2989,10 @@ export default function App() {
       'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec',
       'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec',
       'https://script.google.com/macros/s/AKfycbzIJd7V5NkJIFJ44MLb9IS9QpDauTClCulaZ2ahTHOWdsG4Drp-jBjiRcRw6BZr8thC/exec',
-      'https://script.google.com/macros/s/AKfycbzAoK69sGChliR447lin10wAdASp9nQXdH2pRfytNycDMmmb-SR4Sv8sOgZw30i_mfr/exec'
+      'https://script.google.com/macros/s/AKfycbzAoK69sGChliR447lin10wAdASp9nQXdH2pRfytNycDMmmb-SR4Sv8sOgZw30i_mfr/exec',
+      'https://script.google.com/macros/s/AKfycbwcjH4-pbnUwPBS6Vu-c6_OjOGKmrp_r2FOp4WDC4ZeCIWI4zhgLPhD4sDtzVidSd_Y/exec'
     ];
-    return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbwcjH4-pbnUwPBS6Vu-c6_OjOGKmrp_r2FOp4WDC4ZeCIWI4zhgLPhD4sDtzVidSd_Y/exec';
+    return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbzLrxBDxME-n5kfNHgKW0SlTbw_GqpqfHe8eTJs50WBRxBkaqZLAfLzzANFOSGdzh-R/exec';
   });
   const [pendingUsers, setPendingUsers] = useState([]);
   const [activeUsersList, setActiveUsersList] = useState([]);
@@ -8096,15 +8097,17 @@ export default function App() {
       formattedExpiry = "31/12/2099"; // Selamanya
     }
     
-    // Cari data RS dan PIC dari tab permohonan akun
+    // Cari data RS, PIC, dan Email dari tab permohonan akun
     var rsCode = "";
     var rsName = "";
     var picName = "";
+    var email = "";
     
     var permData = sheet.getDataRange().getValues();
     for (var j = 1; j < permData.length; j++) {
       if (permData[j][7] === username) {
         picName = permData[j][1]; // Nama Lengkap
+        email = permData[j][2];   // Email
         rsCode = permData[j][4];  // Kode RS
         rsName = permData[j][5];  // Nama RS
         if (!password) {
@@ -8134,20 +8137,102 @@ export default function App() {
       activeSheet.appendRow([rsCode, rsName, picName, username, password, formattedExpiry]);
     }
     
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User approved" }))
+    // Kirim Email Verifikasi Sukses
+    if (email) {
+      try {
+        var subject = "[AKURAT iDRG] Akun Anda Telah Aktif!";
+        var body = "Yth. " + picName + ",\n\n" +
+                   "Selamat! Pengajuan akun AKURAT iDRG Anda telah disetujui.\n\n" +
+                   "Berikut adalah kredensial akun Anda:\n" +
+                   "- RS: " + rsName + " (" + rsCode + ")\n" +
+                   "- Username: " + username + "\n" +
+                   "- Password: " + password + "\n" +
+                   "- Masa Aktif: " + formattedExpiry + "\n\n" +
+                   "Silakan masuk ke aplikasi di https://akuratidrg.web.id/\n\n" +
+                   "Terima kasih,\nTim Admin AKURAT iDRG";
+        
+        var htmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px;'>" +
+                       "  <h2 style='color: #0d9488;'>Akun AKURAT iDRG Aktif!</h2>" +
+                       "  <p>Yth. <strong>" + picName + "</strong>,</p>" +
+                       "  <p>Selamat! Pengajuan akun untuk faskes Anda telah disetujui dan saat ini sudah aktif.</p>" +
+                       "  <div style='background-color: #f0fdfa; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0d9488;'>" +
+                       "    <table style='width: 100%; border-collapse: collapse;'>" +
+                       "      <tr><td style='padding: 4px 0; color: #666; width: 120px;'>Rumah Sakit</td><td>: <strong>" + rsName + " (" + rsCode + ")</strong></td></tr>" +
+                       "      <tr><td style='padding: 4px 0; color: #666;'>Username</td><td>: <code>" + username + "</code></td></tr>" +
+                       "      <tr><td style='padding: 4px 0; color: #666;'>Password</td><td>: <code>" + password + "</code></td></tr>" +
+                       "      <tr><td style='padding: 4px 0; color: #666;'>Masa Berlaku</td><td>: <strong>" + formattedExpiry + "</strong></td></tr>" +
+                       "    </table>" +
+                       "  </div>" +
+                       "  <p>Silakan login ke aplikasi melalui tautan berikut:</p>" +
+                       "  <p style='text-align: center; margin: 25px 0;'>" +
+                       "    <a href='https://akuratidrg.web.id/' style='background-color: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;'>Masuk Ke Aplikasi</a>" +
+                       "  </p>" +
+                       "  <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>" +
+                       "  <p style='font-size: 11px; color: #666;'>Email ini dikirimkan secara otomatis oleh sistem AKURAT iDRG. Jangan membalas email ini.</p>" +
+                       "</div>";
+                       
+        MailApp.sendEmail({
+          to: email,
+          subject: subject,
+          body: body,
+          htmlBody: htmlBody
+        });
+      } catch (mailErr) {
+        Logger.log("Failed to send approval email: " + mailErr.toString());
+      }
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User approved and email sent" }))
                          .setMimeType(ContentService.MimeType.JSON)
                          .setHeaders(headers);
   }
   
   if (action === "reject") {
     var username = params.username;
+    var picName = "";
+    var email = "";
+    
     var permData = sheet.getDataRange().getValues();
     for (var j = 1; j < permData.length; j++) {
       if (permData[j][7] === username) {
+        picName = permData[j][1]; // Nama Lengkap
+        email = permData[j][2];   // Email
         sheet.getRange(j + 1, 10).setValue("DITOLAK");
       }
     }
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User rejected" }))
+    
+    // Kirim Email Penolakan
+    if (email) {
+      try {
+        var subject = "[AKURAT iDRG] Status Pengajuan Akun";
+        var body = "Yth. " + picName + ",\n\n" +
+                   "Terima kasih telah mengajukan akun AKURAT iDRG.\n\n" +
+                   "Mohon maaf, pengajuan akun Anda dengan username '" + username + "' belum dapat kami setujui saat ini.\n\n" +
+                   "Jika Anda merasa ini adalah kesalahan atau membutuhkan informasi lebih lanjut, silakan hubungi administrator.\n\n" +
+                   "Terima kasih,\nTim Admin AKURAT iDRG";
+        
+        var htmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px;'>" +
+                       "  <h2 style='color: #ef4444;'>Status Pengajuan Akun SAK-iDRG</h2>" +
+                       "  <p>Yth. <strong>" + picName + "</strong>,</p>" +
+                       "  <p>Terima kasih atas minat Anda terhadap platform AKURAT iDRG.</p>" +
+                       "  <p>Mohon maaf, pengajuan akun Anda dengan username <code>" + username + "</code> belum dapat kami setujui saat ini.</p>" +
+                       "  <p>Apabila terdapat kesalahan data atau ingin menanyakan detail lebih lanjut, silakan hubungi pihak Administrator AKURAT iDRG.</p>" +
+                       "  <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>" +
+                       "  <p style='font-size: 11px; color: #666;'>Email ini dikirimkan secara otomatis oleh sistem AKURAT iDRG. Jangan membalas email ini.</p>" +
+                       "</div>";
+                       
+        MailApp.sendEmail({
+          to: email,
+          subject: subject,
+          body: body,
+          htmlBody: htmlBody
+        });
+      } catch (mailErr) {
+        Logger.log("Failed to send rejection email: " + mailErr.toString());
+      }
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User rejected and email sent" }))
                          .setMimeType(ContentService.MimeType.JSON)
                          .setHeaders(headers);
   }
@@ -8175,6 +8260,115 @@ export default function App() {
     return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "User deleted" }))
                          .setMimeType(ContentService.MimeType.JSON)
                          .setHeaders(headers);
+  }
+  
+  if (action === "forgot_password") {
+    var identity = (params.identity || "").trim().toLowerCase();
+    if (!identity) {
+      return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Identity parameter is required" }))
+                           .setMimeType(ContentService.MimeType.JSON)
+                           .setHeaders(headers);
+    }
+    
+    // Cari data di tab permohonan akun
+    var username = "";
+    var email = "";
+    var password = "";
+    var picName = "";
+    var rsName = "";
+    
+    var permData = sheet.getDataRange().getValues();
+    var found = false;
+    for (var j = 1; j < permData.length; j++) {
+      var rowUser = String(permData[j][7] || "").trim().toLowerCase();
+      var rowEmail = String(permData[j][2] || "").trim().toLowerCase();
+      if (rowUser === identity || rowEmail === identity) {
+        picName = permData[j][1];
+        email = permData[j][2];
+        rsName = permData[j][5];
+        username = permData[j][7];
+        password = permData[j][8];
+        found = true;
+        break;
+      }
+    }
+    
+    // Jika tidak ditemukan di permohonan akun, coba cari di Sheet1 (User Aktif)
+    if (!found) {
+      var activeData = activeSheet.getDataRange().getValues();
+      for (var i = 1; i < activeData.length; i++) {
+        var rowActiveUser = String(activeData[i][3] || "").trim().toLowerCase();
+        if (rowActiveUser === identity) {
+          picName = activeData[i][2]; // PIC RS
+          rsName = activeData[i][1];  // NAMA RS
+          username = activeData[i][3]; // USERNAME
+          password = activeData[i][4]; // PASSWORD
+          // Cari email di database permohonan dengan mencocokkan username
+          for (var j = 1; j < permData.length; j++) {
+            if (String(permData[j][7] || "").trim().toLowerCase() === username.toLowerCase()) {
+              email = permData[j][2];
+              break;
+            }
+          }
+          found = true;
+          break;
+        }
+      }
+    }
+    
+    if (found && email) {
+      try {
+        var subject = "[AKURAT iDRG] Pemulihan Kredensial Akun";
+        var body = "Yth. " + picName + ",\n\n" +
+                   "Anda menerima email ini karena ada permintaan untuk memulihkan kredensial masuk akun AKURAT iDRG Anda.\n\n" +
+                   "Berikut adalah kredensial akun Anda:\n" +
+                   "- RS: " + rsName + "\n" +
+                   "- Username: " + username + "\n" +
+                   "- Password: " + password + "\n\n" +
+                   "Silakan gunakan kredensial tersebut untuk masuk ke aplikasi di https://akuratidrg.web.id/\n\n" +
+                   "Jika Anda tidak merasa mengajukan pemulihan ini, harap abaikan email ini atau hubungi admin.\n\n" +
+                   "Terima kasih,\nTim Admin AKURAT iDRG";
+        
+        var htmlBody = "<div style='font-family: Arial, sans-serif; padding: 20px; color: #333; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px;'>" +
+                       "  <h2 style='color: #0ea5e9;'>Pemulihan Kredensial Akun SAK-iDRG</h2>" +
+                       "  <p>Yth. <strong>" + picName + "</strong>,</p>" +
+                       "  <p>Kami menerima permintaan untuk mengirimkan kredensial masuk akun AKURAT iDRG Anda.</p>" +
+                       "  <div style='background-color: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0ea5e9;'>" +
+                       "    <table style='width: 100%; border-collapse: collapse;'>" +
+                       "      <tr><td style='padding: 4px 0; color: #666; width: 120px;'>Rumah Sakit</td><td>: <strong>" + rsName + "</strong></td></tr>" +
+                       "      <tr><td style='padding: 4px 0; color: #666;'>Username</td><td>: <code>" + username + "</code></td></tr>" +
+                       "      <tr><td style='padding: 4px 0; color: #666;'>Password</td><td>: <code>" + password + "</code></td></tr>" +
+                       "    </table>" +
+                       "  </div>" +
+                       "  <p>Silakan gunakan informasi di atas untuk masuk ke dashboard utama:</p>" +
+                       "  <p style='text-align: center; margin: 25px 0;'>" +
+                       "    <a href='https://akuratidrg.web.id/' style='background-color: #0ea5e9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;'>Masuk Ke Aplikasi</a>" +
+                       "  </p>" +
+                       "  <p style='color: #ef4444; font-size: 11px;'>PENTING: Jangan berikan detail ini kepada siapapun demi keamanan data klaim faskes Anda.</p>" +
+                       "  <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>" +
+                       "  <p style='font-size: 11px; color: #666;'>Email ini dikirimkan secara otomatis oleh sistem AKURAT iDRG karena permintaan pemulihan password. Jika ini bukan Anda, abaikan email ini.</p>" +
+                       "</div>";
+                       
+        MailApp.sendEmail({
+          to: email,
+          subject: subject,
+          body: body,
+          htmlBody: htmlBody
+        });
+        
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", message: "Email sent" }))
+                             .setMimeType(ContentService.MimeType.JSON)
+                             .setHeaders(headers);
+      } catch (mailErr) {
+        return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Failed to send email: " + mailErr.toString() }))
+                             .setMimeType(ContentService.MimeType.JSON)
+                             .setHeaders(headers);
+      }
+    } else {
+      return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Identity not found or no email associated" }))
+                           .setMimeType(ContentService.MimeType.JSON)
+                           .setHeaders(headers);
+    }
   }
   
   return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Invalid action" }))
@@ -8678,7 +8872,7 @@ export default function App() {
                 <div className="mt-3">
                   <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • v1.4.5 (190526-21:36)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.4.5 (190520262310)</p>
               </div>
             </div>
           </div>
@@ -9224,7 +9418,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">v1.4.5 (190526-21:36)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.4.5 (190520262310)</span>
                 </div>
               )}
             </div>
@@ -9406,7 +9600,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">v1.4.5</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.4.5</span>
             </p>
           </footer>
         </div>
