@@ -8518,9 +8518,9 @@ export default function App() {
               >
                 <X size={20} />
               </button>
-              <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
+              <a href="https://drive.google.com/file/d/1L2g_Z8Gxv1MRHxVt5RsGBsMJ-0xItjas/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
                 <img
-                  src="https://lh3.googleusercontent.com/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
+                  src="https://lh3.googleusercontent.com/d/1L2g_Z8Gxv1MRHxVt5RsGBsMJ-0xItjas"
                   alt="Advertisement"
                   className="w-full h-auto object-contain max-h-[85vh]"
                   onError={(e) => {
@@ -9464,9 +9464,9 @@ export default function App() {
               >
                 <X size={20} />
               </button>
-              <a href="https://drive.google.com/file/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a/view" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
+              <a href="https://drive.google.com/file/d/1L2g_Z8Gxv1MRHxVt5RsGBsMJ-0xItjas/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="block rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-slate-800">
                 <img
-                  src="https://lh3.googleusercontent.com/d/1PgR9wuUVdfTxHOMqZ7A72GqKVX5dcX0a"
+                  src="https://lh3.googleusercontent.com/d/1L2g_Z8Gxv1MRHxVt5RsGBsMJ-0xItjas"
                   alt="Advertisement"
                   className="w-full h-auto object-contain max-h-[85vh]"
                   onError={(e) => {
