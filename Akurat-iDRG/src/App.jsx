@@ -7307,7 +7307,7 @@ export default function App() {
                   // Gunakan activeOverrides[d.norm] secara langsung karena d.disp sudah di-mask
                   // sehingga normalisasi dari d.disp tidak akan cocok dengan key override
                   const overrideVal = activeOverrides[d.norm];
-                  const autoResolved = resolveKsmDept(d.norm, {}); // resolve dari nama asli tanpa overrides
+                  const autoResolved = resolveKsmDept(d.disp, {}); // Gunakan d.disp agar gelar medis terdeteksi!
                   const current = overrideVal
                     ? (typeof overrideVal === 'string' ? { ksm: overrideVal, dept: 'Override' } : overrideVal)
                     : autoResolved;
