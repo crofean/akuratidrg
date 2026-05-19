@@ -1011,7 +1011,6 @@ const TABS = [
   { id: 'insight_sosialisasi', label: 'Insight Sosialisasi', icon: Sparkles },
   { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award },
   { id: 'pending_sakti', label: 'Analisis Pending', icon: FileSpreadsheet },
-  { id: 'sync_icd', label: 'Kamus ICD', icon: RefreshCw },
   { id: 'settings_ksm', label: 'Pengaturan KSM', icon: Settings },
   { id: 'user_management', label: 'Manajemen Akses', icon: ClipboardList }
 ];
