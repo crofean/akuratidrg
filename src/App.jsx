@@ -2987,9 +2987,10 @@ export default function App() {
     const oldUrls = [
       'https://script.google.com/macros/s/AKfycbwiCOoo3cs6B_VJjlSG-UCsQEjCV687TnruZ1TD6mNjUXxzZnCYJ0pxQjMIjffz6X7Z/exec',
       'https://script.google.com/macros/s/AKfycbxL88WWiRrQ5JbNAq2qSxnTBULpHYJuaRdNINxFwfZVgdHhp3oojsGQEEHuwQLMLKDn/exec',
-      'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec'
+      'https://script.google.com/macros/s/AKfycbyChScgs4N8u2wLV8y7fFRj7jyNrUlyPVrarBWfIHToVWqrl3svMD3zZleOEg5je9Qt/exec',
+      'https://script.google.com/macros/s/AKfycbzIJd7V5NkJIFJ44MLb9IS9QpDauTClCulaZ2ahTHOWdsG4Drp-jBjiRcRw6BZr8thC/exec'
     ];
-    return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbzIJd7V5NkJIFJ44MLb9IS9QpDauTClCulaZ2ahTHOWdsG4Drp-jBjiRcRw6BZr8thC/exec';
+    return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbzAoK69sGChliR447lin10wAdASp9nQXdH2pRfytNycDMmmb-SR4Sv8sOgZw30i_mfr/exec';
   });
   const [pendingUsers, setPendingUsers] = useState([]);
   const [activeUsersList, setActiveUsersList] = useState([]);
