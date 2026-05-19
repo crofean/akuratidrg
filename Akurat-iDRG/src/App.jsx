@@ -7196,12 +7196,15 @@ export default function App() {
     }
 
     const updateOverride = (norm, ksm, dept) => {
+      console.log('[SAK-iDRG] updateOverride called:', { norm, ksm, dept });
       setDraftKsmOverrides(prev => {
         const base = prev !== null ? prev : ksmOverrides;
-        return {
+        const next = {
           ...base,
           [norm]: { ksm, dept }
         };
+        console.log('[SAK-iDRG] Next draftKsmOverrides:', next);
+        return next;
       });
     };
 
@@ -7312,6 +7315,16 @@ export default function App() {
                     ? (typeof overrideVal === 'string' ? { ksm: overrideVal, dept: 'Override' } : overrideVal)
                     : autoResolved;
                   const isOverridden = !!overrideVal;
+
+                  if (d.norm && (d.norm.includes('AHMAD') || d.norm.includes('FITRAH'))) {
+                    console.log('[SAK-iDRG] Render row debug for:', d.norm, {
+                      overrideVal,
+                      autoResolved,
+                      current,
+                      isOverridden,
+                      activeOverridesKeys: Object.keys(activeOverrides)
+                    });
+                  }
                   
                   return (
                     <tr key={d.norm} className={`transition-colors ${isOverridden ? 'bg-sky-50/50' : 'hover:bg-slate-50'}`}>
