@@ -3217,108 +3217,127 @@ export default function App() {
   }, [activeTab, subTab, globalFilter, auditVerdicts, ksmOverrides, registrationSheetId, registrationGid, registrationScriptUrl]);
 
   const fetchUserManagementData = async () => {
-    setIsFetchingUsers(true);
+    try {
+      setIsLoadingUsers(true);
+      const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      
+      const approved = data.filter(u => u.status === 'active');
+      const pending = data.filter(u => u.status === 'pending');
+      const rejected = data.filter(u => u.status === 'rejected');
+      
+      setUserAccounts(approved);
+      setPendingUsers(pending);
+      setRejectedUsers(rejected);
+      setUserManagementError('');
+    } catch (err) {
+      setUserManagementError('Gagal mengambil data user: ' + err.message);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  const handleApprove = async (userId) => {
+    const duration = pendingDurations[userId] || 12;
+    setIsProcessingAction(true);
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
-      // Fetch helper dengan timeout (10 detik) untuk mencegah hang
-      const fetchWithTimeout = async (url, timeout = 10000) => {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
-        try {
-          const response = await fetch(url, { signal: controller.signal });
-          clearTimeout(id);
-          return response;
-        } catch (err) {
-          clearTimeout(id);
-          throw err;
-        }
-      };
+      const masaAktif = new Date();
+      if (duration !== 999) masaAktif.setMonth(masaAktif.getMonth() + duration);
+      else masaAktif.setFullYear(masaAktif.getFullYear() + 100);
 
-      // Helper robust mapping case-insensitive & space-tolerant
-      const findHeaderIndex = (headers, possibleNames, defaultIdx) => {
-        const cleanedHeaders = headers.map(h => h.trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
-        for (const name of possibleNames) {
-          const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const idx = cleanedHeaders.indexOf(cleanName);
-          if (idx !== -1) return idx;
-        }
-        return defaultIdx;
-      };
-
-      // 1. Fetch active users list (gid=0)
-      const activeUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=0`;
-      const activeRes = await fetchWithTimeout(activeUrl);
-      if (!activeRes.ok) throw new Error("Gagal mengunduh daftar User Aktif dari Google Sheets.");
-      const activeText = await activeRes.text();
-      const activeRows = activeText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
+      const { error } = await supabase.from('profiles').update({ status: 'active', masa_aktif: masaAktif }).eq('id', userId);
+      if (error) throw error;
       
-      const activeHeaders = activeRows[0] || [];
-      const userIdx = findHeaderIndex(activeHeaders, ['username', 'user'], 3);
-      const passIdx = findHeaderIndex(activeHeaders, ['password', 'sandi', 'katasandi'], 4);
-      const activeIdx = findHeaderIndex(activeHeaders, ['masaaktif', 'expiry', 'expired', 'berlaku'], 5);
-      
-      const activeList = activeRows.slice(1).map(r => ({
-        username: r[userIdx] || '',
-        password: r[passIdx] || '',
-        masaAktif: r[activeIdx] || ''
-      })).filter(u => u.username);
-      setActiveUsersList(activeList);
-
-      // 2. Fetch pending users list (gid=registrationGid)
-      const pendingUrl = `https://docs.google.com/spreadsheets/d/${registrationSheetId}/export?format=csv&gid=${registrationGid}`;
-      const pendingRes = await fetchWithTimeout(pendingUrl);
-      if (!pendingRes.ok) throw new Error("Gagal mengunduh daftar Pengajuan dari Google Sheets. Pastikan GID Tab Permohonan sudah benar.");
-      const pendingText = await pendingRes.text();
-      const pendingRows = pendingText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim().replace(/^"|"$/g, '')));
-      
-      const pendingHeaders = pendingRows[0] || [];
-      const timestampIdx = findHeaderIndex(pendingHeaders, ['timestamp', 'tanggal'], 0);
-      const fullNameIdx = findHeaderIndex(pendingHeaders, ['namalengkap', 'nama', 'fullname'], 1);
-      const emailIdx = findHeaderIndex(pendingHeaders, ['email', 'surel'], 2);
-      const phoneIdx = findHeaderIndex(pendingHeaders, ['nohp', 'phone', 'telepon', 'hp'], 3);
-      const rsNameIdx = findHeaderIndex(pendingHeaders, ['namars', 'rsname', 'rumahsakit'], 5);
-      const positionIdx = findHeaderIndex(pendingHeaders, ['jabatan', 'position'], 6);
-      const pUserIdx = findHeaderIndex(pendingHeaders, ['username', 'user'], 7);
-      const pPassIdx = findHeaderIndex(pendingHeaders, ['password', 'sandi', 'katasandi'], 8);
-      const statusIdx = findHeaderIndex(pendingHeaders, ['status', 'catatan', 'keterangan'], 9);
-      
-      const pList = pendingRows.slice(1).map(r => {
-        let rawStatus = r[statusIdx] || r[10] || 'PENDING';
-        rawStatus = rawStatus.trim().toUpperCase();
-        if (rawStatus === 'TERVERIFIKASI' || rawStatus === 'DITOLAK' || rawStatus === 'DIBATALKAN') {
-          // Status valid
-        } else {
-          // Jika kosong atau "KOSONG"
-          rawStatus = 'PENDING';
-        }
-        return {
-          timestamp: r[timestampIdx] || '',
-          fullName: (r[fullNameIdx] || '').replace(/\+/g, ' '),
-          email: r[emailIdx] || '',
-          phone: r[phoneIdx] || '',
-          rsName: (r[rsNameIdx] || '').replace(/\+/g, ' '),
-          position: (r[positionIdx] || '').replace(/\+/g, ' '),
-          username: r[pUserIdx] || '',
-          password: r[pPassIdx] || '',
-          status: rawStatus
-        };
-      }).filter(u => u.username);
-      setPendingUsers(pList);
-      
+      setUserManagementSuccess('Pengguna berhasil disetujui!');
+      fetchUserManagementData();
     } catch (err) {
-      console.error("[SAK-iDRG] Error fetching user management data:", err);
-      setUserManagementError(err.message || 'Gagal memuat data dari Google Sheets.');
+      setUserManagementError('Gagal menyetujui akun: ' + err.message);
     } finally {
-      setIsFetchingUsers(false);
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleReject = async (userId) => {
+    if (!window.confirm('Apakah Anda yakin ingin menolak pengajuan ini?')) return;
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+      if (error) throw error;
+      setUserManagementSuccess('Pengguna berhasil ditolak!');
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menolak akun: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleDeleteActive = async (userId) => {
+    if (!window.confirm('Apakah Anda yakin ingin menonaktifkan akses pengguna ini?')) return;
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const { error } = await supabase.from('profiles').update({ status: 'disabled' }).eq('id', userId);
+      if (error) throw error;
+      setUserManagementSuccess('Akses pengguna berhasil dinonaktifkan.');
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menonaktifkan akun: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleEditUserClick = (u) => {
+    setEditingUser(u);
+    setEditUserData({
+      nama_lengkap: u.nama_lengkap || '',
+      nama_faskes: u.nama_faskes || '',
+      no_wa: u.no_wa || '',
+      role: u.role || 'user',
+      status: u.status || 'active',
+      masa_aktif: u.masa_aktif ? new Date(u.masa_aktif).toISOString().split('T')[0] : ''
+    });
+    setShowEditUserModal(true);
+  };
+
+  const handleSaveEditUser = async (e) => {
+    e.preventDefault();
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    try {
+      const updates = {
+        nama_lengkap: editUserData.nama_lengkap,
+        nama_faskes: editUserData.nama_faskes,
+        no_wa: editUserData.no_wa,
+        role: editUserData.role,
+        status: editUserData.status,
+        masa_aktif: editUserData.masa_aktif ? new Date(editUserData.masa_aktif).toISOString() : null
+      };
+      const { error } = await supabase.from('profiles').update(updates).eq('id', editingUser.id);
+      if (error) throw error;
+      
+      setUserManagementSuccess('Data pengguna berhasil diperbarui!');
+      setShowEditUserModal(false);
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menyimpan data pengguna: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
     }
   };
 
   useEffect(() => {
-    if (subTab === 'user_management' && username.toLowerCase() === 'admin') {
+    if (subTab === "user_management" && (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com')) {
       fetchUserManagementData();
     }
-  }, [subTab, registrationSheetId, registrationGid]);
+  }, [subTab, username]);
+
 
   useEffect(() => {
     console.log('[SAK-iDRG] Global Filter changed:', globalFilter);
@@ -7736,128 +7755,6 @@ export default function App() {
   const [showPasswordList, setShowPasswordList] = useState({});
 
   const renderUserManagement = () => {
-    const fetchUserManagementData = async () => {
-      try {
-        setIsLoadingUsers(true);
-        const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-        if (error) throw error;
-        
-        const approved = data.filter(u => u.status === 'active');
-        const pending = data.filter(u => u.status === 'pending');
-        const rejected = data.filter(u => u.status === 'rejected');
-        
-        setUserAccounts(approved);
-        setPendingUsers(pending);
-        setRejectedUsers(rejected);
-        setUserManagementError('');
-      } catch (err) {
-        setUserManagementError('Gagal mengambil data user: ' + err.message);
-      } finally {
-        setIsLoadingUsers(false);
-      }
-    };
-
-    const handleApprove = async (userId) => {
-      const duration = pendingDurations[userId] || 12;
-      setIsProcessingAction(true);
-      setUserManagementError('');
-      setUserManagementSuccess('');
-      try {
-        const masaAktif = new Date();
-        if (duration !== 999) masaAktif.setMonth(masaAktif.getMonth() + duration);
-        else masaAktif.setFullYear(masaAktif.getFullYear() + 100);
-
-        const { error } = await supabase.from('profiles').update({ status: 'active', masa_aktif: masaAktif }).eq('id', userId);
-        if (error) throw error;
-        
-        setUserManagementSuccess(`Pengguna berhasil disetujui!`);
-        fetchUserManagementData();
-      } catch (err) {
-        setUserManagementError('Gagal menyetujui akun: ' + err.message);
-      } finally {
-        setIsProcessingAction(false);
-      }
-    };
-
-    const handleReject = async (userId) => {
-      if (!window.confirm(`Apakah Anda yakin ingin menolak pengajuan ini?`)) return;
-      setIsProcessingAction(true);
-      setUserManagementError('');
-      setUserManagementSuccess('');
-      try {
-        const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
-        if (error) throw error;
-        setUserManagementSuccess(`Pengguna berhasil ditolak!`);
-        fetchUserManagementData();
-      } catch (err) {
-        setUserManagementError('Gagal menolak akun: ' + err.message);
-      } finally {
-        setIsProcessingAction(false);
-      }
-    };
-
-    const handleDeleteActive = async (userId) => {
-      if (!window.confirm(`Apakah Anda yakin ingin menonaktifkan akses pengguna ini?`)) return;
-      setIsProcessingAction(true);
-      setUserManagementError('');
-      setUserManagementSuccess('');
-      try {
-        const { error } = await supabase.from('profiles').update({ status: 'disabled' }).eq('id', userId);
-        if (error) throw error;
-        setUserManagementSuccess(`Akses pengguna berhasil dinonaktifkan.`);
-        fetchUserManagementData();
-      } catch (err) {
-        setUserManagementError('Gagal menonaktifkan akun: ' + err.message);
-      } finally {
-        setIsProcessingAction(false);
-      }
-    };
-
-    const handleEditUserClick = (u) => {
-      setEditingUser(u);
-      setEditUserData({
-        nama_lengkap: u.nama_lengkap || '',
-        nama_faskes: u.nama_faskes || '',
-        no_wa: u.no_wa || '',
-        role: u.role || 'user',
-        status: u.status || 'active',
-        masa_aktif: u.masa_aktif ? new Date(u.masa_aktif).toISOString().split('T')[0] : ''
-      });
-      setShowEditUserModal(true);
-    };
-
-    const handleSaveEditUser = async (e) => {
-      e.preventDefault();
-      setIsProcessingAction(true);
-      setUserManagementError('');
-      try {
-        const updates = {
-          nama_lengkap: editUserData.nama_lengkap,
-          nama_faskes: editUserData.nama_faskes,
-          no_wa: editUserData.no_wa,
-          role: editUserData.role,
-          status: editUserData.status,
-          masa_aktif: editUserData.masa_aktif ? new Date(editUserData.masa_aktif).toISOString() : null
-        };
-        const { error } = await supabase.from('profiles').update(updates).eq('id', editingUser.id);
-        if (error) throw error;
-        
-        setUserManagementSuccess('Data pengguna berhasil diperbarui!');
-        setShowEditUserModal(false);
-        fetchUserManagementData();
-      } catch (err) {
-        setUserManagementError('Gagal menyimpan data pengguna: ' + err.message);
-      } finally {
-        setIsProcessingAction(false);
-      }
-    };
-
-    useEffect(() => {
-      if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com') {
-        fetchUserManagementData();
-      }
-    }, [username]);
-
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
         <SectionHeader 
