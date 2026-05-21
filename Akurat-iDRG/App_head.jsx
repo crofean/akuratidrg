@@ -4123,9 +4123,33 @@ export default function App() {
         }} exportText="Ekspor Anomali" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <Card className="p-6 bg-white cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('Seluruh Kasus ICU', r => String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5') || String(r['IDRG_DRG_CODE'] || '').includes('ICU'))}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">Total Kasus ICU</h4><p className="text-4xl font-black text-red-600">{data.total || 0}</p></Card>
-          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 1', r => { const sl = String(r['INACBG'] || '').slice(-1); return sl === '1' && (String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5')); })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 1</h4><p className="text-2xl font-black">{data.sev1 || 0}</p></Card>
-          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 2', r => { const sl = String(r['INACBG'] || '').slice(-1); return sl === '2' && (String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5')); })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 2</h4><p className="text-2xl font-black">{data.sev2 || 0}</p></Card>
-          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 3', r => { const sl = String(r['INACBG'] || '').slice(-1); return sl === '3' && (String(r['INACBG'] || '').includes('-4') || String(r['INACBG'] || '').includes('-5')); })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 3</h4><p className="text-2xl font-black">{data.sev3 || 0}</p></Card>
+          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 1', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            const isIcu = icuInd === '1' || icuLos > 0 || ventHour > 0;
+            const inaCode = String(r['INACBG'] || '').trim();
+            const sev = inaCode.endsWith('-I') ? 1 : inaCode.endsWith('-II') ? 2 : inaCode.endsWith('-III') ? 3 : 0;
+            return isIcu && sev === 1;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 1</h4><p className="text-2xl font-black">{data.sev1 || 0}</p></Card>
+          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 2', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            const isIcu = icuInd === '1' || icuLos > 0 || ventHour > 0;
+            const inaCode = String(r['INACBG'] || '').trim();
+            const sev = inaCode.endsWith('-I') ? 1 : inaCode.endsWith('-II') ? 2 : inaCode.endsWith('-III') ? 3 : 0;
+            return isIcu && sev === 2;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 2</h4><p className="text-2xl font-black">{data.sev2 || 0}</p></Card>
+          <Card className="p-6 cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => openDrilldown('ICU SL 3', r => {
+            const icuInd = String(r['ICU_INDIKATOR'] || '').trim();
+            const icuLos = parseFloat(r['ICU_LOS'] || 0);
+            const ventHour = parseFloat(r['VENT_HOUR'] || 0);
+            const isIcu = icuInd === '1' || icuLos > 0 || ventHour > 0;
+            const inaCode = String(r['INACBG'] || '').trim();
+            const sev = inaCode.endsWith('-I') ? 1 : inaCode.endsWith('-II') ? 2 : inaCode.endsWith('-III') ? 3 : 0;
+            return isIcu && sev === 3;
+          })}><h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">ICU SL 3</h4><p className="text-2xl font-black">{data.sev3 || 0}</p></Card>
         </div>
         {data.anomalies?.length > 0 && (
           <Card>
