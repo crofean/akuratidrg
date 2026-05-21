@@ -2999,6 +2999,34 @@ export default function App() {
     return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbwDfLqyeRjDs6LUpZ5unl3gh0muwS2zECBS6jsPgL3poqmicuWuA9l6ph2qCcqkHVcE/exec';
   });
   const [userSearchTerm, setUserSearchTerm] = useState("");
+
+  const [customKsms, setCustomKsms] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('sak_custom_ksms')) || []; } catch(e){ return []; }
+  });
+  const [customDepts, setCustomDepts] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('sak_custom_depts')) || []; } catch(e){ return []; }
+  });
+  const [newKsmInput, setNewKsmInput] = useState("");
+  const [newDeptInput, setNewDeptInput] = useState("");
+
+  const addCustomKsm = () => {
+    if(newKsmInput.trim()) {
+      const updated = [...customKsms, newKsmInput.trim().toUpperCase()];
+      setCustomKsms(updated);
+      localStorage.setItem('sak_custom_ksms', JSON.stringify(updated));
+      setNewKsmInput("");
+    }
+  };
+
+  const addCustomDept = () => {
+    if(newDeptInput.trim()) {
+      const updated = [...customDepts, newDeptInput.trim().toUpperCase()];
+      setCustomDepts(updated);
+      localStorage.setItem('sak_custom_depts', JSON.stringify(updated));
+      setNewDeptInput("");
+    }
+  };
+
   const [pendingUsers, setPendingUsers] = useState([]);
   const [userAccounts, setUserAccounts] = useState([]);
   const [rejectedUsers, setRejectedUsers] = useState([]);
@@ -7452,7 +7480,7 @@ export default function App() {
                         >
                           <option value="">-- Pilih KSM --</option>
                           {/* Combine standard list with any existing KSM from the dataset to ensure coverage */}
-                          {Array.from(new Set([...KSM_LIST, current.ksm])).sort().map(k => (
+                          {Array.from(new Set([...KSM_LIST, ...customKsms, current.ksm])).sort().map(k => (
                             <option key={k} value={k}>{k}</option>
                           ))}
                         </select>
@@ -7465,7 +7493,7 @@ export default function App() {
                           className={`w-full bg-white border rounded-lg px-3 py-1.5 text-xs font-bold focus:ring-2 focus:ring-sky-500/20 outline-none transition-all cursor-pointer ${isOverridden ? 'border-sky-300 text-sky-700' : 'border-slate-200 text-slate-600'}`}
                         >
                           <option value="">-- Pilih Departemen --</option>
-                          {DEPT_LIST.sort().map(dept => (
+                          {Array.from(new Set([...DEPT_LIST, ...customDepts, current.dept])).sort().map(dept => (
                             <option key={dept} value={dept}>{dept}</option>
                           ))}
                         </select>
@@ -7904,7 +7932,7 @@ export default function App() {
                     <td colSpan="6" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada daftar user aktif terdeteksi.</td>
                   </tr>
                 ) : (
-                  userAccounts.map((u, idx) => {
+                  userAccounts.filter(u => !userSearchTerm || Object.values(u).some(v => String(v).toLowerCase().includes(userSearchTerm.toLowerCase()))).map((u, idx) => {
                     let isExpired = false;
                     if (u.masa_aktif) {
                       const activeDate = new Date(u.masa_aktif);
@@ -9251,7 +9279,7 @@ export default function App() {
                               <tr key={`ddr-${i}`} className={`transition-colors ${rowFlag ? 'bg-rose-50/70 hover:bg-rose-100/60' : 'hover:bg-slate-50/80'}`}>
                                 <td className={`${tCell} text-center font-semibold ${rowFlag ? 'text-rose-400' : 'text-slate-400'}`}>{rowFlag ? <span className="text-rose-500 font-black">!</span> : i + 1}</td>
                                 <td className={`${tCell} font-extrabold ${rowFlag ? 'text-rose-800 sticky left-0 bg-rose-50 shadow-[2px_0_5px_-2px_rgba(244,63,94,0.1)] z-10' : 'text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10'}`}>{displayName}</td>
-                                <td className={`${tCell} font-bold text-slate-600`}>{String(row.DPJP || '-').trim()}</td>
+                                <td className={`${tCell} font-bold text-slate-600`}>{(() => { const dpjpVal = String(row.DPJP || '-').trim(); return dpjpVal !== '-' ? dpjpVal.split(' ').filter(w=>w.length>0).map(w => w.charAt(0) + '***').join(' ') : dpjpVal; })()}</td>
                                 <td className={`${tCell} font-bold text-slate-600`}>{String(row.MRN || '-')}</td>
                                 <td className={`${tCell} text-xs font-mono font-semibold text-slate-500`}>{String(row.SEP || '-')}</td>
                                 <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row._tglMasuk || '-')}</td>
