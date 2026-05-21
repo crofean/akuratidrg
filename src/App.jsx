@@ -3334,11 +3334,6 @@ export default function App() {
     }
   };
 
-  useEffect(() => {
-    if (subTab === "user_management" && (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com')) {
-      fetchUserManagementData();
-    }
-  }, [subTab, username]);
 
 
   useEffect(() => {
@@ -3383,6 +3378,13 @@ export default function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [regData, setRegData] = useState({ email: '', password: '', username: '', nama: '', faskes: '', wa: '' });
   const [regState, setRegState] = useState({ loading: false, error: '', success: '' });
+
+  useEffect(() => {
+    if (subTab === "user_management" && (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com')) {
+      fetchUserManagementData();
+    }
+  }, [subTab, username]);
+
 
   useEffect(() => {
     const checkAuth = async () => {
