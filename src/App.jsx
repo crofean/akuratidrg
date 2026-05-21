@@ -7466,7 +7466,7 @@ export default function App() {
                             {d.disp.charAt(0)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-extrabold text-slate-700">{d.disp}</span>
+                            <span className="font-extrabold text-slate-700">{String(d.disp || '-').split(' ').filter(w=>w.length>0).map(w=>w.charAt(0)+'***').join(' ')}</span>
                             <span className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{d.norm}</span>
                           </div>
                         </div>
@@ -8246,14 +8246,14 @@ export default function App() {
     Object.values(patMap).forEach(visits => {
       if (visits.length < 2) return;
       // Urutkan kunjungan dari yang terlama ke terbaru (chronological)
-      visits.sort((a, b) => new Date(a.DISCHARGE_DATE) - new Date(b.DISCHARGE_DATE));
+      visits.sort((a, b) => parseDateSafe(a.DISCHARGE_DATE) - parseDateSafe(b.DISCHARGE_DATE));
 
       for (let i = 0; i < visits.length - 1; i++) {
         const v1 = visits[i];
         const v2 = visits[i + 1];
 
-        const d1 = new Date(v1.DISCHARGE_DATE);
-        const d2 = new Date(v2.DISCHARGE_DATE);
+        const d1 = parseDateSafe(v1.DISCHARGE_DATE);
+        const d2 = parseDateSafe(v2.DISCHARGE_DATE);
         const diffTime = Math.abs(d2 - d1);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -8343,7 +8343,7 @@ export default function App() {
                       <td className="px-5 py-4 text-center font-bold text-slate-400 align-top">{idx + 1}</td>
                       <td className="px-5 py-4 font-black text-slate-700 align-top">{c.pid}</td>
                       <td className="px-5 py-4 align-top whitespace-normal min-w-[200px]">
-                        <div className="font-bold text-slate-600 text-sm mb-2">{c.nama}</div>
+                        <div className="font-bold text-slate-600 text-sm mb-2">{maskNameSafe(c.nama)}</div>
                         <span className={"px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase " + (c.type === 'Readmisi' ? 'bg-rose-100 text-rose-700' : 'bg-orange-100 text-orange-700')}>
                           {c.type}
                         </span>
@@ -8378,7 +8378,7 @@ export default function App() {
                                       {isPtd1 ? 'Rawat Inap' : 'Rawat Jalan'}
                                     </span>
                                     <span className="font-mono text-[10px] font-bold text-slate-500 bg-white border px-1.5 rounded">SEP: {sep}</span>
-                                    {v.DPJP && <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 rounded">DPJP: {v.DPJP}</span>}
+                                    {v.DPJP && <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 rounded">DPJP: {maskNameSafe(v.DPJP)}</span>}
                                   </div>
                                   <div className="text-[10px] text-slate-600">
                                     <span className="font-bold text-slate-800">{diagC}</span> - {diagDesc}
@@ -8397,8 +8397,8 @@ export default function App() {
                                 {i > 0 && (() => {
                                   // Find the previous visit in chronological order
                                   const prevV = filteredHistory[i-1];
-                                  const d1 = new Date(prevV.DISCHARGE_DATE);
-                                  const d2 = new Date(v.DISCHARGE_DATE);
+                                  const d1 = parseDateSafe(prevV.DISCHARGE_DATE);
+                                  const d2 = parseDateSafe(v.DISCHARGE_DATE);
                                   const df = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24));
                                   if (df < 30) {
                                     const sameD = normDpjp(prevV.DPJP) === normDpjp(v.DPJP);
