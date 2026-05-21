@@ -1007,7 +1007,7 @@ const extract18 = (row) => {
 };
 
 const TABS = [
-  { id: 'executive', label: 'Executive', icon: PieChart }, { id: 'report', label: 'Laporan', icon: Table2 }, { id: 'rekap', label: 'Rekap Kasus', icon: Layers },
+  { id: 'executive', label: 'Executive', icon: PieChart }, { id: 'readmisi', label: 'Readmisi & Fragmentasi', icon: RefreshCw }, { id: 'report', label: 'Laporan', icon: Table2 }, { id: 'rekap', label: 'Rekap Kasus', icon: Layers },
   { id: 'mapping', label: 'Peta iDRG', icon: GitMerge }, { id: 'sl_cl_analysis', label: 'Analisis SL/CL', icon: Layers }, { id: 'dept', label: 'Kinerja Departemen', icon: Building2 }, { id: 'ksm', label: 'Kinerja KSM', icon: Users }, { id: 'dpjp', label: 'Kinerja DPJP', icon: User },
   { id: 'insight_sosialisasi', label: 'Insight Sosialisasi', icon: Sparkles },
   { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award },
@@ -2998,6 +2998,7 @@ export default function App() {
     ];
     return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbwDfLqyeRjDs6LUpZ5unl3gh0muwS2zECBS6jsPgL3poqmicuWuA9l6ph2qCcqkHVcE/exec';
   });
+  const [userSearchTerm, setUserSearchTerm] = useState("");
   const [pendingUsers, setPendingUsers] = useState([]);
   const [userAccounts, setUserAccounts] = useState([]);
   const [rejectedUsers, setRejectedUsers] = useState([]);
@@ -5642,6 +5643,7 @@ export default function App() {
                   const c18 = extract18(r);
                   const patientName = String(r.NAMA_PASien || r.NAMA_PASIEN || '-');
                   const displayName = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
+                            const drilldownDpjp = String(row.DPJP || '-').trim();
                   return (
                     <tr
                       key={i}
@@ -8193,6 +8195,190 @@ export default function App() {
     );
   };
 
+  
+  const renderReadmisiFragmentasi = () => {
+    const raw = dashData?.rawRows || [];
+    if (raw.length === 0) return <div className="p-8 text-center text-slate-500 font-bold">Data belum tersedia / tidak ada.</div>;
+
+    // Kelompokkan data berdasarkan MRN (atau NOKARTU jika MRN kosong)
+    const patMap = {};
+    raw.forEach(r => {
+      const pid = String(r.MRN || r.NOKARTU || '').trim();
+      if (!pid || pid === '-') return;
+      if (!patMap[pid]) patMap[pid] = [];
+      patMap[pid].push(r);
+    });
+
+    let readmisiCount = 0;
+    let fragCount = 0;
+    let readmisiCases = [];
+    let fragCases = [];
+
+    Object.values(patMap).forEach(visits => {
+      if (visits.length < 2) return;
+      // Urutkan kunjungan dari yang terlama ke terbaru (chronological)
+      visits.sort((a, b) => new Date(a.DISCHARGE_DATE) - new Date(b.DISCHARGE_DATE));
+
+      for (let i = 0; i < visits.length - 1; i++) {
+        const v1 = visits[i];
+        const v2 = visits[i + 1];
+
+        // Hitung selisih hari dari kepulangan v1 ke kepulangan v2
+        const d1 = new Date(v1.DISCHARGE_DATE);
+        const d2 = new Date(v2.DISCHARGE_DATE);
+        const diffTime = Math.abs(d2 - d1);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 30) {
+          const isV2Inap = String(v2.PTD || '').trim() === '1';
+          const isV2Jalan = String(v2.PTD || '').trim() === '2';
+          
+          const dpjp1 = normDpjp(v1.DPJP);
+          const dpjp2 = normDpjp(v2.DPJP);
+          const sameDpjp = dpjp1 === dpjp2;
+          
+          const ina1 = String(v1.INACBG || '').trim().split('-').slice(0, 2).join('-');
+          const ina2 = String(v2.INACBG || '').trim().split('-').slice(0, 2).join('-');
+          const relatedDiag = ina1 && ina2 && ina1 === ina2;
+
+          const caseInfo = {
+            pid: String(v2.MRN || v2.NOKARTU || '-'),
+            nama: String(v2.NAMA_PASIEN || v2.NAMA || '-'),
+            history: visits, // All visits for this patient
+            v1, v2,
+            diffDays,
+            sameDpjp,
+            relatedDiag
+          };
+
+          if (isV2Inap) {
+            readmisiCount++;
+            readmisiCases.push(caseInfo);
+          } else if (isV2Jalan) {
+            fragCount++;
+            fragCases.push(caseInfo);
+          }
+        }
+      }
+    });
+
+    // Remove duplicate patients from the case lists (just unique patients)
+    const uniqueReadmisi = Array.from(new Map(readmisiCases.map(item => [item.pid, item])).values());
+    const uniqueFrag = Array.from(new Map(fragCases.map(item => [item.pid, item])).values());
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
+        <SectionHeader icon={RefreshCw} title="Potensi Readmisi & Fragmentasi" desc="Deteksi pasien rawat inap (Readmisi) dan rawat jalan (Fragmentasi) dengan kunjungan ulang < 30 hari." colorClass="bg-rose-50 text-rose-600" highlightClass="bg-rose-500/5" exportAction={() => {}} exportText="Ekspor" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <Card className="p-6 bg-white border-l-4 border-l-rose-500">
+            <h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">Potensi Readmisi (Rawat Inap)</h4>
+            <div className="flex items-end gap-3">
+              <p className="text-4xl font-black text-rose-600">{uniqueReadmisi.length}</p>
+              <span className="text-sm font-bold text-slate-400 mb-1">Pasien</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-2 font-medium">Kunjungan ulang PTD=1 dalam <span className="font-bold">&lt; 30 hari</span>.</p>
+          </Card>
+          <Card className="p-6 bg-white border-l-4 border-l-orange-500">
+            <h4 className="text-slate-500 uppercase text-xs font-extrabold mb-2">Potensi Fragmentasi / Konsul Internal (Rawat Jalan)</h4>
+            <div className="flex items-end gap-3">
+              <p className="text-4xl font-black text-orange-600">{uniqueFrag.length}</p>
+              <span className="text-sm font-bold text-slate-400 mb-1">Pasien</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-2 font-medium">Kunjungan ulang PTD=2 dalam <span className="font-bold">&lt; 30 hari</span>.</p>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6">
+          <Card>
+            <div className="p-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Daftar Pasien Terindikasi</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left whitespace-nowrap">
+                <thead className="bg-slate-50 text-[10px] uppercase font-black tracking-wider text-slate-500">
+                  <tr>
+                    <th className="px-5 py-4 border-b border-slate-200 w-12 text-center">No</th>
+                    <th className="px-5 py-4 border-b border-slate-200">No RM</th>
+                    <th className="px-5 py-4 border-b border-slate-200">Nama Pasien</th>
+                    <th className="px-5 py-4 border-b border-slate-200">Indikasi Utama</th>
+                    <th className="px-5 py-4 border-b border-slate-200">Riwayat Kunjungan Kronologis</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-xs">
+                  {[...uniqueReadmisi.map(u => ({...u, type: 'Readmisi'})), ...uniqueFrag.map(u => ({...u, type: 'Fragmentasi'}))]
+                    .sort((a,b) => b.history.length - a.history.length).map((c, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/50">
+                      <td className="px-5 py-4 text-center font-bold text-slate-400">{idx + 1}</td>
+                      <td className="px-5 py-4 font-black text-slate-700">{c.pid}</td>
+                      <td className="px-5 py-4 font-bold text-slate-600">{c.nama}</td>
+                      <td className="px-5 py-4">
+                        <span className={"px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase " + (c.type === 'Readmisi' ? 'bg-rose-100 text-rose-700' : 'bg-orange-100 text-orange-700')}>
+                          {c.type}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 whitespace-normal min-w-[500px]">
+                        <div className="flex flex-col gap-2">
+                          {c.history.map((v, i) => {
+                            const isPtd1 = String(v.PTD || '').trim() === '1';
+                            const diagC = String(v.INACBG || '-');
+                            const diagDesc = String(v.DESKRIPSI_INACBG || '-');
+                            return (
+                              <div key={i} className={"flex items-center gap-3 p-2 rounded-lg border " + (isPtd1 ? 'bg-indigo-50 border-indigo-100' : 'bg-slate-50 border-slate-200')}>
+                                <span className={"font-black px-2 py-0.5 rounded text-[10px] " + (isPtd1 ? 'bg-indigo-200 text-indigo-800' : 'bg-slate-200 text-slate-700')}>
+                                  {i + 1}
+                                </span>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-slate-800">{String(v.DISCHARGE_DATE || '-')}</span>
+                                    <span className={"text-[10px] font-black uppercase " + (isPtd1 ? 'text-indigo-600' : 'text-slate-500')}>
+                                      {isPtd1 ? 'Rawat Inap' : 'Rawat Jalan'}
+                                    </span>
+                                    {v.DPJP && <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 rounded">{v.DPJP}</span>}
+                                  </div>
+                                  <div className="text-[10px] text-slate-500 mt-0.5 truncate max-w-[450px]">
+                                    <span className="font-bold text-slate-700">{diagC}</span> - {diagDesc}
+                                  </div>
+                                </div>
+                                {i > 0 && (() => {
+                                  // Hitung info spesifik utk kunjungan ini vs sebelumnya
+                                  const prevV = c.history[i-1];
+                                  const d1 = new Date(prevV.DISCHARGE_DATE);
+                                  const d2 = new Date(v.DISCHARGE_DATE);
+                                  const df = Math.ceil(Math.abs(d2 - d1) / (1000 * 60 * 60 * 24));
+                                  if (df < 30) {
+                                    const sameD = normDpjp(prevV.DPJP) === normDpjp(v.DPJP);
+                                    const diagRel = String(prevV.INACBG||'').split('-').slice(0,2).join('-') === String(v.INACBG||'').split('-').slice(0,2).join('-');
+                                    return (
+                                      <div className="flex flex-col items-end gap-1 shrink-0">
+                                        <span className="text-[9px] font-black text-rose-600 bg-rose-100 px-1.5 rounded uppercase tracking-wider">{df} Hari Sjk Sblmnya</span>
+                                        <div className="flex gap-1">
+                                          {!sameD && <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1.5 border border-orange-200 rounded">DPJP Beda</span>}
+                                          {sameD && <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 border border-emerald-200 rounded">DPJP Sama</span>}
+                                          {diagRel && <span className="text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 border border-purple-200 rounded">Diag Berkaitan</span>}
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                })()}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  };
+
+
   const renderTopUp = () => {
     const data = dashData?.topUpStats?.items || [];
     return (
@@ -8985,6 +9171,7 @@ export default function App() {
                           <tr>
                             <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle text-center bg-slate-50">No</th>
                             <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle sticky left-0 bg-white z-40 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-slate-800">Nama Pasien</th>
+                            <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">DPJP</th>
                             <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">MRN</th>
                             <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">No SEP</th>
                             <th rowSpan={2} className="px-5 py-4 border-r border-slate-100 align-middle bg-slate-50">Tgl Masuk</th>
@@ -9010,7 +9197,7 @@ export default function App() {
                         <tfoot className="sticky bottom-0 z-20">
                           {drilldownStats && (
                             <tr className="bg-teal-100 border-t-2 border-teal-300 shadow-[0_-2px_8px_-2px_rgba(20,184,166,0.25)]">
-                              <td colSpan={7} className="px-5 py-3 font-black text-right text-teal-900 tracking-wider text-xs uppercase">~ Rata-Rata / {drilldown.data.length.toLocaleString()} Kasus:</td>
+                              <td colSpan={8} className="px-5 py-3 font-black text-right text-teal-900 tracking-wider text-xs uppercase">~ Rata-Rata / {drilldown.data.length.toLocaleString()} Kasus:</td>
                               <td className="px-5 py-3 text-center font-black text-teal-800 bg-teal-200/50">ALOS: {drilldownStats.avgLos.toFixed(1)}</td>
                               <td className="px-5 py-3 text-center font-black text-rose-800 bg-rose-100/70">MAX: {drilldownStats.maxLos}</td>
                               <td colSpan={8}></td>
@@ -9039,6 +9226,7 @@ export default function App() {
                               <tr key={`ddr-${i}`} className={`transition-colors ${rowFlag ? 'bg-rose-50/70 hover:bg-rose-100/60' : 'hover:bg-slate-50/80'}`}>
                                 <td className={`${tCell} text-center font-semibold ${rowFlag ? 'text-rose-400' : 'text-slate-400'}`}>{rowFlag ? <span className="text-rose-500 font-black">!</span> : i + 1}</td>
                                 <td className={`${tCell} font-extrabold ${rowFlag ? 'text-rose-800 sticky left-0 bg-rose-50 shadow-[2px_0_5px_-2px_rgba(244,63,94,0.1)] z-10' : 'text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10'}`}>{displayName}</td>
+                                <td className={`${tCell} font-bold text-slate-600`}>{drilldownDpjp}</td>
                                 <td className={`${tCell} font-bold text-slate-600`}>{String(row.MRN || '-')}</td>
                                 <td className={`${tCell} text-xs font-mono font-semibold text-slate-500`}>{String(row.SEP || '-')}</td>
                                 <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row._tglMasuk || '-')}</td>
@@ -9263,7 +9451,7 @@ export default function App() {
                       <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-16 rounded-2xl text-center mt-6 max-w-2xl mx-auto shadow-sm animate-in zoom-in-95 duration-300"><div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6"><AlertCircle className="text-slate-400" size={40} /></div><h2 className="text-2xl font-black mb-3 text-slate-700 tracking-tight">Tidak Ada Data Ditemukan</h2><p className="text-slate-500 font-medium">Kriteria filter yang Anda pilih tidak memiliki kecocokan record dalam dataset yang sedang aktif. Silakan ubah filter Periode, Rawat, Kelas, atau DPJP.</p></div>
                     ) : (
                       <div className="relative z-20">
-                        {subTab === 'executive' && renderExecutive()} {subTab === 'report' && renderReport()} {subTab === 'rekap' && renderRekap()}
+                        {subTab === 'executive' && renderExecutive()} {subTab === 'report' && renderReport()} {subTab === 'rekap' && renderRekap()} {subTab === 'readmisi' && renderReadmisiFragmentasi()}
                         {subTab === 'topup' && renderTopUp()}
                         {subTab === 'sl_cl_analysis' && renderSlClAnalysis()} {subTab === 'dept' && renderDepartemen()} {subTab === 'ksm' && renderKsm()} {subTab === 'dpjp' && renderDpjp()} {subTab === 'kpi_coder' && renderKpiCoder()}
                         {subTab === 'mapping' && renderPemetaan()} {subTab === 'discrepancy' && renderKetepatan()} {subTab === 'audit' && renderAudit()}
