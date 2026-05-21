@@ -3384,8 +3384,9 @@ export default function App() {
     setLoginError('');
 
     try {
+      const loginEmail = username.includes('@') ? username : `${username}@akurat.idrg`;
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: username,
+        email: loginEmail,
         password: password
       });
 
@@ -3488,7 +3489,8 @@ export default function App() {
     setForgotError('');
     setForgotSuccess('');
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(forgotIdentity.trim());
+      const resetEmail = forgotIdentity.trim().includes('@') ? forgotIdentity.trim() : `${forgotIdentity.trim()}@akurat.idrg`;
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail);
       if (error) throw error;
       setForgotSuccess('Email reset password berhasil dikirim! Silakan periksa kotak masuk Anda.');
       setForgotIdentity('');
