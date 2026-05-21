@@ -2576,7 +2576,7 @@ const InsightSosialisasiComponent = React.memo(({
         <div className="flex items-center gap-3">
           <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="Logo" className="w-12 h-12 object-contain" />
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight">AKURAT iDRG Analytics Platform</h2>
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">akurat.id Analytics Platform</h2>
             <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Laporan Sosialisasi & Evaluasi Kendali Mutu Kendali Biaya (KMKB)</p>
           </div>
         </div>
@@ -3384,7 +3384,7 @@ export default function App() {
     setLoginError('');
 
     try {
-      const loginEmail = username.includes('@') ? username : `${username}@akurat.idrg`;
+      const loginEmail = username.includes('@') ? username : `${username}@akurat.id`;
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password: password
@@ -3489,7 +3489,7 @@ export default function App() {
     setForgotError('');
     setForgotSuccess('');
     try {
-      const resetEmail = forgotIdentity.trim().includes('@') ? forgotIdentity.trim() : `${forgotIdentity.trim()}@akurat.idrg`;
+      const resetEmail = forgotIdentity.trim().includes('@') ? forgotIdentity.trim() : `${forgotIdentity.trim()}@akurat.id`;
       const { error } = await supabase.auth.resetPasswordForEmail(resetEmail);
       if (error) throw error;
       setForgotSuccess('Email reset password berhasil dikirim! Silakan periksa kotak masuk Anda.');
@@ -6502,7 +6502,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="Logo" className="w-12 h-12 object-contain" />
             <div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight">AKURAT iDRG Analytics Platform</h2>
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">akurat.id Analytics Platform</h2>
               <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Laporan Sosialisasi & Evaluasi Kendali Mutu Kendali Biaya (KMKB)</p>
             </div>
           </div>
@@ -9393,7 +9393,7 @@ export default function App() {
                 ) : (
                   <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50 animate-in zoom-in-95 duration-500">
                     <div className="mb-10 animate-in fade-in zoom-in-75 duration-1000">
-                      <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="AKURAT iDRG Logo" className="w-72 mx-auto drop-shadow-[0_20px_50px_rgba(20,184,166,0.3)] transition-transform hover:scale-105 duration-700" />
+                      <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="akurat.id Logo" className="w-72 mx-auto drop-shadow-[0_20px_50px_rgba(20,184,166,0.3)] transition-transform hover:scale-105 duration-700" />
                     </div>
                     <h2 className="text-3xl font-black mb-4 text-slate-800 tracking-tight">Menunggu Dataset Utama...</h2>
                     <p className="text-slate-500 font-medium leading-relaxed">

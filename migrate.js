@@ -49,7 +49,7 @@ async function migrate() {
     if (!username || !password) continue;
 
     // Pastikan username menjadi email agar kompatibel dengan Supabase
-    const email = username.includes('@') ? username : `${username}@akurat.idrg`;
+    const email = username.includes('@') ? username : `${username}@akurat.id`;
 
     console.log(`[${i}/${lines.length - 1}] Memigrasi pengguna: ${username} (${email})`);
 
