@@ -5643,7 +5643,7 @@ export default function App() {
                   const c18 = extract18(r);
                   const patientName = String(r.NAMA_PASien || r.NAMA_PASIEN || '-');
                   const displayName = patientName !== '-' ? patientName.split(' ').filter(w => w.length > 0).map(w => w.charAt(0) + '***').join(' ') : patientName;
-                            const drilldownDpjp = String(row.DPJP || '-').trim();
+                            
                   return (
                     <tr
                       key={i}
@@ -9251,7 +9251,7 @@ export default function App() {
                               <tr key={`ddr-${i}`} className={`transition-colors ${rowFlag ? 'bg-rose-50/70 hover:bg-rose-100/60' : 'hover:bg-slate-50/80'}`}>
                                 <td className={`${tCell} text-center font-semibold ${rowFlag ? 'text-rose-400' : 'text-slate-400'}`}>{rowFlag ? <span className="text-rose-500 font-black">!</span> : i + 1}</td>
                                 <td className={`${tCell} font-extrabold ${rowFlag ? 'text-rose-800 sticky left-0 bg-rose-50 shadow-[2px_0_5px_-2px_rgba(244,63,94,0.1)] z-10' : 'text-slate-800 sticky left-0 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.02)] z-10'}`}>{displayName}</td>
-                                <td className={`${tCell} font-bold text-slate-600`}>{drilldownDpjp}</td>
+                                <td className={`${tCell} font-bold text-slate-600`}>{String(row.DPJP || '-').trim()}</td>
                                 <td className={`${tCell} font-bold text-slate-600`}>{String(row.MRN || '-')}</td>
                                 <td className={`${tCell} text-xs font-mono font-semibold text-slate-500`}>{String(row.SEP || '-')}</td>
                                 <td className={`${tCell} text-xs font-bold text-slate-500`}>{String(row._tglMasuk || '-')}</td>
