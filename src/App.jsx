@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save } from 'lucide-react';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
@@ -10,7 +10,7 @@ export const saveAsPng = async (elementId, fileName) => {
   const el = document.getElementById(elementId);
   if (!el) {
     console.error('Element not found in DOM with ID:', elementId);
-    alert('โ ๏ธ Error: Elemen grafik "' + elementId + '" tidak ditemukan di halaman! Silakan unggah file Excel terlebih dahulu.');
+    alert('⚠️ Error: Elemen grafik "' + elementId + '" tidak ditemukan di halaman! Silakan unggah file Excel terlebih dahulu.');
     return;
   }
   
@@ -30,7 +30,7 @@ export const saveAsPng = async (elementId, fileName) => {
   loadingIndicator.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.4)';
   loadingIndicator.style.fontFamily = 'sans-serif';
   loadingIndicator.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-  loadingIndicator.innerText = 'โณ Sedang memproses dan mengunduh gambar PNG... Mohon tunggu sebentar.';
+  loadingIndicator.innerText = '⏳ Sedang memproses dan mengunduh gambar PNG... Mohon tunggu sebentar.';
   document.body.appendChild(loadingIndicator);
 
   try {
@@ -53,7 +53,7 @@ export const saveAsPng = async (elementId, fileName) => {
     console.log('Successfully saved chart as PNG:', fileName);
   } catch (err) {
     console.error('Failed to save chart:', err);
-    alert('โ ๏ธ Gagal menyimpan gambar!\\nDetail Error: ' + err.message + '\\n\\nSilakan periksa console browser (F12) untuk melihat info selengkapnya.');
+    alert('⚠️ Gagal menyimpan gambar!\\nDetail Error: ' + err.message + '\\n\\nSilakan periksa console browser (F12) untuk melihat info selengkapnya.');
   } finally {
     if (loadingIndicator && loadingIndicator.parentNode) {
       loadingIndicator.parentNode.removeChild(loadingIndicator);
@@ -2529,7 +2529,7 @@ const InsightSosialisasiComponent = React.memo(({
             className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all border shadow-sm uppercase tracking-wider ${isSlideMode ? 'bg-teal-600 text-white border-teal-500' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
             title="Toggle Mode Slide / Layar Penuh Presentasi"
           >
-            ๐“บ {isSlideMode ? 'Mode Biasa' : 'Mode Slide / Presentasi'}
+            📺 {isSlideMode ? 'Mode Biasa' : 'Mode Slide / Presentasi'}
           </button>
           <button
             onClick={exportKsmSocialization}
@@ -2612,7 +2612,7 @@ const InsightSosialisasiComponent = React.memo(({
           {/* Clinical Standing Quadrant */}
           <div className={`p-4 rounded-2xl border flex flex-col gap-1.5 max-w-sm shrink-0 shadow-lg ${quadrantClass}`}>
             <div className="flex items-center gap-2">
-              <span className="text-base">๐งญ</span>
+              <span className="text-base">🧭</span>
               <span className="text-[10px] font-black uppercase tracking-wider">Kuadran Klinis</span>
             </div>
             <span className="text-sm font-black tracking-tight">{quadrantBadge}</span>
@@ -2662,7 +2662,7 @@ const InsightSosialisasiComponent = React.memo(({
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <span className="text-xs font-black text-slate-800 truncate" title={g.desc}>{g.desc}</span>
-                  <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus โ€ข Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
+                  <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus • Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
                 </div>
               </div>
             ))}
@@ -2684,7 +2684,7 @@ const InsightSosialisasiComponent = React.memo(({
                 </div>
                 <div className="flex-1 min-w-0 flex flex-col justify-center">
                   <span className="text-xs font-black text-slate-800 truncate" title={g.desc}>{g.desc}</span>
-                  <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus โ€ข Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
+                  <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus • Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
                 </div>
               </div>
             ))}
@@ -2702,7 +2702,7 @@ const InsightSosialisasiComponent = React.memo(({
             <div className="p-2 bg-red-100 text-red-700 rounded-xl"><AlertTriangle size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800">Top 5 Diagnosa Utama Berdefisit (ICD-10)</h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Diagnosa primer penyumbang akumulasi defisit tertinggi โ€” Klik untuk rincian kasus</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Diagnosa primer penyumbang akumulasi defisit tertinggi — Klik untuk rincian kasus</p>
             </div>
           </div>
           <div className="p-4 space-y-4 flex-1 overflow-auto max-h-[500px]">
@@ -2714,7 +2714,7 @@ const InsightSosialisasiComponent = React.memo(({
                   <span className="font-black text-red-600 text-xs whitespace-nowrap">{formatRp(d.totalDefisit)}</span>
                 </div>
                 <div className="flex flex-col gap-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-semibold text-slate-600">
-                  <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">๐’ก Rekomendasi Koding / Sosialisasi Dokter:</span>
+                  <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">💡 Rekomendasi Koding / Sosialisasi Dokter:</span>
                   {getCodingGuideline(d.code)}
                 </div>
                 <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wide flex items-center justify-between">
@@ -2733,7 +2733,7 @@ const InsightSosialisasiComponent = React.memo(({
             <div className="p-2 bg-amber-100 text-amber-700 rounded-xl"><Scissors size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800">Top 5 Tindakan Utama Berdefisit (ICD-9-CM)</h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">Prosedur penunjang / operasi utama penyumbang kerugian terbesar โ€” Klik untuk rincian kasus</p>
+              <p className="text-[10px] text-slate-400 mt-0.5">Prosedur penunjang / operasi utama penyumbang kerugian terbesar — Klik untuk rincian kasus</p>
             </div>
           </div>
           <div className="p-4 space-y-4 flex-1 overflow-auto max-h-[500px]">
@@ -2745,7 +2745,7 @@ const InsightSosialisasiComponent = React.memo(({
                   <span className="font-black text-amber-600 text-xs whitespace-nowrap">{formatRp(p.totalDefisit)}</span>
                 </div>
                 <div className="flex flex-col gap-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-semibold text-slate-600">
-                  <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">๐’ก Rekomendasi Dokumentasi Klinis:</span>
+                  <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">💡 Rekomendasi Dokumentasi Klinis:</span>
                   {getProcedureGuideline(p.code)}
                 </div>
                 <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wide flex items-center justify-between">
@@ -2776,13 +2776,13 @@ const InsightSosialisasiComponent = React.memo(({
               onClick={() => setSocializationScatterMode('inacbg')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${socializationScatterMode === 'inacbg' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
             >
-              ๐ฎ๐ฉ INA-CBG vs RS
+              🇮🇩 INA-CBG vs RS
             </button>
             <button
               onClick={() => setSocializationScatterMode('idrg')}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${socializationScatterMode === 'idrg' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
             >
-              โก iDRG vs RS (Simulasi)
+              ⚡ iDRG vs RS (Simulasi)
             </button>
           </div>
         </div>
@@ -2834,7 +2834,7 @@ const InsightSosialisasiComponent = React.memo(({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {/* iDRG Impact Insight Panel */}
             <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4.5 rounded-2xl border border-indigo-100/50 space-y-2.5">
-              <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">โก Analisis Akselerasi Tarif iDRG</span>
+              <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">⚡ Analisis Akselerasi Tarif iDRG</span>
               <p className="text-xs font-semibold leading-relaxed text-slate-700">
                 Implementasi sistem tarif iDRG diproyeksikan meningkatkan rata-rata pendapatan per kasus KSM ini sebesar <strong className="text-indigo-700 font-black">+{formatRp(kAvgIdrg - kAvgIna)}</strong>.
               </p>
@@ -4000,7 +4000,7 @@ export default function App() {
         if (dList[0]) maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] = (maps.inaToIdrg[inaCode].targets[tK].priDiags[dList[0]] || 0) + 1;
         for (let i = 1; i < dList.length; i++) maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] = (maps.inaToIdrg[inaCode].targets[tK].secDiags[dList[i]] || 0) + 1;
         for (let p of pList) if (p) maps.inaToIdrg[inaCode].targets[tK].procs[p] = (maps.inaToIdrg[inaCode].targets[tK].procs[p] || 0) + 1;
-        // Reverse map: iDRG โ’ INA
+        // Reverse map: iDRG → INA
         if (!maps.idrgToIna[drgCode]) maps.idrgToIna[drgCode] = { desc: String(r['IDRG_DRG_DESCRIPTION'] || '-'), totalCases: 0, sumLos: 0, maxLos: 0, sumIna: 0, sumIdrg: 0, sources: {} };
         maps.idrgToIna[drgCode].totalCases++;
         maps.idrgToIna[drgCode].sumLos += curLos;
@@ -4255,7 +4255,7 @@ export default function App() {
                   </div>
                 </div>
                 <p className={`text-base font-black mb-1 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-700'}`}>
-                  {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'โ” Selesai!' : uploadProgress.status === 'error' ? 'โ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '๐“ Membaca...' : uploadProgress.status === 'parsing' ? 'โ๏ธ Memproses...' : '๐”— Menghubungkan...'}
+                  {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '✔ Selesai!' : uploadProgress.status === 'error' ? '❌ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '📂 Membaca...' : uploadProgress.status === 'parsing' ? '⚙️ Memproses...' : '🔗 Menghubungkan...'}
                 </p>
                 <p className="text-xs text-slate-500 font-medium truncate max-w-[220px] mx-auto mb-4" title={uploadProgress.fileName}>{uploadProgress.fileName || 'Menyelesaikan...'}</p>
                 <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden max-w-[200px] mx-auto">
@@ -4389,7 +4389,7 @@ export default function App() {
                 {uploadedFiles.map((f) => (
                   <li key={f.id} className="flex items-center gap-5 text-sm bg-white border border-slate-100 shadow-sm p-5 rounded-[1.5rem] group hover:border-teal-200 transition-all hover:shadow-xl hover:-translate-y-1">
                     <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-sm shadow-emerald-100"><CheckCircle size={24} className="text-emerald-500" /></div>
-                    <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} โ€ข <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
+                    <div className="flex-1 min-w-0"><p className="truncate text-slate-800 font-black tracking-tight" title={String(f.path)}>{String(f.name)}</p><p className="text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">{String(f.size)} • <span className="font-black text-teal-600 bg-teal-50 px-2 py-0.5 rounded-lg ml-1">{f.rows.length.toLocaleString()} RECORDS</span></p></div>
                     <button onClick={() => removeFile(f.id)} className="text-slate-300 hover:text-rose-600 p-2.5 rounded-xl hover:bg-rose-50 transition-all hover:rotate-90"><X size={20} /></button>
                   </li>
                 ))}
@@ -4415,15 +4415,15 @@ export default function App() {
 
     const insights = [
       selInaRS < 0
-        ? { t: 'w', icon: 'โ ๏ธ', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} โ€” potensi defisit klaim.` }
-        : { t: 's', icon: 'โ”', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} โ€” klaim dalam posisi surplus.` },
+        ? { t: 'w', icon: '⚠️', txt: `INA-CBG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selInaRS))} — potensi defisit klaim.` }
+        : { t: 's', icon: '✔', txt: `INA-CBG melebihi Tarif RS sebesar ${formatRp(selInaRS)} — klaim dalam posisi surplus.` },
       selIdrgRS < 0
-        ? { t: 'w', icon: 'โ ๏ธ', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} โ€” evaluasi dokumentasi Klinis Diagnosa Sekunder diperlukan.` }
-        : { t: 's', icon: 'โ”', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} โ€” koding complexity level sudah optimal.` },
-      { t: 'i', icon: '๐“', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
-      { t: 'i', icon: '๐ฅ', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
-      ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '๐’ก', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
-      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '๐”', txt: `${dashData.auditFindings.length} temuan audit koding โ€” segera tinjau di modul Audit.` }] : []),
+        ? { t: 'w', icon: '⚠️', txt: `iDRG lebih rendah dari Tarif RS sebesar ${formatRp(Math.abs(selIdrgRS))} — evaluasi dokumentasi Klinis Diagnosa Sekunder diperlukan.` }
+        : { t: 's', icon: '✔', txt: `iDRG melebihi Tarif RS sebesar ${formatRp(selIdrgRS)} — koding complexity level sudah optimal.` },
+      { t: 'i', icon: '📊', txt: `${formatPct(dashData.tIna > 0 ? (dashData.cInaHigh / t) * 100 : 0)}% kasus INA > iDRG; ${formatPct(dashData.tIna > 0 ? (dashData.cIdrgHigh / t) * 100 : 0)}% kasus iDRG > INA.` },
+      { t: 'i', icon: '🏥', txt: `Komposisi: ${formatPct(ranapPct)}% Rawat Inap (${dashData.ranapCount.toLocaleString()}) vs ${formatPct(100 - ranapPct)}% Rawat Jalan (${rajalCount.toLocaleString()} kasus).` },
+      ...(dashData.topUpStats?.topUpKasus > 0 ? [{ t: 's', icon: '💡', txt: `Potensi Top-Up: ${dashData.topUpStats.topUpKasus} kasus senilai ${formatRp(dashData.topUpStats.topUpNilai)}.` }] : []),
+      ...(dashData.auditFindings?.length > 0 ? [{ t: 'w', icon: '🔎', txt: `${dashData.auditFindings.length} temuan audit koding — segera tinjau di modul Audit.` }] : []),
     ];
 
     return (
@@ -4924,14 +4924,14 @@ export default function App() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => handleToggleAllExclusions(true)} className="text-[10px] font-black px-3 py-1.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all shadow-sm hover:-translate-y-0.5">โ… Pilih Semua</button>
-                  <button onClick={() => handleToggleAllExclusions(false)} className="text-[10px] font-black px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-sm hover:-translate-y-0.5">๐—‘๏ธ Hapus Semua</button>
+                  <button onClick={() => handleToggleAllExclusions(true)} className="text-[10px] font-black px-3 py-1.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all shadow-sm hover:-translate-y-0.5">✅ Pilih Semua</button>
+                  <button onClick={() => handleToggleAllExclusions(false)} className="text-[10px] font-black px-3 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-sm hover:-translate-y-0.5">🗑️ Hapus Semua</button>
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                 {[
                   { key: '89', label: 'Bab 89', desc: 'Pemeriksaan & Evaluasi' },
-                  { key: '90_91', label: 'Bab 90โ€“91', desc: 'Lab & Diagnostik' },
+                  { key: '90_91', label: 'Bab 90–91', desc: 'Lab & Diagnostik' },
                   { key: '99', label: 'Bab 99', desc: 'Tindakan Lain-lain' },
                   { key: '87.44_87.49', label: '87.44 / 87.49', desc: 'Pencitraan Toraks' },
                   { key: '57.94', label: '57.94', desc: 'Instilasi Kandung Kemih' },
@@ -5241,13 +5241,13 @@ export default function App() {
             onClick={() => setPemetaanTab('inaToIdrg')}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${!isReverse ? 'bg-white text-sky-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
           >
-            <GitMerge size={14} /> INA-CBG โ’ iDRG
+            <GitMerge size={14} /> INA-CBG → iDRG
           </button>
           <button
             onClick={() => setPemetaanTab('idrgToIna')}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-black transition-all duration-300 ${isReverse ? 'bg-white text-orange-600 shadow-md scale-105' : 'text-slate-500 hover:bg-white/50'}`}
           >
-            <GitMerge size={14} className="rotate-180" /> iDRG โ’ INA-CBG
+            <GitMerge size={14} className="rotate-180" /> iDRG → INA-CBG
           </button>
         </div>
 
@@ -5260,7 +5260,7 @@ export default function App() {
               type="text"
               value={mapFilter}
               onChange={e => setMapFilter(e.target.value)}
-              placeholder={isReverse ? "Cari kode iDRG atau deskripsiโ€ฆ" : "Cari kode INACBG atau deskripsiโ€ฆ"}
+              placeholder={isReverse ? "Cari kode iDRG atau deskripsi…" : "Cari kode INACBG atau deskripsi…"}
               className="w-full pl-9 pr-9 py-2 text-sm border border-slate-200 rounded-xl bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition placeholder-slate-400"
             />
             {mapFilter && (
@@ -5424,7 +5424,7 @@ export default function App() {
             <div className="p-2 bg-teal-100 rounded-xl text-teal-700"><Activity size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus INA-CBG</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus โ€” klik titik untuk drill-down</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode INA-CBG berdasarkan Selisih Finansial vs Volume Kasus — klik titik untuk drill-down</p>
             </div>
           </div>
           <div className="p-4">
@@ -5435,10 +5435,10 @@ export default function App() {
             const data = dashData.inaSummary || [];
             if (data.length === 0) return null;
             const avgVol = data.reduce((s, d) => s + d.count, 0) / data.length;
-            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi โ€” KRITIS
-            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi โ€” OPTIMAL
-            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah โ€” WASPADA
-            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah โ€” MONITOR
+            const q1 = data.filter(d => d.totalSelisih < 0 && d.count >= avgVol);  // Defisit & Vol Tinggi — KRITIS
+            const q2 = data.filter(d => d.totalSelisih >= 0 && d.count >= avgVol); // Surplus & Vol Tinggi — OPTIMAL
+            const q3 = data.filter(d => d.totalSelisih < 0 && d.count < avgVol);  // Defisit & Vol Rendah — WASPADA
+            const q4 = data.filter(d => d.totalSelisih >= 0 && d.count < avgVol); // Surplus & Vol Rendah — MONITOR
             const topQ1 = [...q1].sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 3);
             const topQ2 = [...q2].sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 3);
             const totalDefisit = data.filter(d => d.totalSelisih < 0).reduce((s, d) => s + d.totalSelisih, 0);
@@ -5447,10 +5447,10 @@ export default function App() {
               <div className="px-5 pb-5 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'Prioritas perbaikan Dokumentasi Klinis Diagnosa Sekunder & koding' },
-                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'Kode unggulan, pertahankan' },
-                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau efisiensi Dokumentasi Klinis Diagnosa Sekunder & koding' },
-                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '๐”ต', note: 'Potensi pengembangan layanan' },
+                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '🔴', note: 'Prioritas perbaikan Dokumentasi Klinis Diagnosa Sekunder & koding' },
+                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '🟢', note: 'Kode unggulan, pertahankan' },
+                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '🟡', note: 'Pantau efisiensi Dokumentasi Klinis Diagnosa Sekunder & koding' },
+                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-teal-50 border-teal-200 text-teal-700', badge: 'bg-teal-500', icon: '🔵', note: 'Potensi pengembangan layanan' },
                   ].map((item, i) => {
                     const qData = [q1, q2, q3, q4][i];
                     const codes = new Set(qData.map(d => d.code));
@@ -5476,7 +5476,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topQ1.length > 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ ๏ธ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
+                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">⚠️ Kode INA-CBG Berdefisit Tinggi (Perlu Perhatian)</p>
                       <div className="space-y-1.5">
                         {topQ1.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
@@ -5490,7 +5490,7 @@ export default function App() {
                   )}
                   {topQ2.length > 0 && (
                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ” Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
+                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">✔ Kode INA-CBG Bersurplus Tinggi (Performa Optimal)</p>
                       <div className="space-y-1.5">
                         {topQ2.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus INA: ${d.code}`, row => String(row.INACBG).trim() === d.code)}>
@@ -5520,7 +5520,7 @@ export default function App() {
             <div className="p-2 bg-rose-100 rounded-xl text-rose-700"><Activity size={18} /></div>
             <div>
               <h3 className="font-extrabold text-slate-800 tracking-tight">Kuadran Kasus iDRG</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus โ€” klik titik untuk drill-down</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Distribusi kode iDRG berdasarkan Selisih Finansial vs Volume Kasus — klik titik untuk drill-down</p>
             </div>
           </div>
           <div className="p-4">
@@ -5543,10 +5543,10 @@ export default function App() {
               <div className="px-5 pb-5 space-y-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '๐”ด', note: 'CL terlalu rendah, review Dokumentasi Klinis Diagnosa Sekunder & koding' },
-                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '๐ข', note: 'CL optimal, pertahankan' },
-                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '๐ก', note: 'Pantau & evaluasi per kasus' },
-                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '๐”ต', note: 'Efisien, kembangkan layanan' },
+                    { label: 'Defisit & Vol Tinggi', count: q1.length, color: 'bg-red-50 border-red-200 text-red-700', badge: 'bg-red-500', icon: '🔴', note: 'CL terlalu rendah, review Dokumentasi Klinis Diagnosa Sekunder & koding' },
+                    { label: 'Surplus & Vol Tinggi', count: q2.length, color: 'bg-lime-50 border-lime-200 text-lime-700', badge: 'bg-lime-500', icon: '🟢', note: 'CL optimal, pertahankan' },
+                    { label: 'Defisit & Vol Rendah', count: q3.length, color: 'bg-amber-50 border-amber-200 text-amber-700', badge: 'bg-amber-500', icon: '🟡', note: 'Pantau & evaluasi per kasus' },
+                    { label: 'Surplus & Vol Rendah', count: q4.length, color: 'bg-sky-50 border-sky-200 text-sky-700', badge: 'bg-sky-500', icon: '🔵', note: 'Efisien, kembangkan layanan' },
                   ].map((item, i) => {
                     const qData = [q1, q2, q3, q4][i];
                     const codes = new Set(qData.map(d => d.code));
@@ -5572,7 +5572,7 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {topQ1.length > 0 && (
                     <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ ๏ธ Kode iDRG Berdefisit Tinggi (Review CL)</p>
+                      <p className="text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">⚠️ Kode iDRG Berdefisit Tinggi (Review CL)</p>
                       <div className="space-y-1.5">
                         {topQ1.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-red-100 cursor-pointer hover:bg-red-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
@@ -5586,7 +5586,7 @@ export default function App() {
                   )}
                   {topQ2.length > 0 && (
                     <div className="bg-lime-50 border border-lime-100 rounded-xl p-4">
-                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">โ” Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
+                      <p className="text-xs font-extrabold text-lime-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">✔ Kode iDRG Bersurplus Tinggi (CL Optimal)</p>
                       <div className="space-y-1.5">
                         {topQ2.map((d, i) => (
                           <div key={i} className="flex items-center justify-between text-xs bg-white rounded-lg px-3 py-1.5 border border-lime-100 cursor-pointer hover:bg-lime-50 transition-colors" onClick={() => openDrilldown(`Kasus iDRG: ${d.code}`, row => String(row.IDRG_DRG_CODE).trim() === d.code)}>
@@ -5738,7 +5738,7 @@ export default function App() {
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <SectionHeader icon={Building2} title="Kinerja Departemen" desc="Analisis efisiensi biaya hierarki Departemen โก๏ธ KSM โก๏ธ DPJP." colorClass="bg-indigo-50 text-indigo-600" highlightClass="bg-indigo-500/5" exportAction={() => {
+        <SectionHeader icon={Building2} title="Kinerja Departemen" desc="Analisis efisiensi biaya hierarki Departemen ➡️ KSM ➡️ DPJP." colorClass="bg-indigo-50 text-indigo-600" highlightClass="bg-indigo-500/5" exportAction={() => {
           const csv = [];
           deptData.forEach(dept => {
             // 1. Department Summary Row
@@ -5776,8 +5776,8 @@ export default function App() {
         {/* DEPT BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 Departemen โ€” Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
-            { title: 'Top 10 Departemen โ€” Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
+            { title: 'Top 10 Departemen — Selisih INA-RS', data: [...deptData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
+            { title: 'Top 10 Departemen — Selisih iDRG-RS', data: [...deptData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.data.map(d => Math.abs(d[chart.key])), 1);
             return (
@@ -5862,7 +5862,7 @@ export default function App() {
                       <tr className="bg-slate-100/80 font-black border-y border-slate-200">
                         <td className="p-4 sticky left-0 z-20 bg-slate-100 shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={dept.name}>
                           <div className="flex items-center gap-2 cursor-pointer truncate" onClick={() => setOpenKsm(isDeptOpen ? null : `dept-${di}`)}>
-                            <span className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>โ–ถ</span>
+                            <span className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-transform ${isDeptOpen ? 'rotate-90 bg-slate-800 text-white' : 'bg-slate-300 text-slate-700'}`}>▶</span>
                             <span className="uppercase text-slate-800 tracking-tight truncate">{dept.name}</span>
                           </div>
                         </td>
@@ -5886,7 +5886,7 @@ export default function App() {
                             >
                               <td className="p-4 pl-10 border-l-4 border-indigo-500 sticky left-0 z-20 bg-white shadow-[2px_0_5px_rgba(0,0,0,0.08)] min-w-[300px] max-w-[300px] w-[300px] truncate" title={ksm.name}>
                                 <div className="flex items-center gap-2 truncate">
-                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] shrink-0 transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>โ–ถ</span>
+                                  <span className={`w-4 h-4 rounded flex items-center justify-center text-[10px] shrink-0 transition-transform ${isKsmOpen ? 'rotate-90 bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-600'}`}>▶</span>
                                   <span className="font-bold text-indigo-700 truncate">{ksm.name}</span>
                                 </div>
                               </td>
@@ -5958,7 +5958,7 @@ export default function App() {
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <SectionHeader icon={Users} title="Kinerja KSM (Kelompok Staf Medis)" desc="Analisis efisiensi biaya hierarki KSM โก๏ธ DPJP." colorClass="bg-indigo-50 text-indigo-600" highlightClass="bg-indigo-500/5" exportAction={() => {
+        <SectionHeader icon={Users} title="Kinerja KSM (Kelompok Staf Medis)" desc="Analisis efisiensi biaya hierarki KSM ➡️ DPJP." colorClass="bg-indigo-50 text-indigo-600" highlightClass="bg-indigo-500/5" exportAction={() => {
           const csv = [];
           ksmData.forEach(ksm => {
             // 1. KSM Row
@@ -5985,8 +5985,8 @@ export default function App() {
         {/* KSM BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 KSM โ€” Selisih INA-RS', data: [...ksmData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
-            { title: 'Top 10 KSM โ€” Selisih iDRG-RS', data: [...ksmData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
+            { title: 'Top 10 KSM — Selisih INA-RS', data: [...ksmData].sort((a, b) => b.selisihIna - a.selisihIna).slice(0, 10), key: 'selisihIna', color: '#0ea5e9', negColor: '#f97316' },
+            { title: 'Top 10 KSM — Selisih iDRG-RS', data: [...ksmData].sort((a, b) => b.selisihIdrg - a.selisihIdrg).slice(0, 10), key: 'selisihIdrg', color: '#8b5cf6', negColor: '#ef4444' },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.data.map(d => Math.abs(d[chart.key])), 1);
             return (
@@ -6508,7 +6508,7 @@ export default function App() {
               className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all border shadow-sm uppercase tracking-wider ${isSlideMode ? 'bg-teal-600 text-white border-teal-500' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'}`}
               title="Toggle Mode Slide / Layar Penuh Presentasi"
             >
-              ๐“บ {isSlideMode ? 'Mode Biasa' : 'Mode Slide / Presentasi'}
+              📺 {isSlideMode ? 'Mode Biasa' : 'Mode Slide / Presentasi'}
             </button>
             <button
               onClick={exportKsmSocialization}
@@ -6591,7 +6591,7 @@ export default function App() {
             {/* Clinical Standing Quadrant */}
             <div className={`p-4 rounded-2xl border flex flex-col gap-1.5 max-w-sm shrink-0 shadow-lg ${quadrantClass}`}>
               <div className="flex items-center gap-2">
-                <span className="text-base">๐งญ</span>
+                <span className="text-base">🧭</span>
                 <span className="text-[10px] font-black uppercase tracking-wider">Kuadran Klinis</span>
               </div>
               <span className="text-sm font-black tracking-tight">{quadrantBadge}</span>
@@ -6641,7 +6641,7 @@ export default function App() {
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <span className="text-xs font-black text-slate-800 truncate" title={g.desc}>{g.desc}</span>
-                    <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus โ€ข Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
+                    <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus • Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
                   </div>
                 </div>
               ))}
@@ -6663,7 +6663,7 @@ export default function App() {
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <span className="text-xs font-black text-slate-800 truncate" title={g.desc}>{g.desc}</span>
-                    <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus โ€ข Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
+                    <span className="text-[10px] text-slate-500 font-bold mt-0.5">{g.count} Kasus • Rerata Selisih: <span className={g.totalSelisih >= 0 ? 'text-lime-600 font-black' : 'text-rose-600 font-black'}>{formatRp(g.totalSelisih / g.count)}</span></span>
                   </div>
                 </div>
               ))}
@@ -6681,7 +6681,7 @@ export default function App() {
               <div className="p-2 bg-red-100 text-red-700 rounded-xl"><AlertTriangle size={18} /></div>
               <div>
                 <h3 className="font-extrabold text-slate-800">Top 5 Diagnosa Utama Berdefisit (ICD-10)</h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">Diagnosa primer penyumbang akumulasi defisit tertinggi โ€” Klik untuk rincian kasus</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Diagnosa primer penyumbang akumulasi defisit tertinggi — Klik untuk rincian kasus</p>
               </div>
             </div>
             <div className="p-4 space-y-4 flex-1 overflow-auto max-h-[500px]">
@@ -6693,7 +6693,7 @@ export default function App() {
                     <span className="font-black text-red-600 text-xs whitespace-nowrap">{formatRp(d.totalDefisit)}</span>
                   </div>
                   <div className="flex flex-col gap-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-semibold text-slate-600">
-                    <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">๐’ก Rekomendasi Koding / Sosialisasi Dokter:</span>
+                    <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">💡 Rekomendasi Koding / Sosialisasi Dokter:</span>
                     {getCodingGuideline(d.code)}
                   </div>
                   <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wide flex items-center justify-between">
@@ -6712,7 +6712,7 @@ export default function App() {
               <div className="p-2 bg-amber-100 text-amber-700 rounded-xl"><Scissors size={18} /></div>
               <div>
                 <h3 className="font-extrabold text-slate-800">Top 5 Tindakan Utama Berdefisit (ICD-9-CM)</h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">Prosedur penunjang / operasi utama penyumbang kerugian terbesar โ€” Klik untuk rincian kasus</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Prosedur penunjang / operasi utama penyumbang kerugian terbesar — Klik untuk rincian kasus</p>
               </div>
             </div>
             <div className="p-4 space-y-4 flex-1 overflow-auto max-h-[500px]">
@@ -6724,7 +6724,7 @@ export default function App() {
                     <span className="font-black text-amber-600 text-xs whitespace-nowrap">{formatRp(p.totalDefisit)}</span>
                   </div>
                   <div className="flex flex-col gap-1.5 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] font-semibold text-slate-600">
-                    <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">๐’ก Rekomendasi Dokumentasi Klinis:</span>
+                    <span className="text-[9px] font-black text-teal-600 uppercase tracking-widest block">💡 Rekomendasi Dokumentasi Klinis:</span>
                     {getProcedureGuideline(p.code)}
                   </div>
                   <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wide flex items-center justify-between">
@@ -6755,13 +6755,13 @@ export default function App() {
                 onClick={() => setSocializationScatterMode('inacbg')}
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${socializationScatterMode === 'inacbg' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
-                ๐ฎ๐ฉ INA-CBG vs RS
+                🇮🇩 INA-CBG vs RS
               </button>
               <button
                 onClick={() => setSocializationScatterMode('idrg')}
                 className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${socializationScatterMode === 'idrg' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
               >
-                โก iDRG vs RS (Simulasi)
+                ⚡ iDRG vs RS (Simulasi)
               </button>
             </div>
           </div>
@@ -6813,7 +6813,7 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
               {/* iDRG Impact Insight Panel */}
               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4.5 rounded-2xl border border-indigo-100/50 space-y-2.5">
-                <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">โก Analisis Akselerasi Tarif iDRG</span>
+                <span className="text-[10px] font-black text-indigo-800 uppercase tracking-wider block">⚡ Analisis Akselerasi Tarif iDRG</span>
                 <p className="text-xs font-semibold leading-relaxed text-slate-700">
                   Implementasi sistem tarif iDRG diproyeksikan meningkatkan rata-rata pendapatan per kasus KSM ini sebesar <strong className="text-indigo-700 font-black">+{formatRp(kAvgIdrg - kAvgIna)}</strong>.
                 </p>
@@ -6979,8 +6979,8 @@ export default function App() {
         {/* DPJP BAR CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
-            { title: 'Top 10 DPJP โ€” Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
-            { title: 'Top 10 DPJP โ€” Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
+            { title: 'Top 10 DPJP — Volume Kasus', items: top10Kasus, getVal: d => d.count, color: '#14b8a6', unit: ' kasus' },
+            { title: 'Top 10 DPJP — Selisih INA-RS', items: top10SelIna, getVal: d => d.selIna, color: '#0ea5e9', negColor: '#f97316', isCurrency: true },
           ].map((chart, ci) => {
             const maxVal = Math.max(...chart.items.map(d => Math.abs(chart.getVal(d))), 1);
             return (
@@ -7365,7 +7365,7 @@ export default function App() {
         localStorage.setItem('sak_ksm_overrides', JSON.stringify(draftKsmOverrides));
         setKsmOverrides(draftKsmOverrides);
         setDraftKsmOverrides(null);
-        setUserManagementSuccess("โ… Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
+        setUserManagementSuccess("✅ Sukses! Perubahan pemetaan KSM telah disimpan dan diterapkan ke seluruh dashboard.");
         setTimeout(() => setUserManagementSuccess(""), 4000);
       }
     };
@@ -7407,7 +7407,7 @@ export default function App() {
         {isDirty && (
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-md shadow-orange-500/5 animate-in slide-in-from-top-2 duration-300 mb-6">
             <div className="flex gap-3">
-              <span className="text-xl">โ ๏ธ</span>
+              <span className="text-xl">⚠️</span>
               <div>
                 <span className="text-[10px] font-black text-amber-800 uppercase tracking-widest block">Perubahan Mappings Belum Disimpan</span>
                 <p className="text-xs font-semibold text-slate-700 mt-1 leading-relaxed">
@@ -7427,7 +7427,7 @@ export default function App() {
                 onClick={saveChanges}
                 className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20 transition-all active:scale-95 flex items-center justify-center gap-1.5 animate-pulse"
               >
-                โก Simpan &amp; Terapkan
+                ⚡ Simpan &amp; Terapkan
               </button>
             </div>
           </div>
@@ -7607,10 +7607,10 @@ export default function App() {
         } else {
           localStorage.removeItem("sak_icd_sheet_url");
         }
-        alert(`โ… Kamus ICD Berhasil Disinkronkan!\n\n${dictArray.length.toLocaleString()} kode berhasil dimuat secara lokal.`);
+        alert(`✅ Kamus ICD Berhasil Disinkronkan!\n\n${dictArray.length.toLocaleString()} kode berhasil dimuat secara lokal.`);
       } catch (err) {
         console.error(err);
-        alert(`โ Gagal sinkronisasi kamus: ${err.message}`);
+        alert(`❌ Gagal sinkronisasi kamus: ${err.message}`);
       } finally {
         setIsSyncingIcd(false);
         setIcdSyncStatus("");
@@ -7623,16 +7623,16 @@ export default function App() {
         {autoSyncStatus === "syncing" && (
           <div className="bg-teal-50 border border-teal-200 text-teal-800 px-4 py-3 rounded-2xl flex items-center gap-3 animate-pulse text-xs font-bold shadow-sm">
             <RefreshCw className="animate-spin text-teal-600" size={16} />
-            <span>๐” Sedang menyelaraskan Kamus ICD terbaru dari Google Sheets secara otomatis di latar belakang...</span>
+            <span>🔄 Sedang menyelaraskan Kamus ICD terbaru dari Google Sheets secara otomatis di latar belakang...</span>
           </div>
         )}
         {autoSyncStatus === "done" && (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl flex items-center justify-between gap-3 text-xs font-bold shadow-sm animate-in fade-in duration-300">
             <div className="flex items-center gap-3">
-              <span className="p-1 bg-emerald-100 rounded-lg text-emerald-600">โ…</span>
+              <span className="p-1 bg-emerald-100 rounded-lg text-emerald-600">✅</span>
               <span>Kamus ICD berhasil disinkronkan secara otomatis dari cloud spreadsheet!</span>
             </div>
-            <button onClick={() => setAutoSyncStatus("")} className="text-emerald-500 hover:text-emerald-700">โ•</button>
+            <button onClick={() => setAutoSyncStatus("")} className="text-emerald-500 hover:text-emerald-700">✕</button>
           </div>
         )}
 
@@ -7677,7 +7677,7 @@ export default function App() {
             </div>
 
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-[10px] text-slate-500 font-semibold leading-relaxed mt-4">
-              ๐’ก <b>Tips:</b> Sistem akan selalu memprioritaskan kode terbaru dari IndexedDB. Jika offline atau koneksi gagal, sistem akan menggunakan basis data fallback berfrekuensi tinggi bawaan secara otomatis.
+              💡 <b>Tips:</b> Sistem akan selalu memprioritaskan kode terbaru dari IndexedDB. Jika offline atau koneksi gagal, sistem akan menggunakan basis data fallback berfrekuensi tinggi bawaan secara otomatis.
             </div>
           </Card>
 
@@ -7714,7 +7714,7 @@ export default function App() {
                 disabled={isSyncingIcd}
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-black text-xs uppercase tracking-widest shadow-md hover:shadow-lg hover:from-teal-700 hover:to-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 shrink-0"
               >
-                {isSyncingIcd ? `โณ ${icdSyncStatus}` : "โก Sinkronkan Sekarang"}
+                {isSyncingIcd ? `⏳ ${icdSyncStatus}` : "⚡ Sinkronkan Sekarang"}
               </button>
             </div>
           </Card>
@@ -7741,7 +7741,7 @@ export default function App() {
                 className="bg-transparent border-none outline-none text-xs text-slate-700 font-bold w-full"
               />
               {icdSearchQuery && (
-                <button onClick={() => setIcdSearchQuery("")} className="text-slate-400 hover:text-slate-600 text-xs">โ•</button>
+                <button onClick={() => setIcdSearchQuery("")} className="text-slate-400 hover:text-slate-600 text-xs">✕</button>
               )}
             </div>
           </div>
@@ -7775,7 +7775,7 @@ export default function App() {
                 {filteredResults.length === 0 && (
                   <tr>
                     <td colSpan="4" className="py-8 text-center text-xs font-semibold text-slate-400 bg-slate-50/50">
-                      ๐“ญ Tidak ditemukan kode yang cocok dengan kata kunci "{icdSearchQuery}"
+                      📭 Tidak ditemukan kode yang cocok dengan kata kunci "{icdSearchQuery}"
                     </td>
                   </tr>
                 )}
@@ -8186,10 +8186,10 @@ export default function App() {
                         <div className="flex gap-2 justify-center">
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'sesuai' ? undefined : 'sesuai'); }}
                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'sesuai' ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-emerald-200 hover:text-emerald-600'}`}
-                          >โ” SESUAI</button>
+                          >✓ SESUAI</button>
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'tidak' ? undefined : 'tidak'); }}
                             className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border-2 ${v === 'tidak' ? 'bg-rose-600 border-rose-600 text-white shadow-lg shadow-rose-600/30' : 'bg-white border-slate-100 text-slate-400 hover:border-rose-200 hover:text-rose-600'}`}
-                          >โ– TIDAK</button>
+                          >✗ TIDAK</button>
                         </div>
                       </td>
                     </tr>
@@ -8213,14 +8213,14 @@ export default function App() {
         }} />
         <Card className="overflow-x-auto">
           <MiniTable data={data} columns={[
-            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} โ’ ${r.akhir}` },
+            { header: 'Pola', className: 'font-extrabold', render: r => `${r.awal} → ${r.akhir}` },
             { header: 'Pembayar', className: 'text-xs font-semibold', render: r => r.pembayar },
             { header: 'Jumlah', className: 'text-right font-bold', render: r => r.count },
             { header: 'Total Nilai', className: 'text-right font-black text-cyan-600', render: r => formatRp(r.totalNilai) },
             { header: 'SL1', className: 'text-right', render: r => r.sev1 },
             { header: 'SL2', className: 'text-right', render: r => r.sev2 },
             { header: 'SL3', className: 'text-right', render: r => r.sev3 }
-          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}โ’${r.akhir}`, row => {
+          ]} onRowClick={r => openDrilldown(`Naik Kelas: ${r.awal}→${r.akhir}`, row => {
             const kAw = String(row['KELAS_RAWAT'] || row['KELAS'] || row['HAK_KELAS'] || '').trim();
             const matchC2 = String(row['C2'] || '').match(/"selisih_biaya":\s*\{\s*"nilai":\s*"(\d+)"\s*,\s*"pembayar":\s*"([^"]+)"\s*,\s*"naik_kelas":\s*"([^"]+)"/);
             const kAk = matchC2 ? matchC2[3].toUpperCase() : '';
@@ -8351,7 +8351,7 @@ export default function App() {
                       <td className="px-5 py-4 text-center font-bold text-slate-400 align-top">{idx + 1}</td>
                       <td className="px-5 py-4 font-black text-slate-700 align-top">{c.pid}</td>
                       <td className="px-5 py-4 align-top whitespace-normal min-w-[200px]">
-                        <div className="font-bold text-slate-600 text-sm mb-2">{maskNameSafe(c.nama)}</div>
+                        <div className="font-bold text-slate-600 text-sm mb-2">{maskName(c.nama)}</div>
                         <span className={"px-2.5 py-1 rounded-full text-[10px] font-black tracking-widest uppercase " + (c.type === 'Readmisi' ? 'bg-rose-100 text-rose-700' : 'bg-orange-100 text-orange-700')}>
                           {c.type}
                         </span>
@@ -8386,7 +8386,7 @@ export default function App() {
                                       {isPtd1 ? 'Rawat Inap' : 'Rawat Jalan'}
                                     </span>
                                     <span className="font-mono text-[10px] font-bold text-slate-500 bg-white border px-1.5 rounded">SEP: {sep}</span>
-                                    {v.DPJP && <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 rounded">DPJP: {maskNameSafe(v.DPJP)}</span>}
+                                    {v.DPJP && <span className="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 rounded">DPJP: {maskName(v.DPJP)}</span>}
                                   </div>
                                   <div className="text-[10px] text-slate-600">
                                     <span className="font-bold text-slate-800">{diagC}</span> - {diagDesc}
@@ -8604,11 +8604,11 @@ export default function App() {
 
   // === ANALYSIS OVERLAY ===
   const analysisSteps = [
-    { icon: '๐“', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
-    { icon: '๐”ฌ', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
-    { icon: '๐’ฐ', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
-    { icon: '๐ฉบ', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
-    { icon: '๐“', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
+    { icon: '📊', label: 'Membaca struktur data klaim...', color: '#2dd4bf' },
+    { icon: '🔬', label: 'Menganalisis kode INA-CBG & iDRG...', color: '#5eead4' },
+    { icon: '💰', label: 'Menghitung selisih finansial...', color: '#14b8a6' },
+    { icon: '🩺', label: 'Mendeteksi anomali koding audit...', color: '#0d9488' },
+    { icon: '📈', label: 'Menyusun laporan & grafik...', color: '#0f766e' },
   ];
   useEffect(() => {
     if (!isAnalyzing) { setAnalysisStep(0); return; }
@@ -8642,7 +8642,7 @@ export default function App() {
                   }}
                 />
                 <div style={{ display: 'none' }} className="w-full h-64 flex-col items-center justify-center gap-3 text-white/60">
-                  <span className="text-5xl">๐“ข</span>
+                  <span className="text-5xl">📢</span>
                   <p className="text-sm font-semibold">Klik untuk melihat informasi lebih lanjut</p>
                 </div>
               </a>
@@ -8760,7 +8760,7 @@ export default function App() {
                 <div className="mt-3">
                   <button type="button" onClick={() => setShowRegister(true)} className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</button>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">ยฉ 2026 iDRG Analytics Platform โ€ข Alpha v1.4.6 (210520261156)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.4.7 (220520260237)</p>
               </div>
             </div>
           </div>
@@ -8998,7 +8998,7 @@ export default function App() {
                   <h3 className="text-base sm:text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
                     {!drilldown.prev && <Table2 size={20} className="text-teal-600 shrink-0" />} Rincian Data Analitik
                   </h3>
-                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} โ€” {drilldown.data.length.toLocaleString()} Record Terfilter</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-slate-400 mt-1 uppercase tracking-[0.2em]">{drilldown.title} — {drilldown.data.length.toLocaleString()} Record Terfilter</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
@@ -9374,7 +9374,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.4.6 (210520261156)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.4.7 (220520260237)</span>
                 </div>
               )}
             </div>
@@ -9556,14 +9556,14 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.4.6</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.4.7</span>
             </p>
           </footer>
         </div>
 
 
 
-        {/* MAP MODAL โ€” INACBGโ’iDRG or iDRGโ’INACBG */}
+        {/* MAP MODAL — INACBG→iDRG or iDRG→INACBG */}
         {mapModal.isOpen && dashData && (
           <div className="fixed inset-0 z-[160] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 sm:p-6 animate-in fade-in duration-200">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden ring-1 ring-slate-900/5">
@@ -9573,10 +9573,10 @@ export default function App() {
                   <div className="p-2 bg-sky-100 rounded-xl text-sky-700"><GitMerge size={20} /></div>
                   <div>
                     <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">
-                      {mapModal.type === 'ina' ? `Peta INACBG โ’ iDRG` : `Peta iDRG โ’ INACBG`}
+                      {mapModal.type === 'ina' ? `Peta INACBG → iDRG` : `Peta iDRG → INACBG`}
                     </h3>
                     <p className="text-xs font-bold text-slate-400 mt-0.5 uppercase tracking-wider">
-                      <span className="text-sky-600">{mapModal.code}</span> โ€” {mapModal.desc || '-'}
+                      <span className="text-sky-600">{mapModal.code}</span> — {mapModal.desc || '-'}
                     </p>
                   </div>
                 </div>
@@ -9604,7 +9604,7 @@ export default function App() {
                         <span className="bg-orange-500 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{idrg.split(' ')[0]}</span>
                         <span className="text-sm font-bold text-slate-700 flex-1">{idrg.substring(idrg.indexOf(' ') + 1)}</span>
                         <button
-                          onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} โ’ ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
+                          onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${mapModal.code} → ${idrg.split(' ')[0]}`, r => String(r.INACBG).trim() === mapModal.code && String(r.IDRG_DRG_CODE).trim() === idrg.split(' ')[0]); }}
                           className="flex items-center gap-1.5 text-[11px] font-black uppercase text-sky-700 bg-sky-100 hover:bg-sky-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
                         >
                           <Table2 size={11} /> {data.count} Kasus
@@ -9655,7 +9655,7 @@ export default function App() {
                         <span className="bg-sky-600 text-white px-3 py-1 rounded-lg text-sm font-black shadow-sm">{inaCode}</span>
                         <span className="text-sm font-bold text-slate-700 flex-1">{data.desc || '-'}</span>
                         <button
-                          onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} โ’ ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
+                          onClick={() => { setMapModal({ isOpen: false, type: '', code: '', desc: '' }); openDrilldown(`${inaCode} → ${mapModal.code}`, r => String(r.INACBG).trim() === inaCode && String(r.IDRG_DRG_CODE).trim() === mapModal.code); }}
                           className="flex items-center gap-1.5 text-[11px] font-black uppercase text-orange-700 bg-orange-100 hover:bg-orange-500 hover:text-white px-3 py-1.5 rounded-lg transition-all"
                         >
                           <Table2 size={11} /> {data.count} Kasus
@@ -9735,7 +9735,7 @@ export default function App() {
                   }}
                 />
                 <div style={{ display: 'none' }} className="w-full h-64 flex-col items-center justify-center gap-3 text-white/60">
-                  <span className="text-5xl">๐“ข</span>
+                  <span className="text-5xl">📢</span>
                   <p className="text-sm font-semibold">Klik untuk melihat informasi lebih lanjut</p>
                 </div>
               </a>
