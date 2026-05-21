@@ -3384,7 +3384,7 @@ export default function App() {
     setLoginError('');
 
     try {
-      const loginEmail = username.includes('@') ? username : `${username}@akurat.id`;
+      const loginEmail = username.includes('@') ? username.replace(/\s+/g, '') : `${username.replace(/\s+/g, '')}@akurat.id`;
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password: password

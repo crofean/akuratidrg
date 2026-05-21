@@ -1,9 +1,9 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 // === KONFIGURASI SUPABASE ===
 // Ganti dengan Service Role Key dari Project Settings -> API
 const SUPABASE_URL = 'https://qrxjpbvvqsbtgbferkua.supabase.co';
-const SUPABASE_SERVICE_KEY = 'GANTI_DENGAN_SERVICE_ROLE_KEY_ANDA';
+const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFyeGpwYnZ2cXNidGdiZmVya3VhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTM1MTMwNywiZXhwIjoyMDk0OTI3MzA3fQ.kgokGv3H1SDU2PpFl368BKJOL1VVJWPE4bm4Hiw-TCg';
 
 // URL Google Sheets (Tab Active Users)
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98/export?format=csv&gid=0';
@@ -49,7 +49,7 @@ async function migrate() {
     if (!username || !password) continue;
 
     // Pastikan username menjadi email agar kompatibel dengan Supabase
-    const email = username.includes('@') ? username : `${username}@akurat.id`;
+    const email = username.includes('@') ? username.replace(/\s+/g, '') : `${username.replace(/\s+/g, '')}@akurat.id`;
 
     console.log(`[${i}/${lines.length - 1}] Memigrasi pengguna: ${username} (${email})`);
 
