@@ -2965,6 +2965,8 @@ export default function App() {
   });
   const [overrideSearch, setOverrideSearch] = useState('');
   const [expandedKsms, setExpandedKsms] = useState({});
+  const [pendingDurations, setPendingDurations] = useState({});
+  const [showPasswordList, setShowPasswordList] = useState({});
   const [uploadProgress, setUploadProgress] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [openKsm, setOpenKsm] = useState(null);
@@ -7750,9 +7752,6 @@ export default function App() {
       </div>
     );
   };
-
-  const [pendingDurations, setPendingDurations] = useState({});
-  const [showPasswordList, setShowPasswordList] = useState({});
 
   const renderUserManagement = () => {
     return (
