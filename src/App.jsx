@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
+import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send } from 'lucide-react';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
@@ -2996,11 +2997,17 @@ export default function App() {
     return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbwDfLqyeRjDs6LUpZ5unl3gh0muwS2zECBS6jsPgL3poqmicuWuA9l6ph2qCcqkHVcE/exec';
   });
   const [pendingUsers, setPendingUsers] = useState([]);
+  const [userAccounts, setUserAccounts] = useState([]);
+  const [rejectedUsers, setRejectedUsers] = useState([]);
   const [activeUsersList, setActiveUsersList] = useState([]);
   const [isFetchingUsers, setIsFetchingUsers] = useState(false);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
   const [userManagementError, setUserManagementError] = useState('');
   const [userManagementSuccess, setUserManagementSuccess] = useState('');
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [editUserData, setEditUserData] = useState({});
 
   // --- STATE UNTUK INSIGHT SOSIALISASI ---
   const [selectedSocializationDept, setSelectedSocializationDept] = useState('');
@@ -3352,7 +3359,20 @@ export default function App() {
   const [forgotSuccess, setForgotSuccess] = useState('');
   const [forgotError, setForgotError] = useState('');
 
-  // URL Apps Script untuk sesi login — menggunakan registrationScriptUrl yang sama
+  const [showRegister, setShowRegister] = useState(false);
+  const [regData, setRegData] = useState({ email: '', password: '', username: '', nama: '', faskes: '', wa: '' });
+  const [regState, setRegState] = useState({ loading: false, error: '', success: '' });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsLoggedIn(true);
+        setUsername(session.user.email);
+      }
+    };
+    checkAuth();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -3360,59 +3380,59 @@ export default function App() {
       setLoginError('Harap selesaikan verifikasi keamanan (geser puzzle) terlebih dahulu.');
       return;
     }
-
     setIsLoggingIn(true);
     setLoginError('');
 
     try {
-      let userMatch = null;
-      let activeStr = null;
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: username,
+        password: password
+      });
 
-      try {
-        const sheetUrl = "https://docs.google.com/spreadsheets/d/1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98/export?format=csv&gid=0";
-        const res = await fetch(sheetUrl);
-        if (!res.ok) throw new Error("Gagal mengambil data dari server autentikasi.");
-        const csvText = await res.text();
-        const rows = csvText.split(/\r?\n/).filter(r => r.trim()).map(row => row.split(',').map(cell => cell.trim()));
-        const headers = rows[0] || [];
-
-        const userIdx = headers.indexOf("USERNAME");
-        const passIdx = headers.indexOf("PASSWORD");
-        const activeIdx = headers.indexOf("MasaAktif");
-
-        const match = rows.slice(1).find(r => r[userIdx] === username && r[passIdx] === password);
-        if (match) {
-          userMatch = match;
-          activeStr = activeIdx !== -1 ? match[activeIdx] : null;
-        }
-      } catch (err) {
-        console.warn("Spreadsheet fetch failed, falling back to local users.", err);
-        const localMatch = validUsers.find(u => u.username === username && u.password === password);
-        if (localMatch) userMatch = localMatch;
-      }
-
-      if (userMatch) {
-        if (activeStr) {
-          const parts = activeStr.split('/');
-          if (parts.length === 3) {
-            const activeDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
-            const today = new Date();
-            if (activeDate < today) {
-              setLoginError(`Masa berlaku akses Anda telah habis pada ${activeStr}. Silahkan hubungi Admin AKURAT - iDRG.`);
-              setPassword('');
-              setCaptchaVerified(false);
-              setIsLoggingIn(false);
-              return;
-            }
-          }
-        }
-        setShowDisclaimer(true);
-        setLoginError('');
-      } else {
-        setLoginError('Username atau Password tidak terdaftar. Silahkan hubungi Admin AKURAT - iDRG untuk mendapatkan akses.');
+      if (authError) {
+        setLoginError('Login gagal: ' + authError.message);
         setPassword('');
         setCaptchaVerified(false);
+        return;
       }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authData.user.id)
+        .single();
+
+      if (profileError || !profile) {
+        setLoginError('Profil tidak ditemukan. Hubungi admin.');
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (profile.status === 'pending') {
+        setLoginError('Akun Anda masih menunggu persetujuan Admin.');
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (profile.status === 'rejected') {
+        setLoginError('Mohon maaf, permohonan akun Anda ditolak.');
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (profile.masa_aktif) {
+        const activeDate = new Date(profile.masa_aktif);
+        const today = new Date();
+        if (activeDate < today) {
+          setLoginError(`Masa berlaku akses Anda telah habis. Silahkan hubungi Admin AKURAT - iDRG.`);
+          await supabase.auth.signOut();
+          return;
+        }
+      }
+
+      localStorage.setItem('sak_role', profile.role || 'user');
+      setShowDisclaimer(true);
+      setLoginError('');
     } catch (err) {
       console.error(err);
       setLoginError('Terjadi kesalahan saat memverifikasi data login.');
@@ -3429,53 +3449,58 @@ export default function App() {
     localStorage.setItem('sak_username', username);
     localStorage.setItem('sak_login_time', Date.now().toString());
 
-    // Daftarkan Sesi ke Server (Google Apps Script) secara background agar tidak mengganggu performa login
-    if (registrationScriptUrl && registrationScriptUrl.trim() !== '') {
-      const sessionUrl = `${registrationScriptUrl}?action=log_session&username=${encodeURIComponent(username)}&sessionId=${encodeURIComponent(sid)}&loginTime=${encodeURIComponent(new Date().toISOString())}`;
-      fetch(sessionUrl).catch(e => console.warn("Gagal mendaftarkan sesi di server:", e));
-    }
-
     setActiveTab('upload');
     setIsLoggedIn(true);
     setShowDisclaimer(false);
   };
 
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setRegState({ loading: true, error: '', success: '' });
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: regData.email,
+        password: regData.password,
+        options: {
+          data: {
+            username: regData.username,
+            nama: regData.nama,
+            faskes: regData.faskes,
+            wa: regData.wa
+          }
+        }
+      });
+      if (error) throw error;
+      setRegState({ loading: false, error: '', success: 'Permohonan akun berhasil! Admin akan segera meninjau akun Anda.' });
+      setTimeout(() => setShowRegister(false), 3000);
+    } catch (err) {
+      setRegState({ loading: false, error: err.message, success: '' });
+    }
+  };
+
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     if (!forgotIdentity.trim()) {
-      setForgotError('Harap masukkan Username atau Email Anda.');
-      return;
-    }
-    if (!registrationScriptUrl || registrationScriptUrl.trim() === '') {
-      setForgotError('Google Apps Script URL belum dikonfigurasi. Hubungi administrator.');
+      setForgotError('Harap masukkan Email Anda.');
       return;
     }
     setIsProcessingForgot(true);
     setForgotError('');
     setForgotSuccess('');
     try {
-      const url = `${registrationScriptUrl}?action=forgot_password&identity=${encodeURIComponent(forgotIdentity.trim())}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data.status === 'success') {
-        setForgotSuccess('Email berhasil dikirim! Silakan periksa kotak masuk email Anda beberapa saat lagi.');
-        setForgotIdentity('');
-      } else {
-        const msg = data.message || '';
-        if (msg.includes('not found') || msg.includes('no email')) {
-          setForgotError('Username atau Email tidak ditemukan. Pastikan data yang Anda masukkan sudah benar.');
-        } else {
-          setForgotError('Gagal mengirim email: ' + msg);
-        }
-      }
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotIdentity.trim());
+      if (error) throw error;
+      setForgotSuccess('Email reset password berhasil dikirim! Silakan periksa kotak masuk Anda.');
+      setForgotIdentity('');
     } catch (err) {
-      setForgotError('Gagal memproses permintaan. Periksa koneksi internet atau hubungi administrator.');
+      setForgotError('Gagal mengirim email: ' + err.message);
     } finally {
       setIsProcessingForgot(false);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setIsLoggedIn(false);
     setUsername('');
     setPassword('');
@@ -7709,51 +7734,59 @@ export default function App() {
   const [showPasswordList, setShowPasswordList] = useState({});
 
   const renderUserManagement = () => {
-    const handleApprove = async (username, password) => {
-      const duration = pendingDurations[username] || 12;
-      if (!registrationScriptUrl || registrationScriptUrl.trim() === '') {
-        setUserManagementError('Google Apps Script URL belum dikonfigurasi. Isi kolom URL di atas terlebih dahulu.');
-        return;
+    const fetchUserManagementData = async () => {
+      try {
+        setIsLoadingUsers(true);
+        const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        
+        const approved = data.filter(u => u.status === 'active');
+        const pending = data.filter(u => u.status === 'pending');
+        const rejected = data.filter(u => u.status === 'rejected');
+        
+        setUserAccounts(approved);
+        setPendingUsers(pending);
+        setRejectedUsers(rejected);
+        setUserManagementError('');
+      } catch (err) {
+        setUserManagementError('Gagal mengambil data user: ' + err.message);
+      } finally {
+        setIsLoadingUsers(false);
       }
+    };
+
+    const handleApprove = async (userId) => {
+      const duration = pendingDurations[userId] || 12;
       setIsProcessingAction(true);
       setUserManagementError('');
       setUserManagementSuccess('');
       try {
-        const url = `${registrationScriptUrl}?action=approve&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&duration=${duration}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === 'success') {
-          setUserManagementSuccess(`Pengguna @${username} berhasil disetujui dan diaktifkan dengan masa aktif ${duration === 999 ? 'Selamanya' : duration + ' Bulan'}! Email notifikasi telah dikirim.`);
-          setTimeout(fetchUserManagementData, 1500);
-        } else {
-          setUserManagementError('Gagal menyetujui akun: ' + (data.message || 'Error tidak diketahui'));
-        }
+        const masaAktif = new Date();
+        if (duration !== 999) masaAktif.setMonth(masaAktif.getMonth() + duration);
+        else masaAktif.setFullYear(masaAktif.getFullYear() + 100);
+
+        const { error } = await supabase.from('profiles').update({ status: 'active', masa_aktif: masaAktif }).eq('id', userId);
+        if (error) throw error;
+        
+        setUserManagementSuccess(`Pengguna berhasil disetujui!`);
+        fetchUserManagementData();
       } catch (err) {
-        setUserManagementError('Gagal memproses persetujuan akun: ' + err.message);
+        setUserManagementError('Gagal menyetujui akun: ' + err.message);
       } finally {
         setIsProcessingAction(false);
       }
     };
 
-    const handleReject = async (username) => {
-      if (!window.confirm(`Apakah Anda yakin ingin menolak pengajuan dari @${username}?`)) return;
-      if (!registrationScriptUrl || registrationScriptUrl.trim() === '') {
-        setUserManagementError('Google Apps Script URL belum dikonfigurasi. Isi kolom URL di atas terlebih dahulu.');
-        return;
-      }
+    const handleReject = async (userId) => {
+      if (!window.confirm(`Apakah Anda yakin ingin menolak pengajuan ini?`)) return;
       setIsProcessingAction(true);
       setUserManagementError('');
       setUserManagementSuccess('');
       try {
-        const url = `${registrationScriptUrl}?action=reject&username=${encodeURIComponent(username)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.status === 'success') {
-          setUserManagementSuccess(`Pengguna @${username} telah ditolak. Email notifikasi penolakan telah dikirim.`);
-          setTimeout(fetchUserManagementData, 1500);
-        } else {
-          setUserManagementError('Gagal menolak akun: ' + (data.message || 'Error tidak diketahui'));
-        }
+        const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+        if (error) throw error;
+        setUserManagementSuccess(`Pengguna berhasil ditolak!`);
+        fetchUserManagementData();
       } catch (err) {
         setUserManagementError('Gagal menolak akun: ' + err.message);
       } finally {
@@ -7761,16 +7794,16 @@ export default function App() {
       }
     };
 
-    const handleDeleteActive = async (username) => {
-      if (!window.confirm(`Apakah Anda yakin ingin menonaktifkan akses untuk @${username}? Pengguna ini tidak akan bisa login lagi.`)) return;
+    const handleDeleteActive = async (userId) => {
+      if (!window.confirm(`Apakah Anda yakin ingin menonaktifkan akses pengguna ini?`)) return;
       setIsProcessingAction(true);
       setUserManagementError('');
       setUserManagementSuccess('');
       try {
-        const url = `${registrationScriptUrl}?action=delete&username=${encodeURIComponent(username)}`;
-        await fetch(url, { mode: 'no-cors' });
-        setUserManagementSuccess(`Akses untuk @${username} berhasil dinonaktifkan.`);
-        setTimeout(fetchUserManagementData, 1500);
+        const { error } = await supabase.from('profiles').update({ status: 'disabled' }).eq('id', userId);
+        if (error) throw error;
+        setUserManagementSuccess(`Akses pengguna berhasil dinonaktifkan.`);
+        fetchUserManagementData();
       } catch (err) {
         setUserManagementError('Gagal menonaktifkan akun: ' + err.message);
       } finally {
@@ -7778,25 +7811,61 @@ export default function App() {
       }
     };
 
-    const togglePasswordVisibility = (uname) => {
-      setShowPasswordList(prev => ({ ...prev, [uname]: !prev[uname] }));
+    const handleEditUserClick = (u) => {
+      setEditingUser(u);
+      setEditUserData({
+        nama_lengkap: u.nama_lengkap || '',
+        nama_faskes: u.nama_faskes || '',
+        no_wa: u.no_wa || '',
+        role: u.role || 'user',
+        status: u.status || 'active',
+        masa_aktif: u.masa_aktif ? new Date(u.masa_aktif).toISOString().split('T')[0] : ''
+      });
+      setShowEditUserModal(true);
     };
 
-    const changeDuration = (uname, val) => {
-      setPendingDurations(prev => ({ ...prev, [uname]: parseInt(val) }));
+    const handleSaveEditUser = async (e) => {
+      e.preventDefault();
+      setIsProcessingAction(true);
+      setUserManagementError('');
+      try {
+        const updates = {
+          nama_lengkap: editUserData.nama_lengkap,
+          nama_faskes: editUserData.nama_faskes,
+          no_wa: editUserData.no_wa,
+          role: editUserData.role,
+          status: editUserData.status,
+          masa_aktif: editUserData.masa_aktif ? new Date(editUserData.masa_aktif).toISOString() : null
+        };
+        const { error } = await supabase.from('profiles').update(updates).eq('id', editingUser.id);
+        if (error) throw error;
+        
+        setUserManagementSuccess('Data pengguna berhasil diperbarui!');
+        setShowEditUserModal(false);
+        fetchUserManagementData();
+      } catch (err) {
+        setUserManagementError('Gagal menyimpan data pengguna: ' + err.message);
+      } finally {
+        setIsProcessingAction(false);
+      }
     };
+
+    useEffect(() => {
+      if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com') {
+        fetchUserManagementData();
+      }
+    }, [username]);
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
         <SectionHeader 
           icon={ClipboardList} 
           title="Manajemen Akses & Kredensial Pengguna" 
-          desc="Otorisasi pengajuan akun baru dan atur masa aktif akses SAK-iDRG langsung dari aplikasi secara otomatis." 
+          desc="Otorisasi pengajuan akun baru dan atur masa aktif akses SAK-iDRG langsung dari aplikasi secara otomatis menggunakan Supabase." 
           colorClass="bg-teal-500/10 text-teal-700" 
           highlightClass="bg-teal-500/5" 
         />
 
-        {/* NOTIFICATION MESSAGES */}
         {userManagementError && (
           <div className="p-4 bg-rose-50 border-2 border-rose-100 rounded-2xl flex items-center gap-3 text-rose-700 font-bold text-sm animate-in shake duration-300">
             <AlertCircle size={20} className="shrink-0" />
@@ -7811,61 +7880,19 @@ export default function App() {
           </div>
         )}
 
-        {/* DATABASE SETTINGS & REFRESH BUTTON */}
-        <Card className="p-6">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 border-b border-slate-100 pb-4">
-            <div>
-              <h3 className="text-lg font-black text-slate-800 tracking-tight">Pengaturan Sinkronisasi Google Sheets</h3>
-              <p className="text-xs text-slate-500 font-medium">Hubungkan tab Permohonan dan script verifikasi otomatis untuk aktivasi instan.</p>
-            </div>
-            <button 
-              onClick={fetchUserManagementData}
-              disabled={isFetchingUsers || isProcessingAction}
-              className="bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 disabled:shadow-none transition-all uppercase tracking-wider shrink-0 w-full sm:w-auto justify-center cursor-pointer"
-            >
-              {isFetchingUsers ? <Activity size={16} className="animate-spin" /> : <Zap size={16} />} 
-              {isFetchingUsers ? 'Sedang Memuat...' : 'Muat Ulang Data'}
-            </button>
-          </div>
+        {/* REFRESH BUTTON */}
+        <div className="flex justify-end mb-4">
+          <button 
+            onClick={fetchUserManagementData}
+            disabled={isLoadingUsers || isProcessingAction}
+            className="bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 disabled:shadow-none transition-all uppercase tracking-wider cursor-pointer"
+          >
+            {isLoadingUsers ? <Activity size={16} className="animate-spin" /> : <RefreshCw size={16} />} 
+            {isLoadingUsers ? 'Memuat...' : 'Muat Ulang'}
+          </button>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Google Spreadsheet ID</label>
-              <input 
-                type="text" 
-                value={registrationSheetId} 
-                onChange={e => setRegistrationSheetId(e.target.value)} 
-                placeholder="ID Spreadsheet..." 
-                className="w-full px-4 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">GID Tab Permohonan (Registrasi)</label>
-              <input 
-                type="text" 
-                value={registrationGid} 
-                onChange={e => setRegistrationGid(e.target.value)} 
-                placeholder="GID Tab Permohonan..." 
-                className="w-full px-4 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Google Apps Script API URL</label>
-              <input 
-                type="text" 
-                value={registrationScriptUrl} 
-                onChange={e => setRegistrationScriptUrl(e.target.value)} 
-                placeholder="https://script.google.com/..." 
-                className="w-full px-4 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl text-xs font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all truncate"
-              />
-            </div>
-          </div>
-          <div className="mt-4 p-3 bg-teal-50/50 rounded-xl border border-teal-100 text-[10px] text-teal-800 font-semibold leading-relaxed">
-            💡 <strong>Petunjuk:</strong> Buka Google Spreadsheet Anda. ID Spreadsheet terletak di URL peramban antara <code>/d/</code> dan <code>/edit</code>. GID Tab Permohonan terletak di akhir URL peramban saat Anda mengeklik tab formulir registrasi (contoh: <code>gid=2082885116</code>).
-          </div>
-        </Card>
-
-        {/* SECTION 1: PENDING USERS (PENGAJUAN AKUN BARU) */}
+        {/* SECTION 1: PENDING USERS */}
         <Card className="p-6">
           <div className="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
             <div>
@@ -7873,10 +7900,9 @@ export default function App() {
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
                 Pengajuan Akun Baru (Pending)
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Tinjau, pilih masa aktif akses, lalu aktifkan akun langsung dari panel ini.</p>
             </div>
             <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-              {pendingUsers.filter(u => u.status === 'PENDING').length} Pengajuan
+              {pendingUsers.length} Pengajuan
             </span>
           </div>
 
@@ -7884,81 +7910,67 @@ export default function App() {
             <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="px-5 py-4">Tanggal Pendaftaran</th>
                   <th className="px-5 py-4">Nama Lengkap</th>
-                  <th className="px-5 py-4">Instansi Rumah Sakit</th>
-                  <th className="px-5 py-4">Jabatan / Posisi</th>
-                  <th className="px-5 py-4">Username / Password</th>
-                  <th className="px-5 py-4 text-center">Durasi Masa Aktif</th>
+                  <th className="px-5 py-4">Faskes / Kontak</th>
+                  <th className="px-5 py-4">Username</th>
+                  <th className="px-5 py-4 text-center">Durasi Akses</th>
                   <th className="px-5 py-4 text-center">Aksi Keputusan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
-                {pendingUsers.filter(u => u.status === 'PENDING').length === 0 ? (
+                {pendingUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada pengajuan akun baru yang tertunda. Semua bersih! ✨</td>
+                    <td colSpan="5" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada pengajuan akun baru yang tertunda.</td>
                   </tr>
                 ) : (
-                  pendingUsers.filter(u => u.status === 'PENDING').map((u, idx) => {
-                    const duration = pendingDurations[u.username] || 12;
-                    return (
-                      <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-5 py-4 font-bold text-slate-500 text-xs">{u.timestamp || '-'}</td>
-                        <td className="px-5 py-4">
-                          <div className="flex flex-col">
-                            <span className="font-black text-slate-800 text-sm">{u.fullName}</span>
-                            <span className="text-[10px] text-slate-400 font-bold">{u.email} • {u.phone}</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-4 font-extrabold text-slate-700 text-xs">{u.rsName || '-'}</td>
-                        <td className="px-5 py-4 font-bold text-slate-600 text-xs">{u.position || '-'}</td>
-                        <td className="px-5 py-4">
-                          <div className="flex flex-col">
-                            <span className="font-black text-teal-600 text-xs">@{u.username}</span>
-                            <span className="text-[10px] text-slate-400 font-bold font-mono">PWD: {u.password}</span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-4 text-center">
-                          <select 
-                            value={duration} 
-                            onChange={(e) => changeDuration(u.username, e.target.value)}
-                            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-teal-500 text-slate-700 cursor-pointer"
-                          >
-                            <option value="1">1 Bulan</option>
-                            <option value="3">3 Bulan</option>
-                            <option value="6">6 Bulan</option>
-                            <option value="12">12 Bulan (1 Tahun)</option>
-                            <option value="999">Selamanya</option>
-                          </select>
-                        </td>
-                        <td className="px-5 py-4 text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            <button 
-                              onClick={() => handleApprove(u.username, u.password)}
-                              disabled={isProcessingAction}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                            >
-                              Setujui
-                            </button>
-                            <button 
-                              onClick={() => handleReject(u.username)}
-                              disabled={isProcessingAction}
-                              className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                            >
-                              Tolak
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
+                  pendingUsers.map((u, idx) => (
+                    <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-5 py-4">
+                        <span className="font-black text-slate-800 text-sm block">{u.nama_lengkap}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="font-bold text-slate-600 text-xs block">{u.nama_faskes || '-'}</span>
+                        <span className="text-[10px] text-slate-400 font-bold block">{u.no_wa || '-'}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="font-black text-teal-600 text-xs">@{u.username}</span>
+                      </td>
+                      <td className="px-5 py-4 text-center">
+                        <select 
+                          value={pendingDurations[u.id] || 12}
+                          onChange={(e) => setPendingDurations({ ...pendingDurations, [u.id]: parseInt(e.target.value) })}
+                          className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-teal-500 text-slate-700 cursor-pointer"
+                        >
+                          <option value="1">1 Bulan</option>
+                          <option value="3">3 Bulan</option>
+                          <option value="6">6 Bulan</option>
+                          <option value="12">1 Tahun</option>
+                          <option value="999">Selamanya</option>
+                        </select>
+                      </td>
+                      <td className="px-5 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button 
+                            onClick={() => handleApprove(u.id)}
+                            disabled={isProcessingAction}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                          >Setujui</button>
+                          <button 
+                            onClick={() => handleReject(u.id)}
+                            disabled={isProcessingAction}
+                            className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                          >Tolak</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
           </div>
         </Card>
 
-        {/* SECTION 2: ACTIVE ACCOUNTS (DAFTAR USER AKTIF) */}
+        {/* SECTION 2: ACTIVE ACCOUNTS */}
         <Card className="p-6">
           <div className="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
             <div>
@@ -7966,10 +7978,9 @@ export default function App() {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
                 Daftar Akun Terdaftar & Masa Aktif
               </h3>
-              <p className="text-xs text-slate-500 font-medium">Berikut adalah semua akun yang saat ini terdaftar dan memiliki akses masuk ke SAK-iDRG.</p>
             </div>
             <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-              {activeUsersList.length} User Terdaftar
+              {userAccounts.length} User Terdaftar
             </span>
           </div>
 
@@ -7978,49 +7989,38 @@ export default function App() {
               <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black tracking-wider border-b border-slate-200">
                 <tr>
                   <th className="px-5 py-4">No</th>
-                  <th className="px-5 py-4">Username Akses</th>
-                  <th className="px-5 py-4">Kata Sandi (Password)</th>
+                  <th className="px-5 py-4">Username</th>
+                  <th className="px-5 py-4">Nama & Faskes</th>
                   <th className="px-5 py-4">Masa Berlaku Akses</th>
                   <th className="px-5 py-4 text-center">Status Keaktifan</th>
                   <th className="px-5 py-4 text-center">Tindakan Kontrol</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white text-xs">
-                {activeUsersList.length === 0 ? (
+                {userAccounts.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400 font-medium">Memuat atau tidak ada daftar user aktif terdeteksi.</td>
+                    <td colSpan="6" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada daftar user aktif terdeteksi.</td>
                   </tr>
                 ) : (
-                  activeUsersList.map((u, idx) => {
-                    const isShown = !!showPasswordList[u.username];
-                    
-                    // Check expiry status
+                  userAccounts.map((u, idx) => {
                     let isExpired = false;
-                    if (u.masaAktif) {
-                      const parts = u.masaAktif.split('/');
-                      if (parts.length === 3) {
-                        const activeDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T23:59:59`);
-                        const today = new Date();
-                        if (activeDate < today) isExpired = true;
-                      }
+                    if (u.masa_aktif) {
+                      const activeDate = new Date(u.masa_aktif);
+                      const today = new Date();
+                      if (activeDate < today) isExpired = true;
                     }
                     
                     return (
-                      <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                      <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-5 py-4 text-slate-400 font-bold text-center w-12">{idx + 1}</td>
                         <td className="px-5 py-4 font-black text-slate-800 text-sm">@{u.username}</td>
-                        <td className="px-5 py-4 font-mono font-bold text-slate-600">
-                          <div className="flex items-center gap-2">
-                            <span>{isShown ? u.password : '••••••••'}</span>
-                            <button 
-                              onClick={() => togglePasswordVisibility(u.username)}
-                              className="text-[9px] font-black text-teal-600 hover:text-teal-700 uppercase tracking-widest bg-teal-50 px-1.5 py-0.5 rounded cursor-pointer select-none"
-                            >
-                              {isShown ? 'Sembunyikan' : 'Tampilkan'}
-                            </button>
-                          </div>
+                        <td className="px-5 py-4">
+                          <span className="block font-bold">{u.nama_lengkap}</span>
+                          <span className="block text-slate-500 text-[10px]">{u.nama_faskes}</span>
                         </td>
-                        <td className="px-5 py-4 font-bold text-slate-500">{u.masaAktif || 'Selamanya'}</td>
+                        <td className="px-5 py-4 font-bold text-slate-500">
+                          {u.masa_aktif ? new Date(u.masa_aktif).toLocaleDateString('id-ID') : 'Selamanya'}
+                        </td>
                         <td className="px-5 py-4 text-center">
                           {isExpired ? (
                             <span className="bg-rose-100 text-rose-800 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Expired</span>
@@ -8029,16 +8029,21 @@ export default function App() {
                           )}
                         </td>
                         <td className="px-5 py-4 text-center">
-                          {u.username.toLowerCase() === 'admin' ? (
+                          {u.role === 'admin' ? (
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Proteksi Sistem</span>
                           ) : (
-                            <button 
-                              onClick={() => handleDeleteActive(u.username)}
-                              disabled={isProcessingAction}
-                              className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                            >
-                              Hapus Akses
-                            </button>
+                            <div className="flex items-center justify-center gap-2">
+                              <button 
+                                onClick={() => handleEditUserClick(u)}
+                                disabled={isProcessingAction}
+                                className="bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                              >Edit Akun</button>
+                              <button 
+                                onClick={() => handleDeleteActive(u.id)}
+                                disabled={isProcessingAction}
+                                className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                              >Hapus Akses</button>
+                            </div>
                           )}
                         </td>
                       </tr>
@@ -8050,273 +8055,70 @@ export default function App() {
           </div>
         </Card>
 
-        {/* SECTION 3: GOOGLE APPS SCRIPT TUTORIAL */}
-        <Card className="p-6">
-          <h3 className="text-lg font-black text-slate-800 tracking-tight mb-2 flex items-center gap-2">
-            <ClipboardList size={22} className="text-teal-600 font-black shrink-0" />
-            Panduan Sinkronisasi Google Apps Script Otomatis
-          </h3>
-          <p className="text-xs text-slate-500 font-medium mb-4 leading-relaxed">
-            Agar tombol **Setujui**, **Tolak**, dan **Hapus Akses** di atas dapat memodifikasi Google Spreadsheet Anda secara instan, lakukan langkah penyalinan script satu kali saja di bawah ini:
-          </p>
+        {/* EDIT USER MODAL */}
+        {showEditUserModal && editingUser && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="max-w-md w-full max-h-[95vh] overflow-y-auto custom-scrollbar p-8 shadow-2xl border border-white/20 bg-white relative rounded-[2rem] animate-in zoom-in-95 duration-300">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-400 to-amber-600"></div>
+              <button onClick={() => setShowEditUserModal(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-full transition-all">
+                <X size={20} />
+              </button>
+              
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Activity size={32} className="text-amber-600" />
+                </div>
+                <h2 className="text-xl font-black text-slate-800 tracking-tight">Edit Akun Pengguna</h2>
+                <p className="text-xs text-slate-500 font-medium mt-1">Ubah data profil dan hak akses untuk @{editingUser.username}</p>
+              </div>
 
-          <div className="space-y-4 text-xs font-bold text-slate-700 leading-relaxed">
-            <div className="flex gap-3">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">1</span>
-              <p>Buka Google Spreadsheet Anda. Klik menu **Extensions** (Ekstensi) lalu pilih **Apps Script** di bagian atas.</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">2</span>
-              <p>Hapus semua kode bawaan yang ada di dalam editor script tersebut.</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">3</span>
-              <p>Salin (*copy*) seluruh kode program Apps Script di kotak abu-abu di bawah ini, lalu tempelkan (*paste*) ke editor Apps Script Anda.</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">4</span>
-              <p>Klik tombol disket **Save** (Simpan). Kemudian, klik tombol **Deploy** (Terapkan) dan pilih **New Deployment** (Terapkan Baru).</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">5</span>
-              <p>Pilih tipe deployment **Web App**. Pada pilihan **Execute as**, pilih **Me (Email Anda)**. Pada pilihan **Who has access**, pilih **Anyone** (Siapa saja, bahkan anonim - tenang saja, ini aman karena hanya diakses oleh aplikasi SAK-iDRG Anda).</p>
-            </div>
-            <div className="flex gap-3">
-              <span className="w-5 h-5 rounded-full bg-teal-600 text-white font-black flex items-center justify-center shrink-0 text-[10px]">6</span>
-              <p>Klik **Deploy**. Izinkan otorisasi keamanan akun Google Anda. Salin **Web App URL** yang dihasilkan dan tempelkan (*paste*) ke kolom **Google Apps Script API URL** di bagian atas halaman pengaturan tab ini!</p>
+              <form onSubmit={handleSaveEditUser} className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nama Lengkap</label>
+                  <input type="text" required value={editUserData.nama_lengkap} onChange={e => setEditUserData({...editUserData, nama_lengkap: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nama Rumah Sakit / Faskes</label>
+                  <input type="text" required value={editUserData.nama_faskes} onChange={e => setEditUserData({...editUserData, nama_faskes: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">No WhatsApp</label>
+                  <input type="text" value={editUserData.no_wa} onChange={e => setEditUserData({...editUserData, no_wa: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Role</label>
+                    <select value={editUserData.role} onChange={e => setEditUserData({...editUserData, role: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium cursor-pointer">
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Status</label>
+                    <select value={editUserData.status} onChange={e => setEditUserData({...editUserData, status: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium cursor-pointer">
+                      <option value="active">Active</option>
+                      <option value="pending">Pending</option>
+                      <option value="disabled">Disabled</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Masa Aktif Berakhir (Kosongkan = Selamanya)</label>
+                  <input type="date" value={editUserData.masa_aktif} onChange={e => setEditUserData({...editUserData, masa_aktif: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" />
+                </div>
+                
+                <div className="pt-4 flex gap-3">
+                  <button type="button" onClick={() => setShowEditUserModal(false)} className="flex-1 font-bold py-3 px-4 rounded-xl text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors text-xs uppercase tracking-wider">Batal</button>
+                  <button type="submit" disabled={isProcessingAction} className="flex-[2] font-black py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 text-xs tracking-wider uppercase bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0">
+                    {isProcessingAction ? <Activity size={16} className="animate-spin" /> : <Save size={16} />}
+                    {isProcessingAction ? 'Menyimpan...' : 'Simpan Perubahan'}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-
-          <div className="mt-6 border border-slate-200 rounded-2xl overflow-hidden shadow-inner">
-            <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              <span>Google Apps Script - Code.gs</span>
-              <span className="text-teal-600">Teroptimasi Get/Post</span>
-            </div>
-            <textarea 
-              readOnly 
-              rows="12"
-              className="w-full bg-slate-900 text-slate-200 font-mono text-[10px] p-4 outline-none leading-relaxed resize-y select-all"
-              value={`// ============================================================
-// AKURAT iDRG - Google Apps Script (Code.gs)
-// PENTING: Setiap kali script diupdate, lakukan "New Deployment"!
-// ============================================================
-
-function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeaders({
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
-    });
-}
-function doGet(e)  { return handleRequest(e.parameter); }
-function doPost(e) {
-  var p = {};
-  try { p = JSON.parse(e.postData.contents); } catch(err) { p = e.parameter; }
-  return handleRequest(p);
-}
-
-function handleRequest(params) {
-  var action      = params.action;
-  var ss          = SpreadsheetApp.getActiveSpreadsheet();
-  var permSheet   = ss.getSheetByName("permohonan akun");
-  var activeSheet = ss.getSheetByName("Sheet1");
-
-  if (!permSheet)   permSheet = ss.insertSheet("permohonan akun");
-  if (!activeSheet) {
-    activeSheet = ss.insertSheet("Sheet1");
-    activeSheet.appendRow(["KODE RS","NAMA RS","PIC RS","USERNAME","PASSWORD","MasaAktif"]);
-  }
-
-  var h = {
-    "Access-Control-Allow-Origin":  "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
-  };
-  function ok(msg)  { return ContentService.createTextOutput(JSON.stringify({status:"success",message:msg})).setMimeType(ContentService.MimeType.JSON).setHeaders(h); }
-  function err(msg) { return ContentService.createTextOutput(JSON.stringify({status:"error",message:msg})).setMimeType(ContentService.MimeType.JSON).setHeaders(h); }
-
-  // ── 1. APPROVE ─────────────────────────────────────────────────
-  if (action === "approve") {
-    var uname = params.username, pwd = params.password;
-    var dur   = parseInt(params.duration || 12);
-    var exp   = new Date();
-    exp.setMonth(exp.getMonth() + dur);
-    var expFmt = (dur === 999) ? "31/12/2099" : Utilities.formatDate(exp, "GMT+7", "dd/MM/yyyy");
-
-    var rsCode="",rsName="",pic="",email="";
-    var rows = permSheet.getDataRange().getValues();
-    for (var j=1; j<rows.length; j++) {
-      if (String(rows[j][7]).trim() === String(uname).trim()) {
-        pic=rows[j][1]; email=rows[j][2]; rsCode=rows[j][4]; rsName=rows[j][5];
-        if (!pwd) pwd = rows[j][8];
-        permSheet.getRange(j+1, 10).setValue("TERVERIFIKASI");
-      }
-    }
-    var aRows = activeSheet.getDataRange().getValues();
-    var idx = -1;
-    for (var i=1; i<aRows.length; i++) { if (String(aRows[i][3]).trim()===String(uname).trim()) {idx=i; break;} }
-    if (idx!==-1) {
-      activeSheet.getRange(idx+1,1).setValue(rsCode); activeSheet.getRange(idx+1,2).setValue(rsName);
-      activeSheet.getRange(idx+1,3).setValue(pic);    activeSheet.getRange(idx+1,5).setValue(pwd);
-      activeSheet.getRange(idx+1,6).setValue(expFmt);
-    } else { activeSheet.appendRow([rsCode,rsName,pic,uname,pwd,expFmt]); }
-
-    if (email) {
-      try {
-        MailApp.sendEmail({
-          to: email,
-          subject: "[AKURAT iDRG] Akun Anda Telah Aktif!",
-          body: "Yth. "+pic+",\\n\\nAkun AKURAT iDRG Anda telah disetujui.\\n\\nUsername: "+uname+"\\nPassword: "+pwd+"\\nMasa Aktif: "+expFmt+"\\n\\nLogin di https://akuratidrg.web.id/\\n\\nTerima kasih,\\nTim Admin AKURAT iDRG",
-          htmlBody:
-            "<div style='font-family:Arial,sans-serif;padding:24px;max-width:600px;border:1px solid #e2e8f0;border-radius:12px'>"+
-            "<h2 style='color:#0d9488;margin-top:0'>Akun AKURAT iDRG Aktif! &#127881;</h2>"+
-            "<p>Yth. <strong>"+pic+"</strong>,</p>"+
-            "<p>Selamat! Pengajuan akun Anda telah <strong>disetujui</strong> dan sudah aktif.</p>"+
-            "<div style='background:#f0fdfa;padding:16px;border-radius:8px;margin:20px 0;border-left:4px solid #0d9488'>"+
-            "<table style='width:100%;border-collapse:collapse;font-size:14px'>"+
-            "<tr><td style='padding:5px 0;color:#666;width:130px'>Rumah Sakit</td><td><strong>: "+rsName+" ("+rsCode+")</strong></td></tr>"+
-            "<tr><td style='padding:5px 0;color:#666'>Username</td><td>: <code style='background:#e2e8f0;padding:2px 8px;border-radius:4px'>"+uname+"</code></td></tr>"+
-            "<tr><td style='padding:5px 0;color:#666'>Password</td><td>: <code style='background:#e2e8f0;padding:2px 8px;border-radius:4px'>"+pwd+"</code></td></tr>"+
-            "<tr><td style='padding:5px 0;color:#666'>Masa Berlaku</td><td><strong>: "+expFmt+"</strong></td></tr>"+
-            "</table></div>"+
-            "<p style='text-align:center;margin:28px 0'><a href='https://akuratidrg.web.id/' style='background:#0d9488;color:#fff;padding:13px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px'>Masuk Ke Aplikasi &rarr;</a></p>"+
-            "<hr style='border:0;border-top:1px solid #e2e8f0;margin:20px 0'>"+
-            "<p style='font-size:11px;color:#999;margin:0'>Email ini dikirim otomatis. Jangan balas email ini.</p></div>"
-        });
-      } catch(me) { Logger.log("Approve email error: "+me); }
-    }
-    return ok("User approved and email sent");
-  }
-
-  // ── 2. REJECT ─────────────────────────────────────────────────
-  if (action === "reject") {
-    var uname = params.username, pic="", email="";
-    var rows = permSheet.getDataRange().getValues();
-    for (var j=1; j<rows.length; j++) {
-      if (String(rows[j][7]).trim()===String(uname).trim()) {
-        pic=rows[j][1]; email=rows[j][2];
-        permSheet.getRange(j+1,10).setValue("DITOLAK");
-      }
-    }
-    if (email) {
-      try {
-        MailApp.sendEmail({
-          to: email,
-          subject: "[AKURAT iDRG] Status Pengajuan Akun",
-          body: "Yth. "+pic+",\\n\\nMohon maaf, pengajuan akun '"+uname+"' belum dapat kami setujui.\\nHubungi administrator untuk info lebih lanjut.\\n\\nTerima kasih,\\nTim Admin AKURAT iDRG",
-          htmlBody:
-            "<div style='font-family:Arial,sans-serif;padding:24px;max-width:600px;border:1px solid #e2e8f0;border-radius:12px'>"+
-            "<h2 style='color:#ef4444;margin-top:0'>Status Pengajuan Akun AKURAT iDRG</h2>"+
-            "<p>Yth. <strong>"+pic+"</strong>,</p>"+
-            "<p>Mohon maaf, pengajuan akun dengan username <code style='background:#fee2e2;padding:2px 8px;border-radius:4px'>"+uname+"</code> <strong>belum dapat kami setujui</strong> saat ini.</p>"+
-            "<p>Hubungi Administrator AKURAT iDRG untuk informasi lebih lanjut.</p>"+
-            "<hr style='border:0;border-top:1px solid #e2e8f0;margin:20px 0'>"+
-            "<p style='font-size:11px;color:#999;margin:0'>Email ini dikirim otomatis. Jangan balas email ini.</p></div>"
-        });
-      } catch(me) { Logger.log("Reject email error: "+me); }
-    }
-    return ok("User rejected and email sent");
-  }
-
-  // ── 3. DELETE ─────────────────────────────────────────────────
-  if (action === "delete") {
-    var uname = params.username;
-    var aRows = activeSheet.getDataRange().getValues();
-    for (var i=1; i<aRows.length; i++) {
-      if (String(aRows[i][3]).trim()===String(uname).trim()) { activeSheet.deleteRow(i+1); break; }
-    }
-    var rows = permSheet.getDataRange().getValues();
-    for (var j=1; j<rows.length; j++) {
-      if (String(rows[j][7]).trim()===String(uname).trim()) permSheet.getRange(j+1,10).setValue("DIBATALKAN");
-    }
-    return ok("User deleted");
-  }
-
-  // ── 4. FORGOT_PASSWORD ────────────────────────────────────────
-  if (action === "forgot_password") {
-    var id = (params.identity||"").trim().toLowerCase();
-    if (!id) return err("Identity parameter is required");
-
-    var uname="",email="",pwd="",pic="",rsName="", found=false;
-    var rows = permSheet.getDataRange().getValues();
-    for (var j=1; j<rows.length; j++) {
-      if (String(rows[j][7]||"").trim().toLowerCase()===id || String(rows[j][2]||"").trim().toLowerCase()===id) {
-        pic=rows[j][1]; email=rows[j][2]; rsName=rows[j][5]; uname=rows[j][7]; pwd=rows[j][8];
-        found=true; break;
-      }
-    }
-    if (!found) {
-      var aRows = activeSheet.getDataRange().getValues();
-      for (var i=1; i<aRows.length; i++) {
-        if (String(aRows[i][3]||"").trim().toLowerCase()===id) {
-          pic=aRows[i][2]; rsName=aRows[i][1]; uname=aRows[i][3]; pwd=aRows[i][4];
-          for (var k=1; k<rows.length; k++) {
-            if (String(rows[k][7]||"").trim().toLowerCase()===String(uname).toLowerCase()) { email=rows[k][2]; break; }
-          }
-          found=true; break;
-        }
-      }
-    }
-    if (!found || !email) return err("Identity not found or no email associated");
-
-    try {
-      MailApp.sendEmail({
-        to: email,
-        subject: "[AKURAT iDRG] Pemulihan Kredensial Akun",
-        body: "Yth. "+pic+",\\n\\nKredensial akun AKURAT iDRG Anda:\\n- RS: "+rsName+"\\n- Username: "+uname+"\\n- Password: "+pwd+"\\n\\nLogin di https://akuratidrg.web.id/\\n\\nJika bukan Anda yang meminta, abaikan email ini.\\n\\nTerima kasih,\\nTim Admin AKURAT iDRG",
-        htmlBody:
-          "<div style='font-family:Arial,sans-serif;padding:24px;max-width:600px;border:1px solid #e2e8f0;border-radius:12px'>"+
-          "<h2 style='color:#0ea5e9;margin-top:0'>Pemulihan Kredensial Akun &#128273;</h2>"+
-          "<p>Yth. <strong>"+pic+"</strong>,</p>"+
-          "<p>Kami menerima permintaan pemulihan kredensial akun AKURAT iDRG Anda.</p>"+
-          "<div style='background:#f0f9ff;padding:16px;border-radius:8px;margin:20px 0;border-left:4px solid #0ea5e9'>"+
-          "<table style='width:100%;border-collapse:collapse;font-size:14px'>"+
-          "<tr><td style='padding:5px 0;color:#666;width:130px'>Rumah Sakit</td><td><strong>: "+rsName+"</strong></td></tr>"+
-          "<tr><td style='padding:5px 0;color:#666'>Username</td><td>: <code style='background:#e2e8f0;padding:2px 8px;border-radius:4px'>"+uname+"</code></td></tr>"+
-          "<tr><td style='padding:5px 0;color:#666'>Password</td><td>: <code style='background:#e2e8f0;padding:2px 8px;border-radius:4px'>"+pwd+"</code></td></tr>"+
-          "</table></div>"+
-          "<p style='text-align:center;margin:28px 0'><a href='https://akuratidrg.web.id/' style='background:#0ea5e9;color:#fff;padding:13px 30px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px'>Masuk Ke Aplikasi &rarr;</a></p>"+
-          "<p style='color:#ef4444;font-size:12px;font-weight:bold;background:#fff5f5;padding:10px;border-radius:6px;border-left:3px solid #ef4444'>&#9888; PENTING: Jangan bagikan kredensial ini kepada siapapun!</p>"+
-          "<hr style='border:0;border-top:1px solid #e2e8f0;margin:20px 0'>"+
-          "<p style='font-size:11px;color:#999;margin:0'>Jika bukan Anda yang meminta pemulihan ini, abaikan email ini.</p></div>"
-      });
-      return ok("Email sent");
-    } catch(me) { return err("Failed to send email: "+me.toString()); }
-  }
-
-  // ── 5. LOG_SESSION ────────────────────────────────────────────
-  if (action === "log_session") {
-    var uname = params.username||"", sid = params.sessionId||"", lt = params.loginTime||new Date().toISOString();
-    var logSheet = ss.getSheetByName("Log Sesi");
-    if (!logSheet) {
-      logSheet = ss.insertSheet("Log Sesi");
-      logSheet.appendRow(["Timestamp WIB","Username","Session ID","Login Time (ISO)"]);
-      logSheet.getRange(1,1,1,4).setFontWeight("bold").setBackground("#0d9488").setFontColor("white");
-      logSheet.setColumnWidths(1,4,180);
-    }
-    logSheet.appendRow([Utilities.formatDate(new Date(),"GMT+7","dd/MM/yyyy HH:mm:ss"), uname, sid, lt]);
-    return ok("Session logged");
-  }
-
-  // ── 6. GET_SESSIONS ───────────────────────────────────────────
-  if (action === "get_sessions") {
-    var logSheet = ss.getSheetByName("Log Sesi");
-    if (!logSheet) return ContentService.createTextOutput(JSON.stringify({status:"success",sessions:[]})).setMimeType(ContentService.MimeType.JSON).setHeaders(h);
-    var data = logSheet.getDataRange().getValues();
-    var sessions = [];
-    for (var i=1; i<data.length; i++) sessions.push({timestamp:data[i][0],username:data[i][1],sessionId:data[i][2],loginTime:data[i][3]});
-    sessions.reverse();
-    return ContentService.createTextOutput(JSON.stringify({status:"success",sessions:sessions})).setMimeType(ContentService.MimeType.JSON).setHeaders(h);
-  }
-
-  // ── FALLBACK ──────────────────────────────────────────────────
-  return err("Invalid action");
-}`}
-            />
-          </div>
-        </Card>
+        )}
       </div>
     );
   };
@@ -8809,7 +8611,7 @@ function handleRequest(params) {
               <div className="mt-8 text-center">
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
                 <div className="mt-3">
-                  <a href="/permohonan-akun/" className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</a>
+                  <button type="button" onClick={() => setShowRegister(true)} className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</button>
                 </div>
                 <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.4.6 (210520261156)</p>
               </div>
@@ -8835,19 +8637,19 @@ function handleRequest(params) {
                 </div>
                 <h3 className="text-xl font-black text-slate-800 tracking-tight">Lupa Password Sistem?</h3>
                 <p className="text-xs text-slate-500 leading-relaxed font-bold">
-                  Masukkan Username atau Email terdaftar Anda. Kami akan mencari kredensial Anda dan mengirimkannya secara otomatis via email.
+                  Masukkan Email terdaftar Anda. Kami akan mengirimkan tautan pemulihan kata sandi.
                 </p>
               </div>
 
               <form onSubmit={handleForgotPassword} className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Username atau Email</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Email Terdaftar</label>
                   <input
-                    type="text"
+                    type="email"
                     value={forgotIdentity}
                     onChange={e => { setForgotIdentity(e.target.value); setForgotError(''); setForgotSuccess(''); }}
                     className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold shadow-sm"
-                    placeholder="Contoh: user123 atau user@email.com"
+                    placeholder="Contoh: user@email.com"
                     required
                   />
                 </div>
@@ -8875,8 +8677,74 @@ function handleRequest(params) {
                     }`}
                 >
                   {isProcessingForgot ? <Activity size={16} className="animate-spin" /> : <Send size={16} />}
-                  {isProcessingForgot ? 'MEMPROSES...' : 'KIRIM PASSWORD SAYA'}
+                  {isProcessingForgot ? 'MEMPROSES...' : 'KIRIM RESET LINK'}
                 </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showRegister && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="max-w-md w-full max-h-[95vh] overflow-y-auto custom-scrollbar p-10 shadow-2xl border border-white/20 bg-white relative rounded-[2.5rem] animate-in zoom-in-95 duration-300">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 via-emerald-500 to-teal-600"></div>
+              <button onClick={() => setShowRegister(false)} className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-full transition-all">
+                <X size={20} />
+              </button>
+              
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <ClipboardList size={32} className="text-teal-600" />
+                </div>
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">Permohonan Akun</h2>
+                <p className="text-sm text-slate-500 font-medium mt-2">Daftar untuk mendapatkan akses ke aplikasi</p>
+              </div>
+
+              {regState.error && (
+                <div className="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3">
+                  <AlertCircle size={18} className="text-rose-500 shrink-0 mt-0.5" />
+                  <p className="text-xs font-bold text-rose-700">{regState.error}</p>
+                </div>
+              )}
+
+              {regState.success && (
+                <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-start gap-3">
+                  <CheckCircle size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                  <p className="text-xs font-bold text-emerald-700">{regState.success}</p>
+                </div>
+              )}
+
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email</label>
+                  <input type="email" required value={regData.email} onChange={e => setRegData({...regData, email: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="email@contoh.com" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+                  <input type="password" required value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} minLength={6} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="Minimal 6 karakter" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Username (ID Login)</label>
+                  <input type="text" required value={regData.username} onChange={e => setRegData({...regData, username: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="johndoe" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nama Lengkap</label>
+                  <input type="text" required value={regData.nama} onChange={e => setRegData({...regData, nama: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="Nama Lengkap Anda" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Nama Rumah Sakit / Faskes</label>
+                  <input type="text" required value={regData.faskes} onChange={e => setRegData({...regData, faskes: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="RSUD Contoh" />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">No WhatsApp</label>
+                  <input type="text" value={regData.wa} onChange={e => setRegData({...regData, wa: e.target.value})} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="081234567890" />
+                </div>
+                <div className="pt-4">
+                  <button type="submit" disabled={regState.loading} className="w-full font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 text-xs tracking-[0.1em] uppercase bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0">
+                    {regState.loading ? <Activity size={16} className="animate-spin" /> : <Send size={16} />}
+                    {regState.loading ? 'MEMPROSES...' : 'KIRIM PERMOHONAN'}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
