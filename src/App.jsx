@@ -1779,11 +1779,11 @@ const parseDate = (dateStr) => {
 };
 
 // --- REUSABLE UI COMPONENTS ---
-const Card = React.memo(({ children, className = '', id = null, downloadTitle = null }) => {
+const Card = React.memo(({ children, className = '', id = null, downloadTitle = null, onClick = undefined }) => {
   const hasBg = className.split(' ').some(c => c.startsWith('bg-'));
   const btnStyle = { position: 'absolute', top: '12px', right: '12px', zIndex: 60, display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 11px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 8px rgba(14,165,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'all 0.2s' };
   return (
-    <div id={id} style={{ position: 'relative' }} className={`${hasBg ? '' : 'bg-white'} rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 ${className}`}>
+    <div id={id} onClick={onClick} style={{ position: 'relative' }} className={`${hasBg ? '' : 'bg-white'} rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 ${className}`}>
       {downloadTitle && id && (
         <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} style={btnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} className="print:hidden" title={`Unduh ${downloadTitle} sebagai PNG`}>
           <Download size={13} /> Simpan PNG
