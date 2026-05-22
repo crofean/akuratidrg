@@ -8837,12 +8837,12 @@ export default function App() {
 
               <form onSubmit={handleLogin} className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Username</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Email (atau Username Lama)</label>
                   <input
                     type="text" value={username}
                     onChange={e => { setUsername(e.target.value); setLoginError(''); }}
                     className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold shadow-sm"
-                    placeholder="Masukkan username" required
+                    placeholder="Masukkan Email lengkap Anda" required
                   />
                 </div>
                 <div>
