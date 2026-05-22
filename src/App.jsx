@@ -3376,11 +3376,24 @@ export default function App() {
   const [resetPasswordFeedback, setResetPasswordFeedback] = useState({}); // { [userId]: 'loading'|'success'|'error' }
 
   const handleAdminResetPassword = async (u) => {
-    if (!u.email) {
-      setUserManagementError(`User @${u.username} tidak memiliki email terdaftar. Reset password tidak bisa dilakukan.`);
-      return;
+    let targetEmail = u.email;
+    
+    // Jika email tidak ada di profil (karena tabel profiles memang tidak simpan email)
+    if (!targetEmail) {
+      // Coba tebak dari username, jika username mengandung '@'
+      if (u.username && u.username.includes('@')) {
+        targetEmail = u.username;
+      } else {
+        // Minta admin memasukkan email user secara manual
+        const promptEmail = window.prompt(
+          `Sistem tidak mengetahui email untuk user @${u.username} (${u.nama_lengkap}).\n\nMasukkan email yang digunakan user ini saat mendaftar:`
+        );
+        if (!promptEmail) return; // Batal jika kosong
+        targetEmail = promptEmail.trim();
+      }
     }
-    const confirmMsg = `Kirim link reset password ke email:\n${u.email}\n\nUser (${u.nama_lengkap}) akan menerima email dari Supabase untuk mengatur password baru.\n\nLanjutkan?`;
+
+    const confirmMsg = `Kirim link reset password ke email:\n${targetEmail}\n\nLanjutkan?`;
     if (!window.confirm(confirmMsg)) return;
 
     setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'loading' }));
@@ -3388,16 +3401,23 @@ export default function App() {
     setUserManagementSuccess('');
     try {
       const redirectTo = window.location.origin + window.location.pathname;
-      const { error } = await supabase.auth.resetPasswordForEmail(u.email, { redirectTo });
-      if (error) throw error;
+      const { error } = await supabase.auth.resetPasswordForEmail(targetEmail, { redirectTo });
+      if (error) {
+        if (error.message.toLowerCase().includes('not found') || error.message.toLowerCase().includes('user not found')) {
+          throw new Error('Email tidak terdaftar di sistem Auth. Pastikan emailnya benar.');
+        }
+        if (error.message.toLowerCase().includes('rate limit')) {
+          throw new Error('Terlalu sering mengirim. Tunggu beberapa saat.');
+        }
+        throw new Error(error.message);
+      }
       setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'success' }));
-      setUserManagementSuccess(`✅ Link reset password berhasil dikirim ke ${u.email}`);
-      // Reset feedback setelah 5 detik
+      setUserManagementSuccess(`✅ Link reset password berhasil dikirim ke ${targetEmail}`);
       setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 5000);
     } catch (err) {
       setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'error' }));
-      setUserManagementError(`Gagal kirim reset ke ${u.email}: ${err.message}`);
-      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 4000);
+      setUserManagementError(`Gagal kirim reset ke ${targetEmail}: ${err.message}`);
+      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 6000);
     }
   };
 
