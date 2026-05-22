@@ -1,0 +1,179 @@
+const fs = require('fs');
+
+let code = fs.readFileSync('src/App.jsx', 'utf8');
+
+// The new functions from renderUserManagement
+const newFuncs = `  const fetchUserManagementData = async () => {
+    try {
+      setIsLoadingUsers(true);
+      const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      
+      const approved = data.filter(u => u.status === 'active');
+      const pending = data.filter(u => u.status === 'pending');
+      const rejected = data.filter(u => u.status === 'rejected');
+      
+      setUserAccounts(approved);
+      setPendingUsers(pending);
+      setRejectedUsers(rejected);
+      setUserManagementError('');
+    } catch (err) {
+      setUserManagementError('Gagal mengambil data user: ' + err.message);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  const handleApprove = async (userId) => {
+    const duration = pendingDurations[userId] || 12;
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const masaAktif = new Date();
+      if (duration !== 999) masaAktif.setMonth(masaAktif.getMonth() + duration);
+      else masaAktif.setFullYear(masaAktif.getFullYear() + 100);
+
+      const { error } = await supabase.from('profiles').update({ status: 'active', masa_aktif: masaAktif }).eq('id', userId);
+      if (error) throw error;
+      
+      setUserManagementSuccess('Pengguna berhasil disetujui!');
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menyetujui akun: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleReject = async (userId) => {
+    if (!window.confirm('Apakah Anda yakin ingin menolak pengajuan ini?')) return;
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+      if (error) throw error;
+      setUserManagementSuccess('Pengguna berhasil ditolak!');
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menolak akun: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleDeleteActive = async (userId) => {
+    if (!window.confirm('Apakah Anda yakin ingin menonaktifkan akses pengguna ini?')) return;
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const { error } = await supabase.from('profiles').update({ status: 'disabled' }).eq('id', userId);
+      if (error) throw error;
+      setUserManagementSuccess('Akses pengguna berhasil dinonaktifkan.');
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menonaktifkan akun: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  const handleEditUserClick = (u) => {
+    setEditingUser(u);
+    setEditUserData({
+      nama_lengkap: u.nama_lengkap || '',
+      nama_faskes: u.nama_faskes || '',
+      no_wa: u.no_wa || '',
+      role: u.role || 'user',
+      status: u.status || 'active',
+      masa_aktif: u.masa_aktif ? new Date(u.masa_aktif).toISOString().split('T')[0] : ''
+    });
+    setShowEditUserModal(true);
+  };
+
+  const handleSaveEditUser = async (e) => {
+    e.preventDefault();
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    try {
+      const updates = {
+        nama_lengkap: editUserData.nama_lengkap,
+        nama_faskes: editUserData.nama_faskes,
+        no_wa: editUserData.no_wa,
+        role: editUserData.role,
+        status: editUserData.status,
+        masa_aktif: editUserData.masa_aktif ? new Date(editUserData.masa_aktif).toISOString() : null
+      };
+      const { error } = await supabase.from('profiles').update(updates).eq('id', editingUser.id);
+      if (error) throw error;
+      
+      setUserManagementSuccess('Data pengguna berhasil diperbarui!');
+      setShowEditUserModal(false);
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal menyimpan data pengguna: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
+  useEffect(() => {
+    if (subTab === "user_management" && (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com')) {
+      fetchUserManagementData();
+    }
+  }, [subTab, username]);
+`;
+
+// Remove old functions
+const lines = code.split('\n');
+let newLines = [];
+let skip = false;
+
+// Delete old fetchUserManagementData up to its useEffect
+for (let i = 0; i < lines.length; i++) {
+  if (lines[i].includes('const fetchUserManagementData = async () => {')) {
+    // If it's the first occurrence (around line 3219)
+    if (i < 5000) {
+      skip = true;
+    }
+  }
+  
+  if (skip && lines[i].includes('}, [subTab, registrationSheetId, registrationGid]);')) {
+    skip = false;
+    newLines.push(newFuncs);
+    continue;
+  }
+  
+  if (!skip) {
+    newLines.push(lines[i]);
+  }
+}
+
+let code2 = newLines.join('\n');
+let finalLines = [];
+let skipNested = false;
+let nestedLines = code2.split('\n');
+
+for (let i = 0; i < nestedLines.length; i++) {
+  if (nestedLines[i].includes('const renderUserManagement = () => {')) {
+    finalLines.push(nestedLines[i]);
+    // Skip next lines until return (
+    skipNested = true;
+    continue;
+  }
+  
+  if (skipNested && nestedLines[i].includes('return (')) {
+    skipNested = false;
+    finalLines.push(nestedLines[i]);
+    continue;
+  }
+  
+  if (!skipNested) {
+    finalLines.push(nestedLines[i]);
+  }
+}
+
+fs.writeFileSync('src/App.jsx', finalLines.join('\n'));
+console.log('App.jsx fixed successfully!');

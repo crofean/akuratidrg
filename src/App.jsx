@@ -3568,7 +3568,7 @@ export default function App() {
     e.preventDefault();
     setRegState({ loading: true, error: '', success: '' });
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: regData.email,
         password: regData.password,
         options: {
@@ -3581,6 +3581,7 @@ export default function App() {
         }
       });
       if (error) throw error;
+      if (!data.user) throw new Error('Pendaftaran ditolak oleh server. Email atau Username ini mungkin sudah digunakan, atau terkena limit pendaftaran. Silakan gunakan kombinasi Email & Username lain.');
       setRegState({ loading: false, error: '', success: 'Permohonan akun berhasil! Admin akan segera meninjau akun Anda.' });
       setTimeout(() => setShowRegister(false), 3000);
     } catch (err) {
