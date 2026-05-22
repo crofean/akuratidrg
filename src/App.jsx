@@ -3372,7 +3372,34 @@ export default function App() {
     }
   };
 
+  // State untuk feedback reset password per-user
+  const [resetPasswordFeedback, setResetPasswordFeedback] = useState({}); // { [userId]: 'loading'|'success'|'error' }
 
+  const handleAdminResetPassword = async (u) => {
+    if (!u.email) {
+      setUserManagementError(`User @${u.username} tidak memiliki email terdaftar. Reset password tidak bisa dilakukan.`);
+      return;
+    }
+    const confirmMsg = `Kirim link reset password ke email:\n${u.email}\n\nUser (${u.nama_lengkap}) akan menerima email dari Supabase untuk mengatur password baru.\n\nLanjutkan?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'loading' }));
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const redirectTo = window.location.origin + window.location.pathname;
+      const { error } = await supabase.auth.resetPasswordForEmail(u.email, { redirectTo });
+      if (error) throw error;
+      setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'success' }));
+      setUserManagementSuccess(`✅ Link reset password berhasil dikirim ke ${u.email}`);
+      // Reset feedback setelah 5 detik
+      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 5000);
+    } catch (err) {
+      setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'error' }));
+      setUserManagementError(`Gagal kirim reset ke ${u.email}: ${err.message}`);
+      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 4000);
+    }
+  };
 
   useEffect(() => {
     console.log('[SAK-iDRG] Global Filter changed:', globalFilter);
@@ -7986,6 +8013,7 @@ export default function App() {
                   <th className="px-5 py-4">No</th>
                   <th className="px-5 py-4">Username</th>
                   <th className="px-5 py-4">Nama & Faskes</th>
+                  <th className="px-5 py-4">Email</th>
                   <th className="px-5 py-4">Masa Berlaku Akses</th>
                   <th className="px-5 py-4 text-center">Status Keaktifan</th>
                   <th className="px-5 py-4 text-center">Tindakan Kontrol</th>
@@ -8013,6 +8041,12 @@ export default function App() {
                           <span className="block font-bold">{u.nama_lengkap}</span>
                           <span className="block text-slate-500 text-[10px]">{u.nama_faskes}</span>
                         </td>
+                        <td className="px-5 py-4">
+                          {u.email
+                            ? <a href={`mailto:${u.email}`} className="text-blue-600 hover:underline font-mono text-[11px] font-bold">{u.email}</a>
+                            : <span className="text-slate-300 text-[10px]">—</span>
+                          }
+                        </td>
                         <td className="px-5 py-4 font-bold text-slate-500">
                           {u.masa_aktif ? new Date(u.masa_aktif).toLocaleDateString('id-ID') : 'Selamanya'}
                         </td>
@@ -8027,17 +8061,44 @@ export default function App() {
                           {u.role === 'admin' ? (
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Proteksi Sistem</span>
                           ) : (
-                            <div className="flex items-center justify-center gap-2">
-                              <button 
-                                onClick={() => handleEditUserClick(u)}
-                                disabled={isProcessingAction}
-                                className="bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                              >Edit Akun</button>
-                              <button 
-                                onClick={() => handleDeleteActive(u.id)}
-                                disabled={isProcessingAction}
-                                className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                              >Hapus Akses</button>
+                            <div className="flex flex-col items-center gap-1.5">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button 
+                                  onClick={() => handleEditUserClick(u)}
+                                  disabled={isProcessingAction}
+                                  className="bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                                >Edit Akun</button>
+                                <button 
+                                  onClick={() => handleDeleteActive(u.id)}
+                                  disabled={isProcessingAction}
+                                  className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                                >Hapus Akses</button>
+                              </div>
+                              {/* Tombol Reset Password */}
+                              <button
+                                onClick={() => handleAdminResetPassword(u)}
+                                disabled={isProcessingAction || resetPasswordFeedback[u.id] === 'loading'}
+                                className={`w-full px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                                  resetPasswordFeedback[u.id] === 'success'
+                                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                                    : resetPasswordFeedback[u.id] === 'error'
+                                    ? 'bg-rose-100 text-rose-600 border border-rose-200'
+                                    : resetPasswordFeedback[u.id] === 'loading'
+                                    ? 'bg-slate-100 text-slate-400 border border-slate-200'
+                                    : 'bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-100'
+                                }`}
+                              >
+                                {resetPasswordFeedback[u.id] === 'loading' && <Activity size={10} className="animate-spin" />}
+                                {resetPasswordFeedback[u.id] === 'success' && <CheckCircle size={10} />}
+                                {resetPasswordFeedback[u.id] === 'error' && <AlertCircle size={10} />}
+                                {!resetPasswordFeedback[u.id] && <Key size={10} />}
+                                {
+                                  resetPasswordFeedback[u.id] === 'loading' ? 'Mengirim...' :
+                                  resetPasswordFeedback[u.id] === 'success' ? 'Email Terkirim!' :
+                                  resetPasswordFeedback[u.id] === 'error' ? 'Gagal!' :
+                                  'Reset Password'
+                                }
+                              </button>
                             </div>
                           )}
                         </td>
