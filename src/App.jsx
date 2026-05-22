@@ -3322,7 +3322,7 @@ export default function App() {
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
-      const { error } = await supabase.from('profiles').update({ status: 'disabled' }).eq('id', userId);
+      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
       if (error) throw error;
       setUserManagementSuccess('Akses pengguna berhasil dinonaktifkan.');
       fetchUserManagementData();
@@ -3525,7 +3525,7 @@ export default function App() {
       }
 
       if (profile.status === 'rejected') {
-        setLoginError('Mohon maaf, permohonan akun Anda ditolak.');
+        setLoginError('Mohon maaf, permohonan akun Anda ditolak atau akses telah dinonaktifkan.');
         await supabase.auth.signOut();
         return;
       }
