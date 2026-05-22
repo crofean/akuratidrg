@@ -7655,7 +7655,7 @@ export default function App() {
                             {d.disp.charAt(0)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-extrabold text-slate-700">{String(d.disp || '-').split(' ').filter(w=>w.length>0).map(w=>w.charAt(0)+'***').join(' ')}</span>
+                            <span className="font-extrabold text-slate-700 whitespace-nowrap overflow-hidden text-ellipsis max-w-[160px]" title={d.disp}>{d.disp}</span>
                           </div>
                         </div>
                       </td>
