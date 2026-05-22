@@ -7848,9 +7848,11 @@ export default function App() {
             <table className="w-full text-sm text-left whitespace-nowrap">
               <thead className="bg-slate-50 text-slate-500 text-[10px] uppercase font-black tracking-wider border-b border-slate-200">
                 <tr>
-                  <th className="px-5 py-4">Nama Lengkap</th>
-                  <th className="px-5 py-4">Faskes / Kontak</th>
-                  <th className="px-5 py-4">Username</th>
+                  <th className="px-5 py-4">Nama & Username</th>
+                  <th className="px-5 py-4">Email & No. WA</th>
+                  <th className="px-5 py-4">Faskes & Jabatan</th>
+                  <th className="px-5 py-4">Kode RS</th>
+                  <th className="px-5 py-4">Catatan</th>
                   <th className="px-5 py-4 text-center">Durasi Akses</th>
                   <th className="px-5 py-4 text-center">Aksi Keputusan</th>
                 </tr>
@@ -7858,20 +7860,30 @@ export default function App() {
               <tbody className="divide-y divide-slate-100 bg-white">
                 {pendingUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada pengajuan akun baru yang tertunda.</td>
+                    <td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada pengajuan akun baru yang tertunda.</td>
                   </tr>
                 ) : (
                   pendingUsers.map((u, idx) => (
-                    <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr key={u.id} className="hover:bg-amber-50/30 transition-colors">
                       <td className="px-5 py-4">
                         <span className="font-black text-slate-800 text-sm block">{u.nama_lengkap}</span>
+                        <span className="font-black text-teal-600 text-[10px] block mt-0.5">@{u.username}</span>
+                        <span className="text-[9px] text-slate-400 font-bold block mt-0.5">{u.created_at ? new Date(u.created_at).toLocaleString('id-ID') : '-'}</span>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="font-bold text-slate-600 text-xs block">{u.nama_faskes || '-'}</span>
-                        <span className="text-[10px] text-slate-400 font-bold block">{u.no_wa || '-'}</span>
+                        {u.email && <a href={`mailto:${u.email}`} className="font-bold text-blue-600 hover:underline text-xs block">{u.email}</a>}
+                        {!u.email && <span className="text-slate-400 text-xs">-</span>}
+                        <span className="text-[10px] text-slate-500 font-bold block mt-0.5">{u.no_wa ? `WA: ${u.no_wa}` : '-'}</span>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="font-black text-teal-600 text-xs">@{u.username}</span>
+                        <span className="font-bold text-slate-700 text-xs block">{u.nama_faskes || '-'}</span>
+                        {u.jabatan && <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{u.jabatan}</span>}
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="font-mono text-xs font-bold text-slate-600">{u.kode_rs || '-'}</span>
+                      </td>
+                      <td className="px-5 py-4 max-w-[180px]">
+                        <span className="text-[10px] text-slate-500 break-words whitespace-normal leading-relaxed">{u.catatan || '-'}</span>
                       </td>
                       <td className="px-5 py-4 text-center">
                         <select 
@@ -7891,13 +7903,13 @@ export default function App() {
                           <button 
                             onClick={() => handleApprove(u.id)}
                             disabled={isProcessingAction}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                          >Setujui</button>
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-sm shadow-emerald-500/30"
+                          >✓ Setujui</button>
                           <button 
                             onClick={() => handleReject(u.id)}
                             disabled={isProcessingAction}
-                            className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
-                          >Tolak</button>
+                            className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
+                          >✗ Tolak</button>
                         </div>
                       </td>
                     </tr>
