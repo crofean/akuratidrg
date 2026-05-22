@@ -717,15 +717,30 @@ const DEFAULT_AUDIT_RULES = [
   },
   {
     "id": "AUDIT-COD-37",
-    "case": "Pembuatan AV Shunt (Cimino) Baru vs Revisi",
+    "case": "Salah Kode Revisi/Komplikasi AV Shunt (BA Kesepakatan)",
     "category": "Coding Audit",
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["N18.5", "Z49.1"] }, { "operator": "OR", "codes": ["39.42", "39.52"] }]
+      "groups": [
+        { "operator": "OR", "codes": ["N18", "T82", "Z49"] },
+        { "operator": "OR", "codes": ["39.52", "59.42"] }
+      ]
     },
     "validation_action": {
-      "warning_message": "Koreksi Spesifisitas: AV Shunt BARU menggunakan 39.27. Kode 39.42 HANYA untuk REVISI shunt lama."
+      "warning_message": "Sesuai BA Kesepakatan Koding: Perbaikan, konversi, atau pengangkatan + pembuatan AV Shunt baru akibat komplikasi HARUS menggunakan prosedur 39.42, BUKAN 39.52 atau 59.42. Pastikan diagnosis menggunakan T82.- sesuai komplikasi."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-37B",
+    "case": "Validasi Revisi vs AV Shunt Baru",
+    "category": "Coding Audit",
+    "condition": {
+      "codes": ["39.42"]
+    },
+    "validation_action": {
+      "warning_message": "Koreksi Spesifisitas AV Shunt: Kode 39.42 HANYA untuk REVISI / Komplikasi AV shunt lama (sebaiknya disertai diagnosis T82.-). Jika ini adalah pembuatan AV Shunt BARU (Cimino pertama kali), gunakan 39.27."
     },
     "PTD": "1/2"
   },
