@@ -927,6 +927,35 @@ const DEFAULT_AUDIT_RULES = [
       "warning_message": "Koreksi Koding: Jika Kasus Psikosis dan terdapat Epilepsi Psikosis gunakan Kode F06.8 (Sumber: Aturan ICD 10 2010)."
     },
     "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-60",
+    "case": "CVA / Stroke Tanpa CT-Scan/MRI",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "grouped",
+      "operator": "AND",
+      "groups": [
+        { "operator": "OR", "codes": ["I60", "I61", "I62", "I63"] },
+        { "operator": "NOT", "codes": ["87.03", "88.91"] }
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Klaim Stroke/CVA (I60-I63) WAJIB dilampirkan dengan bukti tindakan CT Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada, kode diagnosis akan diturunkan atau digugurkan."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-61",
+    "case": "Verifikasi Fundus Photography (95.11)",
+    "category": "Coding Audit",
+    "condition": {
+      "codes": ["95.11"]
+    },
+    "validation_action": {
+      "warning_message": "Pastikan ada bukti cetak foto retina (Fundus Photography) untuk klaim kode 95.11. Jika tanpa bukti foto visual, harus diturunkan kodenya menjadi Observasi Visual Langsung (16.21)."
+    },
+    "PTD": "1/2"
   }
 ];
 
@@ -4095,7 +4124,15 @@ export default function App() {
       const acRow = [...dList, ...pList]; let hit = false;
       DEFAULT_AUDIT_RULES.forEach(ru => {
         const op = ru.condition?.operator || "OR"; let matched = false;
-        if (ru.condition?.type === 'grouped') matched = op === 'AND' ? ru.condition.groups.every(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c)))) : ru.condition.groups.some(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c))));
+        if (ru.condition?.type === 'grouped') {
+          matched = op === 'AND' ? ru.condition.groups.every(g => {
+            const hasMatch = g.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+            return g.operator === 'NOT' ? !hasMatch : hasMatch;
+          }) : ru.condition.groups.some(g => {
+            const hasMatch = g.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+            return g.operator === 'NOT' ? !hasMatch : hasMatch;
+          });
+        }
         else if (ru.condition?.codes) matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
 
         if (matched) {
