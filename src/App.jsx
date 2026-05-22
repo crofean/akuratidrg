@@ -7495,6 +7495,79 @@ export default function App() {
           highlightClass="bg-slate-500/5" 
         />
 
+        {/* Tambah KSM & Departemen Baru */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3">
+            <h3 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <Users size={14} className="text-sky-500" /> Tambah KSM Baru (Kustom)
+            </h3>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Contoh: KSM BEDAH ONKOLOGI" 
+                value={newKsmInput} 
+                onChange={e => setNewKsmInput(e.target.value)} 
+                className="flex-1 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm font-bold focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none transition-all"
+              />
+              <button 
+                onClick={addCustomKsm} 
+                className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 shrink-0 active:scale-95"
+              >
+                <Plus size={16} /> Tambah
+              </button>
+            </div>
+            {customKsms.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {customKsms.map(k => (
+                  <span key={k} className="px-2.5 py-1.5 bg-sky-50 text-sky-700 border border-sky-100 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
+                    {k}
+                    <button onClick={() => {
+                      const updated = customKsms.filter(x => x !== k);
+                      setCustomKsms(updated);
+                      localStorage.setItem('sak_custom_ksms', JSON.stringify(updated));
+                    }} className="ml-1 text-sky-400 hover:text-rose-500 hover:scale-110 transition-all"><X size={12} /></button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-3">
+            <h3 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <Building2 size={14} className="text-emerald-500" /> Tambah Departemen Baru (Kustom)
+            </h3>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Contoh: Department of Oncology" 
+                value={newDeptInput} 
+                onChange={e => setNewDeptInput(e.target.value)} 
+                className="flex-1 bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2 text-sm font-bold focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all"
+              />
+              <button 
+                onClick={addCustomDept} 
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center gap-2 shrink-0 active:scale-95"
+              >
+                <Plus size={16} /> Tambah
+              </button>
+            </div>
+            {customDepts.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {customDepts.map(d => (
+                  <span key={d} className="px-2.5 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-lg text-[10px] font-black uppercase flex items-center gap-1 shadow-sm">
+                    {d}
+                    <button onClick={() => {
+                      const updated = customDepts.filter(x => x !== d);
+                      setCustomDepts(updated);
+                      localStorage.setItem('sak_custom_depts', JSON.stringify(updated));
+                    }} className="ml-1 text-emerald-400 hover:text-rose-500 hover:scale-110 transition-all"><X size={12} /></button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
