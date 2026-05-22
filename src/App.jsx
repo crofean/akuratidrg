@@ -3461,6 +3461,7 @@ export default function App() {
   const [forgotError, setForgotError] = useState('');
 
   const [showRegister, setShowRegister] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
   const [regData, setRegData] = useState({ email: '', password: '', username: '', nama: '', faskes: '', wa: '' });
   const [regState, setRegState] = useState({ loading: false, error: '', success: '' });
 
@@ -9036,7 +9037,16 @@ export default function App() {
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
-                  <input type="password" required value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} minLength={6} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 transition-all outline-none font-medium" placeholder="Minimal 6 karakter" />
+                  <div className="relative">
+                    <input type={showRegPassword ? "text" : "password"} required value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} minLength={6} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 pr-12 transition-all outline-none font-medium" placeholder="Minimal 6 karakter" />
+                    <button
+                      type="button"
+                      onClick={() => setShowRegPassword(!showRegPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-teal-600 transition-colors focus:outline-none"
+                    >
+                      {showRegPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Username (ID Login)</label>
