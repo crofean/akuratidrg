@@ -1053,7 +1053,13 @@ const normDpjp = (name) => {
 // Safely parse a date string into a Date object; returns epoch (0) for invalid/null values
 const parseDateSafe = (dateStr) => {
   if (!dateStr || String(dateStr).trim() === '-' || String(dateStr).trim() === '') return new Date(0);
-  const d = new Date(String(dateStr).trim());
+  const str = String(dateStr).trim();
+  const p = str.split('/');
+  if (p.length === 3) {
+    const d = new Date(`${p[2]}-${p[1]}-${p[0]}`);
+    if (!isNaN(d.getTime())) return d;
+  }
+  const d = new Date(str);
   return isNaN(d.getTime()) ? new Date(0) : d;
 };
 
