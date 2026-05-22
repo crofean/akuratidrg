@@ -3007,6 +3007,7 @@ export default function App() {
     return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbwDfLqyeRjDs6LUpZ5unl3gh0muwS2zECBS6jsPgL3poqmicuWuA9l6ph2qCcqkHVcE/exec';
   });
   const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [pendingSearchTerm, setPendingSearchTerm] = useState("");
 
   const [customKsms, setCustomKsms] = useState(() => {
     try { return JSON.parse(localStorage.getItem('sak_custom_ksms')) || []; } catch(e){ return []; }
@@ -3417,7 +3418,8 @@ export default function App() {
   const [regState, setRegState] = useState({ loading: false, error: '', success: '' });
 
   useEffect(() => {
-    if (subTab === "user_management" && (username.toLowerCase() === 'admin' || username.toLowerCase() === 'admin@admin.com')) {
+    const role = localStorage.getItem('sak_role');
+    if (subTab === "user_management" && role === 'admin') {
       fetchUserManagementData();
     }
   }, [subTab, username]);
@@ -3541,21 +3543,39 @@ export default function App() {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    if (!forgotIdentity.trim()) {
-      setForgotError('Harap masukkan Email Anda.');
+    const input = forgotIdentity.trim();
+    if (!input) {
+      setForgotError('Harap masukkan Email atau Username Anda.');
       return;
     }
     setIsProcessingForgot(true);
     setForgotError('');
     setForgotSuccess('');
     try {
-      const resetEmail = forgotIdentity.trim().includes('@') ? forgotIdentity.trim() : `${forgotIdentity.trim()}@akurat.id`;
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail);
-      if (error) throw error;
-      setForgotSuccess('Email reset password berhasil dikirim! Silakan periksa kotak masuk Anda.');
+      // Jika tidak ada @, asumsikan username dan tambahkan domain @akurat.id
+      const resetEmail = input.includes('@') ? input : `${input}@akurat.id`;
+      // redirectTo: agar link reset mengarah kembali ke aplikasi ini
+      const redirectTo = window.location.origin + window.location.pathname;
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, { redirectTo });
+      if (error) {
+        // Terjemahkan error Supabase ke Bahasa Indonesia
+        if (error.message.toLowerCase().includes('rate limit') || error.message.toLowerCase().includes('too many')) {
+          throw new Error('Terlalu banyak percobaan. Harap tunggu beberapa menit sebelum mencoba lagi.');
+        }
+        if (error.message.toLowerCase().includes('not found') || error.message.toLowerCase().includes('user not found')) {
+          throw new Error('Email atau username tidak ditemukan. Pastikan data yang dimasukkan sudah benar.');
+        }
+        throw new Error(error.message);
+      }
+      setForgotSuccess(`✅ Link reset password telah dikirim ke email yang terdaftar dengan akun "${input}". Silakan periksa kotak masuk (dan folder Spam) Anda.`);
       setForgotIdentity('');
+      // Auto-close modal setelah 5 detik
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setForgotSuccess('');
+      }, 5000);
     } catch (err) {
-      setForgotError('Gagal mengirim email: ' + err.message);
+      setForgotError(err.message || 'Gagal mengirim email reset password. Coba lagi nanti.');
     } finally {
       setIsProcessingForgot(false);
     }
@@ -3624,23 +3644,7 @@ export default function App() {
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-
-    // Ambil data user dari Google Sheets
-    fetch('https://docs.google.com/spreadsheets/d/1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98/export?format=csv&gid=0')
-      .then(res => res.text())
-      .then(csvText => {
-        const lines = csvText.split(/\r?\n/);
-        const users = [];
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i].split(',');
-          if (cols.length >= 5) {
-            users.push({ username: String(cols[3]).trim(), password: String(cols[4]).trim() });
-          }
-        }
-        if (users.length > 0) setValidUsers(users);
-      })
-      .catch(err => console.error('Gagal mengambil data user', err));
-
+    // Autentikasi user sepenuhnya via Supabase Auth (Google Sheets tidak lagi digunakan)
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -7832,16 +7836,34 @@ export default function App() {
 
         {/* SECTION 1: PENDING USERS */}
         <Card className="p-6">
-          <div className="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
-                Pengajuan Akun Baru (Pending)
-              </h3>
+          <div className="border-b border-slate-100 pb-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                  Pengajuan Akun Baru (Pending)
+                </h3>
+              </div>
+              <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                {pendingUsers.length} Pengajuan
+              </span>
             </div>
-            <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-              {pendingUsers.length} Pengajuan
-            </span>
+            {/* Search Bar Pending */}
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Cari nama, email, faskes, username..."
+                value={pendingSearchTerm}
+                onChange={e => setPendingSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 transition-all text-slate-700 placeholder-slate-400"
+              />
+              {pendingSearchTerm && (
+                <button onClick={() => setPendingSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto custom-scrollbar border border-slate-100 rounded-2xl">
@@ -7862,8 +7884,12 @@ export default function App() {
                   <tr>
                     <td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada pengajuan akun baru yang tertunda.</td>
                   </tr>
-                ) : (
-                  pendingUsers.map((u, idx) => (
+                ) : (() => {
+                  const filtered = pendingUsers.filter(u => !pendingSearchTerm || Object.values(u).some(v => String(v).toLowerCase().includes(pendingSearchTerm.toLowerCase())));
+                  if (filtered.length === 0) return (
+                    <tr><td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-medium">📭 Tidak ada pengajuan yang cocok dengan "{pendingSearchTerm}".</td></tr>
+                  );
+                  return filtered.map((u, idx) => (
                     <tr key={u.id} className="hover:bg-amber-50/30 transition-colors">
                       <td className="px-5 py-4">
                         <span className="font-black text-slate-800 text-sm block">{u.nama_lengkap}</span>
@@ -7914,7 +7940,8 @@ export default function App() {
                       </td>
                     </tr>
                   ))
-                )}
+                })()
+              }
               </tbody>
             </table>
           </div>
@@ -7922,16 +7949,34 @@ export default function App() {
 
         {/* SECTION 2: ACTIVE ACCOUNTS */}
         <Card className="p-6">
-          <div className="border-b border-slate-100 pb-4 mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-                Daftar Akun Terdaftar & Masa Aktif
-              </h3>
+          <div className="border-b border-slate-100 pb-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                  Daftar Akun Terdaftar & Masa Aktif
+                </h3>
+              </div>
+              <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
+                {userAccounts.length} User Terdaftar
+              </span>
             </div>
-            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">
-              {userAccounts.length} User Terdaftar
-            </span>
+            {/* Search Bar Active */}
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Cari nama, username, faskes, email..."
+                value={userSearchTerm}
+                onChange={e => setUserSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all text-slate-700 placeholder-slate-400"
+              />
+              {userSearchTerm && (
+                <button onClick={() => setUserSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto custom-scrollbar border border-slate-100 rounded-2xl">
@@ -8781,64 +8826,93 @@ export default function App() {
         {showForgotPassword && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-in fade-in duration-300">
             <div className="max-w-md w-full p-8 shadow-2xl border border-white/20 bg-white relative rounded-[2rem] animate-in zoom-in-95 duration-300">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-t-[2rem]"></div>
               
               <button 
-                onClick={() => setShowForgotPassword(false)}
+                onClick={() => { setShowForgotPassword(false); setForgotError(''); setForgotSuccess(''); setForgotIdentity(''); }}
                 className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-rose-600 hover:scale-105 transition-all outline-none"
               >
                 <X size={16} />
               </button>
 
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center shadow-inner mx-auto mb-2">
+              <div className="text-center space-y-3 mb-6">
+                <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center shadow-inner mx-auto">
                   <Key size={32} className="text-teal-600" />
                 </div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight">Lupa Password Sistem?</h3>
-                <p className="text-xs text-slate-500 leading-relaxed font-bold">
-                  Masukkan Email terdaftar Anda. Kami akan mengirimkan tautan pemulihan kata sandi.
+                <h3 className="text-xl font-black text-slate-800 tracking-tight">Lupa Password?</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                  Masukkan <span className="font-bold text-slate-700">Email</span> atau <span className="font-bold text-slate-700">Username</span> akun Anda.
+                  Kami akan mengirimkan tautan reset password ke email terdaftar.
                 </p>
               </div>
 
-              <form onSubmit={handleForgotPassword} className="mt-6 space-y-4">
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Email Terdaftar</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
+                    Email atau Username
+                  </label>
                   <input
-                    type="email"
+                    type="text"
                     value={forgotIdentity}
                     onChange={e => { setForgotIdentity(e.target.value); setForgotError(''); setForgotSuccess(''); }}
-                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold shadow-sm"
-                    placeholder="Contoh: user@email.com"
-                    required
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold shadow-sm"
+                    placeholder="Contoh: user@email.com atau username Anda"
+                    autoComplete="email"
+                    autoFocus
                   />
+                  <p className="mt-1.5 ml-1 text-[10px] text-slate-400 font-medium">
+                    💡 Jika menggunakan username tanpa @, sistem akan otomatis menambahkan @akurat.id
+                  </p>
                 </div>
 
                 {forgotError && (
-                  <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-700 font-bold text-xs animate-in shake duration-300">
-                    <AlertCircle size={16} className="shrink-0" />
+                  <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3 text-rose-700 font-bold text-xs animate-in shake duration-300">
+                    <AlertCircle size={16} className="shrink-0 mt-0.5" />
                     <span>{forgotError}</span>
                   </div>
                 )}
 
                 {forgotSuccess && (
-                  <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-700 font-bold text-xs animate-in fade-in duration-300">
-                    <CheckCircle size={16} className="shrink-0" />
+                  <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-start gap-3 text-emerald-700 font-bold text-xs animate-in fade-in duration-300">
+                    <CheckCircle size={16} className="shrink-0 mt-0.5" />
                     <span>{forgotSuccess}</span>
                   </div>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={isProcessingForgot}
-                  className={`w-full font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 text-xs tracking-[0.1em] uppercase ${!isProcessingForgot
-                    ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20 hover:-translate-y-0.5'
-                    : 'bg-slate-100 text-slate-300 cursor-not-allowed border-2 border-slate-50'
+                {forgotSuccess ? (
+                  <button
+                    type="button"
+                    onClick={() => { setShowForgotPassword(false); setForgotSuccess(''); }}
+                    className="w-full font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 text-xs tracking-[0.1em] uppercase bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 hover:-translate-y-0.5 cursor-pointer"
+                  >
+                    <CheckCircle size={16} /> TUTUP
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={isProcessingForgot || !forgotIdentity.trim()}
+                    className={`w-full font-black py-4 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 text-xs tracking-[0.1em] uppercase ${
+                      !isProcessingForgot && forgotIdentity.trim()
+                        ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-lg shadow-teal-600/20 hover:-translate-y-0.5 cursor-pointer'
+                        : 'bg-slate-100 text-slate-300 cursor-not-allowed border-2 border-slate-50'
                     }`}
-                >
-                  {isProcessingForgot ? <Activity size={16} className="animate-spin" /> : <Send size={16} />}
-                  {isProcessingForgot ? 'MEMPROSES...' : 'KIRIM RESET LINK'}
-                </button>
+                  >
+                    {isProcessingForgot ? <Activity size={16} className="animate-spin" /> : <Send size={16} />}
+                    {isProcessingForgot ? 'MENGIRIM...' : 'KIRIM LINK RESET PASSWORD'}
+                  </button>
+                )}
               </form>
+
+              <p className="text-center text-[10px] text-slate-400 font-medium mt-4">
+                Ingat password Anda?{' '}
+                <button
+                  type="button"
+                  onClick={() => { setShowForgotPassword(false); setForgotError(''); setForgotSuccess(''); }}
+                  className="text-teal-500 hover:text-teal-600 font-bold transition-colors"
+                >
+                  Kembali ke Login
+                </button>
+              </p>
             </div>
           </div>
         )}
@@ -9424,7 +9498,7 @@ export default function App() {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSidebarOpen ? 'Dashboard Menu' : '...'}</p>
             </div>
 
-            {TABS.filter(t => t.id !== 'user_management' || username.toLowerCase() === 'admin').map((t, idx) => {
+            {TABS.filter(t => t.id !== 'user_management' || localStorage.getItem('sak_role') === 'admin').map((t, idx) => {
               const Icon = t.icon;
               const isActive = activeTab === 'dashboard' && subTab === t.id;
               return (
