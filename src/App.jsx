@@ -4871,13 +4871,19 @@ export default function App() {
       const tindakanHeaders = ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
       const tindakanRows = dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
 
+      const detailHeaders = ['Code', 'Deskripsi', 'Jumlah', 'ALOS', 'Subtotal RS', 'Subtotal INA', 'Perpasien iDRG', 'Cost Weight', 'NBR', 'Adj Factor', 'Avg RS', 'Subtotal iDRG', 'Selisih'];
+      const detailRanapRows = dashData.drgSummaryRanap.map(r => [r.code, r.desc, r.count, r.avgLos, r.sumRS, r.sumIna, r.avgIdrg, r.avgCW, r.avgNBR, r.avgAF, r.avgRS, r.sumIdrg, r.selisih]);
+      const detailRajalRows = dashData.drgSummaryRajal.map(r => [r.code, r.desc, r.count, r.avgLos, r.sumRS, r.sumIna, r.avgIdrg, r.avgCW, r.avgNBR, r.avgAF, r.avgRS, r.sumIdrg, r.selisih]);
+
       exportMultipleSheetsToXlsx('Laporan_Lengkap_Klaim', [
         { sheetName: 'Ringkasan Klaim', headers: ringkasanHeaders, rows: ringkasanRows },
         { sheetName: 'Severity Level', headers: severityHeaders, rows: severityRows },
         { sheetName: 'Complexity Level', headers: complexityHeaders, rows: complexityRows },
         { sheetName: 'Diagnosa Utama', headers: diagUtamaHeaders, rows: diagUtamaRows },
         { sheetName: 'Diagnosa Sekunder', headers: diagSekunderHeaders, rows: diagSekunderRows },
-        { sheetName: 'Tindakan', headers: tindakanHeaders, rows: tindakanRows }
+        { sheetName: 'Tindakan', headers: tindakanHeaders, rows: tindakanRows },
+        { sheetName: 'Detail Ranap', headers: detailHeaders, rows: detailRanapRows },
+        { sheetName: 'Detail Rajal', headers: detailHeaders, rows: detailRajalRows }
       ]);
     };
     const slKeys = ['sl0', 'sl1', 'sl2', 'sl3'];
