@@ -4843,6 +4843,43 @@ export default function App() {
   };
 
   const renderReport = () => {
+    const exportSemuaLaporan = () => {
+      const ringkasanHeaders = ['Bulan', 'Tarif RS', 'Kasus Rajal (INA)', 'Kasus Ranap (INA)', 'Total Kasus (INA)', 'Tarif Rajal (INA)', 'Tarif Ranap (INA)', 'Total Tarif (INA)', 'Kasus Rajal (iDRG)', 'Kasus Ranap (iDRG)', 'Total Kasus (iDRG)', 'Tarif Rajal (iDRG)', 'Tarif Ranap (iDRG)', 'Total Tarif (iDRG)', 'Selisih INACBG - RS', 'Selisih iDRG - RS', 'Selisih iDRG - INACBG'];
+      const ringkasanRows = dashData.reportArray.map(m => {
+        const totIna = (m.inaRajal ?? 0) + (m.inaRanap ?? 0);
+        const totIdrg = (m.idrgRajal ?? 0) + (m.idrgRanap ?? 0);
+        return [
+          m.label, m.tarifRsTotal, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
+          m.inaRajal, m.inaRanap, totIna, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
+          m.idrgRajal, m.idrgRanap, totIdrg, totIna - (m.tarifRsTotal ?? 0), totIdrg - (m.tarifRsTotal ?? 0),
+          totIdrg - totIna
+        ];
+      });
+
+      const severityHeaders = ['Bulan', 'SL 0 (Kasus)', 'SL 1 (Kasus)', 'SL 2 (Kasus)', 'SL 3 (Kasus)', 'SL 0 (Tarif)', 'SL 1 (Tarif)', 'SL 2 (Tarif)', 'SL 3 (Tarif)', 'Total Kasus', 'Total Klaim'];
+      const severityRows = dashData.severityReportArray.map(m => [m.label, m.sl0_kasus, m.sl1_kasus, m.sl2_kasus, m.sl3_kasus, m.sl0_rp, m.sl1_rp, m.sl2_rp, m.sl3_rp, m.total_kasus, m.total_rp]);
+
+      const complexityHeaders = ['Bulan', 'Rajal (Kasus)', 'CL 9 (Kasus)', 'CL 0 (Kasus)', 'CL 1 (Kasus)', 'CL 2 (Kasus)', 'CL 3 (Kasus)', 'CL 4 (Kasus)', 'Rajal (Tarif)', 'CL 9 (Tarif)', 'CL 0 (Tarif)', 'CL 1 (Tarif)', 'CL 2 (Tarif)', 'CL 3 (Tarif)', 'CL 4 (Tarif)', 'Total Kasus', 'Total Klaim'];
+      const complexityRows = dashData.clReportArray.map(m => [m.label, m.rj_kasus, m.cl9_kasus, m.cl0_kasus, m.cl1_kasus, m.cl2_kasus, m.cl3_kasus, m.cl4_kasus, m.rj_rp, m.cl9_rp, m.cl0_rp, m.cl1_rp, m.cl2_rp, m.cl3_rp, m.cl4_rp, m.total_kasus, m.total_rp]);
+
+      const diagUtamaHeaders = ['No', 'Kode Diagnosa', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
+      const diagUtamaRows = dashData.diagUtamaFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+
+      const diagSekunderHeaders = ['No', 'Kode Diagnosa', 'Deskripsi Resmi', 'Jumlah Temuan', 'Persentase (%)'];
+      const diagSekunderRows = dashData.diagSekunderFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+
+      const tindakanHeaders = ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
+      const tindakanRows = dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+
+      exportMultipleSheetsToXlsx('Laporan_Lengkap_Klaim', [
+        { sheetName: 'Ringkasan Klaim', headers: ringkasanHeaders, rows: ringkasanRows },
+        { sheetName: 'Severity Level', headers: severityHeaders, rows: severityRows },
+        { sheetName: 'Complexity Level', headers: complexityHeaders, rows: complexityRows },
+        { sheetName: 'Diagnosa Utama', headers: diagUtamaHeaders, rows: diagUtamaRows },
+        { sheetName: 'Diagnosa Sekunder', headers: diagSekunderHeaders, rows: diagSekunderRows },
+        { sheetName: 'Tindakan', headers: tindakanHeaders, rows: tindakanRows }
+      ]);
+    };
     const slKeys = ['sl0', 'sl1', 'sl2', 'sl3'];
     const clKeys = ['rj', 'cl9', 'cl0', 'cl1', 'cl2', 'cl3', 'cl4'];
 
@@ -5605,44 +5642,6 @@ export default function App() {
     const inaList = (dashData?.inaSummary || []).slice(0, 20);
     const drgList = (dashData?.drgSummary || []).slice(0, 20);
     const allRows = dashData?.rawRows || [];
-    const exportSemuaLaporan = () => {
-      const ringkasanHeaders = ['Bulan', 'Tarif RS', 'Kasus Rajal (INA)', 'Kasus Ranap (INA)', 'Total Kasus (INA)', 'Tarif Rajal (INA)', 'Tarif Ranap (INA)', 'Total Tarif (INA)', 'Kasus Rajal (iDRG)', 'Kasus Ranap (iDRG)', 'Total Kasus (iDRG)', 'Tarif Rajal (iDRG)', 'Tarif Ranap (iDRG)', 'Total Tarif (iDRG)', 'Selisih INACBG - RS', 'Selisih iDRG - RS', 'Selisih iDRG - INACBG'];
-      const ringkasanRows = dashData.reportArray.map(m => {
-        const totIna = (m.inaRajal ?? 0) + (m.inaRanap ?? 0);
-        const totIdrg = (m.idrgRajal ?? 0) + (m.idrgRanap ?? 0);
-        return [
-          m.label, m.tarifRsTotal, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
-          m.inaRajal, m.inaRanap, totIna, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
-          m.idrgRajal, m.idrgRanap, totIdrg, totIna - (m.tarifRsTotal ?? 0), totIdrg - (m.tarifRsTotal ?? 0),
-          totIdrg - totIna
-        ];
-      });
-
-      const severityHeaders = ['Bulan', 'SL 0 (Kasus)', 'SL 1 (Kasus)', 'SL 2 (Kasus)', 'SL 3 (Kasus)', 'SL 0 (Tarif)', 'SL 1 (Tarif)', 'SL 2 (Tarif)', 'SL 3 (Tarif)', 'Total Kasus', 'Total Klaim'];
-      const severityRows = dashData.severityReportArray.map(m => [m.label, m.sl0_kasus, m.sl1_kasus, m.sl2_kasus, m.sl3_kasus, m.sl0_rp, m.sl1_rp, m.sl2_rp, m.sl3_rp, m.total_kasus, m.total_rp]);
-
-      const complexityHeaders = ['Bulan', 'Rajal (Kasus)', 'CL 9 (Kasus)', 'CL 0 (Kasus)', 'CL 1 (Kasus)', 'CL 2 (Kasus)', 'CL 3 (Kasus)', 'CL 4 (Kasus)', 'Rajal (Tarif)', 'CL 9 (Tarif)', 'CL 0 (Tarif)', 'CL 1 (Tarif)', 'CL 2 (Tarif)', 'CL 3 (Tarif)', 'CL 4 (Tarif)', 'Total Kasus', 'Total Klaim'];
-      const complexityRows = dashData.clReportArray.map(m => [m.label, m.rj_kasus, m.cl9_kasus, m.cl0_kasus, m.cl1_kasus, m.cl2_kasus, m.cl3_kasus, m.cl4_kasus, m.rj_rp, m.cl9_rp, m.cl0_rp, m.cl1_rp, m.cl2_rp, m.cl3_rp, m.cl4_rp, m.total_kasus, m.total_rp]);
-
-      const diagUtamaHeaders = ['No', 'Kode Diagnosa', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
-      const diagUtamaRows = dashData.diagUtamaFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
-
-      const diagSekunderHeaders = ['No', 'Kode Diagnosa', 'Deskripsi Resmi', 'Jumlah Temuan', 'Persentase (%)'];
-      const diagSekunderRows = dashData.diagSekunderFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
-
-      const tindakanHeaders = ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
-      const tindakanRows = dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
-
-      exportMultipleSheetsToXlsx('Laporan_Lengkap_Klaim', [
-        { sheetName: 'Ringkasan Klaim', headers: ringkasanHeaders, rows: ringkasanRows },
-        { sheetName: 'Severity Level', headers: severityHeaders, rows: severityRows },
-        { sheetName: 'Complexity Level', headers: complexityHeaders, rows: complexityRows },
-        { sheetName: 'Diagnosa Utama', headers: diagUtamaHeaders, rows: diagUtamaRows },
-        { sheetName: 'Diagnosa Sekunder', headers: diagSekunderHeaders, rows: diagSekunderRows },
-        { sheetName: 'Tindakan', headers: tindakanHeaders, rows: tindakanRows }
-      ]);
-    };
-
     const exportAllCases = () => {
       const hdrs = ['No', 'Nama Pasien', 'MRN', 'SEP', 'Tgl Masuk', 'Tgl Pulang', 'LOS', 'DPJP', 'Kode INA', 'Deskripsi INA', 'Kode iDRG', 'Deskripsi iDRG', 'Tarif RS', 'Tarif INA-CBG', 'Tarif iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', ...compKeys.map(c => c.label)];
       const rws = allRows.map((r, i) => {
@@ -9174,7 +9173,7 @@ export default function App() {
                 <div className="mt-3">
                   <button type="button" onClick={() => setShowRegister(true)} className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</button>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.4.7 (220520260237)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.5.0 (220520260237)</p>
               </div>
             </div>
           </div>
@@ -9826,7 +9825,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.4.7 (220520260237)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.5.0 (220520260237)</span>
                 </div>
               )}
             </div>
@@ -10008,7 +10007,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.4.7</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.5.0</span>
             </p>
           </footer>
         </div>
