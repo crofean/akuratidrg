@@ -5649,8 +5649,8 @@ export default function App() {
         const ina = parseFloat(r.TOTAL_TARIF) || 0;
         const idrg = parseFloat(r.IDRG_TOTAL_TARIF) || 0;
         const c18 = extract18(r);
-        const patientName = String(r.NAMA_PASien || r.NAMA_PASIEN || '-');
-        return [i + 1, patientName, String(r.MRN || '-'), String(r.SEP || '-'), r._tglMasuk, String(r.DISCHARGE_DATE || '-'), r._los, String(r.DPJP || '-'), String(r.INACBG || '-'), String(r.DESKRIPSI_INACBG || '-'), String(r.IDRG_DRG_CODE || '-'), String(r.IDRG_DRG_DESCRIPTION || '-'), rs, ina, idrg, ina - rs, idrg - rs, ...compKeys.map(c => c18[c.key])];
+        const patientName = maskName(String(r.NAMA_PASien || r.NAMA_PASIEN || '-'));
+        return [i + 1, patientName, String(r.MRN || '-'), String(r.SEP || '-'), r._tglMasuk, String(r.DISCHARGE_DATE || '-'), r._los, maskName(String(r.DPJP || '-')), String(r.INACBG || '-'), String(r.DESKRIPSI_INACBG || '-'), String(r.IDRG_DRG_CODE || '-'), String(r.IDRG_DRG_DESCRIPTION || '-'), rs, ina, idrg, ina - rs, idrg - rs, ...compKeys.map(c => c18[c.key])];
       });
       exportToXlsx('Rekap_Seluruh_Kasus', hdrs, rws);
     };
@@ -6001,7 +6001,7 @@ export default function App() {
               // 3. DPJP Rows under KSM
               ksm.dpjps.forEach(dpjp => {
                 csv.push([
-                  'DPJP', dept.name, ksm.name, dpjp.rawName || dpjp.name, dpjp.count, 
+                  'DPJP', dept.name, ksm.name, maskName(dpjp.rawName || dpjp.name), dpjp.count, 
                   dpjp.sumRS, dpjp.sumIna, dpjp.sumIdrg, 
                   dpjp.sumIna - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumIna,
                   ...compKeys.map(c => (dpjp.comps?.[c.key] || 0))
@@ -6211,7 +6211,7 @@ export default function App() {
             // 2. DPJP Rows under KSM
             ksm.dpjps.forEach(dpjp => {
               csv.push([
-                'DPJP', ksm.name, dpjp.rawName || dpjp.name, dpjp.count, 
+                'DPJP', ksm.name, maskName(dpjp.rawName || dpjp.name), dpjp.count, 
                 dpjp.sumRS, dpjp.sumIna, dpjp.sumIdrg, 
                 dpjp.sumIna - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumRS, dpjp.sumIdrg - dpjp.sumIna,
                 ...compKeys.map(c => (dpjp.comps?.[c.key] || 0))
@@ -7191,7 +7191,7 @@ export default function App() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <SectionHeader icon={User} title="Kinerja DPJP (Dokter Penanggung Jawab Pelayanan)" desc="Produktivitas dan selisih finansial per DPJP." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => {
-          const csv = data.map(d => [d.rawName || d.name, d.count, d.sumRS, d.sumIna, d.sumIdrg, d.sumIna - d.sumRS, d.sumIdrg - d.sumRS, d.sumIdrg - d.sumIna, ...compKeys.map(c => d.comps?.[c.key] || 0)]);
+          const csv = data.map(d => [maskName(d.rawName || d.name), d.count, d.sumRS, d.sumIna, d.sumIdrg, d.sumIna - d.sumRS, d.sumIdrg - d.sumRS, d.sumIdrg - d.sumIna, ...compKeys.map(c => d.comps?.[c.key] || 0)]);
           exportToXlsx('Kinerja_DPJP', ['Nama DPJP', 'Jumlah Kasus', 'Total RS', 'Total INA', 'Total iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', 'Selisih iDRG-INA', ...compKeys.map(c => c.label)], csv);
         }} />
 
@@ -8705,11 +8705,16 @@ export default function App() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
         <SectionHeader icon={RefreshCw} title="Potensi Readmisi & Fragmentasi" desc="Deteksi pasien rawat inap (Readmisi) dan rawat jalan (Fragmentasi) dengan kunjungan ulang < 30 hari." colorClass="bg-rose-50 text-rose-600" highlightClass="bg-rose-500/5" exportAction={() => {
-          const headers = ['No RM', 'Nama Pasien', 'Kunjungan 1 (Tgl Pulang)', 'Diagnosa 1', 'DPJP 1', 'Kunjungan 2 (Tgl Masuk)', 'Diagnosa 2', 'DPJP 2', 'Jarak Hari', 'Sama DPJP', 'Sama Diagnosa Dasar'];
+          const headers = [
+            'No RM', 'Nama Pasien', 
+            'Kunjungan 1 (SEP)', 'Kunjungan 1 (Tgl Masuk)', 'Kunjungan 1 (Tgl Pulang)', 'Kunjungan 1 (LOS)', 'Kunjungan 1 (DPJP)', 'Kunjungan 1 (Kode INA)', 'Kunjungan 1 (Deskripsi INA)', 'Kunjungan 1 (Kode iDRG)', 'Kunjungan 1 (Tarif RS)', 'Kunjungan 1 (Tarif INA)', 'Kunjungan 1 (Tarif iDRG)',
+            'Kunjungan 2 (SEP)', 'Kunjungan 2 (Tgl Masuk)', 'Kunjungan 2 (Tgl Pulang)', 'Kunjungan 2 (LOS)', 'Kunjungan 2 (DPJP)', 'Kunjungan 2 (Kode INA)', 'Kunjungan 2 (Deskripsi INA)', 'Kunjungan 2 (Kode iDRG)', 'Kunjungan 2 (Tarif RS)', 'Kunjungan 2 (Tarif INA)', 'Kunjungan 2 (Tarif iDRG)',
+            'Jarak Hari', 'Sama DPJP', 'Sama Diagnosa Dasar'
+          ];
           const mapCase = c => [
-            c.pid, c.nama, 
-            c.v1.DISCHARGE_DATE, String(c.v1.INACBG || '') + ' ' + String(c.v1.DESKRIPSI_INACBG || ''), String(c.v1.DPJP || ''),
-            c.v2._tglMasuk || c.v2.TGL_MASUK, String(c.v2.INACBG || '') + ' ' + String(c.v2.DESKRIPSI_INACBG || ''), String(c.v2.DPJP || ''),
+            c.pid, maskName(c.nama),
+            c.v1.SEP || '-', c.v1._tglMasuk || c.v1.TGL_MASUK || '-', c.v1.DISCHARGE_DATE || '-', c.v1._los || 1, maskName(String(c.v1.DPJP || '-')), c.v1.INACBG || '-', c.v1.DESKRIPSI_INACBG || '-', c.v1.IDRG_DRG_CODE || '-', parseFloat(c.v1.TARIF_RS || c.v1.BIAYA_RS || 0) || 0, parseFloat(c.v1.TOTAL_TARIF || 0) || 0, parseFloat(c.v1.IDRG_TOTAL_TARIF || 0) || 0,
+            c.v2.SEP || '-', c.v2._tglMasuk || c.v2.TGL_MASUK || '-', c.v2.DISCHARGE_DATE || '-', c.v2._los || 1, maskName(String(c.v2.DPJP || '-')), c.v2.INACBG || '-', c.v2.DESKRIPSI_INACBG || '-', c.v2.IDRG_DRG_CODE || '-', parseFloat(c.v2.TARIF_RS || c.v2.BIAYA_RS || 0) || 0, parseFloat(c.v2.TOTAL_TARIF || 0) || 0, parseFloat(c.v2.IDRG_TOTAL_TARIF || 0) || 0,
             c.diffDays, c.sameDpjp ? 'Ya' : 'Tidak', c.relatedDiag ? 'Ya' : 'Tidak'
           ];
           exportMultipleSheetsToXlsx('Potensi_Readmisi_Fragmentasi', [
