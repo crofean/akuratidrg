@@ -1802,9 +1802,14 @@ const exportToXlsx = (filename, headers, rows) => {
   const link = document.createElement('a');
   link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
   link.download = `${cleanFilename}.xlsx`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  
+  if (globalSetExcelExport) {
+    globalSetExcelExport({ workbook, filename: cleanFilename });
+  } else {
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 };
 
 const formatRp = (val, short = false) => {
@@ -1821,6 +1826,7 @@ const formatRp = (val, short = false) => {
 const formatRpEx = (val) => (val === undefined || isNaN(val) || !isFinite(val) || val === 0) ? "-" : `${val < 0 ? '-' : ''}Rp ${new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Math.abs(val))}`;
 const formatPct = (val) => (isNaN(val) || !isFinite(val) || val == null) ? "0.00" : Number(val).toFixed(2);
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+let globalSetExcelExport = null;
 const parseDate = (dateStr) => {
   if (!dateStr) return null;
   const p = String(dateStr).split('/');
@@ -2536,14 +2542,18 @@ const InsightSosialisasiComponent = React.memo(({
     const cleanKsmName = String(currentKsm.substring(0, 15)).replace(/[\/\\:\*\?"<>\|]/g, '_');
     const filename = `Sosialisasi_KSM_${cleanKsmName}`;
 
-    // Write Base64 and download
-    const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-    const link = document.createElement('a');
-    link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
-    link.download = `${filename}.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (globalSetExcelExport) {
+      globalSetExcelExport({ workbook, filename });
+    } else {
+      // Write Base64 and download
+      const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+      const link = document.createElement('a');
+      link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
+      link.download = `${filename}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   if (allRows.length === 0) {
@@ -3014,6 +3024,47 @@ export default function App() {
   const [mapModal, setMapModal] = useState({ isOpen: false, type: '', code: '', desc: '' });
   const [uploadSubTab, setUploadSubTab] = useState('manual');
   const [driveUrl, setDriveUrl] = useState('');
+
+  const [excelExportReq, setExcelExportReq] = useState(null);
+  const [excelExportPassword, setExcelExportPassword] = useState('');
+  const [isEncryptingExcel, setIsEncryptingExcel] = useState(false);
+  const [showExportPasswordMask, setShowExportPasswordMask] = useState(false);
+
+  useEffect(() => {
+    globalSetExcelExport = setExcelExportReq;
+    return () => { globalSetExcelExport = null; };
+  }, []);
+
+  const processExcelExport = async (e) => {
+    if (e) e.preventDefault();
+    if (!excelExportPassword) return alert("Password tidak boleh kosong!");
+    setIsEncryptingExcel(true);
+    try {
+      const { workbook, filename } = excelExportReq;
+      const outArr = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
+      // Import the browser version directly to avoid Node.js polyfill issues in Vite
+      const mod = await import('xlsx-populate/browser/xlsx-populate.js');
+      const XlsxPopulate = mod.default || window.XlsxPopulate || mod;
+      const popWb = await XlsxPopulate.fromDataAsync(outArr);
+      const encBuf = await popWb.outputAsync({ password: excelExportPassword });
+      
+      const blob = new Blob([encBuf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${filename}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setExcelExportReq(null);
+      setExcelExportPassword('');
+    } catch(err) {
+      alert("Gagal mengenkripsi Excel: " + err.message);
+    } finally {
+      setIsEncryptingExcel(false);
+    }
+  };
+
   const [ksmOverrides, setKsmOverrides] = useState(() => {
     try {
       const saved = localStorage.getItem('sak_ksm_overrides');
@@ -3336,7 +3387,7 @@ export default function App() {
       if (duration !== 999) masaAktif.setMonth(masaAktif.getMonth() + duration);
       else masaAktif.setFullYear(masaAktif.getFullYear() + 100);
 
-      const { error } = await supabase.from('profiles').update({ status: 'active', masa_aktif: masaAktif }).eq('id', userId);
+      const { error } = await supabase.from('profiles').update({ status: 'active', masa_aktif: masaAktif }).eq('username', userId);
       if (error) throw error;
       
       setUserManagementSuccess('Pengguna berhasil disetujui!');
@@ -3354,7 +3405,7 @@ export default function App() {
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
-      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('username', userId);
       if (error) throw error;
       setUserManagementSuccess('Pengguna berhasil ditolak!');
       fetchUserManagementData();
@@ -3371,7 +3422,7 @@ export default function App() {
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
-      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', userId);
+      const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('username', userId);
       if (error) throw error;
       setUserManagementSuccess('Akses pengguna berhasil dinonaktifkan.');
       fetchUserManagementData();
@@ -3408,7 +3459,7 @@ export default function App() {
         status: editUserData.status,
         masa_aktif: editUserData.masa_aktif ? new Date(editUserData.masa_aktif).toISOString() : null
       };
-      const { error } = await supabase.from('profiles').update(updates).eq('id', editingUser.id);
+      const { error } = await supabase.from('profiles').update(updates).eq('username', editingUser.username);
       if (error) throw error;
       
       setUserManagementSuccess('Data pengguna berhasil diperbarui!');
@@ -3445,7 +3496,7 @@ export default function App() {
     const confirmMsg = `Kirim link reset password ke email:\n${targetEmail}\n\nLanjutkan?`;
     if (!window.confirm(confirmMsg)) return;
 
-    setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'loading' }));
+    setResetPasswordFeedback(prev => ({ ...prev, [u.username]: 'loading' }));
     setUserManagementError('');
     setUserManagementSuccess('');
     try {
@@ -3460,13 +3511,13 @@ export default function App() {
         }
         throw new Error(error.message);
       }
-      setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'success' }));
+      setResetPasswordFeedback(prev => ({ ...prev, [u.username]: 'success' }));
       setUserManagementSuccess(`✅ Link reset password berhasil dikirim ke ${targetEmail}`);
-      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 5000);
+      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.username]; return n; }), 5000);
     } catch (err) {
-      setResetPasswordFeedback(prev => ({ ...prev, [u.id]: 'error' }));
+      setResetPasswordFeedback(prev => ({ ...prev, [u.username]: 'error' }));
       setUserManagementError(`Gagal kirim reset ke ${targetEmail}: ${err.message}`);
-      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.id]; return n; }), 6000);
+      setTimeout(() => setResetPasswordFeedback(prev => { const n = { ...prev }; delete n[u.username]; return n; }), 6000);
     }
   };
 
@@ -6586,14 +6637,18 @@ export default function App() {
       const cleanKsmName = String(currentKsm.substring(0, 15)).replace(/[\/\\:\*\?"<>\|]/g, '_');
       const filename = `Sosialisasi_KSM_${cleanKsmName}`;
 
-      // Write Base64 and download
-      const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-      const link = document.createElement('a');
-      link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
-      link.download = `${filename}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (globalSetExcelExport) {
+        globalSetExcelExport({ workbook, filename });
+      } else {
+        // Write Base64 and download
+        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+        const link = document.createElement('a');
+        link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
+        link.download = `${filename}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     };
 
     return (
@@ -8066,7 +8121,7 @@ export default function App() {
                     <tr><td colSpan="7" className="px-6 py-12 text-center text-slate-400 font-medium">📭 Tidak ada pengajuan yang cocok dengan "{pendingSearchTerm}".</td></tr>
                   );
                   return filtered.map((u, idx) => (
-                    <tr key={u.id} className="hover:bg-amber-50/30 transition-colors">
+                    <tr key={u.username} className="hover:bg-amber-50/30 transition-colors">
                       <td className="px-5 py-4">
                         <span className="font-black text-slate-800 text-sm block">{u.nama_lengkap}</span>
                         <span className="font-black text-teal-600 text-[10px] block mt-0.5">@{u.username}</span>
@@ -8089,8 +8144,8 @@ export default function App() {
                       </td>
                       <td className="px-5 py-4 text-center">
                         <select 
-                          value={pendingDurations[u.id] || 12}
-                          onChange={(e) => setPendingDurations({ ...pendingDurations, [u.id]: parseInt(e.target.value) })}
+                          value={pendingDurations[u.username] || 12}
+                          onChange={(e) => setPendingDurations({ ...pendingDurations, [u.username]: parseInt(e.target.value) })}
                           className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-teal-500 text-slate-700 cursor-pointer"
                         >
                           <option value="1">1 Bulan</option>
@@ -8103,12 +8158,12 @@ export default function App() {
                       <td className="px-5 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button 
-                            onClick={() => handleApprove(u.id)}
+                            onClick={() => handleApprove(u.username)}
                             disabled={isProcessingAction}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-sm shadow-emerald-500/30"
                           >✓ Setujui</button>
                           <button 
-                            onClick={() => handleReject(u.id)}
+                            onClick={() => handleReject(u.username)}
                             disabled={isProcessingAction}
                             className="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
                           >✗ Tolak</button>
@@ -8183,7 +8238,7 @@ export default function App() {
                     }
                     
                     return (
-                      <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
+                      <tr key={u.username} className="hover:bg-slate-50/50 transition-colors">
                         <td className="px-5 py-4 text-slate-400 font-bold text-center w-12">{idx + 1}</td>
                         <td className="px-5 py-4 font-black text-slate-800 text-sm">@{u.username}</td>
                         <td className="px-5 py-4">
@@ -8218,7 +8273,7 @@ export default function App() {
                                   className="bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
                                 >Edit Akun</button>
                                 <button 
-                                  onClick={() => handleDeleteActive(u.id)}
+                                  onClick={() => handleDeleteActive(u.username)}
                                   disabled={isProcessingAction}
                                   className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
                                 >Hapus Akses</button>
@@ -8226,25 +8281,25 @@ export default function App() {
                               {/* Tombol Reset Password */}
                               <button
                                 onClick={() => handleAdminResetPassword(u)}
-                                disabled={isProcessingAction || resetPasswordFeedback[u.id] === 'loading'}
+                                disabled={isProcessingAction || resetPasswordFeedback[u.username] === 'loading'}
                                 className={`w-full px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                                  resetPasswordFeedback[u.id] === 'success'
+                                  resetPasswordFeedback[u.username] === 'success'
                                     ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                                    : resetPasswordFeedback[u.id] === 'error'
+                                    : resetPasswordFeedback[u.username] === 'error'
                                     ? 'bg-rose-100 text-rose-600 border border-rose-200'
-                                    : resetPasswordFeedback[u.id] === 'loading'
+                                    : resetPasswordFeedback[u.username] === 'loading'
                                     ? 'bg-slate-100 text-slate-400 border border-slate-200'
                                     : 'bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-100'
                                 }`}
                               >
-                                {resetPasswordFeedback[u.id] === 'loading' && <Activity size={10} className="animate-spin" />}
-                                {resetPasswordFeedback[u.id] === 'success' && <CheckCircle size={10} />}
-                                {resetPasswordFeedback[u.id] === 'error' && <AlertCircle size={10} />}
-                                {!resetPasswordFeedback[u.id] && <Key size={10} />}
+                                {resetPasswordFeedback[u.username] === 'loading' && <Activity size={10} className="animate-spin" />}
+                                {resetPasswordFeedback[u.username] === 'success' && <CheckCircle size={10} />}
+                                {resetPasswordFeedback[u.username] === 'error' && <AlertCircle size={10} />}
+                                {!resetPasswordFeedback[u.username] && <Key size={10} />}
                                 {
-                                  resetPasswordFeedback[u.id] === 'loading' ? 'Mengirim...' :
-                                  resetPasswordFeedback[u.id] === 'success' ? 'Email Terkirim!' :
-                                  resetPasswordFeedback[u.id] === 'error' ? 'Gagal!' :
+                                  resetPasswordFeedback[u.username] === 'loading' ? 'Mengirim...' :
+                                  resetPasswordFeedback[u.username] === 'success' ? 'Email Terkirim!' :
+                                  resetPasswordFeedback[u.username] === 'error' ? 'Gagal!' :
                                   'Reset Password'
                                 }
                               </button>
@@ -10047,6 +10102,75 @@ export default function App() {
               <p className="text-center text-white/50 text-xs mt-4 font-medium tracking-wider">
                 Gerakkan mouse atau klik untuk menutup
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL PASSWORD EXCEL */}
+        {excelExportReq && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="bg-emerald-600 p-6 flex flex-col items-center justify-center text-white relative">
+                <button
+                  onClick={() => {
+                    setExcelExportReq(null);
+                    setExcelExportPassword('');
+                  }}
+                  className="absolute top-4 right-4 text-emerald-100 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-3 backdrop-blur-md">
+                  <Key size={32} className="text-white drop-shadow-md" />
+                </div>
+                <h3 className="text-lg font-black tracking-tight">Proteksi File Excel</h3>
+                <p className="text-emerald-100 text-xs font-semibold mt-1 text-center leading-relaxed">
+                  Buat password untuk mengamankan<br/>data yang akan diunduh.
+                </p>
+              </div>
+              <form onSubmit={processExcelExport} className="p-6 flex flex-col gap-5">
+                <div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block">
+                    Password File
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showExportPasswordMask ? "text" : "password"}
+                      value={excelExportPassword}
+                      onChange={(e) => setExcelExportPassword(e.target.value)}
+                      placeholder="Masukkan password rahasia..."
+                      className="w-full pl-4 pr-10 py-3 rounded-xl bg-slate-50 border-2 border-slate-100 text-slate-800 font-bold focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all shadow-inner placeholder-slate-300"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowExportPasswordMask(!showExportPasswordMask)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer p-1"
+                    >
+                      {showExportPasswordMask ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <p className="text-[9px] font-bold text-slate-400 mt-2 flex items-start gap-1.5 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <Key size={12} className="shrink-0 text-amber-500" />
+                    <span>Password ini akan ditanyakan oleh aplikasi Excel saat membuka file ini nanti.</span>
+                  </p>
+                </div>
+                <button
+                  type="submit"
+                  disabled={!excelExportPassword || isEncryptingExcel}
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 cursor-pointer"
+                >
+                  {isEncryptingExcel ? (
+                    <>
+                      <Activity size={16} className="animate-spin" /> Mengenkripsi Data...
+                    </>
+                  ) : (
+                    <>
+                      <Download size={16} /> Proses & Unduh File
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
           </div>
         )}
