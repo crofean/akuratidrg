@@ -3378,7 +3378,7 @@ export default function App() {
   };
 
   const handleApprove = async (userId) => {
-    const duration = pendingDurations[userId] || 12;
+    const duration = pendingDurations[userId] || 3;
     setIsProcessingAction(true);
     setUserManagementError('');
     setUserManagementSuccess('');
@@ -8144,7 +8144,7 @@ export default function App() {
                       </td>
                       <td className="px-5 py-4 text-center">
                         <select 
-                          value={pendingDurations[u.username] || 12}
+                          value={pendingDurations[u.username] || 3}
                           onChange={(e) => setPendingDurations({ ...pendingDurations, [u.username]: parseInt(e.target.value) })}
                           className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold outline-none focus:border-teal-500 text-slate-700 cursor-pointer"
                         >
