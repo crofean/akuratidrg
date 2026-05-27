@@ -1812,6 +1812,43 @@ const exportToXlsx = (filename, headers, rows) => {
   }
 };
 
+const exportMultipleSheetsToXlsx = (filename, sheetsData) => {
+  const cleanFilename = String(filename).replace(/[\/\\:\*\?"<>\|]/g, '_');
+  const workbook = XLSX.utils.book_new();
+
+  sheetsData.forEach(sheetInfo => {
+    const data = [sheetInfo.headers, ...sheetInfo.rows];
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+    if (sheetInfo.headers && sheetInfo.headers.length > 0) {
+      const colWidths = sheetInfo.headers.map((h, colIdx) => {
+        let maxLen = String(h).length;
+        sheetInfo.rows.forEach(r => {
+          const cellValue = r[colIdx] !== undefined && r[colIdx] !== null ? String(r[colIdx]) : '';
+          if (cellValue.length > maxLen) {
+            maxLen = cellValue.length;
+          }
+        });
+        return { wch: Math.max(maxLen + 4, 12) };
+      });
+      worksheet['!cols'] = colWidths;
+    }
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetInfo.sheetName);
+  });
+
+  if (globalSetExcelExport) {
+    globalSetExcelExport({ workbook, filename: cleanFilename });
+  } else {
+    const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+    const link = document.createElement('a');
+    link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + wbout;
+    link.download = `${cleanFilename}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
+
 const formatRp = (val, short = false) => {
   if (val === undefined || isNaN(val) || !isFinite(val)) return short ? '0' : 'Rp 0';
   const absVal = Math.abs(val); const sign = val < 0 ? '-' : '';
@@ -4840,6 +4877,14 @@ export default function App() {
               </button>
             );
           })}
+          <div className="flex-1 hidden md:block"></div>
+          <button
+            onClick={exportSemuaLaporan}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black transition-all duration-300 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20 uppercase tracking-wider md:ml-auto w-full md:w-auto justify-center"
+            title="Unduh seluruh laporan tabel dalam satu file Excel (Multi-Sheet)"
+          >
+            <Download size={14} /> Unduh Semua Laporan (Multi-Sheet)
+          </button>
         </div>
 
         {reportSubTab === 'summary' && (
@@ -5563,6 +5608,44 @@ export default function App() {
     const inaList = (dashData?.inaSummary || []).slice(0, 20);
     const drgList = (dashData?.drgSummary || []).slice(0, 20);
     const allRows = dashData?.rawRows || [];
+    const exportSemuaLaporan = () => {
+      const ringkasanHeaders = ['Bulan', 'Tarif RS', 'Kasus Rajal (INA)', 'Kasus Ranap (INA)', 'Total Kasus (INA)', 'Tarif Rajal (INA)', 'Tarif Ranap (INA)', 'Total Tarif (INA)', 'Kasus Rajal (iDRG)', 'Kasus Ranap (iDRG)', 'Total Kasus (iDRG)', 'Tarif Rajal (iDRG)', 'Tarif Ranap (iDRG)', 'Total Tarif (iDRG)', 'Selisih INACBG - RS', 'Selisih iDRG - RS', 'Selisih iDRG - INACBG'];
+      const ringkasanRows = dashData.reportArray.map(m => {
+        const totIna = (m.inaRajal ?? 0) + (m.inaRanap ?? 0);
+        const totIdrg = (m.idrgRajal ?? 0) + (m.idrgRanap ?? 0);
+        return [
+          m.label, m.tarifRsTotal, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
+          m.inaRajal, m.inaRanap, totIna, m.kasusRajal, m.kasusRanap, m.kasusRajal + m.kasusRanap,
+          m.idrgRajal, m.idrgRanap, totIdrg, totIna - (m.tarifRsTotal ?? 0), totIdrg - (m.tarifRsTotal ?? 0),
+          totIdrg - totIna
+        ];
+      });
+
+      const severityHeaders = ['Bulan', 'SL 0 (Kasus)', 'SL 1 (Kasus)', 'SL 2 (Kasus)', 'SL 3 (Kasus)', 'SL 0 (Tarif)', 'SL 1 (Tarif)', 'SL 2 (Tarif)', 'SL 3 (Tarif)', 'Total Kasus', 'Total Klaim'];
+      const severityRows = dashData.severityReportArray.map(m => [m.label, m.sl0_kasus, m.sl1_kasus, m.sl2_kasus, m.sl3_kasus, m.sl0_rp, m.sl1_rp, m.sl2_rp, m.sl3_rp, m.total_kasus, m.total_rp]);
+
+      const complexityHeaders = ['Bulan', 'Rajal (Kasus)', 'CL 9 (Kasus)', 'CL 0 (Kasus)', 'CL 1 (Kasus)', 'CL 2 (Kasus)', 'CL 3 (Kasus)', 'CL 4 (Kasus)', 'Rajal (Tarif)', 'CL 9 (Tarif)', 'CL 0 (Tarif)', 'CL 1 (Tarif)', 'CL 2 (Tarif)', 'CL 3 (Tarif)', 'CL 4 (Tarif)', 'Total Kasus', 'Total Klaim'];
+      const complexityRows = dashData.clReportArray.map(m => [m.label, m.rj_kasus, m.cl9_kasus, m.cl0_kasus, m.cl1_kasus, m.cl2_kasus, m.cl3_kasus, m.cl4_kasus, m.rj_rp, m.cl9_rp, m.cl0_rp, m.cl1_rp, m.cl2_rp, m.cl3_rp, m.cl4_rp, m.total_kasus, m.total_rp]);
+
+      const diagUtamaHeaders = ['No', 'Kode Diagnosa', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
+      const diagUtamaRows = dashData.diagUtamaFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+
+      const diagSekunderHeaders = ['No', 'Kode Diagnosa', 'Deskripsi Resmi', 'Jumlah Temuan', 'Persentase (%)'];
+      const diagSekunderRows = dashData.diagSekunderFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+
+      const tindakanHeaders = ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
+      const tindakanRows = dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+
+      exportMultipleSheetsToXlsx('Laporan_Lengkap_Klaim', [
+        { sheetName: 'Ringkasan Klaim', headers: ringkasanHeaders, rows: ringkasanRows },
+        { sheetName: 'Severity Level', headers: severityHeaders, rows: severityRows },
+        { sheetName: 'Complexity Level', headers: complexityHeaders, rows: complexityRows },
+        { sheetName: 'Diagnosa Utama', headers: diagUtamaHeaders, rows: diagUtamaRows },
+        { sheetName: 'Diagnosa Sekunder', headers: diagSekunderHeaders, rows: diagSekunderRows },
+        { sheetName: 'Tindakan', headers: tindakanHeaders, rows: tindakanRows }
+      ]);
+    };
+
     const exportAllCases = () => {
       const hdrs = ['No', 'Nama Pasien', 'MRN', 'SEP', 'Tgl Masuk', 'Tgl Pulang', 'LOS', 'DPJP', 'Kode INA', 'Deskripsi INA', 'Kode iDRG', 'Deskripsi iDRG', 'Tarif RS', 'Tarif INA-CBG', 'Tarif iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', ...compKeys.map(c => c.label)];
       const rws = allRows.map((r, i) => {
@@ -8625,7 +8708,19 @@ export default function App() {
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-12">
-        <SectionHeader icon={RefreshCw} title="Potensi Readmisi & Fragmentasi" desc="Deteksi pasien rawat inap (Readmisi) dan rawat jalan (Fragmentasi) dengan kunjungan ulang < 30 hari." colorClass="bg-rose-50 text-rose-600" highlightClass="bg-rose-500/5" exportAction={() => {}} exportText="Ekspor" />
+        <SectionHeader icon={RefreshCw} title="Potensi Readmisi & Fragmentasi" desc="Deteksi pasien rawat inap (Readmisi) dan rawat jalan (Fragmentasi) dengan kunjungan ulang < 30 hari." colorClass="bg-rose-50 text-rose-600" highlightClass="bg-rose-500/5" exportAction={() => {
+          const headers = ['No RM', 'Nama Pasien', 'Kunjungan 1 (Tgl Pulang)', 'Diagnosa 1', 'DPJP 1', 'Kunjungan 2 (Tgl Masuk)', 'Diagnosa 2', 'DPJP 2', 'Jarak Hari', 'Sama DPJP', 'Sama Diagnosa Dasar'];
+          const mapCase = c => [
+            c.pid, c.nama, 
+            c.v1.DISCHARGE_DATE, String(c.v1.INACBG || '') + ' ' + String(c.v1.DESKRIPSI_INACBG || ''), String(c.v1.DPJP || ''),
+            c.v2._tglMasuk || c.v2.TGL_MASUK, String(c.v2.INACBG || '') + ' ' + String(c.v2.DESKRIPSI_INACBG || ''), String(c.v2.DPJP || ''),
+            c.diffDays, c.sameDpjp ? 'Ya' : 'Tidak', c.relatedDiag ? 'Ya' : 'Tidak'
+          ];
+          exportMultipleSheetsToXlsx('Potensi_Readmisi_Fragmentasi', [
+            { sheetName: 'Readmisi (Ranap)', headers, rows: uniqueReadmisi.map(mapCase) },
+            { sheetName: 'Fragmentasi (Rajal)', headers, rows: uniqueFrag.map(mapCase) }
+          ]);
+        }} exportText="Ekspor Excel" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <Card className="p-6 bg-white border-l-4 border-l-rose-500">
