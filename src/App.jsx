@@ -3611,14 +3611,11 @@ export default function App() {
 
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setIsLoggedIn(true);
-        setUsername(session.user.email);
-      }
+    // Memastikan user harus login ulang setiap kali halaman di-reload (F5)
+    const enforceLoginOnReload = async () => {
+      await supabase.auth.signOut();
     };
-    checkAuth();
+    enforceLoginOnReload();
   }, []);
 
   const handleLogin = async (e) => {
