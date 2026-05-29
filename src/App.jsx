@@ -3079,9 +3079,22 @@ export default function App() {
     try {
       const { workbook, filename } = excelExportReq;
       const outArr = XLSX.write(workbook, { type: 'array', bookType: 'xlsx' });
-      // Import the browser version directly to avoid Node.js polyfill issues in Vite
-      const mod = await import('xlsx-populate/browser/xlsx-populate.js');
-      const XlsxPopulate = mod.default || window.XlsxPopulate || mod;
+      // Import the browser version dynamically
+      let XlsxPopulate;
+      try {
+        const mod = await import('xlsx-populate/browser/xlsx-populate.js');
+        XlsxPopulate = mod.default || window.XlsxPopulate || mod;
+      } catch (importErr) {
+        // Fallback to CDN if the local chunk is missing (e.g., due to a recent deployment during the user's session)
+        XlsxPopulate = await new Promise((resolve, reject) => {
+          if (window.XlsxPopulate) return resolve(window.XlsxPopulate);
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/xlsx-populate@1.21.0/browser/xlsx-populate.min.js';
+          script.onload = () => resolve(window.XlsxPopulate);
+          script.onerror = () => reject(new Error('Gagal memuat pustaka dari server dan CDN. Silakan muat ulang (refresh) halaman.'));
+          document.body.appendChild(script);
+        });
+      }
       const popWb = await XlsxPopulate.fromDataAsync(outArr);
       const encBuf = await popWb.outputAsync({ password: excelExportPassword });
       
