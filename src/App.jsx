@@ -3871,9 +3871,21 @@ export default function App() {
       }
     };
 
-    // Periksa setiap 15 detik
-    const intervalId = setInterval(checkConcurrentLogin, 15000);
-    return () => clearInterval(intervalId);
+    // Optimasi Kuota Supabase: Periksa setiap 1 menit SAJA, 
+    // DAN langsung periksa saat user kembali membuka/fokus ke tab browser ini
+    const intervalId = setInterval(checkConcurrentLogin, 60000);
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkConcurrentLogin();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [isLoggedIn]);
 
   const fileInputRef = useRef(null); const folderInputRef = useRef(null);
