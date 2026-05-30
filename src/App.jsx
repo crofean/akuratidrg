@@ -3707,6 +3707,15 @@ export default function App() {
     localStorage.setItem('sak_username', username);
     localStorage.setItem('sak_login_time', Date.now().toString());
 
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('profiles').update({ session_id: sid }).eq('id', user.id);
+      }
+    } catch (err) {
+      console.error("Gagal update session_id:", err);
+    }
+
     setActiveTab('upload');
     setIsLoggedIn(true);
     setShowDisclaimer(false);
@@ -3833,6 +3842,38 @@ export default function App() {
       if (timeoutId) clearTimeout(timeoutId);
       events.forEach(event => window.removeEventListener(event, resetTimer));
     };
+  }, [isLoggedIn]);
+
+  // C. Concurrent Login Check (Satu Akun Satu Perangkat)
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    
+    const checkConcurrentLogin = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('session_id')
+          .eq('id', user.id)
+          .single();
+          
+        if (!error && data && data.session_id) {
+          const localSid = localStorage.getItem('sak_session_id');
+          if (localSid && localSid !== data.session_id) {
+            alert("Sesi Berakhir: Akun Anda telah diakses dari perangkat lain.");
+            handleLogout();
+          }
+        }
+      } catch (err) {
+        // Abaikan error jaringan sementara
+      }
+    };
+
+    // Periksa setiap 15 detik
+    const intervalId = setInterval(checkConcurrentLogin, 15000);
+    return () => clearInterval(intervalId);
   }, [isLoggedIn]);
 
   const fileInputRef = useRef(null); const folderInputRef = useRef(null);
