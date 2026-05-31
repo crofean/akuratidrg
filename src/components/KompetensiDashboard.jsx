@@ -5,6 +5,8 @@ import {
   ChevronRight, X, Search, AlertCircle, CheckCircle,
   BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy, FileSpreadsheet
 } from 'lucide-react';
+import PasswordModal from './PasswordModal';
+import { exportToExcel } from '../utils/exportUtils';
 import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils/competencyAnalyzer';
 import { copyToClipboardHtml } from '../App';
 import KompetensiLaporan from './KompetensiLaporan';
@@ -490,6 +492,101 @@ export default function KompetensiDashboard({ rows, onBack }) {
   const [search,  setSearch]  = useState('');
   const [config,  setConfig]  = useState({});
 
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingExport, setPendingExport] = useState(null);
+
+  const handleExportTop10 = () => {
+    if (!data || !data.top10) return;
+    
+    const formatSheet = (title, tableData) => {
+      const sheet = {
+        name: title.substring(0, 31),
+        columns: [
+          { header: 'No', key: 'no', width: 5 },
+          { header: 'Kode ICD', key: 'code', width: 15 },
+          { header: 'Deskripsi', key: 'desc', width: 50 },
+          { header: 'Kasus', key: 'kasus', width: 10 },
+          { header: 'INA-CBG', key: 'ina', width: 20 },
+          { header: 'iDRG', key: 'idrg', width: 20 }
+        ],
+        data: []
+      };
+      
+      if (tableData) {
+        tableData.forEach((d, i) => {
+          sheet.data.push({
+            no: i + 1,
+            code: d.code,
+            desc: d.desc,
+            kasus: d.kasus,
+            ina: d.ina,
+            idrg: d.idrg
+          });
+        });
+      }
+      return sheet;
+    };
+
+    setPendingExport({
+      name: 'Top_10_Kompetensi',
+      sheets: [
+        formatSheet('Diag Sesuai', data.top10.diagSesuai),
+        formatSheet('Tindakan Sesuai', data.top10.procSesuai),
+        formatSheet('Diag Tidak Sesuai', data.top10.diagTidakSesuai),
+        formatSheet('Tindakan Tidak Sesuai', data.top10.procTidakSesuai)
+      ]
+    });
+    setShowPasswordModal(true);
+  };
+
+  const handleExportDrillDown = (title, icdSummaryData, cfg, grp) => {
+    const sheet = {
+      name: 'Rincian_ICD',
+      columns: [
+        { header: 'No', key: 'no', width: 5 },
+        { header: 'Kode ICD', key: 'code', width: 15 },
+        { header: 'Deskripsi', key: 'desc', width: 50 },
+        { header: 'Komp. RS', key: 'komprs', width: 20 },
+        { header: 'Level ICD', key: 'levelicd', width: 20 },
+        { header: 'Status', key: 'status', width: 15 },
+        { header: 'Frekuensi', key: 'freq', width: 10 },
+        { header: 'INA-CBG', key: 'ina', width: 20 },
+        { header: 'iDRG', key: 'idrg', width: 20 },
+        { header: 'Selisih', key: 'selisih', width: 20 }
+      ],
+      data: []
+    };
+    
+    if (icdSummaryData) {
+      icdSummaryData.forEach((d, i) => {
+        const rsLevel = cfg && cfg[grp] ? cfg[grp] : 'Belum Ada Mapping';
+        const rsLevelIdx = LEVEL_ORDER.indexOf(rsLevel);
+        const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
+        const isSesuai = rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx;
+
+        sheet.data.push({
+          no: i + 1,
+          code: d.code,
+          desc: d.desc,
+          komprs: rsLevel,
+          levelicd: d.level,
+          status: isSesuai ? 'Sesuai' : 'Tidak Sesuai',
+          freq: d.count,
+          ina: d.ina,
+          idrg: d.idrg,
+          selisih: d.idrg - d.ina
+        });
+      });
+    }
+
+    setPendingExport({
+      name: `Rincian_${String(title).replace(/[^a-zA-Z0-9]/g, '_')}`,
+      sheets: [sheet]
+    });
+    setShowPasswordModal(true);
+  };
+
+
   useEffect(()=>{
     (async()=>{
       setLoading(true);
@@ -720,11 +817,19 @@ export default function KompetensiDashboard({ rows, onBack }) {
             </div>
 
             {/* TOP 10 TABLES */}
-            <div className="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:col-span-3">
-              <Top10Table title="Top 10 Diagnosa Sesuai Kompetensi RS" data={data.top10?.diagSesuai} />
-              <Top10Table title="Top 10 Tindakan Sesuai Kompetensi RS" data={data.top10?.procSesuai} />
-              <Top10Table title="Top 10 Diagnosa Tidak Sesuai Kompetensi RS" data={data.top10?.diagTidakSesuai} />
-              <Top10Table title="Top 10 Tindakan Tidak Sesuai Kompetensi RS" data={data.top10?.procTidakSesuai} />
+            <div className="mt-8 lg:col-span-3">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-black text-slate-800">Top 10 Diagnosa & Tindakan</h3>
+                <button onClick={handleExportTop10} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: 900 }}>
+                  <Download size={14} /> Download Excel
+                </button>
+              </div>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <Top10Table title="Top 10 Diagnosa Sesuai Kompetensi RS" data={data.top10?.diagSesuai} />
+                <Top10Table title="Top 10 Tindakan Sesuai Kompetensi RS" data={data.top10?.procSesuai} />
+                <Top10Table title="Top 10 Diagnosa Tidak Sesuai Kompetensi RS" data={data.top10?.diagTidakSesuai} />
+                <Top10Table title="Top 10 Tindakan Tidak Sesuai Kompetensi RS" data={data.top10?.procTidakSesuai} />
+              </div>
             </div>
           </div>
         )}
@@ -923,7 +1028,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
 }
 
 /* wrapper loads icdMap from CSV */
-function DrillDownWrapper({ group, rows, config, onClose }) {
+function DrillDownWrapper({ group, rows, config, onClose, onExport }) {
   const [icdMap, setIcdMap] = useState(null);
   useEffect(()=>{
     (async()=>{

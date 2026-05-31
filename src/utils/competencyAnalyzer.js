@@ -256,13 +256,25 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       groupDetails[gName].lossIdrg += tIdrg;
     }
 
-    // Tracking Top 10
-    const addCode = (codeListStr, targetObj) => {
+    // Tracking Top 10 per ICD Code
+    const processCodes = (codeListStr, targetSesuai, targetTidakSesuai) => {
       const codes = codeListStr.split(';').map(d => d.trim()).filter(d => d && d !== '-' && d.toLowerCase() !== 'none');
       codes.forEach(c => {
+        const entry = icdMap?.get(c)?.[0];
+        
+        if (!entry || !entry.level || entry.level === 'Belum Ada Mapping') {
+           // Skip completely if not mapped
+           return; 
+        }
+
+        const rsLevelStr = myCompetencies[entry.group] || 'Paripurna';
+        const rsLevelInt = levelValues[rsLevelStr] ?? 4;
+        const codeSesuai = entry.levelInt <= rsLevelInt;
+
+        const targetObj = codeSesuai ? targetSesuai : targetTidakSesuai;
+
         if (!targetObj[c]) {
-          const entry = icdMap?.get(c)?.[0];
-          let dsc = entry ? entry.desc : '-';
+          let dsc = entry.desc || '-';
           if ((!dsc || dsc === '-') && typeof icdFallback === 'object' && icdFallback !== null) {
             let found = icdFallback[c] || icdFallback[c.replace('.', '')];
             if (!found) {
@@ -283,13 +295,8 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       });
     };
 
-    if (isWithinCompetency) {
-      addCode(diagStr, topDiagSesuai);
-      addCode(procStr, topProcSesuai);
-    } else {
-      addCode(diagStr, topDiagTidakSesuai);
-      addCode(procStr, topProcTidakSesuai);
-    }
+    processCodes(diagStr, topDiagSesuai, topDiagTidakSesuai);
+    processCodes(procStr, topProcSesuai, topProcTidakSesuai);
 
 
     // Tabel 1: level-based stats

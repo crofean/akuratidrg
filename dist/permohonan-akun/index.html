@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permohonan Akun | AKURAT - iDRG</title>
+    <!-- Redirect ke sistem baru -->
+    <script>
+        alert('Sistem Pendaftaran telah diperbarui! Anda akan diarahkan ke portal utama.');
+        window.location.href = '/';
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="bg-decoration">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="Logo">
+                <div class="logo-text">
+                    <h1>AKURAT - <span>iD</span>RG</h1>
+                    <p>Account Application System</p>
+                </div>
+            </div>
+            <div class="header-content">
+                <h2>Formulir Permohonan Akun Baru</h2>
+                <p>Lengkapi data di bawah ini untuk mendapatkan akses ke dashboard analitik iDRG.</p>
+            </div>
+        </header>
+
+        <form id="registrationForm">
+            <div class="form-grid">
+                <!-- Data Kontak -->
+                <div class="form-section">
+                    <h3><i data-lucide="user"></i> Identitas Personal</h3>
+                    
+                    <div class="input-group">
+                        <label for="fullName">Nama Lengkap <span class="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Masukkan nama sesuai KTP" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Alamat Email Aktif <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
+                        <small>Digunakan untuk notifikasi dan pemulihan akun</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="phone">Nomor Handphone Aktif <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" placeholder="0812xxxx" required>
+                    </div>
+                </div>
+
+                <!-- Data Rumah Sakit -->
+                <div class="form-section">
+                    <h3><i data-lucide="building-2"></i> Afiliasi Rumah Sakit</h3>
+                    
+                    <div class="input-group">
+                        <label for="rsCode">Kode RS (Kode Rumah Sakit) <span class="required">*</span></label>
+                        <input type="text" id="rsCode" name="rsCode" placeholder="Masukkan Kode RS Resmi" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="rsName">Nama RS (Nama Rumah Sakit) <span class="required">*</span></label>
+                        <input type="text" id="rsName" name="rsName" placeholder="Contoh: RSUD Sayang Rakyat" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="position">Jabatan Anda di Rumah Sakit <span class="required">*</span></label>
+                        <select id="position" name="position" required>
+                            <option value="" disabled selected>Pilih Jabatan</option>
+                            <option value="Direktur">Direktur</option>
+                            <option value="Staff Administrasi">Staff Administrasi</option>
+                            <option value="Petugas Klaim/Verifikasi">Petugas Klaim/Verifikasi</option>
+                            <option value="IT/Teknisi">IT/Teknisi</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Kredensial Akun -->
+                <div class="form-section full-width">
+                    <h3><i data-lucide="shield-check"></i> Keamanan Akun</h3>
+                    <div class="credentials-grid">
+                        <div class="input-group">
+                            <label for="username">Nama Pengguna (Username) <span class="required">*</span></label>
+                            <div class="username-wrapper" style="position: relative; display: flex; align-items: center;">
+                                <input type="text" id="username" name="username" placeholder="Buat username unik" required style="width: 100%; padding-right: 40px;">
+                                <span id="usernameStatusIcon" style="position: absolute; right: 14px; display: none; align-items: center; justify-content: center; pointer-events: none;"></span>
+                            </div>
+                            <small id="usernameStatusText" style="font-size: 10px; font-weight: 700; display: block; margin-top: 4px; transition: all 0.3s;"></small>
+                        </div>
+                        <div class="input-group">
+                            <label for="password">Kata Sandi (Password) <span class="required">*</span></label>
+                            <div class="password-wrapper">
+                                <input type="password" id="password" name="password" placeholder="Min. 8 karakter, A-Z, a-z, 0-9 & simbol" required>
+                                <button type="button" class="toggle-password" data-target="password">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                            <small style="font-size: 9px; color: #64748b; line-height: 1.2;">Harus memuat A-Z, a-z, 0-9, dan simbol.</small>
+                        </div>
+                        <div class="input-group">
+                            <label for="confirmPassword">Konfirmasi Kata Sandi <span class="required">*</span></label>
+                            <div class="password-wrapper">
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Ulangi kata sandi baru" required>
+                                <button type="button" class="toggle-password" data-target="confirmPassword">
+                                    <i data-lucide="eye"></i>
+                                </button>
+                            </div>
+                            <small style="font-size: 9px; color: #64748b; line-height: 1.2;">Pastikan kata sandi sama persis.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tambahan -->
+                <div class="form-section full-width">
+                    <div class="input-group">
+                        <label for="questionType">Jenis Pertanyaan / Catatan Tambahan</label>
+                        <textarea id="questionType" name="questionType" rows="2" placeholder="Ada hal yang ingin ditanyakan?"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="agreement-section">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="agreement" name="agreement" required>
+                    <span class="checkmark"></span>
+                    <span class="label-text">Apakah Anda sudah membaca dan menyetujui <a href="javascript:void(0)" id="termsLink">Syarat dan Ketentuan</a> layanan Akurat iDRG?</span>
+                </label>
+                <div class="agreement-options">
+                    <span class="status-badge" id="agreementStatus">Belum Disetujui</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn-submit">
+                    <span class="btn-text">KIRIM PERMOHONAN</span>
+                    <i data-lucide="send"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i data-lucide="check-circle-2"></i>
+            </div>
+            <h2>Permohonan Berhasil Dikirim!</h2>
+            <p>Terima kasih <strong><span id="displayUserName"></span></strong>. Tim kami akan melakukan verifikasi data Rumah Sakit Anda. Notifikasi akan dikirimkan melalui email dalam waktu 1x24 jam.</p>
+            <button class="btn-close" onclick="closeModal('successModal')">Selesai</button>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content terms-content">
+            <div class="terms-header">
+                <i data-lucide="scroll-text"></i>
+                <h2>Syarat & Ketentuan Layanan</h2>
+            </div>
+            <div class="terms-body">
+                <ol>
+                    <li>
+                        <strong>Hak Cipta & Kekayaan Intelektual</strong>
+                        <p>Pengguna wajib menghormati hak cipta karya aplikasi ini. Dilarang keras meniru, menggandakan, atau mengambil konsep dan ide aplikasi AKURAT iDRG tanpa izin tertulis dari pengembang.</p>
+                    </li>
+                    <li>
+                        <strong>Lisensi Penggunaan Akun</strong>
+                        <p>Satu akun hanya diperuntukkan bagi satu orang pengguna. Dilarang keras membagikan atau menyebarkan kredensial akun kepada pihak lain mana pun.</p>
+                    </li>
+                    <li>
+                        <strong>Tanggung Jawab Keamanan Data</strong>
+                        <p>Segala bentuk kebocoran data yang terjadi di luar kendali sistem aplikasi (akibat kelalaian pengguna atau faktor eksternal lainnya) bukan merupakan tanggung jawab developer AKURAT iDRG.</p>
+                    </li>
+                    <li>
+                        <strong>Pemrosesan Data Lokal</strong>
+                        <p>Aplikasi ini mengutamakan privasi. Kami menjamin bahwa data klaim (file .txt/.xlsx) Anda <strong>TIDAK disimpan ke server kami</strong>. Seluruh proses analisis dilakukan secara lokal di browser Anda untuk keamanan maksimal.</p>
+                    </li>
+                </ol>
+            </div>
+            <div class="terms-footer" style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; border-top: 2px solid #f1f5f9; padding-top: 16px;">
+                <button type="button" id="btnTermsCancel" class="btn-close" onclick="closeModal('termsModal')" style="background: #f1f5f9; color: #64748b; font-weight: 700; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: all 0.3s;">Tolak</button>
+                <button type="button" id="btnTermsAccept" class="btn-submit" style="margin-top: 0; width: auto; padding: 12px 28px; border-radius: 12px; font-size: 14px; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2); transition: all 0.3s;">Setujui & Kirim Pengajuan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
