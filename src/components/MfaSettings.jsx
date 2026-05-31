@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { QRCodeSVG } from 'qrcode.react';
-import { ShieldAlert, Key, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ShieldAlert, Key, CheckCircle, AlertTriangle, Smartphone } from 'lucide-react';
 
 const MfaSettings = () => {
   const [factors, setFactors] = useState([]);
@@ -170,6 +170,38 @@ const MfaSettings = () => {
           </div>
         )}
       </div>
+
+      {/* Panduan Instalasi MFA */}
+      {!isMfaActive && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-8">
+          <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <Smartphone size={18} className="text-teal-500"/> Panduan Aktivasi MFA
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
+              <div className="h-40 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_guide_1.png" alt="Download App" className="h-full object-contain" />
+              </div>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">1. Unduh Aplikasi</h4>
+              <p className="text-xs text-slate-500">Unduh aplikasi <strong>Google Authenticator</strong> dari Play Store (Android) atau App Store (iOS) di HP Anda.</p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
+              <div className="h-40 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_guide_2.png" alt="Scan QR" className="h-full object-contain" />
+              </div>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">2. Pindai QR Code</h4>
+              <p className="text-xs text-slate-500">Klik 'Mulai Aktifkan MFA' di atas. Buka aplikasinya di HP, tekan icon "+", pilih "Scan a QR code" lalu arahkan kamera ke QR Code yang muncul.</p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
+              <div className="h-40 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_guide_3.png" alt="Enter OTP" className="h-full object-contain" />
+              </div>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">3. Masukkan Kode OTP</h4>
+              <p className="text-xs text-slate-500">Sistem akan memunculkan 6 digit angka baru setiap 30 detik. Masukkan kode tersebut untuk verifikasi.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
