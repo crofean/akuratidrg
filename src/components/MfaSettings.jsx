@@ -33,7 +33,7 @@ const MfaSettings = () => {
       const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' });
       if (error) throw error;
       setFactorId(data.id);
-      setQrCode(data.totp.qr_code);
+      setQrCode(data.totp.uri); // Use the URI for QRCodeSVG, not the raw SVG string
     } catch (err) {
       setError(err.message);
     } finally {
