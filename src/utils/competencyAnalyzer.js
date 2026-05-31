@@ -45,7 +45,7 @@ export async function loadCompetencyCSV(force = false) {
   if (icdMap && !force) return;
   icdMap = new Map();
   try {
-    const res = await fetch('/data/ICD Kompetensi Layanan.csv');
+    const res = await fetch('./data/ICD Kompetensi Layanan.csv');
     if (!res.ok) { console.warn("Failed to fetch CSV, using empty map."); return; }
     const text = await res.text();
     const lines = text.split(/\r?\n/);

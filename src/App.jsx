@@ -3184,7 +3184,7 @@ export default function App() {
 
   const [rsMap, setRsMap] = useState({});
   useEffect(() => {
-    fetch('/data/rs_map.json').then(res => res.json()).then(data => setRsMap(data)).catch(console.error);
+    fetch('./data/rs_map.json').then(res => res.json()).then(data => setRsMap(data)).catch(console.error);
   }, []);
 
   useEffect(() => {

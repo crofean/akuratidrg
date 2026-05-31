@@ -96,7 +96,7 @@ function DrillDown({ group, rows, icdMap, onClose }) {
   const PER_PAGE = 50;
 
   useEffect(() => {
-    fetch('/data/rs_map.json').then(r => r.json()).then(data => setRsMap(data)).catch(console.error);
+    fetch('./data/rs_map.json').then(r => r.json()).then(data => setRsMap(data)).catch(console.error);
   }, []);
 
   const matchedRows = useMemo(() => {
@@ -804,7 +804,7 @@ function DrillDownWrapper({ group, rows, onClose }) {
     (async()=>{
       const map = new Map();
       try {
-        const res = await fetch('/data/ICD Kompetensi Layanan.csv');
+        const res = await fetch('./data/ICD Kompetensi Layanan.csv');
         if(res.ok){
           const text = await res.text();
           for(const line of text.split(/\r?\n/)){
