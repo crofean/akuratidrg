@@ -12,10 +12,6 @@ const MfaSettings = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadFactors();
-  }, []);
-
   const loadFactors = async () => {
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
@@ -25,6 +21,10 @@ const MfaSettings = () => {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    loadFactors();
+  }, []);
 
   const handleEnableMfa = async () => {
     setLoading(true);
