@@ -6,6 +6,7 @@ import {
   BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy
 } from 'lucide-react';
 import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils/competencyAnalyzer';
+import { copyToClipboardHtml } from '../App';
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 const fmt  = (n) => (n || 0).toLocaleString('id-ID');
@@ -152,8 +153,8 @@ function DrillDown({ group, rows, icdMap, onClose }) {
   const totSel  = totIdrg - totIna;
 
   const copyTable = () => {
-    let tsv = "No\tRumah Sakit\tSEP / No Klaim\tNama Pasien\tDPJP\tJenis\tDiagnosa Utama\tINA-CBG\tiDRG\tSelisih\n";
-    matchedRows.forEach((r, i) => {
+    const headers = ["No", "Rumah Sakit", "SEP / No Klaim", "Nama Pasien", "DPJP", "Jenis", "Diagnosa Utama", "INA-CBG", "iDRG", "Selisih"];
+    const rows = matchedRows.map((r, i) => {
       const kodeRs = String(r['KODE_RS']||'').trim();
       const namaRs = rsMap[kodeRs] ? `${kodeRs} - ${rsMap[kodeRs]}` : kodeRs || '-';
       const sep = r['SEP']||r['NO_SEP']||r['NO_KLAIM']||'-';
@@ -164,11 +165,14 @@ function DrillDown({ group, rows, icdMap, onClose }) {
       const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
       const sel = idrg - ina;
       const jenis = String(r['PTD']||'').trim()==='1' ? 'Ranap' : 'Rajal';
-      tsv += `${i+1}\t"${namaRs}"\t"${sep}"\t"${patientName}"\t"${dpjp}"\t"${jenis}"\t"${mainDiag}"\t${ina}\t${idrg}\t${sel}\n`;
+      return [
+        i+1, namaRs, sep, patientName, dpjp, jenis, mainDiag,
+        `Rp ${ina.toLocaleString('id-ID')}`,
+        `Rp ${idrg.toLocaleString('id-ID')}`,
+        `${sel >= 0 ? '+' : ''}Rp ${sel.toLocaleString('id-ID')}`
+      ];
     });
-    navigator.clipboard.writeText(tsv).then(() => alert('✅ Tabel berhasil disalin ke clipboard! Silakan paste (Ctrl+V) di Excel/Word Anda.')).catch(err => {
-      console.error(err); alert('⚠️ Gagal menyalin tabel ke clipboard!');
-    });
+    copyToClipboardHtml(headers, rows, `Drill-Down: ${dn(group)}`);
   };
 
   const exportToExcel = () => {

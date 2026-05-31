@@ -105,6 +105,45 @@ export const copyAsPng = async (elementId, fileName) => {
   }
 };
 
+export const copyToClipboardHtml = (headers, rows, title = 'Tabel Data') => {
+  const tsv = [headers.join('\t'), ...rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""').replace(/\n/g, ' ')}"`).join('\t'))].join('\n');
+  
+  const htmlHeaders = headers.map(h => `<th style="background-color: #f8fafc; color: #475569; font-weight: bold; padding: 8px; border: 1px solid #e2e8f0; text-align: left;">${h}</th>`).join('');
+  const htmlRows = rows.map(row => {
+    const cells = row.map(cell => {
+      let val = String(cell).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      if (val.startsWith('+Rp') || val.startsWith('-Rp') || val.startsWith('Rp')) {
+        return `<td style="padding: 8px; border: 1px solid #e2e8f0; color: #334155; text-align: right; font-weight: bold;">${val}</td>`;
+      }
+      return `<td style="padding: 8px; border: 1px solid #e2e8f0; color: #334155;">${val}</td>`;
+    }).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  
+  const html = `
+    <div style="font-family: sans-serif;">
+      <h3 style="color: #0f172a; margin-bottom: 8px;">${title}</h3>
+      <table style="border-collapse: collapse; width: 100%; font-size: 12px; font-family: sans-serif;">
+        <thead><tr>${htmlHeaders}</tr></thead>
+        <tbody>${htmlRows}</tbody>
+      </table>
+    </div>
+  `;
+
+  try {
+    const blobHtml = new Blob([html], { type: 'text/html' });
+    const blobText = new Blob([tsv], { type: 'text/plain' });
+    navigator.clipboard.write([new window.ClipboardItem({ 'text/html': blobHtml, 'text/plain': blobText })])
+      .then(() => alert('✅ Tabel berhasil disalin dengan format rapi! Silakan paste di Excel/Word Anda.'))
+      .catch(err => {
+        console.error(err);
+        navigator.clipboard.writeText(tsv).then(() => alert('✅ Tabel berhasil disalin (Teks).')).catch(console.error);
+      });
+  } catch (e) {
+    navigator.clipboard.writeText(tsv).then(() => alert('✅ Tabel berhasil disalin (Teks).')).catch(console.error);
+  }
+};
+
 // --- DATABASE PERSISTENCE LAYER (IndexedDB) ---
 const dbName = "AkuratIdrgDb";
 const storeName = "IcdDictionary";
@@ -1960,18 +1999,26 @@ const SectionHeader = React.memo(({ icon: Icon, title, desc, exportAction, expor
   </Card>
 ));
 
-const MiniTable = React.memo(({ data = [], columns = [], onRowClick, maxHeight = "400px", maxRows = 100 }) => {
+const MiniTable = React.memo(({ data = [], columns = [], onRowClick, maxHeight = "400px", maxRows = 100, title = '' }) => {
   const visibleData = useMemo(() => data.slice(0, maxRows), [data, maxRows]);
   
   const copyMiniTable = (e) => {
     e.stopPropagation();
-    const headers = columns.map(c => c.header).join('\t');
-    const rowStr = visibleData.map((row, i) => columns.map(col => {
+    let tableTitle = title;
+    if (!tableTitle) {
+      const parentEl = e.currentTarget.closest('.flex-col, .relative, .bg-white');
+      if (parentEl) {
+        const h3 = parentEl.querySelector('h3, h2, h4');
+        if (h3) tableTitle = h3.innerText;
+      }
+    }
+    const headers = columns.map(c => c.header);
+    const rows = visibleData.map((row, i) => columns.map(col => {
       let cell = col.render(row, i);
       if (typeof cell === 'object' && cell !== null) cell = cell.props?.children || '-';
-      return `"${String(cell).replace(/"/g, '""').replace(/\n/g, ' ')}"`;
-    }).join('\t')).join('\n');
-    navigator.clipboard.writeText(headers + '\n' + rowStr).then(() => alert('✅ Tabel berhasil disalin!')).catch(err => alert('⚠️ Gagal menyalin tabel.'));
+      return cell;
+    }));
+    copyToClipboardHtml(headers, rows, tableTitle || 'Tabel Data');
   };
 
   return (
@@ -4552,10 +4599,7 @@ export default function App() {
         return [i + 1, String(row.NAMA_PASien || row.NAMA_PASIEN || row.NAMA || '-'), String(row.MRN || '-'), String(row.SEP || '-'), String(row.DISCHARGE_DATE || '-'), inaStr ? (inaStr.endsWith('-I') ? 1 : inaStr.endsWith('-II') ? 2 : inaStr.endsWith('-III') ? 3 : 0) : 0, isNaN(cl) ? '-' : cl, String(row.INACBG || '-'), String(row.DESKRIPSI_INACBG || '-'), String(row.DIAGLIST || '-'), String(row.PROCLIST || '-'), String(row.IDRG_DRG_CODE || '-'), String(row.IDRG_DRG_DESCRIPTION || '-'), String(row.IDRG_DIAG_LISTS || '-'), String(row.IDRG_PROC_LISTS || '-'), rs, ina, idrg, idrg - ina, ...compKeys.map(c => extract18(row)[c.key])];
       });
     }
-    const tsv = [headers.join('\t'), ...rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""').replace(/\n/g, ' ')}"`).join('\t'))].join('\n');
-    navigator.clipboard.writeText(tsv).then(() => alert('✅ Tabel berhasil disalin ke clipboard! Silakan paste (Ctrl+V) di Excel/Word Anda.')).catch(err => {
-      console.error(err); alert('⚠️ Gagal menyalin tabel ke clipboard!');
-    });
+    copyToClipboardHtml(headers, rows, drilldown.title);
   };
 
   const getPieSlices = (items) => {
