@@ -121,9 +121,13 @@ const MfaSettings = () => {
           <div className="space-y-6">
             {!qrCode ? (
               <>
-                <p className="text-sm text-slate-600 leading-relaxed font-medium bg-amber-50 p-4 rounded-xl border border-amber-100 text-amber-800">
-                  Data TXT Klaim JKN adalah berisi data Medis dan bersifat Rahasia dan Untuk Keperluan Analisis Internal Rumah Sakit dalam pelayanan JKN, sangat disarankan untuk mengaktifkan MFA agar data hanya bisa diakses oleh Anda saja.
-                </p>
+                <div className="text-sm text-slate-600 leading-relaxed font-medium bg-amber-50 p-4 rounded-xl border border-amber-100 text-amber-800">
+                  <p>Data TXT Klaim JKN adalah dokumen medis rahasia yang digunakan khusus untuk analisis internal rumah sakit. Sangat disarankan untuk mengaktifkan fitur Multi-Factor Authentication (MFA) pada akun Anda untuk memastikan bahwa:</p>
+                  <ul className="list-disc ml-5 mt-2 space-y-1">
+                    <li>Akun Anda tetap aman.</li>
+                    <li>Pengolahan Data TXT tersebut hanya dapat diakses oleh Anda Seorang dan tidak dapat diakses oleh pihak lain.</li>
+                  </ul>
+                </div>
                 <button onClick={handleEnableMfa} disabled={loading} className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-teal-500/30 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   {loading ? (
                     <>
