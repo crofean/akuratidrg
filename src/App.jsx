@@ -9713,6 +9713,10 @@ export default function App() {
                     <CheckCircle className="text-teal-500 shrink-0 mt-0.5" size={18} />
                     <p className="text-xs text-slate-600 leading-relaxed"><strong>Sesi Sementara.</strong> Menutup tab atau me-refresh halaman akan menghapus data analisis secara permanen dari aplikasi.</p>
                   </div>
+                  <div className="flex gap-4">
+                    <ShieldAlert className="text-amber-500 shrink-0 mt-0.5" size={18} />
+                    <p className="text-xs text-slate-600 leading-relaxed"><strong>Sangat Disarankan.</strong> Segera aktifkan perlindungan <em>Multi-Factor Authentication (MFA)</em> di menu <strong>Keamanan Akun</strong> setelah login, untuk memastikan data hanya dapat diakses oleh Anda.</p>
+                  </div>
                 </div>
                 <div className="w-full flex flex-col gap-3 pt-2">
                   <button onClick={finalizeLogin} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-emerald-500/25 active:scale-95 flex items-center justify-center gap-2">
