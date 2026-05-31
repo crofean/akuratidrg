@@ -534,8 +534,7 @@ export default function KompetensiLaporan({ reports }) {
       </div>
 
       {showPasswordModal && (
-        <PasswordModal
-          onClose={() => setShowPasswordModal(false)}
+        <PasswordModal isOpen={true} onClose={() => setShowPasswordModal(false)}
           onSuccess={(pwd) => {
             setShowPasswordModal(false);
             handleExportExcel(pwd);

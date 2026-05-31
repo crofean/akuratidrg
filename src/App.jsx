@@ -9547,7 +9547,7 @@ export default function App() {
                 <div className="mt-3">
                   <button type="button" onClick={() => setShowRegister(true)} className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</button>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.7.4 (310520261642)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.7.5 (310520261642)</p>
               </div>
             </div>
           </div>
@@ -10243,7 +10243,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.7.4 (310520261642)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.7.5 (310520261642)</span>
                 </div>
               )}
             </div>
@@ -10455,7 +10455,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.7.4</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.7.5</span>
             </p>
           </footer>
         </div>

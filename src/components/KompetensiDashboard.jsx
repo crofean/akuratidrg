@@ -728,10 +728,10 @@ export default function KompetensiDashboard({ rows, onBack }) {
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] bg-slate-100 overflow-y-auto flex flex-col" style={{fontFamily:'inherit'}}>
+    <div className="fixed inset-0 z-[9999] bg-slate-100 flex flex-col" style={{fontFamily:'inherit'}}>
 
       {/* ── Sticky Header ── */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-3 sticky top-0 z-20 shadow-2xl border-b border-teal-500/30">
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-3 shrink-0 z-20 shadow-2xl border-b border-teal-500/30">
         <div className="max-w-screen-2xl mx-auto flex items-center gap-4">
           <button onClick={onBack} className="p-2 rounded-xl hover:bg-white/10 transition-colors shrink-0">
             <ArrowLeft size={20}/>
@@ -755,7 +755,8 @@ export default function KompetensiDashboard({ rows, onBack }) {
         </div>
       </div>
 
-      <div className="max-w-screen-2xl mx-auto w-full px-4 py-5 space-y-5 flex-1">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-5 custom-scrollbar">
+<div className="max-w-screen-2xl mx-auto w-full space-y-5">
 
         {/* ── KPI Row ── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1088,6 +1089,9 @@ export default function KompetensiDashboard({ rows, onBack }) {
           </div>
         )}
 
+      </div>
+      </div>
+
       {/* Password Modal for Exports */}
       {showPasswordModal && pendingExport && (
         <PasswordModal isOpen={true}
@@ -1097,8 +1101,8 @@ export default function KompetensiDashboard({ rows, onBack }) {
           }}
           onSuccess={(password) => {
             exportToExcel(
-              pendingExport.sheets,
               pendingExport.name,
+              pendingExport.sheets,
               password
             );
             setShowPasswordModal(false);
