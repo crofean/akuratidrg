@@ -3275,6 +3275,7 @@ export default function App() {
     return (saved && !oldUrls.includes(saved)) ? saved : 'https://script.google.com/macros/s/AKfycbwDfLqyeRjDs6LUpZ5unl3gh0muwS2zECBS6jsPgL3poqmicuWuA9l6ph2qCcqkHVcE/exec';
   });
   const [userSearchTerm, setUserSearchTerm] = useState("");
+  const [userFilterStatus, setUserFilterStatus] = useState("active");
   const [pendingSearchTerm, setPendingSearchTerm] = useState("");
 
   const [customKsms, setCustomKsms] = useState(() => {
@@ -3599,6 +3600,21 @@ export default function App() {
     } finally {
       setIsProcessingAction(false);
     }
+  };
+
+  const handlePerpanjangAkses = (u) => {
+    setEditingUser(u);
+    const dt = new Date();
+    dt.setMonth(dt.getMonth() + 3); // Default tambah 3 bulan dari hari ini
+    setEditUserData({
+      nama_lengkap: u.nama_lengkap || '',
+      nama_faskes: u.nama_faskes || '',
+      no_wa: u.no_wa || '',
+      role: u.role || 'user',
+      status: 'active',
+      masa_aktif: dt.toISOString().split('T')[0]
+    });
+    setShowEditUserModal(true);
   };
 
   const handleEditUserClick = (u) => {
@@ -8490,20 +8506,31 @@ export default function App() {
               </span>
             </div>
             {/* Search Bar Active */}
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Cari nama, username, faskes, email..."
-                value={userSearchTerm}
-                onChange={e => setUserSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all text-slate-700 placeholder-slate-400"
-              />
-              {userSearchTerm && (
-                <button onClick={() => setUserSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
-                  <X size={14} />
-                </button>
-              )}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Cari nama, username, faskes, email..."
+                  value={userSearchTerm}
+                  onChange={e => setUserSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all text-slate-700 placeholder-slate-400"
+                />
+                {userSearchTerm && (
+                  <button onClick={() => setUserSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              <select
+                value={userFilterStatus}
+                onChange={e => setUserFilterStatus(e.target.value)}
+                className="px-4 py-2 text-xs font-bold border border-slate-200 rounded-xl bg-slate-50 text-slate-700 outline-none focus:border-emerald-500 min-w-[170px] cursor-pointer"
+              >
+                <option value="active">✓ User Aktif Saja</option>
+                <option value="expired">✗ User Kadaluarsa</option>
+                <option value="all">☰ Tampilkan Semua</option>
+              </select>
             </div>
           </div>
 
@@ -8526,7 +8553,20 @@ export default function App() {
                     <td colSpan="6" className="px-6 py-12 text-center text-slate-400 font-medium">Tidak ada daftar user aktif terdeteksi.</td>
                   </tr>
                 ) : (
-                  userAccounts.filter(u => !userSearchTerm || Object.values(u).some(v => String(v).toLowerCase().includes(userSearchTerm.toLowerCase()))).map((u, idx) => {
+                  userAccounts
+                    .filter(u => !userSearchTerm || Object.values(u).some(v => String(v).toLowerCase().includes(userSearchTerm.toLowerCase())))
+                    .filter(u => {
+                      let isExpired = false;
+                      if (u.masa_aktif) {
+                        const activeDate = new Date(u.masa_aktif);
+                        const today = new Date();
+                        if (activeDate < today) isExpired = true;
+                      }
+                      if (userFilterStatus === 'active') return !isExpired;
+                      if (userFilterStatus === 'expired') return isExpired;
+                      return true;
+                    })
+                    .map((u, idx) => {
                     let isExpired = false;
                     if (u.masa_aktif) {
                       const activeDate = new Date(u.masa_aktif);
@@ -8563,7 +8603,14 @@ export default function App() {
                             <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">Proteksi Sistem</span>
                           ) : (
                             <div className="flex flex-col items-center gap-1.5">
-                              <div className="flex items-center justify-center gap-1.5">
+                              <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                                {isExpired && (
+                                  <button 
+                                    onClick={() => handlePerpanjangAkses(u)}
+                                    disabled={isProcessingAction}
+                                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer border border-emerald-200"
+                                  >Perpanjang</button>
+                                )}
                                 <button 
                                   onClick={() => handleEditUserClick(u)}
                                   disabled={isProcessingAction}
