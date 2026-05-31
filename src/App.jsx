@@ -1142,7 +1142,8 @@ const TABS = [
   { id: 'kompetensi', label: 'Kompetensi Layanan', icon: ShieldAlert },
   { id: 'settings_ksm', label: 'Pengaturan KSM', icon: Settings },
   { id: 'settings_kompetensi', label: 'Pengaturan Kompetensi', icon: Settings },
-  { id: 'user_management', label: 'Manajemen Akses', icon: ClipboardList }
+  { id: 'user_management', label: 'Manajemen Akses', icon: ClipboardList },
+  { id: 'security', label: 'Keamanan Akun', icon: ShieldAlert }
 ];
 
 const normDpjp = (name) => {
@@ -3736,6 +3737,9 @@ export default function App() {
   const [loginError, setLoginError] = useState('');
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [mfaChallengeMode, setMfaChallengeMode] = useState(false);
+  const [mfaVerifyCode, setMfaVerifyCode] = useState('');
+  const [mfaFactorId, setMfaFactorId] = useState('');
   const [validUsers, setValidUsers] = useState([{ username: 'Admin', password: 'Admin17' }]);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -3822,12 +3826,48 @@ export default function App() {
         }
       }
 
+      // Check for MFA AAL2 requirement
+      const { data: aal, error: aalError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (!aalError && aal.nextLevel === 'aal2' && aal.currentLevel === 'aal1') {
+        const { data: factors } = await supabase.auth.mfa.listFactors();
+        const totpFactor = factors?.totp?.[0] || factors?.all?.[0];
+        if (totpFactor) {
+          setMfaFactorId(totpFactor.id);
+          setMfaChallengeMode(true);
+          setIsLoggingIn(false);
+          return;
+        }
+      }
+
       localStorage.setItem('sak_role', profile.role || 'user');
       setShowDisclaimer(true);
       setLoginError('');
     } catch (err) {
       console.error(err);
       setLoginError('Terjadi kesalahan saat memverifikasi data login.');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleMfaVerify = async (e) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setLoginError('');
+    try {
+      const challenge = await supabase.auth.mfa.challenge({ factorId: mfaFactorId });
+      if (challenge.error) throw challenge.error;
+      const verify = await supabase.auth.mfa.verify({ factorId: mfaFactorId, challengeId: challenge.data.id, code: mfaVerifyCode });
+      if (verify.error) throw verify.error;
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      
+      localStorage.setItem('sak_role', profile.role || 'user');
+      setMfaChallengeMode(false);
+      setShowDisclaimer(true);
+    } catch (err) {
+      setLoginError('Kode OTP salah atau kadaluarsa. Silakan coba lagi.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -9379,9 +9419,35 @@ export default function App() {
                 </div>
               )}
 
-              <form onSubmit={handleLogin} className="space-y-6">
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Email (atau Username Lama)</label>
+              {mfaChallengeMode ? (
+                <form onSubmit={handleMfaVerify} className="space-y-6">
+                  <div className="text-center space-y-3 mb-6">
+                    <div className="w-16 h-16 bg-teal-100 rounded-full mx-auto flex items-center justify-center text-teal-600 mb-4">
+                      <ShieldAlert size={32} />
+                    </div>
+                    <h3 className="text-xl font-black text-slate-800">Verifikasi Keamanan</h3>
+                    <p className="text-sm text-slate-500">Masukkan 6 digit OTP dari aplikasi Google Authenticator Anda.</p>
+                  </div>
+                  <div>
+                    <input
+                      type="text" 
+                      value={mfaVerifyCode}
+                      onChange={e => { setMfaVerifyCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setLoginError(''); }}
+                      className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-800 placeholder-slate-300 focus:bg-white focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-black text-center text-2xl tracking-[0.2em] shadow-sm"
+                      placeholder="000000" required
+                    />
+                  </div>
+                  <button type="submit" disabled={isLoggingIn || mfaVerifyCode.length !== 6} className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-2xl py-4 font-black uppercase tracking-widest text-sm transition-all flex justify-center items-center gap-2 hover:shadow-lg hover:shadow-teal-500/30 disabled:opacity-50 cursor-pointer">
+                    {isLoggingIn ? 'Memverifikasi...' : 'Verifikasi OTP'}
+                  </button>
+                  <button type="button" onClick={() => { setMfaChallengeMode(false); setMfaVerifyCode(''); }} className="w-full text-slate-400 hover:text-slate-600 text-xs font-bold uppercase tracking-wider mt-4 cursor-pointer">
+                    Kembali ke Login
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Email (atau Username Lama)</label>
                   <input
                     type="text" value={username}
                     onChange={e => { setUsername(e.target.value); setLoginError(''); }}
@@ -9437,6 +9503,7 @@ export default function App() {
                   {isLoggingIn ? 'MEMVERIFIKASI...' : 'MASUK KE DASHBOARD'}
                 </button>
               </form>
+              )}
 
               <div className="mt-8 text-center">
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em]">Gunakan akun resmi sistem AKURAT.</p>
