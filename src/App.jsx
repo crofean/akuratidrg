@@ -3587,6 +3587,23 @@ export default function App() {
     }
   };
 
+  const handleToggleKompetensi = async (user) => {
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const newStatus = !user.akses_kompetensi;
+      const { error } = await supabase.from('profiles').update({ akses_kompetensi: newStatus }).eq('username', user.username);
+      if (error) throw error;
+      setUserManagementSuccess(`Akses kompetensi untuk @${user.username} berhasil ${newStatus ? 'diaktifkan' : 'dinonaktifkan'}.`);
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal mengubah akses kompetensi: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
+
   const handleDeleteActive = async (userId) => {
     if (!window.confirm('Apakah Anda yakin ingin menonaktifkan akses pengguna ini?')) return;
     setIsProcessingAction(true);
@@ -3841,6 +3858,7 @@ export default function App() {
       }
 
       localStorage.setItem('sak_role', profile.role || 'user');
+      localStorage.setItem('sak_akses_kompetensi', profile.akses_kompetensi ? 'true' : 'false');
       setShowDisclaimer(true);
       setLoginError('');
     } catch (err) {
@@ -3865,6 +3883,7 @@ export default function App() {
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
       
       localStorage.setItem('sak_role', profile.role || 'user');
+      localStorage.setItem('sak_akses_kompetensi', profile.akses_kompetensi ? 'true' : 'false');
       setMfaChallengeMode(false);
       setShowDisclaimer(true);
     } catch (err) {
@@ -8658,6 +8677,13 @@ export default function App() {
                                   className="bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
                                 >Edit Akun</button>
                                 <button 
+                                  onClick={() => handleToggleKompetensi(u)}
+                                  disabled={isProcessingAction}
+                                  className={`${u.akses_kompetensi ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'} px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer border ${u.akses_kompetensi ? 'border-indigo-600' : 'border-indigo-200'}`}
+                                >
+                                  {u.akses_kompetensi ? 'Kompetensi: ON' : 'Kompetensi: OFF'}
+                                </button>
+                                <button 
                                   onClick={() => handleDeleteActive(u.username)}
                                   disabled={isProcessingAction}
                                   className="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer"
@@ -10212,7 +10238,13 @@ export default function App() {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSidebarOpen ? 'Dashboard Menu' : '...'}</p>
             </div>
 
-            {TABS.filter(t => !['user_management', 'kompetensi', 'settings_kompetensi'].includes(t.id) || localStorage.getItem('sak_role') === 'admin').map((t, idx) => {
+            {TABS.filter(t => {
+              const isAdmin = localStorage.getItem('sak_role') === 'admin';
+              const hasKomp = localStorage.getItem('sak_akses_kompetensi') === 'true';
+              if (t.id === 'user_management') return isAdmin;
+              if (t.id === 'kompetensi' || t.id === 'settings_kompetensi') return isAdmin || hasKomp;
+              return true;
+            }).map((t, idx) => {
               const Icon = t.icon;
               const isActive = activeTab === 'dashboard' && subTab === t.id;
               return (

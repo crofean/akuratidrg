@@ -22,9 +22,9 @@ export default function KompetensiSettings() {
       if (savedCfg) {
         setConfig(JSON.parse(savedCfg));
       } else {
-        // Initialize default all to Paripurna
+        // Initialize default all to Tidak Melayani
         const def = {};
-        avGroups.forEach(g => def[g] = 'Paripurna');
+        avGroups.forEach(g => def[g] = 'Tidak Melayani');
         setConfig(def);
       }
     };
@@ -96,7 +96,7 @@ export default function KompetensiSettings() {
                   <td className="p-4 font-bold text-slate-700">{g}</td>
                   <td className="p-4">
                     <select
-                      value={config[g] || 'Paripurna'}
+                      value={config[g] || 'Tidak Melayani'}
                       onChange={(e) => handleChange(g, e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded-lg px-4 py-2 font-bold text-slate-700 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                     >

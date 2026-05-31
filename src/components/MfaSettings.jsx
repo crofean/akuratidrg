@@ -181,28 +181,28 @@ const MfaSettings = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
                 <div className="h-64 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                  <img src="/images/mfa_step1.png?v=2" alt="Unduh Aplikasi" className="h-full object-contain" />
+                  <img src="./images/mfa_step1.png?v=2" alt="Unduh Aplikasi" className="h-full object-contain" />
                 </div>
                 <h4 className="font-bold text-slate-800 text-base mb-2">1. Unduh Aplikasi</h4>
                 <p className="text-sm text-slate-500">Unduh aplikasi <strong>Google Authenticator</strong> dari Play Store atau App Store di HP Anda.</p>
               </div>
               <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
                 <div className="h-64 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
-                  <img src="/images/mfa_step2.png?v=2" alt="Mulai Aktivasi" className="h-full w-full object-contain rounded" />
+                  <img src="./images/mfa_step2.png?v=2" alt="Mulai Aktivasi" className="h-full w-full object-contain rounded" />
                 </div>
                 <h4 className="font-bold text-slate-800 text-base mb-2">2. Mulai Aktivasi</h4>
                 <p className="text-sm text-slate-500">Klik tombol <strong>Mulai Aktifkan MFA</strong> pada panel Keamanan Akun Anda.</p>
               </div>
               <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
                 <div className="h-64 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                  <img src="/images/mfa_step3.png?v=2" alt="Pindai QR" className="h-full object-contain" />
+                  <img src="./images/mfa_step3.png?v=2" alt="Pindai QR" className="h-full object-contain" />
                 </div>
                 <h4 className="font-bold text-slate-800 text-base mb-2">3. Pindai QR Code</h4>
                 <p className="text-sm text-slate-500">Buka aplikasi Authenticator, lalu scan QR Code yang muncul di layar laptop.</p>
               </div>
               <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
                 <div className="h-64 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
-                  <img src="/images/mfa_step4.png?v=2" alt="Masukkan OTP" className="h-full w-full object-contain rounded" />
+                  <img src="./images/mfa_step4.png?v=2" alt="Masukkan OTP" className="h-full w-full object-contain rounded" />
                 </div>
                 <h4 className="font-bold text-slate-800 text-base mb-2">4. Masukkan OTP</h4>
                 <p className="text-sm text-slate-500">Masukkan 6 digit angka OTP (contoh: 083500) ke kolom yang tersedia.</p>
@@ -212,7 +212,7 @@ const MfaSettings = () => {
               <div className="md:col-span-2 flex justify-center">
                 <div className="w-full md:w-1/2 bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
                   <div className="h-64 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
-                    <img src="/images/mfa_step5.png?v=2" alt="Selesai & Sukses" className="h-full w-full object-contain rounded" />
+                    <img src="./images/mfa_step5.png?v=2" alt="Selesai & Sukses" className="h-full w-full object-contain rounded" />
                   </div>
                   <h4 className="font-bold text-slate-800 text-base mb-2">5. Selesai</h4>
                   <p className="text-sm text-slate-500">Klik Verifikasi, dan akun Anda kini telah sukses terlindungi dengan keamanan ganda.</p>
