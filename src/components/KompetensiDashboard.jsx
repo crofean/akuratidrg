@@ -682,16 +682,14 @@ export default function KompetensiDashboard({ rows, onBack }) {
     return LEVEL_ORDER.map(lv=>({name:lv,value:data.levelDistribution[lv]||0})).filter(d=>d.value>0);
   },[data]);
 
-  if(loading||!data) return createPortal(
-    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col items-center justify-center">
+  if(loading||!data) return createPortal(<div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col items-center justify-center">
       <div className="relative">
         <div className="w-20 h-20 border-4 border-teal-500/30 border-t-teal-400 rounded-full animate-spin"/>
         <ShieldAlert className="absolute inset-0 m-auto text-teal-400" size={32}/>
       </div>
       <h2 className="text-white font-black text-xl mt-6">Menganalisis Kompetensi Layanan</h2>
       <p className="text-slate-400 text-sm mt-2">Memproses {(rows||[]).length.toLocaleString()} baris data…</p>
-    </div>
-  , document.body);
+    </div>, document.body);
 
   const pctOut = data.totalPatients>0
     ? (data.patientsOutsideCompetency/data.totalPatients*100).toFixed(1) : 0;
@@ -727,8 +725,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
     {id:'laporan',  icon:<FileSpreadsheet size={14}/>, label:'Tabel Laporan'},
   ];
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9999] bg-slate-100 flex flex-col" style={{fontFamily:'inherit'}}>
+  return createPortal(<div className="fixed inset-0 z-[9999] bg-slate-100 flex flex-col" style={{fontFamily:'inherit'}}>
 
       {/* ── Sticky Header ── */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-3 shrink-0 z-20 shadow-2xl border-b border-teal-500/30">
@@ -1090,7 +1087,6 @@ export default function KompetensiDashboard({ rows, onBack }) {
         )}
 
       </div>
-      </div>
 
       {/* Password Modal for Exports */}
       {showPasswordModal && pendingExport && (
@@ -1121,8 +1117,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
           onExport={handleExportDrillDown}
         />
       )}
-    </div>
-  , document.body);
+    </div>, document.body);
 }
 
 /* wrapper loads icdMap from CSV */
