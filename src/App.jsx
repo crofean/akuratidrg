@@ -3918,6 +3918,15 @@ export default function App() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setRegState({ loading: true, error: '', success: '' });
+
+    const pwd = regData.password;
+    if (pwd.length < 8) {
+      return setRegState({ loading: false, error: 'Password minimal 8 karakter.', success: '' });
+    }
+    if (!/[A-Z]/.test(pwd) || !/[a-z]/.test(pwd) || !/[0-9]/.test(pwd) || !/[\W_]/.test(pwd)) {
+      return setRegState({ loading: false, error: 'Password harus mengandung huruf besar, huruf kecil, dan angka atau simbol unik standar keamanan.', success: '' });
+    }
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email: regData.email,
@@ -9675,7 +9684,7 @@ export default function App() {
                 <div>
                   <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
                   <div className="relative">
-                    <input type={showRegPassword ? "text" : "password"} required value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} minLength={6} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 pr-12 transition-all outline-none font-medium" placeholder="Minimal 6 karakter" />
+                    <input type={showRegPassword ? "text" : "password"} required value={regData.password} onChange={e => setRegData({...regData, password: e.target.value})} minLength={8} className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent block p-3.5 pr-12 transition-all outline-none font-medium" placeholder="Minimal 8 karakter" />
                     <button
                       type="button"
                       onClick={() => setShowRegPassword(!showRegPassword)}

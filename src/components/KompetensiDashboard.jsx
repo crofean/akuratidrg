@@ -3,10 +3,11 @@ import { createPortal } from 'react-dom';
 import {
   Activity, ShieldAlert, ArrowLeft, TrendingDown, TrendingUp,
   ChevronRight, X, Search, AlertCircle, CheckCircle,
-  BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy
+  BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy, FileSpreadsheet
 } from 'lucide-react';
 import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils/competencyAnalyzer';
 import { copyToClipboardHtml } from '../App';
+import KompetensiLaporan from './KompetensiLaporan';
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 const fmt  = (n) => (n || 0).toLocaleString('id-ID');
@@ -88,7 +89,7 @@ function MiniLevelBar({ ranap, rajal }) {
 }
 
 /* ─── Drill-Down Modal ────────────────────────────────────────────────────── */
-function DrillDown({ group, rows, icdMap, onClose }) {
+function DrillDown({ group, rows, icdMap, config, onClose }) {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('patients'); // patients | icds
   const [page, setPage] = useState(0);
@@ -138,7 +139,7 @@ function DrillDown({ group, rows, icdMap, onClose }) {
         if (!entries) return;
         const hit = entries.find(e => e.group === group);
         if (!hit) return;
-        if (!map[d]) map[d] = { code:d, level:hit.level, count:0, ina:0, idrg:0 };
+        if (!map[d]) map[d] = { code:d, level:hit.level, desc:hit.desc, count:0, ina:0, idrg:0 };
         map[d].count++;
         map[d].ina  += parseFloat(row['TOTAL_TARIF']||0)||0;
         map[d].idrg += parseFloat(row['IDRG_TOTAL_TARIF']||0)||0;
@@ -320,7 +321,7 @@ function DrillDown({ group, rows, icdMap, onClose }) {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 sticky top-0">
                 <tr>
-                  {['No','Kode ICD','Level Kompetensi','Frekuensi','INA-CBG','iDRG','Selisih'].map(h=>(
+                  {['No','Kode ICD','Deskripsi','Komp. RS','Level Kompetensi','Status','Frekuensi','INA-CBG','iDRG','Selisih'].map(h=>(
                     <th key={h} className={`px-4 py-2.5 text-left font-black text-slate-500 uppercase text-[10px] border-b border-slate-200 ${h==='INA-CBG'?'text-blue-600':h==='iDRG'?'text-violet-600':h==='Selisih'?'text-slate-600':''}`}>{h}</th>
                   ))}
                 </tr>
@@ -329,12 +330,30 @@ function DrillDown({ group, rows, icdMap, onClose }) {
                 {(search ? icdSummary.filter(d=>d.code.toLowerCase().includes(search.toLowerCase())) : icdSummary).map((d,i)=>{
                   const c   = LC[d.level]||LC['Belum Ada Mapping'];
                   const sel = d.idrg - d.ina;
+                  
+                  const rsLevel = config && config[group] ? config[group] : 'Belum Ada Mapping';
+                  const rsLevelIdx = LEVEL_ORDER.indexOf(rsLevel);
+                  const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
+                  const isSesuai = rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx;
+                  const cRs = LC[rsLevel] || LC['Belum Ada Mapping'];
+
                   return (
                     <tr key={i} className={`border-b border-slate-50 hover:bg-teal-50/30 ${i%2===0?'':'bg-slate-50/20'}`}>
                       <td className="px-4 py-2.5 text-slate-400 w-8">{i+1}</td>
                       <td className="px-4 py-2.5 font-mono font-black text-slate-800">{d.code}</td>
+                      <td className="px-4 py-2.5 text-slate-600 max-w-[200px] truncate" title={d.desc}>{d.desc}</td>
+                      <td className="px-4 py-2.5">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${cRs.badge}`}>{rsLevel}</span>
+                      </td>
                       <td className="px-4 py-2.5">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${c.badge}`}>{d.level}</span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        {isSesuai ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700">Sesuai</span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700">Tidak Sesuai</span>
+                        )}
                       </td>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2">
@@ -377,6 +396,91 @@ function DrillDown({ group, rows, icdMap, onClose }) {
 }
 
 /* ─── Main Dashboard ──────────────────────────────────────────────────────── */
+
+function Top10Table({ title, data }) {
+  if (!data || data.length === 0) return null;
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
+      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+        <h3 className="font-black text-sm text-slate-800">{title}</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-[500px]">
+          <thead>
+            <tr className="bg-slate-100 text-slate-500 text-[10px] uppercase whitespace-nowrap">
+              <th className="px-3 py-2 text-left w-8">No</th>
+              <th className="px-3 py-2 text-left w-16">ICD</th>
+              <th className="px-3 py-2 text-left w-48">Deskripsi</th>
+              <th className="px-3 py-2 text-right">Kasus</th>
+              <th className="px-3 py-2 text-right text-blue-600">INA-CBG</th>
+              <th className="px-3 py-2 text-right text-violet-600">iDRG</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((d, i) => (
+              <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 whitespace-nowrap">
+                <td className="px-3 py-2 text-slate-400 font-bold">{i + 1}</td>
+                <td className="px-3 py-2 font-mono font-black text-slate-800">{d.code}</td>
+                <td className="px-3 py-2 text-slate-600 truncate max-w-[150px] 2xl:max-w-[200px]" title={d.desc}>{d.desc}</td>
+                <td className="px-3 py-2 text-right font-black text-slate-700">{fmt(d.kasus)}</td>
+                <td className="px-3 py-2 text-right text-blue-600 font-bold">{fmtRp(d.ina)}</td>
+                <td className="px-3 py-2 text-right text-violet-600 font-bold">{fmtRp(d.idrg)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function DetailKelompokTable({ data }) {
+  if (!data || data.length === 0) return null;
+  const sorted = [...data].sort((a,b) => {
+    if (a.name === 'KASUS BELUM MAPPING') return 1;
+    if (b.name === 'KASUS BELUM MAPPING') return -1;
+    return b.totalKasus - a.totalKasus;
+  });
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6">
+      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+        <h3 className="font-black text-sm text-slate-800">Detail Per Kelompok Layanan</h3>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs min-w-[1000px]">
+          <thead>
+            <tr className="bg-slate-800 text-white text-[10px] uppercase">
+              <th className="px-3 py-3 text-left w-[250px]">Kelompok Layanan</th>
+              <th className="px-3 py-3 text-right">Total Kasus</th>
+              <th className="px-3 py-3 text-right bg-emerald-900/30">Sesuai (Kasus)</th>
+              <th className="px-3 py-3 text-right bg-emerald-900/30">Sesuai (Tarif INA)</th>
+              <th className="px-3 py-3 text-right bg-emerald-900/30">Sesuai (iDRG)</th>
+              <th className="px-3 py-3 text-right bg-rose-900/30">Tidak Sesuai (Kasus)</th>
+              <th className="px-3 py-3 text-right bg-rose-900/30">Tidak Sesuai (INA)</th>
+              <th className="px-3 py-3 text-right bg-rose-900/30">Potensi Loss (iDRG)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((d, i) => (
+              <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50">
+                <td className="px-3 py-2.5 font-bold text-slate-700">{d.name}</td>
+                <td className="px-3 py-2.5 text-right font-black text-slate-800">{fmt(d.totalKasus)}</td>
+                <td className="px-3 py-2.5 text-right font-bold text-emerald-700">{fmt(d.sesuaiKasus)}</td>
+                <td className="px-3 py-2.5 text-right text-emerald-600">{fmtRp(d.sesuaiIna)}</td>
+                <td className="px-3 py-2.5 text-right text-emerald-600 font-bold">{fmtRp(d.sesuaiIdrg)}</td>
+                <td className="px-3 py-2.5 text-right font-bold text-rose-700">{fmt(d.lossKasus)}</td>
+                <td className="px-3 py-2.5 text-right text-rose-600">{fmtRp(d.lossIna)}</td>
+                <td className="px-3 py-2.5 text-right text-rose-600 font-bold">{fmtRp(d.lossIdrg)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+
 export default function KompetensiDashboard({ rows, onBack }) {
   const [data,    setData]    = useState(null);
   const [loading, setLoading] = useState(true);
@@ -384,13 +488,16 @@ export default function KompetensiDashboard({ rows, onBack }) {
   const [drill,   setDrill]   = useState(null);        // group name for drill-down
   const [icdMap,  setIcdMap]  = useState(null);
   const [search,  setSearch]  = useState('');
+  const [config,  setConfig]  = useState({});
 
   useEffect(()=>{
     (async()=>{
       setLoading(true);
       try {
         const cfg  = localStorage.getItem(CONFIG_KEY);
-        const res  = await analyzeCompetency(rows, cfg ? JSON.parse(cfg) : {});
+        const parsedCfg = cfg ? JSON.parse(cfg) : {};
+        setConfig(parsedCfg);
+        const res  = await analyzeCompetency(rows, parsedCfg);
         setData(res);
         // expose icdMap for drill-down (re-parse CSV)
         const { _icdMap } = res;
@@ -447,6 +554,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
     {id:'overview', icon:<BarChart3 size={14}/>, label:'Overview'},
     {id:'table1',   icon:<TableIcon size={14}/>, label:'Tabel Distribusi Level'},
     {id:'table2',   icon:<Grid3X3 size={14}/>,   label:'Per Kelompok Layanan'},
+    {id:'laporan',  icon:<FileSpreadsheet size={14}/>, label:'Tabel Laporan'},
   ];
 
   return createPortal(
@@ -610,6 +718,14 @@ export default function KompetensiDashboard({ rows, onBack }) {
                 )}
               </div>
             </div>
+
+            {/* TOP 10 TABLES */}
+            <div className="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-4 lg:col-span-3">
+              <Top10Table title="Top 10 Diagnosa Sesuai Kompetensi RS" data={data.top10?.diagSesuai} />
+              <Top10Table title="Top 10 Tindakan Sesuai Kompetensi RS" data={data.top10?.procSesuai} />
+              <Top10Table title="Top 10 Diagnosa Tidak Sesuai Kompetensi RS" data={data.top10?.diagTidakSesuai} />
+              <Top10Table title="Top 10 Tindakan Tidak Sesuai Kompetensi RS" data={data.top10?.procTidakSesuai} />
+            </div>
           </div>
         )}
 
@@ -679,6 +795,8 @@ export default function KompetensiDashboard({ rows, onBack }) {
                 </tfoot>
               </table>
             </div>
+
+            <DetailKelompokTable data={data.groupDetails} />
           </div>
         )}
 
@@ -785,11 +903,18 @@ export default function KompetensiDashboard({ rows, onBack }) {
 
       </div>
 
+      {/* ══════════════ LAPORAN TAB ══════════════ */}
+        {tab === 'laporan' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+             <KompetensiLaporan reports={data.reports} />
+          </div>
+        )}
       {/* ── Drill-Down Modal ── */}
       {drill && (
         <DrillDownWrapper
           group={drill}
           rows={rows}
+          config={config}
           onClose={()=>setDrill(null)}
         />
       )}
@@ -798,7 +923,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
 }
 
 /* wrapper loads icdMap from CSV */
-function DrillDownWrapper({ group, rows, onClose }) {
+function DrillDownWrapper({ group, rows, config, onClose }) {
   const [icdMap, setIcdMap] = useState(null);
   useEffect(()=>{
     (async()=>{
@@ -813,10 +938,11 @@ function DrillDownWrapper({ group, rows, onClose }) {
             if(parts.length<6) continue;
             const g=parts[2].trim();
             const code=parts[3].replace(/['"]/g,'').trim();
+            const desc=parts[4].replace(/['"]/g,'').trim();
             const lv=parts[5].replace(/['"]/g,'').trim();
             const level=lv.charAt(0).toUpperCase()+lv.slice(1).toLowerCase();
             if(!map.has(code)) map.set(code,[]);
-            if(!map.get(code).find(e=>e.group===g)) map.get(code).push({group:g,level});
+            if(!map.get(code).find(e=>e.group===g)) map.get(code).push({group:g,level,desc});
           }
         }
       } catch(e){}
@@ -831,5 +957,5 @@ function DrillDownWrapper({ group, rows, onClose }) {
       </div>
     </div>
   );
-  return <DrillDown group={group} rows={rows} icdMap={icdMap} onClose={onClose}/>;
+  return <DrillDown group={group} rows={rows} icdMap={icdMap} config={config} onClose={onClose}/>;
 }
