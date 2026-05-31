@@ -1156,5 +1156,5 @@ function DrillDownWrapper({ group, rows, config, onClose, onExport }) {
       </div>
     </div>
   );
-  return <DrillDown group={group} rows={rows} icdMap={icdMap} config={config} onClose={onClose}/>;
+  return <DrillDown group={group} rows={rows} icdMap={icdMap} config={config} onClose={onClose} onExport={onExport}/>;
 }
