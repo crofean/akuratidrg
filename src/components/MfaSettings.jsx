@@ -177,34 +177,45 @@ const MfaSettings = () => {
           <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
             <Smartphone size={18} className="text-teal-500"/> Panduan Aktivasi MFA
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
-              <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                <img src="/images/mfa_step1.png" alt="Unduh Aplikasi" className="h-full object-contain" />
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
+                <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                  <img src="/images/mfa_step1.png" alt="Unduh Aplikasi" className="h-full object-contain" />
+                </div>
+                <h4 className="font-bold text-slate-800 text-base mb-2">1. Unduh Aplikasi</h4>
+                <p className="text-sm text-slate-500">Unduh aplikasi <strong>Google Authenticator</strong> dari Play Store atau App Store di HP Anda.</p>
               </div>
-              <h4 className="font-bold text-slate-800 text-base mb-2">1. Unduh Aplikasi</h4>
-              <p className="text-sm text-slate-500">Unduh aplikasi <strong>Google Authenticator</strong> dari Play Store (Android) atau App Store (iOS) di HP Anda.</p>
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
+                <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
+                  <img src="/images/mfa_step2.png" alt="Mulai Aktivasi" className="h-full w-full object-cover object-left-top rounded" />
+                </div>
+                <h4 className="font-bold text-slate-800 text-base mb-2">2. Mulai Aktivasi</h4>
+                <p className="text-sm text-slate-500">Klik tombol <strong>Mulai Aktifkan MFA</strong> pada panel Keamanan Akun Anda.</p>
+              </div>
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
+                <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                  <img src="/images/mfa_step3.png" alt="Pindai QR" className="h-full object-contain" />
+                </div>
+                <h4 className="font-bold text-slate-800 text-base mb-2">3. Pindai QR Code</h4>
+                <p className="text-sm text-slate-500">Buka aplikasi Authenticator, lalu scan QR Code yang muncul di layar laptop.</p>
+              </div>
             </div>
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
-              <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
-                <img src="/images/mfa_step2.png" alt="Mulai Aktivasi" className="h-full w-full object-cover object-left-top rounded" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:px-12 lg:px-32">
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
+                <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
+                  <img src="/images/mfa_step4.png" alt="Masukkan OTP" className="h-full w-full object-cover object-left-top rounded" />
+                </div>
+                <h4 className="font-bold text-slate-800 text-base mb-2">4. Masukkan OTP</h4>
+                <p className="text-sm text-slate-500">Masukkan 6 digit angka OTP (contoh: 083500) ke kolom yang tersedia.</p>
               </div>
-              <h4 className="font-bold text-slate-800 text-base mb-2">2. Mulai Aktivasi</h4>
-              <p className="text-sm text-slate-500">Klik tombol <strong>Mulai Aktifkan MFA</strong> pada panel Keamanan Akun Anda.</p>
-            </div>
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
-              <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                <img src="/images/mfa_step3.png" alt="Pindai QR" className="h-full object-contain" />
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
+                <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
+                  <img src="/images/mfa_step5.png" alt="Selesai & Sukses" className="h-full w-full object-cover object-left-top rounded" />
+                </div>
+                <h4 className="font-bold text-slate-800 text-base mb-2">5. Selesai</h4>
+                <p className="text-sm text-slate-500">Klik Verifikasi, dan akun Anda kini telah sukses terlindungi dengan keamanan ganda.</p>
               </div>
-              <h4 className="font-bold text-slate-800 text-base mb-2">3. Pindai QR Code</h4>
-              <p className="text-sm text-slate-500">Buka aplikasi Authenticator, pilih Scan QR Code, lalu arahkan kamera ke QR Code yang muncul di layar.</p>
-            </div>
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-100 text-center shadow-inner">
-              <div className="h-48 mb-6 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2 shadow-sm">
-                <img src="/images/mfa_step4.png" alt="Masukkan OTP" className="h-full w-full object-cover object-left-top rounded" />
-              </div>
-              <h4 className="font-bold text-slate-800 text-base mb-2">4. Masukkan OTP</h4>
-              <p className="text-sm text-slate-500">Masukkan 6 digit angka dari aplikasi Authenticator ke dalam kolom OTP, lalu klik <strong>Verifikasi</strong>.</p>
             </div>
           </div>
         </div>
