@@ -10314,8 +10314,10 @@ export default function App() {
                 </div>
 
                 {subTab === 'kompetensi' ? (dashData && dashData.isLoaded ? <KompetensiDashboard rows={dashData.rawRows} onBack={() => setSubTab('executive')} /> : (
-                  <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50">
-                    <div className="mb-6"><AlertCircle size={48} className="text-teal-600 mx-auto animate-bounce" /></div>
+                  <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50 animate-in zoom-in-95 duration-500">
+                    <div className="mb-10 animate-in fade-in zoom-in-75 duration-1000">
+                      <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="akurat.id Logo" className="w-72 mx-auto drop-shadow-[0_20px_50px_rgba(20,184,166,0.3)] transition-transform hover:scale-105 duration-700" />
+                    </div>
                     <h2 className="text-2xl font-black mb-3 text-slate-800">Menunggu Dataset Utama...</h2>
                     <p className="text-slate-500 font-medium leading-relaxed">
                       Data kompetensi belum dapat ditampilkan. Silakan unggah file klaim RS terlebih dahulu di tab <strong>Integrasi Data</strong>.
