@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../App';
+import { supabase } from '../supabaseClient';
 import { QRCodeSVG } from 'qrcode.react';
 import { ShieldAlert, Key, CheckCircle, AlertTriangle } from 'lucide-react';
 
