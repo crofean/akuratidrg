@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   Activity, ShieldAlert, ArrowLeft, TrendingDown, TrendingUp,
   ChevronRight, X, Search, AlertCircle, CheckCircle,
-  BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download
+  BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy
 } from 'lucide-react';
 import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils/competencyAnalyzer';
 
@@ -151,6 +151,26 @@ function DrillDown({ group, rows, icdMap, onClose }) {
   const totIdrg = matchedRows.reduce((s,r)=>s+(parseFloat(r['IDRG_TOTAL_TARIF'])||0),0);
   const totSel  = totIdrg - totIna;
 
+  const copyTable = () => {
+    let tsv = "No\tRumah Sakit\tSEP / No Klaim\tNama Pasien\tDPJP\tJenis\tDiagnosa Utama\tINA-CBG\tiDRG\tSelisih\n";
+    matchedRows.forEach((r, i) => {
+      const kodeRs = String(r['KODE_RS']||'').trim();
+      const namaRs = rsMap[kodeRs] ? `${kodeRs} - ${rsMap[kodeRs]}` : kodeRs || '-';
+      const sep = r['SEP']||r['NO_SEP']||r['NO_KLAIM']||'-';
+      const patientName = maskName(String(r['NAMA']||r['NAMA_PASIEN']||r['nama']||'-'));
+      const dpjp = maskName(r['DPJP']||'-');
+      const mainDiag = (r['DIAGLIST']||'').split(';')[0]?.trim()||'-';
+      const ina = parseFloat(r['TOTAL_TARIF'])||0;
+      const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
+      const sel = idrg - ina;
+      const jenis = String(r['PTD']||'').trim()==='1' ? 'Ranap' : 'Rajal';
+      tsv += `${i+1}\t"${namaRs}"\t"${sep}"\t"${patientName}"\t"${dpjp}"\t"${jenis}"\t"${mainDiag}"\t${ina}\t${idrg}\t${sel}\n`;
+    });
+    navigator.clipboard.writeText(tsv).then(() => alert('✅ Tabel berhasil disalin ke clipboard! Silakan paste (Ctrl+V) di Excel/Word Anda.')).catch(err => {
+      console.error(err); alert('⚠️ Gagal menyalin tabel ke clipboard!');
+    });
+  };
+
   const exportToExcel = () => {
     let csv = "No,Rumah Sakit,SEP / No Klaim,Nama Pasien,DPJP,Jenis,Diagnosa Utama,INA-CBG,iDRG,Selisih\n";
     matchedRows.forEach((r, i) => {
@@ -188,6 +208,9 @@ function DrillDown({ group, rows, icdMap, onClose }) {
             <p className="text-xs text-slate-400 mt-0.5">{fmt(matchedRows.length)} kasus terdampak</p>
           </div>
           <div className="flex items-center gap-3">
+            <button onClick={copyTable} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-sky-500 rounded-lg text-xs font-bold transition-colors">
+              <Copy size={14}/> Copy Tabel
+            </button>
             <button onClick={exportToExcel} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-teal-500 rounded-lg text-xs font-bold transition-colors">
               <Download size={14}/> Download CSV
             </button>

@@ -4520,6 +4520,29 @@ export default function App() {
     exportToXlsx(`Data_Pasien_${drilldown.title}`, headers, rows);
   };
 
+  const copyDrilldownTable = () => {
+    let headers = [], rows = [];
+    if (drilldown.type === 'pending_sakti') {
+      headers = ['No', 'No SEP', 'Nama Pasien', 'Keterangan Pending', 'Kelompok Kasus', 'Faktor Penyebab', 'DPJP Utama', 'Coder', 'Diaglist', 'Proclist'];
+      rows = drilldown.data.map((c, i) => [i + 1, c.sep || '-', c.nama || '-', c.keterangan || '-', Array.isArray(c.kategori) ? c.kategori.join(', ') : (c.kategori || '-'), c.faktor || '-', c.dpjp || '-', c.coderName || '-', c.diaglist || '-', c.proclist || '-']);
+    } else if (drilldown.type === 'audit_kpi') {
+      headers = ['No', 'SEP', 'Tgl Masuk', 'Tgl Keluar', 'Rule ID', 'Temuan', 'Warning', 'Verdict'];
+      rows = drilldown.data.map((f, i) => [i + 1, f.sep, f.tglMasuk?.substring(0,10)||'-', f.tglKeluar?.substring(0,10)||'-', f.ruleId, f.case, typeof f.warning === 'string' ? f.warning : 'Lihat Detail', auditVerdicts[`${f.sep}|${f.ruleId}`] || 'belum']);
+    } else {
+      headers = ['No', 'Nama Pasien', 'MRN', 'SEP', 'Tgl Pulang', 'SL INA', 'CL iDRG', 'INA Code', 'Deskripsi INA', 'Diag INA', 'Proc INA', 'iDRG Code', 'Deskripsi iDRG', 'Diag iDRG', 'Proc iDRG', 'Tarif RS', 'Tarif INA', 'Tarif iDRG', 'Selisih', ...compKeys.map(c => c.label)];
+      rows = drilldown.data.map((row, i) => {
+        const rs = parseFloat(row.TARIF_RS || row.BIAYA_RS || row.TOTAL_TARIF_RS || 0) || 0;
+        const ina = parseFloat(row.TOTAL_TARIF) || 0; const idrg = parseFloat(row.IDRG_TOTAL_TARIF) || 0;
+        const inaStr = String(row.INACBG || '').trim(); const cl = parseInt(String(row.IDRG_DRG_CODE || '').slice(-1));
+        return [i + 1, String(row.NAMA_PASien || row.NAMA_PASIEN || row.NAMA || '-'), String(row.MRN || '-'), String(row.SEP || '-'), String(row.DISCHARGE_DATE || '-'), inaStr ? (inaStr.endsWith('-I') ? 1 : inaStr.endsWith('-II') ? 2 : inaStr.endsWith('-III') ? 3 : 0) : 0, isNaN(cl) ? '-' : cl, String(row.INACBG || '-'), String(row.DESKRIPSI_INACBG || '-'), String(row.DIAGLIST || '-'), String(row.PROCLIST || '-'), String(row.IDRG_DRG_CODE || '-'), String(row.IDRG_DRG_DESCRIPTION || '-'), String(row.IDRG_DIAG_LISTS || '-'), String(row.IDRG_PROC_LISTS || '-'), rs, ina, idrg, idrg - ina, ...compKeys.map(c => extract18(row)[c.key])];
+      });
+    }
+    const tsv = [headers.join('\t'), ...rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""').replace(/\n/g, ' ')}"`).join('\t'))].join('\n');
+    navigator.clipboard.writeText(tsv).then(() => alert('✅ Tabel berhasil disalin ke clipboard! Silakan paste (Ctrl+V) di Excel/Word Anda.')).catch(err => {
+      console.error(err); alert('⚠️ Gagal menyalin tabel ke clipboard!');
+    });
+  };
+
   const getPieSlices = (items) => {
     let slices = []; let cPct = 0;
     [...items].sort((a, b) => (b.value || 0) - (a.value || 0)).forEach((item) => {
@@ -9594,6 +9617,9 @@ export default function App() {
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <button onClick={copyDrilldownTable} className="bg-sky-600 hover:bg-sky-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-sky-600/20 transition-all uppercase tracking-wider">
+                  <Copy size={16} /> <span className="hidden sm:inline">Copy Tabel</span>
+                </button>
                 <button onClick={dlDrilldownCSV} className="bg-teal-600 hover:bg-teal-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs font-black flex items-center gap-2 shadow-lg shadow-teal-600/20 transition-all uppercase tracking-wider">
                   <Download size={16} /> <span className="hidden sm:inline">Unduh CSV</span>
                 </button>
