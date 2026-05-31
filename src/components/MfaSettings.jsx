@@ -177,27 +177,34 @@ const MfaSettings = () => {
           <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
             <Smartphone size={18} className="text-teal-500"/> Panduan Aktivasi MFA
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
-              <div className="h-40 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                <img src="/images/mfa_guide_1.png" alt="Mulai Aktivasi" className="h-full object-cover object-left-top rounded" />
+              <div className="h-32 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_step1.png" alt="Unduh Aplikasi" className="h-full object-contain" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm mb-2">1. Mulai Aktivasi</h4>
-              <p className="text-xs text-slate-500">Klik tombol <strong>Mulai Aktifkan MFA</strong> pada panel Keamanan Akun Anda.</p>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">1. Unduh Aplikasi</h4>
+              <p className="text-xs text-slate-500">Unduh aplikasi <strong>Google Authenticator</strong> dari Play Store (Android) atau App Store (iOS) di HP Anda.</p>
             </div>
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
-              <div className="h-40 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                <img src="/images/mfa_guide_2.png" alt="Scan QR" className="h-full object-cover object-left-top rounded" />
+              <div className="h-32 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_step2.png" alt="Mulai & Pindai QR" className="h-full object-cover object-left-top rounded" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm mb-2">2. Pindai QR Code</h4>
-              <p className="text-xs text-slate-500">Buka aplikasi <strong>Google Authenticator</strong> di HP Anda dan scan QR Code yang muncul.</p>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">2. Mulai & Pindai QR</h4>
+              <p className="text-xs text-slate-500">Klik tombol <strong>Mulai Aktifkan MFA</strong>. Buka aplikasi Authenticator, pilih Scan QR Code, dan arahkan kamera.</p>
             </div>
             <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
-              <div className="h-40 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
-                <img src="/images/mfa_guide_3.png" alt="Enter OTP" className="h-full object-cover object-left-top rounded" />
+              <div className="h-32 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_step3.png" alt="Masukkan OTP" className="h-full object-cover object-left-top rounded" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm mb-2">3. Masukkan Kode OTP</h4>
-              <p className="text-xs text-slate-500">Masukkan 6 digit angka OTP yang ada di HP Anda ke kolom yang tersedia, lalu verifikasi.</p>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">3. Masukkan OTP</h4>
+              <p className="text-xs text-slate-500">Masukkan 6 digit angka dari aplikasi Authenticator ke dalam kolom OTP, lalu klik <strong>Verifikasi</strong>.</p>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center shadow-inner">
+              <div className="h-32 mb-4 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-slate-100 p-2">
+                <img src="/images/mfa_step4.png" alt="Selesai & Sukses" className="h-full object-cover object-left-top rounded" />
+              </div>
+              <h4 className="font-bold text-slate-800 text-sm mb-2">4. Selesai & Sukses</h4>
+              <p className="text-xs text-slate-500">Saat berhasil, aplikasi akan menampilkan peringatan hijau bahwa MFA telah aktif dan akun terlindungi.</p>
             </div>
           </div>
         </div>
