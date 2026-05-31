@@ -91,7 +91,7 @@ function MiniLevelBar({ ranap, rajal }) {
 }
 
 /* ─── Drill-Down Modal ────────────────────────────────────────────────────── */
-function DrillDown({ group, rows, icdMap, config, onClose }) {
+function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('patients'); // patients | icds
   const [page, setPage] = useState(0);
@@ -218,8 +218,8 @@ function DrillDown({ group, rows, icdMap, config, onClose }) {
             <button onClick={copyTable} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-sky-500 rounded-lg text-xs font-bold transition-colors">
               <Copy size={14}/> Copy Tabel
             </button>
-            <button onClick={exportToExcel} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-teal-500 rounded-lg text-xs font-bold transition-colors">
-              <Download size={14}/> Download CSV
+            <button onClick={() => { if(onExport) onExport('DrillDown_'+dn(group), icdSummary, config, group); }} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-teal-500 rounded-lg text-xs font-bold transition-colors">
+              <Download size={14}/> Download Excel
             </button>
             <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
               <X size={20}/>
@@ -1014,6 +1014,26 @@ export default function KompetensiDashboard({ rows, onBack }) {
              <KompetensiLaporan reports={data.reports} />
           </div>
         )}
+
+      {/* Password Modal for Exports */}
+      {showPasswordModal && pendingExport && (
+        <PasswordModal
+          onClose={() => {
+            setShowPasswordModal(false);
+            setPendingExport(null);
+          }}
+          onSuccess={(password) => {
+            exportToExcel(
+              pendingExport.sheets,
+              pendingExport.name,
+              password
+            );
+            setShowPasswordModal(false);
+            setPendingExport(null);
+          }}
+        />
+      )}
+
       {/* ── Drill-Down Modal ── */}
       {drill && (
         <DrillDownWrapper
@@ -1021,6 +1041,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
           rows={rows}
           config={config}
           onClose={()=>setDrill(null)}
+          onExport={handleExportDrillDown}
         />
       )}
     </div>

@@ -464,7 +464,7 @@ export default function KompetensiLaporan({ reports }) {
   return (
     <div className="relative p-4">
 <style>{`
-.elite-table-container { overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0; background-color: white; }
+.elite-table-container { overflow: auto; max-height: 70vh; border-radius: 12px; border: 1px solid #e2e8f0; background-color: white; }
 .elite-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left; }
 .elite-table th { background-color: #f8fafc; color: #64748b; font-weight: 800; padding: 1rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid #e2e8f0; font-size: 0.7rem; }
 .elite-table td { padding: 0.875rem 1rem; border: 1px solid #e2e8f0; color: #334155; font-weight: 500; }
