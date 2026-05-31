@@ -1962,8 +1962,23 @@ const SectionHeader = React.memo(({ icon: Icon, title, desc, exportAction, expor
 
 const MiniTable = React.memo(({ data = [], columns = [], onRowClick, maxHeight = "400px", maxRows = 100 }) => {
   const visibleData = useMemo(() => data.slice(0, maxRows), [data, maxRows]);
+  
+  const copyMiniTable = (e) => {
+    e.stopPropagation();
+    const headers = columns.map(c => c.header).join('\t');
+    const rowStr = visibleData.map((row, i) => columns.map(col => {
+      let cell = col.render(row, i);
+      if (typeof cell === 'object' && cell !== null) cell = cell.props?.children || '-';
+      return `"${String(cell).replace(/"/g, '""').replace(/\n/g, ' ')}"`;
+    }).join('\t')).join('\n');
+    navigator.clipboard.writeText(headers + '\n' + rowStr).then(() => alert('✅ Tabel berhasil disalin!')).catch(err => alert('⚠️ Gagal menyalin tabel.'));
+  };
+
   return (
-    <div className={`overflow-x-auto flex-1 p-2 custom-scrollbar`} style={{ maxHeight }}>
+    <div className={`overflow-x-auto flex-1 p-2 custom-scrollbar relative group`} style={{ maxHeight }}>
+      <button onClick={copyMiniTable} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 bg-white shadow-md border border-slate-200 rounded-lg text-slate-500 hover:text-sky-600 hover:bg-sky-50 transition-all z-20 print:hidden flex items-center gap-1.5" title="Salin Tabel ke Clipboard">
+        <Copy size={12} /> <span className="text-[10px] font-bold">Copy</span>
+      </button>
       <table className="w-full text-xs text-left whitespace-nowrap">
         <thead className="text-[10px] uppercase font-bold text-slate-400 bg-slate-50/80 backdrop-blur-sm sticky top-0 z-10">
           <tr>{columns.map((col, i) => <th key={`col-${i}`} className={`p-3 border-b border-slate-100 ${col.hClass || col.className || ''}`}>{col.header}</th>)}</tr>
