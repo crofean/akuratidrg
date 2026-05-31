@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus, ShieldAlert, Copy } from 'lucide-react';
 import KompetensiDashboard from './components/KompetensiDashboard.jsx';
+import MfaSettings from './components/MfaSettings.jsx';
 import KompetensiSettings from './components/KompetensiSettings.jsx';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
@@ -10279,6 +10280,7 @@ export default function App() {
                 {subTab === 'kompetensi' ? (dashData && dashData.isLoaded ? <KompetensiDashboard rows={dashData.rawRows} onBack={() => setSubTab('executive')} /> : <div className="p-8 text-center">Harap upload dan proses data terlebih dahulu.</div>) :
                  subTab === 'settings_kompetensi' ? <KompetensiSettings /> :
                  subTab === 'user_management' ? renderUserManagement() : 
+                 subTab === 'security' ? <MfaSettings /> :
                  subTab === 'sync_icd' ? renderSyncIcdTab() :
                  subTab === 'pending_sakti' ? null : (
                    dashData && dashData.isLoaded ? (
