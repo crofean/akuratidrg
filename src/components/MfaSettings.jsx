@@ -30,12 +30,20 @@ const MfaSettings = () => {
     setLoading(true);
     setError('');
     try {
+      // Hapus factor yang menggantung (unverified) jika ada, mencegah error 422
+      const { data: existingFactors } = await supabase.auth.mfa.listFactors();
+      const unverifiedFactors = (existingFactors?.totp || []).filter(f => f.status === 'unverified');
+      for (const factor of unverifiedFactors) {
+        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' });
       if (error) throw error;
       setFactorId(data.id);
-      setQrCode(data.totp.uri); // Use the URI for QRCodeSVG, not the raw SVG string
+      setQrCode(data.totp.uri);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Gagal menyiapkan MFA. Coba muat ulang halaman.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -116,8 +124,16 @@ const MfaSettings = () => {
                 <p className="text-sm text-slate-600 leading-relaxed font-medium bg-amber-50 p-4 rounded-xl border border-amber-100 text-amber-800">
                   Data TXT Klaim JKN adalah berisi data Medis dan bersifat Rahasia dan Untuk Keperluan Analisis Internal Rumah Sakit dalam pelayanan JKN, sangat disarankan untuk mengaktifkan MFA agar data hanya bisa diakses oleh Anda saja.
                 </p>
-                <button onClick={handleEnableMfa} disabled={loading} className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-teal-500/30 cursor-pointer">
-                  Mulai Aktifkan MFA
+                <button onClick={handleEnableMfa} disabled={loading} className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-teal-500/30 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Memproses...
+                    </>
+                  ) : 'Mulai Aktifkan MFA'}
                 </button>
               </>
             ) : (
