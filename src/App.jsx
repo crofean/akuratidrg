@@ -1,6 +1,8 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { supabase } from './supabaseClient';
-import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus } from 'lucide-react';
+import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus, ShieldAlert, Copy } from 'lucide-react';
+import KompetensiDashboard from './components/KompetensiDashboard.jsx';
+import KompetensiSettings from './components/KompetensiSettings.jsx';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas-pro';
@@ -58,6 +60,48 @@ export const saveAsPng = async (elementId, fileName) => {
     if (loadingIndicator && loadingIndicator.parentNode) {
       loadingIndicator.parentNode.removeChild(loadingIndicator);
     }
+  }
+};
+
+export const copyAsPng = async (elementId, fileName) => {
+  const el = document.getElementById(elementId);
+  if (!el) return alert('⚠️ Error: Elemen grafik "' + elementId + '" tidak ditemukan!');
+  
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.style.position = 'fixed';
+  loadingIndicator.style.top = '30px';
+  loadingIndicator.style.left = '50%';
+  loadingIndicator.style.transform = 'translateX(-50%)';
+  loadingIndicator.style.background = 'rgba(15, 23, 42, 0.95)';
+  loadingIndicator.style.color = '#fff';
+  loadingIndicator.style.padding = '14px 28px';
+  loadingIndicator.style.borderRadius = '12px';
+  loadingIndicator.style.zIndex = '99999';
+  loadingIndicator.style.fontSize = '13px';
+  loadingIndicator.style.fontWeight = 'bold';
+  loadingIndicator.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.4)';
+  loadingIndicator.style.fontFamily = 'sans-serif';
+  loadingIndicator.innerText = '⏳ Sedang menyalin gambar ke clipboard... Mohon tunggu sebentar.';
+  document.body.appendChild(loadingIndicator);
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const canvas = await html2canvas(el, { backgroundColor: '#ffffff', scale: 2, useCORS: true, allowTaint: true });
+    
+    canvas.toBlob(async (blob) => {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        alert('✅ Gambar berhasil disalin ke clipboard! Silakan paste (Ctrl+V) di dokumen/grup chat Anda.');
+      } catch (err) {
+        console.error('Failed to copy to clipboard:', err);
+        alert('⚠️ Gagal menyalin ke clipboard. Pastikan browser mendukung dan memberi izin akses clipboard (seperti HTTPS).');
+      }
+    }, 'image/png');
+  } catch (err) {
+    console.error('Failed to capture element:', err);
+    alert('⚠️ Gagal menyalin gambar!\\nDetail Error: ' + err.message);
+  } finally {
+    if (loadingIndicator && loadingIndicator.parentNode) loadingIndicator.parentNode.removeChild(loadingIndicator);
   }
 };
 
@@ -1056,7 +1100,9 @@ const TABS = [
   { id: 'insight_sosialisasi', label: 'Insight Sosialisasi', icon: Sparkles },
   { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award }, { id: 'readmisi', label: 'Readmisi & Fragmentasi', icon: RefreshCw },
   { id: 'pending_sakti', label: 'Analisis Pending', icon: FileSpreadsheet },
+  { id: 'kompetensi', label: 'Kompetensi Layanan', icon: ShieldAlert },
   { id: 'settings_ksm', label: 'Pengaturan KSM', icon: Settings },
+  { id: 'settings_kompetensi', label: 'Pengaturan Kompetensi', icon: Settings },
   { id: 'user_management', label: 'Manajemen Akses', icon: ClipboardList }
 ];
 
@@ -1874,13 +1920,18 @@ const parseDate = (dateStr) => {
 // --- REUSABLE UI COMPONENTS ---
 const Card = React.memo(({ children, className = '', id = null, downloadTitle = null, onClick = undefined }) => {
   const hasBg = className.split(' ').some(c => c.startsWith('bg-'));
-  const btnStyle = { position: 'absolute', top: '12px', right: '12px', zIndex: 60, display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 11px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 8px rgba(14,165,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'all 0.2s' };
+  const btnStyle = { display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 11px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 8px rgba(14,165,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'all 0.2s' };
   return (
     <div id={id} onClick={onClick} style={{ position: 'relative' }} className={`${hasBg ? '' : 'bg-white'} rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100 ${className}`}>
       {downloadTitle && id && (
-        <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} style={btnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} className="print:hidden" title={`Unduh ${downloadTitle} sebagai PNG`}>
-          <Download size={13} /> Simpan PNG
-        </button>
+        <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 60, display: 'flex', gap: '6px' }} className="print:hidden">
+          <button onClick={(e) => { e.stopPropagation(); copyAsPng(id, downloadTitle); }} style={btnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} title={`Salin ${downloadTitle} ke Clipboard`}>
+            <Copy size={13} /> Copy
+          </button>
+          <button onClick={(e) => { e.stopPropagation(); saveAsPng(id, downloadTitle); }} style={btnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} title={`Unduh ${downloadTitle} sebagai PNG`}>
+            <Download size={13} /> Save
+          </button>
+        </div>
       )}
       {children}
     </div>
@@ -3046,8 +3097,8 @@ export default function App() {
   const [globalFilter, setGlobalFilter] = useState(() => {
     try {
       const saved = sessionStorage.getItem('sak_globalFilter');
-      return saved ? JSON.parse(saved) : { periode: [], jenisRawat: [], kelasRawat: [], dpjp: [], ksm: [], departemen: [] };
-    } catch (e) { return { periode: [], jenisRawat: [], kelasRawat: [], dpjp: [], ksm: [], departemen: [] }; }
+      return saved ? JSON.parse(saved) : { periode: [], jenisRawat: [], kelasRawat: [], dpjp: [], ksm: [], departemen: [], kodeRs: [] };
+    } catch (e) { return { periode: [], jenisRawat: [], kelasRawat: [], dpjp: [], ksm: [], departemen: [], kodeRs: [] }; }
   });
   const [isScrolled, setIsScrolled] = useState(false);
   const [reportSubTab, setReportSubTab] = useState('summary');
@@ -3066,6 +3117,11 @@ export default function App() {
   const [excelExportPassword, setExcelExportPassword] = useState('');
   const [isEncryptingExcel, setIsEncryptingExcel] = useState(false);
   const [showExportPasswordMask, setShowExportPasswordMask] = useState(false);
+
+  const [rsMap, setRsMap] = useState({});
+  useEffect(() => {
+    fetch('/data/rs_map.json').then(res => res.json()).then(data => setRsMap(data)).catch(console.error);
+  }, []);
 
   useEffect(() => {
     globalSetExcelExport = setExcelExportReq;
@@ -3295,17 +3351,17 @@ export default function App() {
   useEffect(() => {
     const loadIcdDictionary = async () => {
       try {
-        console.log('[SAK-iDRG] Loading dynamic ICD dictionary from IndexedDB...');
+        console.log('[Akurat-iDRG] Loading dynamic ICD dictionary from IndexedDB...');
         const map = await loadIcdDictFromDb();
         const size = Object.keys(map).length;
         if (size > 0) {
-          console.log(`[SAK-iDRG] Successfully loaded ${size} ICD dictionary codes from IndexedDB.`);
+          console.log(`[Akurat-iDRG] Successfully loaded ${size} ICD dictionary codes from IndexedDB.`);
           setIcdSyncVersion(prev => prev + 1);
         } else {
-          console.log('[SAK-iDRG] Local ICD dictionary database is empty or not synchronized yet.');
+          console.log('[Akurat-iDRG] Local ICD dictionary database is empty or not synchronized yet.');
         }
       } catch (err) {
-        console.error('[SAK-iDRG] Failed to load ICD dictionary from IndexedDB:', err);
+        console.error('[Akurat-iDRG] Failed to load ICD dictionary from IndexedDB:', err);
       }
       
       // Run automatic background synchronization silently!
@@ -3316,7 +3372,7 @@ export default function App() {
       const urlToSync = localStorage.getItem("sak_icd_sheet_url") || "https://docs.google.com/spreadsheets/d/19Fqy6_e_j9_cuH43as9pB_5gJjWnPO3Eb2EIfX1or-w/edit?usp=sharing";
       setAutoSyncStatus("syncing");
       try {
-        console.log('[SAK-iDRG] Starting silent automatic background sync for ICD Dictionary...');
+        console.log('[Akurat-iDRG] Starting silent automatic background sync for ICD Dictionary...');
         const exportUrl = getGoogleSheetCsvUrl(urlToSync.trim());
         const res = await fetch(exportUrl);
         if (!res.ok) throw new Error(`Status ${res.status}`);
@@ -3342,19 +3398,19 @@ export default function App() {
           globalIcdMap = window.sakIcdMap;
           
           window.dispatchEvent(new CustomEvent('sak_icd_sync_complete', { detail: window.sakIcdMap }));
-          console.log(`[SAK-iDRG] Silent automatic background ICD sync finished successfully. Loaded ${dictArray.length} codes.`);
+          console.log(`[Akurat-iDRG] Silent automatic background ICD sync finished successfully. Loaded ${dictArray.length} codes.`);
           setAutoSyncStatus("done");
         } else {
           setAutoSyncStatus("failed");
         }
       } catch (err) {
-        console.warn('[SAK-iDRG] Silent automatic background ICD sync failed, using offline fallback:', err.message);
+        console.warn('[Akurat-iDRG] Silent automatic background ICD sync failed, using offline fallback:', err.message);
         setAutoSyncStatus("failed");
       }
     };
 
     const handleSyncComplete = (e) => {
-      console.log('[SAK-iDRG] ICD sync complete event received. Refreshing RAM cache...');
+      console.log('[Akurat-iDRG] ICD sync complete event received. Refreshing RAM cache...');
       setIcdSyncVersion(prev => prev + 1);
     };
 
@@ -3395,7 +3451,7 @@ export default function App() {
 
   // Persistence Sync
   useEffect(() => {
-    console.log('[SAK-iDRG] Navigation state:', { activeTab, subTab });
+    console.log('[Akurat-iDRG] Navigation state:', { activeTab, subTab });
     sessionStorage.setItem('sak_activeTab', activeTab);
     sessionStorage.setItem('sak_subTab', subTab);
     sessionStorage.setItem('sak_globalFilter', JSON.stringify(globalFilter));
@@ -3572,7 +3628,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    console.log('[SAK-iDRG] Global Filter changed:', globalFilter);
+    console.log('[Akurat-iDRG] Global Filter changed:', globalFilter);
   }, [globalFilter]);
 
   useEffect(() => {
@@ -3972,12 +4028,13 @@ export default function App() {
   const clearData = () => { setUploadedFiles([]); setError(''); };
 
   const filterOptions = useMemo(() => {
-    const periods = new Set(), jenis = new Set(), kelas = new Set(), dpjps = new Map(), ksms = new Set(), depts = new Set();
+    const periods = new Set(), jenis = new Set(), kelas = new Set(), dpjps = new Map(), ksms = new Set(), depts = new Set(), kodeRsSet = new Set();
     uploadedFiles.flatMap(f => f.rows).forEach(r => {
       const dObj = parseDate(r['DISCHARGE_DATE']);
       if (dObj) periods.add(`${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}`);
       if (r['PTD']) jenis.add(String(r['PTD']).trim());
       const kls = r['KELAS_RAWAT'] || r['KELAS'] || r['HAK_KELAS']; if (kls) kelas.add(String(kls).trim());
+      const rs = String(r['KODE_RS'] || '').trim(); if (rs) kodeRsSet.add(rs);
       const np = normDpjp(r['DPJP']); if (!dpjps.has(np)) dpjps.set(np, maskName(r['DPJP'] || 'Unknown'));
       const ksm = extractKsm(r['DPJP'] || 'Unknown', ksmOverrides);
       ksms.add(ksm);
@@ -3989,7 +4046,8 @@ export default function App() {
       kelas: Array.from(kelas).sort(),
       dpjps: Array.from(dpjps.entries()).map(([norm, disp]) => ({ norm, disp })).sort((a, b) => a.disp.localeCompare(b.disp)),
       ksms: Array.from(ksms).sort(),
-      depts: Array.from(depts).sort()
+      depts: Array.from(depts).sort(),
+      kodeRs: Array.from(kodeRsSet).sort()
     };
   }, [uploadedFiles]);
 
@@ -4030,7 +4088,9 @@ export default function App() {
   const dashData = useMemo(() => {
     const rawRows = uploadedFiles.flatMap(f => f.rows);
     if (rawRows.length === 0) return null;
+    
     const rows = rawRows.filter(row => {
+      if (globalFilter.kodeRs && globalFilter.kodeRs.length > 0 && !globalFilter.kodeRs.includes(String(row['KODE_RS'] || '').trim())) return false;
       if (globalFilter.periode.length > 0) { const dObj = parseDate(row['DISCHARGE_DATE']); if (!dObj || !globalFilter.periode.includes(`${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}`)) return false; }
       if (globalFilter.jenisRawat.length > 0 && !globalFilter.jenisRawat.includes(String(row['PTD'] || '').trim())) return false;
       const kls = String(row['KELAS_RAWAT'] || row['KELAS'] || row['HAK_KELAS'] || '').trim();
@@ -4268,8 +4328,8 @@ export default function App() {
         maps.idrgToIna[drgCode].sources[inaCode].sumIdrg += tIdrg;
       }
 
-      const idrgDList = String(r['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
-      const idrgPList = String(r['IDRG_PROC_LISTS'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+      const idrgDList = String(r['IDRG_DIAG_LISTS'] || '').replace(/["']/g, '').split(';').map(d => d.trim()).filter(d => d);
+      const idrgPList = String(r['IDRG_PROC_LISTS'] || '').replace(/["']/g, '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
       // Hitung skor hanya untuk baris yang memiliki data iDRG
       const hasIdrgData = String(r['IDRG_DRG_CODE'] || '').trim() !== '' && String(r['IDRG_DRG_CODE'] || '').trim() !== '-';
       const sDiag = checkMatchList(dList, idrgDList, ['KG', 'HL', 'NL', 'KND', 'G89', 'U82', 'U83', 'U84']);
@@ -4310,6 +4370,8 @@ export default function App() {
             diaglist: dList.join(', '),
             proclist: pList.join(', '),
             coderId: cId,
+            tglMasuk: String(r['ADMISSION_DATE'] || '-'),
+            tglKeluar: String(r['DISCHARGE_DATE'] || '-'),
             totalTarif: parseFloat(r['TOTAL_TARIF'] || 0)
           });
           hit = true;
@@ -7578,6 +7640,8 @@ export default function App() {
                                   ),
                                   sep: String(row['SEP'] || '-'),
                                   mrn: String(row['MRN'] || '-'),
+                                  tglMasuk: String(row['ADMISSION_DATE'] || '-'),
+                                  tglKeluar: String(row['DISCHARGE_DATE'] || '-'),
                                   coderId: r.id
                                 };
                               });
@@ -7650,14 +7714,14 @@ export default function App() {
     }
 
     const updateOverride = (norm, ksm, dept) => {
-      console.log('[SAK-iDRG] updateOverride called:', { norm, ksm, dept });
+      console.log('[Akurat-iDRG] updateOverride called:', { norm, ksm, dept });
       setDraftKsmOverrides(prev => {
         const base = prev !== null ? prev : ksmOverrides;
         const next = {
           ...base,
           [norm]: { ksm, dept }
         };
-        console.log('[SAK-iDRG] Next draftKsmOverrides:', next);
+        console.log('[Akurat-iDRG] Next draftKsmOverrides:', next);
         return next;
       });
     };
@@ -7844,7 +7908,7 @@ export default function App() {
                   const isOverridden = !!overrideVal;
 
                   if (d.norm && (d.norm.includes('AHMAD') || d.norm.includes('FITRAH'))) {
-                    console.log('[SAK-iDRG] Render row debug for:', d.norm, {
+                    console.log('[Akurat-iDRG] Render row debug for:', d.norm, {
                       overrideVal,
                       autoResolved,
                       current,
@@ -8025,7 +8089,7 @@ export default function App() {
         <SectionHeader 
           icon={RefreshCw} 
           title="Sinkronisasi & Kamus ICD" 
-          desc="Hubungkan aplikasi SAK-iDRG dengan pangkalan data ICD-10 & ICD-9 eksternal via Google Sheets untuk verifikasi deskripsi diagnosis dan prosedur medis." 
+          desc="Hubungkan aplikasi Akurat-iDRG dengan pangkalan data ICD-10 & ICD-9 eksternal via Google Sheets untuk verifikasi deskripsi diagnosis dan prosedur medis." 
           colorClass="bg-teal-50 text-teal-600" 
           highlightClass="bg-teal-500/5" 
         />
@@ -8185,7 +8249,7 @@ export default function App() {
         <SectionHeader 
           icon={ClipboardList} 
           title="Manajemen Akses & Kredensial Pengguna" 
-          desc="Otorisasi pengajuan akun baru dan atur masa aktif akses SAK-iDRG langsung dari aplikasi secara otomatis menggunakan Supabase." 
+          desc="Otorisasi pengajuan akun baru dan atur masa aktif akses Akurat-iDRG langsung dari aplikasi secara otomatis menggunakan Supabase." 
           colorClass="bg-teal-500/10 text-teal-700" 
           highlightClass="bg-teal-500/5" 
         />
@@ -9672,6 +9736,8 @@ export default function App() {
                           <tr>
                             <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 w-12 text-center">No</th>
                             <th className="px-5 py-4 border-r border-slate-100 bg-white">SEP</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[100px]">Tgl Masuk</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[100px]">Tgl Keluar</th>
                             <th className="px-5 py-4 border-r border-slate-100 bg-slate-50">Rule ID</th>
                             <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[200px]">Temuan / Kasus</th>
                             <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[300px]">Warning Message</th>
@@ -9686,6 +9752,8 @@ export default function App() {
                               <tr key={idx} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-5 py-3 border-r border-slate-50 text-center text-slate-400 font-semibold">{idx + 1}</td>
                                 <td className="px-5 py-3 border-r border-slate-50 font-mono text-xs text-slate-500">{f.sep}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-slate-600">{f.tglMasuk ? f.tglMasuk.substring(0, 10) : '-'}</td>
+                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-slate-600">{f.tglKeluar ? f.tglKeluar.substring(0, 10) : '-'}</td>
                                 <td className="px-5 py-3 border-r border-slate-50 font-black text-slate-700 text-xs">{f.ruleId}</td>
                                 <td className="px-5 py-3 border-r border-slate-50 text-xs font-bold text-slate-600 truncate max-w-[250px]" title={f.case}>{f.case}</td>
                                 <td className="px-5 py-3 border-r border-slate-50 text-xs text-rose-600 font-medium whitespace-normal min-w-[300px]">{f.warning}</td>
@@ -9940,7 +10008,7 @@ export default function App() {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{isSidebarOpen ? 'Dashboard Menu' : '...'}</p>
             </div>
 
-            {TABS.filter(t => t.id !== 'user_management' || localStorage.getItem('sak_role') === 'admin').map((t, idx) => {
+            {TABS.filter(t => !['user_management', 'kompetensi', 'settings_kompetensi'].includes(t.id) || localStorage.getItem('sak_role') === 'admin').map((t, idx) => {
               const Icon = t.icon;
               const isActive = activeTab === 'dashboard' && subTab === t.id;
               return (
@@ -10009,7 +10077,9 @@ export default function App() {
                   />
                 </div>
 
-                {subTab === 'user_management' ? renderUserManagement() : 
+                {subTab === 'kompetensi' ? (dashData && dashData.isLoaded ? <KompetensiDashboard rows={dashData.rawRows} onBack={() => setSubTab('executive')} /> : <div className="p-8 text-center">Harap upload dan proses data terlebih dahulu.</div>) :
+                 subTab === 'settings_kompetensi' ? <KompetensiSettings /> :
+                 subTab === 'user_management' ? renderUserManagement() : 
                  subTab === 'sync_icd' ? renderSyncIcdTab() :
                  subTab === 'pending_sakti' ? null : (
                    dashData && dashData.isLoaded ? (
@@ -10027,6 +10097,9 @@ export default function App() {
                         </div>
                         <div className="hidden lg:block w-px h-12 bg-slate-200/60"></div>
                         <div className="flex flex-wrap items-center gap-6 flex-[2]">
+                          {localStorage.getItem('sak_role') === 'admin' && (
+                            <MultiSelectFilter icon={Building2} label="Rumah Sakit" selectedValues={globalFilter.kodeRs || []} onChange={v => setGlobalFilter({ ...globalFilter, kodeRs: v })} options={(filterOptions.kodeRs || []).map(s => ({ value: s, label: `${s} - ${rsMap[s] || 'Unknown RS'}` }))} />
+                          )}
                           <MultiSelectFilter icon={Building2} label="Departemen" selectedValues={globalFilter.departemen} onChange={v => setGlobalFilter({ ...globalFilter, departemen: v })} options={(filterOptions.depts || []).map(s => ({ value: s, label: s }))} />
                           <MultiSelectFilter icon={Users} label="KSM" selectedValues={globalFilter.ksm} onChange={v => setGlobalFilter({ ...globalFilter, ksm: v })} options={(filterOptions.ksms || []).map(s => ({ value: s, label: s }))} />
                           <MultiSelectFilter icon={User} label="DPJP Utama" selectedValues={globalFilter.dpjp} onChange={v => setGlobalFilter({ ...globalFilter, dpjp: v })} options={filterOptions.dpjps} valKey="norm" lblKey="disp" />

@@ -1,5 +1,5 @@
 {
-  "name": "sak-idrg",
+  "name": "akurat-idrg",
   "private": true,
   "version": "1.5.0",
   "type": "module",
@@ -17,6 +17,7 @@
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "recharts": "^2.12.7",
     "tailwindcss": "^4.3.0",
     "xlsx": "^0.18.5",
     "xlsx-populate": "^1.21.0"

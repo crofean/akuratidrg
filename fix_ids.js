@@ -1,0 +1,1 @@
+const fs = require('fs'); let content = fs.readFileSync('src/App.jsx', 'utf8'); content = content.replace(/u\.id/g, 'u.username'); content = content.replace(/\.eq\('id', userId\)/g, '.eq(\\'username\\', userId)'); content = content.replace(/\.eq\('id', editingUser\.id\)/g, '.eq(\\'username\\', editingUser.username)'); fs.writeFileSync('src/App.jsx', content);

@@ -13,5 +13,8 @@ export default defineConfig({
       html2canvas: 'html2canvas-pro'
     }
   },
+  optimizeDeps: {
+    include: ['recharts']
+  },
   base: './',
 })
