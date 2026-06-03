@@ -32,7 +32,41 @@ export const generatePPTX = async (dashData, activeExclusionCodes, auditVerdicts
   // ---------------------------------------------------------------------------
   // SLIDE 2: DASHBOARD RINGKASAN
   // ---------------------------------------------------------------------------
-  if (dashData && dashData.scorecard) {
+  let totalPasien = 0;
+  let totalTarifRS = 0;
+  let totalTarifINA = 0;
+  let totalLoss = 0;
+  let totalGain = 0;
+  let totalSelisih = 0;
+  let lossGains = [];
+
+  if (dashData && dashData.rawRows) {
+    const rawRows = dashData.rawRows;
+    totalPasien = rawRows.length;
+
+
+    rawRows.forEach(r => {
+      const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+      const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+      const selisih = ina - rs;
+
+      totalTarifRS += rs;
+      totalTarifINA += ina;
+      if (selisih < 0) totalLoss += selisih;
+      if (selisih > 0) totalGain += selisih;
+
+      lossGains.push({
+        sep: String(r.SEP || '-'),
+        nama: String(r.NAMA_PASIEN || r.NAMA_PASien || r.NAMA || '-'),
+        inacbg: String(r.INACBG || '-'),
+        tarifRs: rs,
+        tarifIna: ina,
+        selisih: selisih
+      });
+    });
+
+    totalSelisih = totalTarifINA - totalTarifRS;
+
     const sc = dashData.scorecard;
     const slideDash = pptx.addSlide();
     
@@ -46,37 +80,37 @@ export const generatePPTX = async (dashData, activeExclusionCodes, auditVerdicts
     // Total Kasus
     slideDash.addShape(pptx.ShapeType.rect, { x: 0.5, y: 1.5, w: boxW, h: boxH, fill: "f8fafc", line: { color: "e2e8f0", pt: 1 } });
     slideDash.addText("TOTAL KASUS", { x: 0.6, y: 1.6, w: boxW-0.2, fontSize: 10, color: "64748b", bold: true });
-    slideDash.addText(`${sc.totalPasien.toLocaleString()} Pasien`, { x: 0.6, y: 1.9, w: boxW-0.2, fontSize: 16, color: "0f172a", bold: true });
+    slideDash.addText(`${totalPasien.toLocaleString()} Pasien`, { x: 0.6, y: 1.9, w: boxW-0.2, fontSize: 16, color: "0f172a", bold: true });
 
     // Selisih Tarif
-    slideDash.addShape(pptx.ShapeType.rect, { x: 5, y: 1.5, w: boxW, h: boxH, fill: sc.totalSelisih >= 0 ? "ecfdf5" : "fff1f2", line: { color: sc.totalSelisih >= 0 ? "a7f3d0" : "fecdd3", pt: 1 } });
-    slideDash.addText("NET SELISIH (INA/iDRG - RS)", { x: 5.1, y: 1.6, w: boxW-0.2, fontSize: 10, color: sc.totalSelisih >= 0 ? "059669" : "e11d48", bold: true });
-    slideDash.addText(`${sc.totalSelisih >= 0 ? '+' : ''}${formatRp(sc.totalSelisih)}`, { x: 5.1, y: 1.9, w: boxW-0.2, fontSize: 16, color: sc.totalSelisih >= 0 ? "065f46" : "9f1239", bold: true });
+    slideDash.addShape(pptx.ShapeType.rect, { x: 5, y: 1.5, w: boxW, h: boxH, fill: totalSelisih >= 0 ? "ecfdf5" : "fff1f2", line: { color: totalSelisih >= 0 ? "a7f3d0" : "fecdd3", pt: 1 } });
+    slideDash.addText("NET SELISIH (INA/iDRG - RS)", { x: 5.1, y: 1.6, w: boxW-0.2, fontSize: 10, color: totalSelisih >= 0 ? "059669" : "e11d48", bold: true });
+    slideDash.addText(`${totalSelisih >= 0 ? '+' : ''}${formatRp(totalSelisih)}`, { x: 5.1, y: 1.9, w: boxW-0.2, fontSize: 16, color: totalSelisih >= 0 ? "065f46" : "9f1239", bold: true });
 
     // Potensi Loss & Gain
     slideDash.addShape(pptx.ShapeType.rect, { x: 0.5, y: 2.5, w: boxW, h: boxH, fill: "fff1f2", line: { color: "fecdd3", pt: 1 } });
     slideDash.addText("POTENSI KERUGIAN (LOSS)", { x: 0.6, y: 2.6, w: boxW-0.2, fontSize: 10, color: "e11d48", bold: true });
-    slideDash.addText(`${formatRp(sc.totalLoss)}`, { x: 0.6, y: 2.9, w: boxW-0.2, fontSize: 16, color: "9f1239", bold: true });
+    slideDash.addText(`${formatRp(totalLoss)}`, { x: 0.6, y: 2.9, w: boxW-0.2, fontSize: 16, color: "9f1239", bold: true });
 
     slideDash.addShape(pptx.ShapeType.rect, { x: 5, y: 2.5, w: boxW, h: boxH, fill: "ecfdf5", line: { color: "a7f3d0", pt: 1 } });
     slideDash.addText("POTENSI KEUNTUNGAN (GAIN)", { x: 5.1, y: 2.6, w: boxW-0.2, fontSize: 10, color: "059669", bold: true });
-    slideDash.addText(`${formatRp(sc.totalGain)}`, { x: 5.1, y: 2.9, w: boxW-0.2, fontSize: 16, color: "065f46", bold: true });
+    slideDash.addText(`${formatRp(totalGain)}`, { x: 5.1, y: 2.9, w: boxW-0.2, fontSize: 16, color: "065f46", bold: true });
 
     // Total Tarif RS vs INA
     slideDash.addShape(pptx.ShapeType.rect, { x: 0.5, y: 3.5, w: boxW, h: boxH, fill: "f1f5f9", line: { color: "e2e8f0", pt: 1 } });
     slideDash.addText("TOTAL TARIF RS", { x: 0.6, y: 3.6, w: boxW-0.2, fontSize: 10, color: "475569", bold: true });
-    slideDash.addText(`${formatRp(sc.totalTarifRS)}`, { x: 0.6, y: 3.9, w: boxW-0.2, fontSize: 16, color: "334155", bold: true });
+    slideDash.addText(`${formatRp(totalTarifRS)}`, { x: 0.6, y: 3.9, w: boxW-0.2, fontSize: 16, color: "334155", bold: true });
 
     slideDash.addShape(pptx.ShapeType.rect, { x: 5, y: 3.5, w: boxW, h: boxH, fill: "f0fdfa", line: { color: "ccfbf1", pt: 1 } });
     slideDash.addText("TOTAL TARIF INA / iDRG", { x: 5.1, y: 3.6, w: boxW-0.2, fontSize: 10, color: "0d9488", bold: true });
-    slideDash.addText(`${formatRp(sc.totalTarifINA)}`, { x: 5.1, y: 3.9, w: boxW-0.2, fontSize: 16, color: "115e59", bold: true });
+    slideDash.addText(`${formatRp(totalTarifINA)}`, { x: 5.1, y: 3.9, w: boxW-0.2, fontSize: 16, color: "115e59", bold: true });
   }
 
   // ---------------------------------------------------------------------------
   // SLIDE 3: TOP 10 KASUS LOSS TERBESAR
   // ---------------------------------------------------------------------------
-  if (dashData && dashData.scorecard && dashData.scorecard.lossGains) {
-    const losses = dashData.scorecard.lossGains.filter(c => c.selisih < 0).sort((a, b) => a.selisih - b.selisih).slice(0, 10);
+  if (lossGains && lossGains.length > 0) {
+    const losses = lossGains.filter(c => c.selisih < 0).sort((a, b) => a.selisih - b.selisih).slice(0, 10);
     
     if (losses.length > 0) {
       const slideLoss = pptx.addSlide();
