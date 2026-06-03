@@ -1029,18 +1029,16 @@ const DEFAULT_AUDIT_RULES = [
   },
   {
     "id": "AUDIT-COD-60",
-    "case": "CVA / Stroke Tanpa CT-Scan/MRI",
+    "case": "Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI)",
     "category": "Coding Audit",
     "condition": {
-      "type": "grouped",
-      "operator": "AND",
-      "groups": [
-        { "operator": "OR", "codes": ["I60", "I61", "I62", "I63"] },
-        { "operator": "NOT", "codes": ["87.03", "88.91"] }
-      ]
+      "type": "custom_missing",
+      "requires": ["I60", "I61", "I62", "I63"],
+      "missing": ["87.03", "88.91"],
+      "excludes": ["Z08", "Z09", "Z09.8"]
     },
     "validation_action": {
-      "warning_message": "Klaim Stroke/CVA (I60-I63) WAJIB dilampirkan dengan bukti tindakan CT Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada, kode diagnosis akan diturunkan atau digugurkan."
+      "warning_message": "Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64."
     },
     "PTD": "1/2"
   },
