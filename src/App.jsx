@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus, ShieldAlert, Copy } from 'lucide-react';
-import { generatePPTX } from './utils/pptxExport';
+import { generatePPTX, generateSosialisasiPPTX } from './utils/pptxExport';
 import KompetensiDashboard from './components/KompetensiDashboard.jsx';
 import MfaSettings from './components/MfaSettings.jsx';
 import KompetensiSettings from './components/KompetensiSettings.jsx';
@@ -2633,6 +2633,40 @@ const InsightSosialisasiComponent = React.memo(({
     return "Lengkapi lembar laporan operasi / tindakan dengan durasi, nama operator utama, dan tanda tangan dokter penanggung jawab pelayanan (DPJP).";
   };
 
+  const exportSosialisasiPPT = async () => {
+    setIsExportingSosPPT(true);
+    try {
+      let scatterImageBase64 = null;
+      const scatterEl = document.getElementById('scatter-plot-container');
+      if (scatterEl) {
+        const canvas = await html2canvas(scatterEl, { scale: 2 });
+        scatterImageBase64 = canvas.toDataURL('image/png');
+      }
+
+      const topCases = Object.values(scatterGroups).sort((a,b) => a.totalDefisit - b.totalDefisit).slice(0, 10).map(c => ({
+        cbg: c.cbg, count: c.count, avgRs: c.avgRS, avgIna: c.avgINA, loss: c.totalDefisit
+      }));
+
+      const topUpPotentials = recommendations.filter(r => r.type === 'TopUp').map(r => ({
+        oldCbg: r.code, newCbg: 'Optimal', kriteria: r.recommendation, delta: r.impact
+      }));
+
+      await generateSosialisasiPPTX({
+        ksmName: selectedSocializationKsm,
+        ksmStats: { kasus: ksmRows.length, ina: kSumINA, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
+        topCases,
+        topUpPotentials,
+        scatterImageBase64,
+        quadrantInsights: [quadrantNote, quadrantTip]
+      });
+    } catch (e) {
+      console.error('Gagal export PPTX Sosialisasi:', e);
+      alert('Terjadi kesalahan saat mengekspor ke PPTX.');
+    } finally {
+      setIsExportingSosPPT(false);
+    }
+  };
+
   const exportKsmSocialization = () => {
     // 1. Sheet 1: Ringkasan Performa
     const summaryHeaders = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
@@ -2754,6 +2788,14 @@ const InsightSosialisasiComponent = React.memo(({
             title="Cetak/Simpan Handout Sosialisasi ke PDF"
           >
             <Printer size={14} /> Cetak Handout PDF
+          </button>
+          <button
+            onClick={exportSosialisasiPPT}
+            disabled={isExportingSosPPT}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
+            title="Export ke PowerPoint (PPTX)"
+          >
+            <Download size={14} /> {isExportingSosPPT ? 'Mengekspor...' : 'Export PPTX'}
           </button>
         </div>
       </div>
@@ -3339,6 +3381,7 @@ export default function App() {
   const [selectedSocializationDept, setSelectedSocializationDept] = useState('');
   const [selectedSocializationKsm, setSelectedSocializationKsm] = useState('');
   const [isSlideMode, setIsSlideMode] = useState(false);
+  const [isExportingSosPPT, setIsExportingSosPPT] = useState(false);
   const [socializationScatterMode, setSocializationScatterMode] = useState('inacbg');
   const [draftKsmOverrides, setDraftKsmOverrides] = useState(null);
   const [icdSyncVersion, setIcdSyncVersion] = useState(0);
@@ -6985,7 +7028,41 @@ export default function App() {
       return "Lengkapi lembar laporan operasi / tindakan dengan durasi, nama operator utama, dan tanda tangan dokter penanggung jawab pelayanan (DPJP).";
     };
 
-    const exportKsmSocialization = () => {
+    const exportSosialisasiPPT = async () => {
+    setIsExportingSosPPT(true);
+    try {
+      let scatterImageBase64 = null;
+      const scatterEl = document.getElementById('scatter-plot-container');
+      if (scatterEl) {
+        const canvas = await html2canvas(scatterEl, { scale: 2 });
+        scatterImageBase64 = canvas.toDataURL('image/png');
+      }
+
+      const topCases = Object.values(scatterGroups).sort((a,b) => a.totalDefisit - b.totalDefisit).slice(0, 10).map(c => ({
+        cbg: c.cbg, count: c.count, avgRs: c.avgRS, avgIna: c.avgINA, loss: c.totalDefisit
+      }));
+
+      const topUpPotentials = recommendations.filter(r => r.type === 'TopUp').map(r => ({
+        oldCbg: r.code, newCbg: 'Optimal', kriteria: r.recommendation, delta: r.impact
+      }));
+
+      await generateSosialisasiPPTX({
+        ksmName: selectedSocializationKsm,
+        ksmStats: { kasus: ksmRows.length, ina: kSumINA, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
+        topCases,
+        topUpPotentials,
+        scatterImageBase64,
+        quadrantInsights: [quadrantNote, quadrantTip]
+      });
+    } catch (e) {
+      console.error('Gagal export PPTX Sosialisasi:', e);
+      alert('Terjadi kesalahan saat mengekspor ke PPTX.');
+    } finally {
+      setIsExportingSosPPT(false);
+    }
+  };
+
+  const exportKsmSocialization = () => {
       // 1. Sheet 1: Ringkasan Performa
       const summaryHeaders = ['Indikator Performa', `Nilai KSM ${currentKsm}`, 'Rata-rata RS'];
       const summaryRows = [
@@ -7094,7 +7171,15 @@ export default function App() {
               title="Cetak/Simpan Handout Sosialisasi ke PDF"
             >
               <Printer size={14} /> Cetak Handout PDF
-            </button>
+          </button>
+          <button
+            onClick={exportSosialisasiPPT}
+            disabled={isExportingSosPPT}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
+            title="Export ke PowerPoint (PPTX)"
+          >
+            <Download size={14} /> {isExportingSosPPT ? 'Mengekspor...' : 'Export PPTX'}
+          </button>
           </div>
         </div>
 
