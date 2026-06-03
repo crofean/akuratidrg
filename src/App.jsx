@@ -2360,6 +2360,7 @@ const InsightSosialisasiComponent = React.memo(({
   activeExclusionCodes
 }) => {
   const allRows = dashData?.rawRows || [];
+  const [isExportingSosPPT, setIsExportingSosPPT] = React.useState(false);
 
   // 1. Get KSM, Department, and 18 Components for each row once (massive CPU speedup)
   const rowsWithKsm = useMemo(() => {
@@ -2651,13 +2652,50 @@ const InsightSosialisasiComponent = React.memo(({
         oldCbg: r.code, newCbg: 'Optimal', kriteria: r.recommendation, delta: r.impact
       }));
 
+      // Compute Top 10 Clinical Info
+      const tDiag = {}; const tSec = {}; const tProc = {};
+      ksmRows.forEach(r => {
+        // Utama
+        let code = String(r.DIAGNOSA || r.DIAGUTAMA || '').trim();
+        if (!code || code === '-' || code.toLowerCase() === 'none') {
+          const dList = String(r.DIAGLIST || '').replace(/"/g, '').split(';').map(d => d.trim()).filter(Boolean);
+          if (dList.length > 0) code = dList[0];
+        }
+        if (code && code !== '-' && code.toLowerCase() !== 'none') {
+          tDiag[code] = (tDiag[code] || 0) + 1;
+        }
+
+        // Sekunder
+        let secList = [];
+        const dl = String(r.DIAGLIST || '').replace(/"/g, '').split(';').map(d => d.trim()).filter(Boolean);
+        if (dl.length > 1) secList = dl.slice(1);
+        secList.forEach(s => {
+          if (s && s !== '-') tSec[s] = (tSec[s] || 0) + 1;
+        });
+
+        // Proc
+        let prList = String(r.PROCLIST || '').replace(/"/g, '').split(';').map(p => p.trim()).filter(Boolean);
+        prList.forEach(p => {
+          if (p && p !== '-') tProc[p] = (tProc[p] || 0) + 1;
+        });
+      });
+
+      const mapToTop10 = (mapObj) => Object.entries(mapObj).sort((a,b) => b[1] - a[1]).slice(0,10).map(x => ({ code: x[0], count: x[1], desc: getIcdDescription(x[0]) || '-' }));
+      const topDiag = mapToTop10(tDiag);
+      const topSec = mapToTop10(tSec);
+      const topProc = mapToTop10(tProc);
+
+
       await generateSosialisasiPPTX({
         ksmName: selectedSocializationKsm,
         ksmStats: { kasus: ksmRows.length, ina: kSumINA, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
         topCases,
         topUpPotentials,
         scatterImageBase64,
-        quadrantInsights: [quadrantNote, quadrantTip]
+        quadrantInsights: [quadrantNote, quadrantTip],
+        topDiag,
+        topSec,
+        topProc
       });
     } catch (e) {
       console.error('Gagal export PPTX Sosialisasi:', e);
@@ -6014,6 +6052,7 @@ export default function App() {
     const inaList = (dashData?.inaSummary || []).slice(0, 20);
     const drgList = (dashData?.drgSummary || []).slice(0, 20);
     const allRows = dashData?.rawRows || [];
+  const [isExportingSosPPT, setIsExportingSosPPT] = React.useState(false);
     const exportAllCases = () => {
       const hdrs = ['No', 'Nama Pasien', 'MRN', 'SEP', 'Tgl Masuk', 'Tgl Pulang', 'LOS', 'DPJP', 'Kode INA', 'Deskripsi INA', 'Kode iDRG', 'Deskripsi iDRG', 'Tarif RS', 'Tarif INA-CBG', 'Tarif iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', ...compKeys.map(c => c.label)];
       const rws = allRows.map((r, i) => {
@@ -6744,6 +6783,7 @@ export default function App() {
 
   const renderInsightSosialisasi = () => {
     const allRows = dashData?.rawRows || [];
+  const [isExportingSosPPT, setIsExportingSosPPT] = React.useState(false);
     if (allRows.length === 0) {
       return (
         <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50">
@@ -7046,13 +7086,50 @@ export default function App() {
         oldCbg: r.code, newCbg: 'Optimal', kriteria: r.recommendation, delta: r.impact
       }));
 
+      // Compute Top 10 Clinical Info
+      const tDiag = {}; const tSec = {}; const tProc = {};
+      ksmRows.forEach(r => {
+        // Utama
+        let code = String(r.DIAGNOSA || r.DIAGUTAMA || '').trim();
+        if (!code || code === '-' || code.toLowerCase() === 'none') {
+          const dList = String(r.DIAGLIST || '').replace(/"/g, '').split(';').map(d => d.trim()).filter(Boolean);
+          if (dList.length > 0) code = dList[0];
+        }
+        if (code && code !== '-' && code.toLowerCase() !== 'none') {
+          tDiag[code] = (tDiag[code] || 0) + 1;
+        }
+
+        // Sekunder
+        let secList = [];
+        const dl = String(r.DIAGLIST || '').replace(/"/g, '').split(';').map(d => d.trim()).filter(Boolean);
+        if (dl.length > 1) secList = dl.slice(1);
+        secList.forEach(s => {
+          if (s && s !== '-') tSec[s] = (tSec[s] || 0) + 1;
+        });
+
+        // Proc
+        let prList = String(r.PROCLIST || '').replace(/"/g, '').split(';').map(p => p.trim()).filter(Boolean);
+        prList.forEach(p => {
+          if (p && p !== '-') tProc[p] = (tProc[p] || 0) + 1;
+        });
+      });
+
+      const mapToTop10 = (mapObj) => Object.entries(mapObj).sort((a,b) => b[1] - a[1]).slice(0,10).map(x => ({ code: x[0], count: x[1], desc: getIcdDescription(x[0]) || '-' }));
+      const topDiag = mapToTop10(tDiag);
+      const topSec = mapToTop10(tSec);
+      const topProc = mapToTop10(tProc);
+
+
       await generateSosialisasiPPTX({
         ksmName: selectedSocializationKsm,
         ksmStats: { kasus: ksmRows.length, ina: kSumINA, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
         topCases,
         topUpPotentials,
         scatterImageBase64,
-        quadrantInsights: [quadrantNote, quadrantTip]
+        quadrantInsights: [quadrantNote, quadrantTip],
+        topDiag,
+        topSec,
+        topProc
       });
     } catch (e) {
       console.error('Gagal export PPTX Sosialisasi:', e);
