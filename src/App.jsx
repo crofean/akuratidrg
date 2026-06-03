@@ -2663,8 +2663,11 @@ const InsightSosialisasiComponent = React.memo(({
         cbg: c.cbg, count: c.count, avgRs: c.totalRs / c.count, avgIna: c.totalIna / c.count, loss: c.loss
       }));
 
-      const topUpPotentials = recommendations.filter(r => r.type === 'TopUp').map(r => ({
-        oldCbg: r.code, newCbg: 'Optimal', kriteria: r.recommendation, delta: r.impact
+      const topUpPotentials = (dashData?.topUpStats?.items || []).slice(0, 10).map(r => ({
+        oldCbg: r.cbg_base ? r.cbg_base.join(', ') : '-',
+        newCbg: r.cbg_target || 'Optimal',
+        kriteria: r.item || '-',
+        delta: r.tarif || 0
       }));
 
       // Compute Top 10 Clinical Info
@@ -7115,8 +7118,11 @@ export default function App() {
         cbg: c.cbg, count: c.count, avgRs: c.totalRs / c.count, avgIna: c.totalIna / c.count, loss: c.loss
       }));
 
-      const topUpPotentials = recommendations.filter(r => r.type === 'TopUp').map(r => ({
-        oldCbg: r.code, newCbg: 'Optimal', kriteria: r.recommendation, delta: r.impact
+      const topUpPotentials = (dashData?.topUpStats?.items || []).slice(0, 10).map(r => ({
+        oldCbg: r.cbg_base ? r.cbg_base.join(', ') : '-',
+        newCbg: r.cbg_target || 'Optimal',
+        kriteria: r.item || '-',
+        delta: r.tarif || 0
       }));
 
       // Compute Top 10 Clinical Info
