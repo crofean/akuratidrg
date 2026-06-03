@@ -2644,8 +2644,23 @@ const InsightSosialisasiComponent = React.memo(({
         scatterImageBase64 = canvas.toDataURL('image/png');
       }
 
-      const topCases = Object.values(scatterGroups).sort((a,b) => a.totalDefisit - b.totalDefisit).slice(0, 10).map(c => ({
-        cbg: c.cbg, count: c.count, avgRs: c.avgRS, avgIna: c.avgINA, loss: c.totalDefisit
+      // Compute Top 10 INA CBG Defisit
+      const tCbg = {};
+      deficitRows.forEach(r => {
+        let code = String(r.INACBG || r.INA_CBG || r.CBG || '-').trim();
+        if (!code || code === '-') return;
+        if (!tCbg[code]) {
+          tCbg[code] = { cbg: code, count: 0, totalRs: 0, totalIna: 0, loss: 0 };
+        }
+        const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+        const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+        tCbg[code].count++;
+        tCbg[code].totalRs += rs;
+        tCbg[code].totalIna += ina;
+        tCbg[code].loss += (ina - rs);
+      });
+      const topCases = Object.values(tCbg).sort((a,b) => a.loss - b.loss).slice(0, 10).map(c => ({
+        cbg: c.cbg, count: c.count, avgRs: c.totalRs / c.count, avgIna: c.totalIna / c.count, loss: c.loss
       }));
 
       const topUpPotentials = recommendations.filter(r => r.type === 'TopUp').map(r => ({
@@ -2693,6 +2708,9 @@ const InsightSosialisasiComponent = React.memo(({
         topUpPotentials,
         scatterImageBase64,
         quadrantInsights: [quadrantNote, quadrantTip],
+        topDiag,
+        topSec,
+        topProc,
         topDiag,
         topSec,
         topProc
@@ -7078,8 +7096,23 @@ export default function App() {
         scatterImageBase64 = canvas.toDataURL('image/png');
       }
 
-      const topCases = Object.values(scatterGroups).sort((a,b) => a.totalDefisit - b.totalDefisit).slice(0, 10).map(c => ({
-        cbg: c.cbg, count: c.count, avgRs: c.avgRS, avgIna: c.avgINA, loss: c.totalDefisit
+      // Compute Top 10 INA CBG Defisit
+      const tCbg = {};
+      deficitRows.forEach(r => {
+        let code = String(r.INACBG || r.INA_CBG || r.CBG || '-').trim();
+        if (!code || code === '-') return;
+        if (!tCbg[code]) {
+          tCbg[code] = { cbg: code, count: 0, totalRs: 0, totalIna: 0, loss: 0 };
+        }
+        const rs = parseFloat(r.TARIF_RS || r.BIAYA_RS || r.TOTAL_TARIF_RS || 0) || 0;
+        const ina = parseFloat(r.TOTAL_TARIF || 0) || 0;
+        tCbg[code].count++;
+        tCbg[code].totalRs += rs;
+        tCbg[code].totalIna += ina;
+        tCbg[code].loss += (ina - rs);
+      });
+      const topCases = Object.values(tCbg).sort((a,b) => a.loss - b.loss).slice(0, 10).map(c => ({
+        cbg: c.cbg, count: c.count, avgRs: c.totalRs / c.count, avgIna: c.totalIna / c.count, loss: c.loss
       }));
 
       const topUpPotentials = recommendations.filter(r => r.type === 'TopUp').map(r => ({
@@ -7127,6 +7160,9 @@ export default function App() {
         topUpPotentials,
         scatterImageBase64,
         quadrantInsights: [quadrantNote, quadrantTip],
+        topDiag,
+        topSec,
+        topProc,
         topDiag,
         topSec,
         topProc
