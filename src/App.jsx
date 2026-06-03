@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus, ShieldAlert, Copy } from 'lucide-react';
+import { generatePPTX } from './utils/pptxExport';
 import KompetensiDashboard from './components/KompetensiDashboard.jsx';
 import MfaSettings from './components/MfaSettings.jsx';
 import KompetensiSettings from './components/KompetensiSettings.jsx';
@@ -3246,6 +3247,20 @@ export default function App() {
   const [showPasswordList, setShowPasswordList] = useState({});
   const [uploadProgress, setUploadProgress] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleExportPPT = async () => {
+    if (!dashData) return;
+    setIsExportingPPT(true);
+    try {
+      await generatePPTX(dashData, activeExclusionCodes, auditVerdicts);
+    } catch (e) {
+      console.error('Gagal export PPTX:', e);
+      alert('Terjadi kesalahan saat mengekspor ke PPTX.');
+    } finally {
+      setIsExportingPPT(false);
+    }
+  };
+
   const [openKsm, setOpenKsm] = useState(null);
   const [analysisStep, setAnalysisStep] = useState(0);
   const [auditVerdicts, setAuditVerdicts] = useState(() => {
@@ -3255,6 +3270,7 @@ export default function App() {
     } catch (e) { return {}; }
   });
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [isExportingPPT, setIsExportingPPT] = useState(false);
 
   // --- USER ACCESS MANAGEMENT SYSTEM STATES ---
   const [registrationSheetId, setRegistrationSheetId] = useState(() => localStorage.getItem('sak_registration_sheet_id') || '1GG8xDtNii2N4V9yNlP_Na-fQtM4zN30ZkLD0aUnMY98');
@@ -4930,7 +4946,7 @@ export default function App() {
 
     return (
       <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <SectionHeader icon={PieChart} title="Executive Dashboard" desc="Ringkasan eksekutif klaim klinis dan analisis profitabilitas." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" printAction={() => window.print()} />
+        <SectionHeader icon={PieChart} title="Executive Dashboard" desc="Ringkasan eksekutif klaim klinis dan analisis profitabilitas." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" printAction={() => window.print()} exportAction={handleExportPPT} exportText={isExportingPPT ? "Mengekspor PPT..." : "Export PPTX"} />
 
         {/* KPI 6-CARD ROW */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
