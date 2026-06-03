@@ -2706,7 +2706,7 @@ const InsightSosialisasiComponent = React.memo(({
 
       await generateSosialisasiPPTX({
         ksmName: selectedSocializationKsm,
-        ksmStats: { kasus: ksmRows.length, ina: kSumINA, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
+        ksmStats: { kasus: ksmRows.length, ina: kSumIna, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
         topCases,
         topUpPotentials,
         scatterImageBase64,
@@ -7161,7 +7161,7 @@ export default function App() {
 
       await generateSosialisasiPPTX({
         ksmName: selectedSocializationKsm,
-        ksmStats: { kasus: ksmRows.length, ina: kSumINA, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
+        ksmStats: { kasus: ksmRows.length, ina: kSumIna, selisih: kSelisihIna, loss: deficitRows.reduce((sum, r) => sum + ((parseFloat(r.TOTAL_TARIF||0)||0) - (parseFloat(r.TARIF_RS||r.BIAYA_RS||r.TOTAL_TARIF_RS||0)||0)), 0) },
         topCases,
         topUpPotentials,
         scatterImageBase64,
