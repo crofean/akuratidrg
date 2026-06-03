@@ -4484,7 +4484,7 @@ export default function App() {
 
       const rawCoderId = String(r['CODER_ID'] || r['USER_CODER'] || r['CODER'] || 'UNKNOWN').trim();
       const cId = rawCoderId.includes(';') ? rawCoderId.split(';')[0].trim().toUpperCase() : rawCoderId.toUpperCase();
-      if (!maps.coder[cId]) maps.coder[cId] = { id: cId, cases: 0, discrepancyCount: 0, auditHits: 0 };
+      if (!maps.coder[cId]) maps.coder[cId] = { id: maskName(cId), rawId: cId, cases: 0, discrepancyCount: 0, auditHits: 0 };
       maps.coder[cId].cases++;
 
       if (sDiag < 100 || sProc < 100) {
@@ -4528,7 +4528,7 @@ export default function App() {
             sep: String(r['SEP'] || '-'),
             diaglist: dList.join(', '),
             proclist: pList.join(', '),
-            coderId: cId,
+            coderId: maskName(cId),
             tglMasuk: String(r['ADMISSION_DATE'] || '-'),
             tglKeluar: String(r['DISCHARGE_DATE'] || '-'),
             totalTarif: parseFloat(r['TOTAL_TARIF'] || 0)
