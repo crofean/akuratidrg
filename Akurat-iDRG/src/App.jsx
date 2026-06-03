@@ -926,6 +926,21 @@ const DEFAULT_AUDIT_RULES = [
       "warning_message": "Koreksi Koding: Jika Kasus Psikosis dan terdapat Epilepsi Psikosis gunakan Kode F06.8 (Sumber: Aturan ICD 10 2010)."
     },
     "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-60",
+    "case": "Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "custom_missing",
+      "requires": ["I60", "I61", "I62", "I63"],
+      "missing": ["87.03", "88.91"],
+      "excludes": ["Z08", "Z09", "Z09.8"]
+    },
+    "validation_action": {
+      "warning_message": "Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64."
+    },
+    "PTD": "1/2"
   }
 ];
 
@@ -1068,18 +1083,16 @@ const maskName = (name) => {
     if (upper === 'SETYAWATI') return 'S*T**W*T*';
     if (upper === 'ENJANG') return 'EN***G';
     if (upper === 'NURDIANSYAH') return 'NU****S*H';
-    if (word.length <= 2) return word.toUpperCase();
-    
-    let chars = upper.split('');
-    const keepStart = chars.length > 5 ? 2 : 1;
-    for (let i = keepStart; i < chars.length - 1; i++) {
-      if (/[AEIOUYH]/.test(chars[i])) {
-        chars[i] = '*';
-      } else if (chars.length > 5 && i % 2 === 0) {
-        chars[i] = '*';
+    const chars = upper.split('');
+    let masked = '';
+    for (let i = 0; i < chars.length; i++) {
+      if (i === 0 || i === 3 || i === 5 || !/[A-Z]/.test(chars[i])) {
+        masked += chars[i];
+      } else {
+        masked += '*';
       }
     }
-    return chars.join('');
+    return masked;
   });
 
   let res = numberPrefix + maskedWords.join(' ');
@@ -1687,7 +1700,6 @@ const KSM_LIST = [
   'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Orthognatik dan Osteodistraksi / Disgnatia dan Osteodistraksi',
   'Dokter Gigi Spesialis Bedah Mulut dan Maksilofasial Konsultan Trauma Maksilofasial dan Temporomandibular Joint',
   'Dokter Gigi Dokter Spesialis Bedah Mulut Neoplasma dan Kista Bedah Mulut dan Maksilofasial',
-  'Dokter Umum',
   'Fisioterapis'
 ];
 
@@ -3590,7 +3602,15 @@ export default function App() {
         const lines = text.split('\n').filter(l => l.trim() !== '');
         if (lines.length > 0) {
           const headers = lines[0].split('\t').map(h => h.trim());
-          const rows = lines.slice(1).map(l => { const vals = l.split('\t'); let obj = {}; headers.forEach((h, i) => { obj[h] = vals[i] ? vals[i].trim() : ''; }); return obj; });
+          const rows = lines.slice(1).map(l => { 
+            const vals = l.split('\t'); let obj = {}; 
+            headers.forEach((h, i) => { obj[h] = vals[i] ? vals[i].trim() : ''; }); 
+            if (obj['DPJP']) obj['DPJP'] = maskName(obj['DPJP']);
+            if (obj['CODER_ID']) obj['CODER_ID'] = maskName(obj['CODER_ID']);
+            if (obj['USER_CODER']) obj['USER_CODER'] = maskName(obj['USER_CODER']);
+            if (obj['CODER']) obj['CODER'] = maskName(obj['CODER']);
+            return obj; 
+          });
           newFiles.push({ id: Math.random().toString(36).substring(2, 11), name: f.name, rawSize: f.size, size: (f.size / 1024).toFixed(2) + ' KB', headers, rows });
         }
         setUploadProgress({ current: fi + 1, total, fileName: f.name, pct: Math.round(((fi + 1) / total) * 100), status: 'done' });
@@ -3933,15 +3953,26 @@ export default function App() {
       maps.coder[cId].cases++;
 
       if (sDiag < 100 || sProc < 100) {
-        maps.discrepancies.push({ rowIdx: idx, mrn: String(r['MRN'] || ''), sep: String(r['SEP'] || ''), diag1: dList, diag2: idrgDList, scoreDiag: sDiag, proc1: pList, proc2: idrgPList, scoreProc: sProc });
+        maps.discrepancies.push({ rowIdx: idx, mrn: String(r['MRN'] || ''), sep: String(r['SEP'] || ''), diag1: dList, diag2: idrgDList, scoreDiag: sDiag, proc1: pList, proc2: idrgPList, scoreProc: sProc, coderId: cId });
         maps.coder[cId].discrepancyCount++;
       }
 
       const acRow = [...dList, ...pList]; let hit = false;
       DEFAULT_AUDIT_RULES.forEach(ru => {
         const op = ru.condition?.operator || "OR"; let matched = false;
-        if (ru.condition?.type === 'grouped') matched = op === 'AND' ? ru.condition.groups.every(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c)))) : ru.condition.groups.some(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c))));
-        else if (ru.condition?.codes) matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+        if (ru.condition?.type === 'grouped') {
+          matched = op === 'AND' ? ru.condition.groups.every(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c)))) : ru.condition.groups.some(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c))));
+        } else if (ru.condition?.type === 'custom_missing') {
+          const reqs = ru.condition.requires || [];
+          const missings = ru.condition.missing || [];
+          const excludes = ru.condition.excludes || [];
+          const hasReq = reqs.some(c => acRow.some(ac => ac.startsWith(c)));
+          const hasMissing = missings.some(c => acRow.some(ac => ac.startsWith(c)));
+          const hasExclude = excludes.some(c => acRow.some(ac => ac.startsWith(c)));
+          if (hasReq && !hasMissing && !hasExclude) matched = true;
+        } else if (ru.condition?.codes) {
+          matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+        }
 
         if (matched) {
           maps.audit.push({
@@ -5240,7 +5271,7 @@ export default function App() {
 
   const renderKetepatan = () => (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <SectionHeader icon={FileCode} title="Akurasi & Ketepatan Koding" desc="Evaluasi discrepancy antara koding INA-CBG dan iDRG menggunakan Fuzzy Logic Match." colorClass="bg-emerald-50 text-emerald-600" highlightClass="bg-emerald-500/5" exportAction={() => exportToXlsx('Data_Ketidaksesuaian_Koding', ['MRN', 'SEP', 'Diag INA', 'Diag iDRG', 'Proc INA', 'Proc iDRG'], dashData.scorecard.discrepancies.map(d => [d.mrn, d.sep, d.diag1.join(", "), d.diag2.join(", "), d.proc1.join(", "), d.proc2.join(", ")]))} exportText="Ekspor Kasus Discrepancy" />
+      <SectionHeader icon={FileCode} title="Akurasi & Ketepatan Koding" desc="Evaluasi discrepancy antara koding INA-CBG dan iDRG menggunakan Fuzzy Logic Match." colorClass="bg-emerald-50 text-emerald-600" highlightClass="bg-emerald-500/5" exportAction={() => exportToXlsx('Data_Ketidaksesuaian_Koding', ['MRN', 'SEP', 'Diag INA', 'Diag iDRG', 'Proc INA', 'Proc iDRG', 'Nama Koder'], dashData.scorecard.discrepancies.map(d => [d.mrn, d.sep, d.diag1.join(", "), d.diag2.join(", "), d.proc1.join(", "), d.proc2.join(", "), d.coderId]))} exportText="Ekspor Kasus Discrepancy" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6 flex items-center gap-5">
           <div className={`w-20 h-20 rounded-2xl flex items-center justify-center font-black text-2xl shadow-sm ${dashData.scorecard.avgDiag >= 99.5 ? 'bg-lime-50 text-green-600 border border-lime-100' : 'bg-orange-50 text-orange-600 border border-orange-100'}`}>{(dashData.scorecard.avgDiag || 0).toFixed(1)}<span className="text-sm ml-0.5">%</span></div>
@@ -8395,8 +8426,8 @@ export default function App() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <SectionHeader icon={CheckSquare} title="Audit Log Kaidah Koding" desc="Verifikasi temuan audit secara mendalam untuk meningkatkan akurasi koding dan performa klinis." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => {
-          const csv = findings.map((f) => [f.ruleId, f.case, f.warning, f.mrn, f.sep, f.diaglist, f.proclist, auditVerdicts[`${f.sep}|${f.ruleId}`] || 'belum']);
-          exportToXlsx('Audit_Log', ['Rule ID', 'Case', 'Warning', 'MRN', 'SEP', 'Diaglist', 'Proclist', 'Verdict'], csv);
+          const csv = findings.map((f) => [f.ruleId, f.case, f.warning, f.mrn, f.sep, f.diaglist, f.proclist, auditVerdicts[`${f.sep}|${f.ruleId}`] || 'belum', f.coderId]);
+          exportToXlsx('Audit_Log', ['Rule ID', 'Case', 'Warning', 'MRN', 'SEP', 'Diaglist', 'Proclist', 'Verdict', 'Nama Koder'], csv);
         }} />
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
