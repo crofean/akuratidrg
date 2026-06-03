@@ -7771,7 +7771,7 @@ export default function App() {
                               const discRows = (dashData?.rawRows || []).filter(row => {
                                 const raw = String(row['CODER_ID'] || row['USER_CODER'] || row['CODER'] || '').trim().toUpperCase();
                                 const c = raw.includes(';') ? raw.split(';')[0].trim() : raw;
-                                if (c !== r.id) return false;
+                                if (maskName(c) !== r.id) return false;
                                 const d1 = String(row['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
                                 const p1 = String(row['PROCLIST'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
                                 const d2 = String(row['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
@@ -10025,6 +10025,8 @@ export default function App() {
                             <th className="px-5 py-4 border-r border-slate-100 bg-slate-50">Rule ID</th>
                             <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[200px]">Temuan / Kasus</th>
                             <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[300px]">Warning Message</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[150px]">Diaglist</th>
+                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[150px]">Proclist</th>
                             <th className="px-5 py-4 bg-white text-center">Status</th>
                           </tr>
                         </thead>
