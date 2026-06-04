@@ -6076,7 +6076,6 @@ export default function App() {
     const inaList = (dashData?.inaSummary || []).slice(0, 20);
     const drgList = (dashData?.drgSummary || []).slice(0, 20);
     const allRows = dashData?.rawRows || [];
-  const [isExportingSosPPT, setIsExportingSosPPT] = React.useState(false);
     const exportAllCases = () => {
       const hdrs = ['No', 'Nama Pasien', 'MRN', 'SEP', 'Tgl Masuk', 'Tgl Pulang', 'LOS', 'DPJP', 'Kode INA', 'Deskripsi INA', 'Kode iDRG', 'Deskripsi iDRG', 'Tarif RS', 'Tarif INA-CBG', 'Tarif iDRG', 'Selisih INA-RS', 'Selisih iDRG-RS', ...compKeys.map(c => c.label)];
       const rws = allRows.map((r, i) => {

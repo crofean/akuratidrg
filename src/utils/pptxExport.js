@@ -142,14 +142,14 @@ export const generateExecutivePPTX = async (dashData) => {
     ]];
     topKsmDefisit.forEach((c, i) => rows.push([
       { text: String(i+1), options: { ...tableCellProps, align: "center" } },
-      { text: c.ksm || "-", options: { ...tableCellProps, bold: true } },
+      { text: c.name || c.ksm || "-", options: { ...tableCellProps, bold: true } },
       { text: String(c.count || 0), options: { ...tableCellProps, align: "center" } },
-      { text: formatRp(c.selisihIna), options: { ...tableCellProps, align: "right", color: "e11d48", bold: true } },
+      { text: formatRp(Math.abs(c.selisihIna || 0)), options: { ...tableCellProps, align: "right", color: "e11d48", bold: true } },
     ]));
     slideKsm.addTable(rows, { x: 0.35, y: 1.25, w: 5.3, colW: [0.35, 2.4, 0.9, 1.65] });
     slideKsm.addChart(pptx.ChartType.bar, [{
       name: "Defisit (Rp)",
-      labels: topKsmDefisit.map(c => String(c.ksm || '')),
+      labels: topKsmDefisit.map(c => String(c.name || c.ksm || '')),
       values: topKsmDefisit.map(c => Math.abs(c.selisihIna))
     }], { x: 5.8, y: 1.25, w: 3.85, h: 4.0, barDir: 'bar', showLegend: false, showValue: false, valAxisHidden: true, catAxisLabelColor: '334155', chartColors: ['0d9488'] });
   }
