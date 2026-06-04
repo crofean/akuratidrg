@@ -1054,6 +1054,41 @@ const DEFAULT_AUDIT_RULES = [
       "warning_message": "Pastikan ada bukti cetak foto retina (Fundus Photography) untuk klaim kode 95.11. Jika tanpa bukti foto visual, harus diturunkan kodenya menjadi Observasi Visual Langsung (16.21)."
     },
     "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-62",
+    "case": "AMI dan CHF (Kondisi Akut)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "grouped",
+      "operator": "AND",
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": ["I21.0"]
+        },
+        {
+          "operator": "OR",
+          "codes": ["I50.0"]
+        }
+      ]
+    },
+    "validation_action": {
+      "warning_message": "AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-63",
+    "case": "Injeksi Intraartikular (81.92)",
+    "category": "Coding Audit",
+    "condition": {
+      "codes": ["81.92"]
+    },
+    "validation_action": {
+      "warning_message": "⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️\n1. CEK STATUS RAWAT (RAJAL VS RANAP)\nDefault tindakan ini adalah Rawat Jalan\n.\nBoleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi\n.\n2. CEK OBAT FARMASI & INTERVAL WAKTU\nSteroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)\n.\nAsam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan\n.\nLidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)\n.\n3. CEK KOMPETENSI DOKTER (DPJP)\nTindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT)."
+    },
+    "PTD": "1/2"
   }
 ];
 
@@ -4407,6 +4442,8 @@ export default function App() {
     if (rows.length === 0) return { isLoaded: true, rawRows: rows, totalRows: 0, isEmptyAfterFilter: true };
 
     let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, scoredCount: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0, totalDiagUCount: 0, totalDiagSCount: 0, totalProcCount: 0 };
+    const uniqueRs = new Set(rows.map(r => String(r['KODE_RS'] || '').trim()).filter(Boolean));
+    const multipleRs = uniqueRs.size > 1;
     let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], audit: [], topUp: {}, ksmEfficiency: {} };
     const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
 
@@ -4434,8 +4471,10 @@ export default function App() {
 
       const isRanap = ptd === '1';
       if (dObj) {
-        const mKey = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}`;
-        if (!maps.monthly[mKey]) maps.monthly[mKey] = { label: `${monthNames[dObj.getMonth()]} '${String(dObj.getFullYear()).slice(-2)}`, inacbg: 0, idrg: 0, selisih: 0, tarifRs: 0, sortVal: dObj.getTime() };
+        const kodeRs = String(r['KODE_RS'] || '').trim();
+        const rsSuffix = (multipleRs && kodeRs) ? ` - ${kodeRs}` : '';
+        const mKey = `${dObj.getFullYear()}-${String(dObj.getMonth() + 1).padStart(2, '0')}${rsSuffix}`;
+        if (!maps.monthly[mKey]) maps.monthly[mKey] = { label: `${monthNames[dObj.getMonth()]} '${String(dObj.getFullYear()).slice(-2)}${rsSuffix}`, inacbg: 0, idrg: 0, selisih: 0, tarifRs: 0, sortVal: dObj.getTime() + (kodeRs ? kodeRs.charCodeAt(0) : 0) };
         maps.monthly[mKey].inacbg += tIna; maps.monthly[mKey].idrg += tIdrg; maps.monthly[mKey].selisih += sel; maps.monthly[mKey].tarifRs += tRS;
 
         if (!maps.report[mKey]) maps.report[mKey] = { label: `${monthNames[dObj.getMonth()]} - ${dObj.getFullYear()}`, sortVal: dObj.getTime(), tarifRsTotal: 0, kasusRajal: 0, kasusRanap: 0, inaRajal: 0, inaRanap: 0, idrgRajal: 0, idrgRanap: 0 };
