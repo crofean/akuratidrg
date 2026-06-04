@@ -5200,17 +5200,28 @@ export default function App() {
             <div className="w-full h-[22rem] mt-6 flex flex-col relative px-2">
               <div className="absolute left-0 right-0 border-b border-slate-300 border-dashed z-0" style={{ top: '65%' }}></div>
               <div className="w-full flex items-center justify-between h-full z-10 gap-2">
-                {dashData.monthlyArray.map((m, i) => {
-                  const isDef = m.selisih < 0;
-                  const posRatio = 65; const negRatio = 35;
-                  const maxV = dashData.maxPosVal || 1; const maxN = dashData.absMaxSelisih || 1;
-                  const hRs = Math.max((m.tarifRs / maxV) * 100, 1);
-                  const hIna = Math.max((m.inacbg / maxV) * 100, 1);
-                  const hIdrg = Math.max((m.idrg / maxV) * 100, 1);
-                  const hSelPos = !isDef ? Math.max((m.selisih / maxV) * 100, 1) : 0;
-                  const hSelNeg = isDef ? Math.max((Math.abs(m.selisih) / maxN) * 100, 1) : 0;
+                {Object.entries(
+                  dashData.monthlyArray.reduce((acc, curr) => {
+                    const bm = curr.baseMonthLabel || curr.label;
+                    if (!acc[bm]) acc[bm] = [];
+                    acc[bm].push(curr);
+                    return acc;
+                  }, {})
+                ).map(([monthStr, items], mIdx) => (
+                  <div key={`month-group-${mIdx}`} className="flex-1 flex flex-col h-full border-r border-slate-200/50 last:border-0 relative pb-8">
+                    <div className="absolute -bottom-8 left-0 right-0 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">{monthStr}</div>
+                    <div className="flex items-center justify-around h-full w-full gap-2 px-1 lg:px-3">
+                      {items.map((m, i) => {
+                        const isDef = m.selisih < 0;
+                        const posRatio = 65; const negRatio = 35;
+                        const maxV = dashData.maxPosVal || 1; const maxN = dashData.absMaxSelisih || 1;
+                        const hRs = Math.max((m.tarifRs / maxV) * 100, 1);
+                        const hIna = Math.max((m.inacbg / maxV) * 100, 1);
+                        const hIdrg = Math.max((m.idrg / maxV) * 100, 1);
+                        const hSelPos = !isDef ? Math.max((m.selisih / maxV) * 100, 1) : 0;
+                        const hSelNeg = isDef ? Math.max((Math.abs(m.selisih) / maxN) * 100, 1) : 0;
 
-                  return (
+                        return (
                     <div key={`pos-${i}`} className="flex-1 flex flex-col items-center justify-center h-full group relative cursor-pointer">
                       <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur text-white text-xs p-3 rounded-xl shadow-xl z-30 pointer-events-none whitespace-nowrap border border-slate-700">
                         <p className="font-extrabold border-b border-slate-700 pb-1.5 mb-1.5 text-slate-100">{String(m.label)}</p>
@@ -5245,11 +5256,16 @@ export default function App() {
                             {isDef && <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-rose-200 text-rose-600 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.selisih, true)}</span>}
                           </div>
                         </div>
+                        </div>
+                        {m.kodeRs && <div className="absolute -bottom-4 left-0 right-0 text-center text-[9px] font-bold text-slate-400 truncate px-1">{m.kodeRs}</div>}
                       </div>
                     </div>
                   );
                 })}
               </div>
+            </div>
+          ))}
+        </div>
             </div>
             <div className="flex justify-center gap-4 mt-6 pt-4 border-t border-slate-100 flex-wrap">
               <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded-full bg-slate-300"></div><span className="text-[10px] font-bold text-slate-600 uppercase">Tarif RS</span></div>
