@@ -5256,7 +5256,6 @@ export default function App() {
                             {isDef && <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-extrabold px-1.5 py-0.5 rounded shadow-[0_1px_2px_rgba(0,0,0,0.15)] bg-white/90 backdrop-blur-sm border border-rose-200 text-rose-600 z-10 whitespace-nowrap transition-transform group-hover:scale-110">{formatRp(m.selisih, true)}</span>}
                           </div>
                         </div>
-                        </div>
                         {m.kodeRs && <div className="absolute -bottom-4 left-0 right-0 text-center text-[9px] font-bold text-slate-400 truncate px-1">{m.kodeRs}</div>}
                       </div>
                     </div>
