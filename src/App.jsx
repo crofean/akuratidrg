@@ -2028,11 +2028,15 @@ const MiniTable = React.memo(({ data = [], columns = [], onRowClick, maxHeight =
   };
 
   return (
-    <div className={`overflow-x-auto flex-1 p-2 custom-scrollbar relative group`} style={{ maxHeight }}>
-      <button onClick={copyMiniTable} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 bg-white shadow-md border border-slate-200 rounded-lg text-slate-500 hover:text-sky-600 hover:bg-sky-50 transition-all z-20 print:hidden flex items-center gap-1.5" title="Salin Tabel ke Clipboard">
-        <Copy size={12} /> <span className="text-[10px] font-bold">Copy</span>
-      </button>
-      <table className="w-full text-xs text-left whitespace-nowrap">
+    <div className={`flex flex-col flex-1`} style={{ maxHeight }}>
+      <div className="flex items-center justify-between px-3 pt-2 pb-1 bg-slate-50/70 border-b border-slate-100">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{title || 'Tabel Data'}</span>
+        <button onClick={copyMiniTable} className="flex items-center gap-1 px-2 py-1 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-500 hover:text-teal-600 shadow-sm transition-all text-[10px] font-bold">
+          <Copy size={11} /> Salin
+        </button>
+      </div>
+      <div className={`overflow-x-auto flex-1 p-2 custom-scrollbar relative`}>
+        <table className="w-full text-xs text-left whitespace-nowrap">
         <thead className="text-[10px] uppercase font-bold text-slate-400 bg-slate-50/80 backdrop-blur-sm sticky top-0 z-10">
           <tr>{columns.map((col, i) => <th key={`col-${i}`} className={`p-3 border-b border-slate-100 ${col.hClass || col.className || ''}`}>{col.header}</th>)}</tr>
         </thead>
@@ -2050,6 +2054,7 @@ const MiniTable = React.memo(({ data = [], columns = [], onRowClick, maxHeight =
         </tbody>
       </table>
       {data.length > maxRows && <div className="p-2 text-xs text-slate-500 text-center font-semibold">Showing {visibleData.length} of {data.length} rows</div>}
+    </div>
     </div>
   );
 });
@@ -2166,15 +2171,17 @@ const ScatterChart = React.memo(({ data, xKey, yKey, rKey, color, xLabel, yLabel
 
   const chartIdRef = React.useRef('chart-' + Math.random().toString(36).slice(2, 8));
   const chartId = chartIdRef.current;
-  const scatterBtnStyle = { position: 'absolute', top: '10px', right: '10px', zIndex: 10, display: 'flex', alignItems: 'center', gap: '5px', background: 'linear-gradient(135deg, #0ea5e9, #0284c7)', color: 'white', border: 'none', borderRadius: '8px', padding: '5px 11px', fontSize: '11px', fontWeight: '800', cursor: 'pointer', boxShadow: '0 2px 8px rgba(14,165,233,0.3)', textTransform: 'uppercase', letterSpacing: '0.04em', transition: 'all 0.2s' };
 
   return (
-    <div id={chartId} style={{ position: 'relative' }} className="w-full bg-white border border-slate-200 rounded-xl shadow-sm">
-      <div className="absolute top-4 left-4 font-bold text-slate-700">{title}</div>
+    <div className="w-full">
+      <div className="flex items-center justify-between px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-t-xl border-b-0">
+        <span className="text-xs font-bold text-slate-500">{title || 'Scatter Plot'}</span>
+        <button onClick={() => saveAsPng(chartId, title)} className="flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-teal-50 border border-slate-200 hover:border-teal-300 rounded-lg text-slate-500 hover:text-teal-600 text-xs font-bold shadow-sm transition-all">
+          <Download size={13} /> Simpan PNG
+        </button>
+      </div>
+      <div id={chartId} style={{ position: 'relative' }} className="w-full bg-white border border-slate-200 rounded-b-xl shadow-sm">
       {data.length > 500 && <div className="absolute top-4 right-28 text-xs text-slate-400">Sampled {processedData.length} of {data.length} points</div>}
-      <button onClick={() => saveAsPng(chartId, title)} style={scatterBtnStyle} onMouseEnter={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0284c7, #0369a1)'} onMouseLeave={e => e.currentTarget.style.background = 'linear-gradient(135deg, #0ea5e9, #0284c7)'} className="print:hidden" title={`Unduh ${title} sebagai PNG`}>
-        <Download size={13} /> Simpan PNG
-      </button>
       <svg ref={svgRef} viewBox={`0 0 ${width} ${height}`} className="w-full h-auto drop-shadow-sm bg-white" xmlns="http://www.w3.org/2000/svg" onMouseLeave={() => setHovered(null)}>
         <rect x={padding.left} y={padding.top} width={innerW / 2} height={scaleY(yAvg) - padding.top} fill="#fef2f2" opacity="0.4" />
         <rect x={padding.left + innerW / 2} y={padding.top} width={innerW / 2} height={scaleY(yAvg) - padding.top} fill="#ecfdf5" opacity="0.4" />
@@ -2235,6 +2242,7 @@ const ScatterChart = React.memo(({ data, xKey, yKey, rKey, color, xLabel, yLabel
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 });
