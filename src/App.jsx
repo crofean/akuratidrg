@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
 import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus, ShieldAlert, Copy } from 'lucide-react';
-import { generatePPTX, generateSosialisasiPPTX } from './utils/pptxExport';
+import { generateExecutivePPTX, generateAuditPPTX, generatePendingPPTX, generateKpiCoderPPTX, generateSosialisasiPPTX } from './utils/pptxExport';
 import KompetensiDashboard from './components/KompetensiDashboard.jsx';
 import MfaSettings from './components/MfaSettings.jsx';
 import KompetensiSettings from './components/KompetensiSettings.jsx';
@@ -1978,7 +1978,7 @@ const Card = React.memo(({ children, className = '', id = null, downloadTitle = 
   );
 });
 
-const SectionHeader = React.memo(({ icon: Icon, title, desc, exportAction, exportText, printAction, colorClass, highlightClass }) => (
+const SectionHeader = React.memo(({ icon: Icon, title, desc, exportAction, exportText, pptAction, pptText, printAction, colorClass, highlightClass }) => (
   <Card className="flex flex-col md:flex-row items-center justify-between gap-6 relative p-6">
     <div className={`absolute -left-20 -top-20 w-64 h-64 rounded-full blur-3xl pointer-events-none ${highlightClass}`}></div>
     <div className="relative z-10 flex-1">
@@ -1992,8 +1992,13 @@ const SectionHeader = React.memo(({ icon: Icon, title, desc, exportAction, expor
         <Printer size={16} /> Print Cetak
       </button>
       {exportAction && (
-        <button onClick={exportAction} className={`text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:-translate-y-0.5 transition-all ${colorClass.replace('-50', '-600').replace('text-', 'shadow-')}`}>
+        <button onClick={exportAction} className={`bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm`}>
           <Download size={16} /> {exportText || 'Ekspor Data'}
+        </button>
+      )}
+      {pptAction && (
+        <button onClick={pptAction} className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-sm">
+          <Download size={16} /> {pptText || 'Export PPTX'}
         </button>
       )}
     </div>
@@ -2713,9 +2718,6 @@ const InsightSosialisasiComponent = React.memo(({
         quadrantInsights: [quadrantNote, quadrantTip],
         topDiag,
         topSec,
-        topProc,
-        topDiag,
-        topSec,
         topProc
       });
     } catch (e) {
@@ -2847,6 +2849,14 @@ const InsightSosialisasiComponent = React.memo(({
             title="Cetak/Simpan Handout Sosialisasi ke PDF"
           >
             <Printer size={14} /> Cetak Handout PDF
+          </button>
+          <button
+            onClick={exportSosialisasiPPT}
+            disabled={isExportingSosPPT}
+            className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
+            title="Export ke PowerPoint"
+          >
+            <Download size={14} /> {isExportingSosPPT ? 'Mengekspor...' : 'Export PPTX'}
           </button>
 
         </div>
@@ -3346,7 +3356,7 @@ export default function App() {
     if (!dashData) return;
     setIsExportingPPT(true);
     try {
-      await generatePPTX(dashData, activeExclusionCodes, auditVerdicts);
+      await generateExecutivePPTX(dashData);
     } catch (e) {
       console.error('Gagal export PPTX:', e);
       alert('Terjadi kesalahan saat mengekspor ke PPTX.');
@@ -7903,7 +7913,9 @@ export default function App() {
         <SectionHeader icon={Award} title="KPI Coder (Kinerja Petugas Koding)" desc="Analisis produktivitas, akurasi input, dan efektivitas koding per individu petugas." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => {
           const csv = data.map(c => [c.id, c.cases, c.discrepancyCount, c.auditHits, c.sesuai, c.tidakSesuai, c.adjAuditHits]);
           exportToXlsx('KPI_Coder', ['Coder ID', 'Total Kasus', 'Discrepancy', 'Audit Flag (Raw)', 'Verified Sesuai', 'Verified Tidak Sesuai', 'Audit Flag (Adjusted)'], csv);
-        }} />
+        }}
+        pptAction={() => generateKpiCoderPPTX(dashData)}
+        pptText="Export PPTX" />
 
         {/* Coder Performance Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -9039,7 +9051,9 @@ export default function App() {
         <SectionHeader icon={CheckSquare} title="Audit Log Kaidah Koding" desc="Verifikasi temuan audit secara mendalam untuk meningkatkan akurasi koding dan performa klinis." colorClass="bg-teal-50 text-teal-600" highlightClass="bg-teal-500/5" exportAction={() => {
           const csv = findings.map((f) => [f.ruleId, f.case, f.warning, f.mrn, f.sep, f.diaglist, f.proclist, auditVerdicts[`${f.sep}|${f.ruleId}`] || 'belum']);
           exportToXlsx('Audit_Log', ['Rule ID', 'Case', 'Warning', 'MRN', 'SEP', 'Diaglist', 'Proclist', 'Verdict'], csv);
-        }} />
+        }}
+        pptAction={() => generateAuditPPTX(dashData, auditVerdicts)}
+        pptText="Export PPTX" />
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card className="p-5 text-center border-b-4 border-b-teal-500"><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Temuan</p><p className="text-3xl font-black text-slate-800">{findings.length}</p></Card>
