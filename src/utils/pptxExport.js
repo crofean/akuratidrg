@@ -17,7 +17,7 @@ const sharedStyle = () => ({
   titleProps: { x: 0.5, y: 0.25, w: 9.0, h: 0.55, color: "0f172a", fontSize: 22, bold: true, fontFace: "Arial" },
   subProps:   { x: 0.5, y: 0.82, w: 9.0, h: 0.32, color: "64748b", fontSize: 12, fontFace: "Arial" },
   tableHeaderProps: { fill: "0d9488", color: "ffffff", bold: true, fontFace: "Arial", fontSize: 9, align: "center", valign: "middle" },
-  tableCellProps:   { fontFace: "Arial", fontSize: 8.5, valign: "middle", border: { pt: 0.5, color: "e2e8f0" }, margin: [2,2,2,2] },
+  tableCellProps:   { fontFace: "Arial", fontSize: 8.5, valign: "middle", border: { pt: 0.5, color: "e2e8f0" } },
   formatRp: (val) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0),
 });
 
@@ -35,7 +35,7 @@ const addTableSlide = (pptx, title, sub, rows, colW, opts = {}) => {
   const slide = pptx.addSlide();
   slide.addText(title, titleProps);
   if (sub) slide.addText(sub, subProps);
-  const tableOpts = { x: 0.35, y: 1.25, w: 9.3, colW, autoPage: true, autoPageRepeatHeader: true, margin: [2,3,2,3], ...opts };
+  const tableOpts = { x: 0.35, y: 1.25, w: 9.3, colW, autoPage: true, autoPageRepeatHeader: true, margin: 0.05, ...opts };
   slide.addTable(rows, tableOpts);
   return slide;
 };
@@ -236,17 +236,19 @@ export const generateExecutivePPTX = async (dashData) => {
       { text: "No", options: tableHeaderProps },
       { text: "Hak Kelas", options: tableHeaderProps },
       { text: "Kelas Rawat", options: tableHeaderProps },
+      { text: "Pembayar", options: tableHeaderProps },
       { text: "Vol Kasus", options: tableHeaderProps },
-      { text: "Total Selisih Nilai", options: tableHeaderProps },
+      { text: "Total Nilai", options: tableHeaderProps },
     ]];
     naikKelas.forEach((c, i) => rows.push([
       { text: String(i+1), options: { ...tableCellProps, align: "center" } },
-      { text: String(c.hak || '-'), options: { ...tableCellProps, align: "center", bold: true } },
-      { text: String(c.rawat || '-'), options: { ...tableCellProps, align: "center", bold: true, color: "0284c7" } },
+      { text: String(c.awal || c.hak || '-'), options: { ...tableCellProps, align: "center", bold: true } },
+      { text: String(c.akhir || c.rawat || '-'), options: { ...tableCellProps, align: "center", bold: true, color: "0284c7" } },
+      { text: String(c.pembayar || '-'), options: { ...tableCellProps, align: "center" } },
       { text: String(c.count || 0), options: { ...tableCellProps, align: "center" } },
       { text: formatRp(c.totalNilai), options: { ...tableCellProps, align: "right", bold: true } },
     ]));
-    addTableSlide(pptx, "Monitor Naik Kelas Rawat", "Pergeseran hak kelas perawatan pasien", rows, [0.4, 1.6, 1.6, 1.2, 4.5]);
+    addTableSlide(pptx, "Monitor Naik Kelas Rawat", "Pergeseran hak kelas perawatan pasien", rows, [0.35, 1.45, 1.45, 1.45, 0.9, 3.7]);
   }
 
   // --- Slide 9: Monitor ICU ---
@@ -287,7 +289,7 @@ export const generateExecutivePPTX = async (dashData) => {
       { text: formatRp(c.totalPotensi), options: { ...tableCellProps, align: "right", color: "059669", bold: true } },
     ]));
     const subText = `Total: ${topUp.topUpKasus} kasus senilai ${formatRp(topUp.topUpNilai)}`;
-    addTableSlide(pptx, "Potensi Top-Up Severity Level", subText, rows, [0.4, 5.2, 1.4, 2.3]);
+    addTableSlide(pptx, "Potensi Top-Up Severity Level", subText, rows, [0.4, 5.0, 1.4, 2.5]);
   }
 
   return pptx.writeFile({ fileName: `Dashboard_Eksekutif_${new Date().getTime()}.pptx` });
@@ -544,7 +546,7 @@ export const generateSosialisasiPPTX = async ({ ksmName, ksmStats, topCases, top
       { text: String(c.count || 0), options: { ...tableCellProps, align: "center" } },
       { text: formatRp(c.delta || c.totalPotensi || 0), options: { ...tableCellProps, align: "right", color: "059669", bold: true } },
     ]));
-    addTableSlide(pptx, "Potensi Top-Up (Severity Level) - KSM " + ksmName, "Rekomendasi peningkatan severity level berdasarkan klinis", rows, [0.4, 5.5, 1.3, 2.1]);
+    addTableSlide(pptx, "Potensi Top-Up (Severity Level) - KSM " + ksmName, "Rekomendasi peningkatan severity level berdasarkan klinis", rows, [0.4, 5.3, 1.2, 2.4]);
   }
 
   // Top 10 Diagnosa Utama
@@ -561,7 +563,7 @@ export const generateSosialisasiPPTX = async ({ ksmName, ksmStats, topCases, top
       { text: d.desc || "-", options: tableCellProps },
       { text: String(d.count || 0), options: { ...tableCellProps, align: "center", bold: true } },
     ]));
-    addTableSlide(pptx, "Top 10 Diagnosa Utama - KSM " + ksmName, "Berdasarkan frekuensi kasus", rows, [0.4, 1.5, 5.8, 1.6]);
+    addTableSlide(pptx, "Top 10 Diagnosa Utama - KSM " + ksmName, "Berdasarkan frekuensi kasus", rows, [0.4, 1.5, 5.9, 1.5]);
   }
 
   // Top 10 Diagnosa Sekunder
@@ -578,7 +580,7 @@ export const generateSosialisasiPPTX = async ({ ksmName, ksmStats, topCases, top
       { text: d.desc || "-", options: tableCellProps },
       { text: String(d.count || 0), options: { ...tableCellProps, align: "center", bold: true } },
     ]));
-    addTableSlide(pptx, "Top 10 Diagnosa Sekunder - KSM " + ksmName, "Berdasarkan frekuensi kemunculan sebagai penyerta", rows, [0.4, 1.5, 5.8, 1.6]);
+    addTableSlide(pptx, "Top 10 Diagnosa Sekunder - KSM " + ksmName, "Berdasarkan frekuensi kemunculan sebagai penyerta", rows, [0.4, 1.5, 5.9, 1.5]);
   }
 
   // Top 10 Prosedur / Tindakan
@@ -595,7 +597,7 @@ export const generateSosialisasiPPTX = async ({ ksmName, ksmStats, topCases, top
       { text: d.desc || "-", options: tableCellProps },
       { text: String(d.count || 0), options: { ...tableCellProps, align: "center", bold: true } },
     ]));
-    addTableSlide(pptx, "Top 10 Prosedur / Tindakan - KSM " + ksmName, "Berdasarkan frekuensi tindakan medis", rows, [0.4, 1.5, 5.8, 1.6]);
+    addTableSlide(pptx, "Top 10 Prosedur / Tindakan - KSM " + ksmName, "Berdasarkan frekuensi tindakan medis", rows, [0.4, 1.5, 5.9, 1.5]);
   }
 
   return pptx.writeFile({ fileName: 'Sosialisasi_KSM_' + ksmName.replace(/\s+/g, '_') + '_' + new Date().getTime() + '.pptx' });
