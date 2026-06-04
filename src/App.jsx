@@ -2358,7 +2358,31 @@ const SliderCaptcha = ({ onVerified, verified }) => {
   );
 };
 
-const InsightSosialisasiComponent = React.memo(({
+const InsightSosialisasiComponent = (props) => {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    setIsReady(false);
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [props.dashData, props.ksmOverrides]);
+
+  if (!isReady) {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 min-h-[500px] animate-in fade-in duration-300">
+        <div className="w-16 h-16 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin mb-6 shadow-sm"></div>
+        <h2 className="text-2xl font-black text-slate-800 tracking-tight">Menyiapkan Insight Sosialisasi...</h2>
+        <p className="text-slate-500 mt-2 font-medium">Mohon tunggu sebentar, sistem sedang mengolah dan merangkum performa KSM.</p>
+      </div>
+    );
+  }
+
+  return <InsightSosialisasiContent {...props} />;
+};
+
+const InsightSosialisasiContent = React.memo(({
   dashData,
   ksmOverrides,
   selectedSocializationDept,
@@ -2826,7 +2850,7 @@ const InsightSosialisasiComponent = React.memo(({
     <div className={`space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isSlideMode ? 'p-6 bg-slate-900 text-white rounded-3xl' : ''}`}>
       
       {/* HEADER & TOP CONTROLS */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-teal-100 shadow-sm print:hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-teal-100 shadow-sm print:hidden hidden-on-print">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-teal-600 text-white rounded-2xl shadow-lg shadow-teal-600/20">
             <Sparkles size={24} className="animate-pulse" />
@@ -2871,7 +2895,7 @@ const InsightSosialisasiComponent = React.memo(({
       </div>
 
       {/* INTERACTIVE HIERARCHY SELECTOR */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-3xl border border-slate-200/60 shadow-sm print:hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-3xl border border-slate-200/60 shadow-sm print:hidden hidden-on-print">
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
             <Building2 size={12} className="text-teal-600" /> Pilih Departemen
@@ -7269,7 +7293,7 @@ export default function App() {
       <div className={`space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${isSlideMode ? 'p-6 bg-slate-900 text-white rounded-3xl' : ''}`}>
         
         {/* HEADER & TOP CONTROLS */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-teal-100 shadow-sm print:hidden">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-teal-100 shadow-sm print:hidden hidden-on-print">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-teal-600 text-white rounded-2xl shadow-lg shadow-teal-600/20">
               <Sparkles size={24} className="animate-pulse" />
@@ -7306,7 +7330,7 @@ export default function App() {
         </div>
 
         {/* INTERACTIVE HIERARCHY SELECTOR */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-3xl border border-slate-200/60 shadow-sm print:hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-5 rounded-3xl border border-slate-200/60 shadow-sm print:hidden hidden-on-print">
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
               <Building2 size={12} className="text-teal-600" /> Pilih Departemen
@@ -10624,7 +10648,7 @@ export default function App() {
                  subTab === 'pending_sakti' ? null : (
                    dashData && dashData.isLoaded ? (
                   <>
-                    <div className="bg-white/40 backdrop-blur-xl p-6 rounded-[2rem] border border-white/60 mb-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] animate-in fade-in slide-in-from-top-4 relative z-[60]">
+                    <div className="bg-white/40 backdrop-blur-xl p-6 rounded-[2rem] border border-white/60 mb-10 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.05)] animate-in fade-in slide-in-from-top-4 relative z-[60] print:hidden hidden-on-print">
                       <div className="flex flex-col lg:flex-row items-center gap-8">
                         <div className="flex flex-wrap items-center gap-6 flex-[1.5]">
                           <MultiSelectFilter icon={Calendar} label="Periode" selectedValues={globalFilter.periode} onChange={v => setGlobalFilter({ ...globalFilter, periode: v })} options={filterOptions.periods.map(p => {
@@ -10818,7 +10842,7 @@ export default function App() {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: white !important; color: black !important; }
-          .print\\:hidden { display: none !important; }
+          .print\\:hidden, .hidden-on-print { display: none !important; }
           .shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)], .shadow-xl, .shadow-sm { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
           .custom-scrollbar { overflow: visible !important; max-height: none !important; height: auto !important; }
           .h-screen { height: auto !important; overflow: visible !important; }
