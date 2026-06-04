@@ -2848,14 +2848,7 @@ const InsightSosialisasiComponent = React.memo(({
           >
             <Printer size={14} /> Cetak Handout PDF
           </button>
-          <button
-            onClick={exportSosialisasiPPT}
-            disabled={isExportingSosPPT}
-            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
-            title="Export ke PowerPoint (PPTX)"
-          >
-            <Download size={14} /> {isExportingSosPPT ? 'Mengekspor...' : 'Export PPTX'}
-          </button>
+
         </div>
       </div>
 
@@ -7291,14 +7284,7 @@ export default function App() {
             >
               <Printer size={14} /> Cetak Handout PDF
           </button>
-          <button
-            onClick={exportSosialisasiPPT}
-            disabled={isExportingSosPPT}
-            className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 uppercase tracking-wider"
-            title="Export ke PowerPoint (PPTX)"
-          >
-            <Download size={14} /> {isExportingSosPPT ? 'Mengekspor...' : 'Export PPTX'}
-          </button>
+
           </div>
         </div>
 
