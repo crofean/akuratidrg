@@ -247,13 +247,13 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
               const icdIdx = LEVEL_ORDER.indexOf(hit.level);
               const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
               if (icdIdx > -1 && (rsIdx === -1 || icdIdx > rsIdx)) {
-                 warnings.push(`${c} (${hit.desc}): Butuh ${hit.level} (${hit.group.replace(/Kelompok Layanan /i,'')})`);
+                 warnings.push({ code: c, desc: hit.desc, level: hit.level, group: hit.group.replace(/Kelompok Layanan /i,'') });
               }
            }
         }
       });
-      warnings = [...new Set(warnings)];
-      const warningStr = warnings.length > 0 ? warnings.join(' | ') : 'Sesuai';
+      const uniqueWarnings = Array.from(new Map(warnings.map(item => [item.code, item])).values());
+      const warningStr = uniqueWarnings.length > 0 ? uniqueWarnings.map(w => `${w.code} (${w.desc}): Butuh ${w.level} (${w.group})`).join(' | ') : 'Sesuai';
 
       csv += `${i+1},"${namaRs}","${sep}","${patientName}","${dpjp}","${jenis}","${mainDiag}","${warningStr}",${ina},${idrg},${sel}\n`;
     });
@@ -474,12 +474,12 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                           const icdIdx = LEVEL_ORDER.indexOf(hit.level);
                           const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
                           if (icdIdx > -1 && (rsIdx === -1 || icdIdx > rsIdx)) {
-                             warnings.push(`${c} (${hit.desc}): Butuh ${hit.level} (${hit.group.replace(/Kelompok Layanan /i,'')})`);
+                             warnings.push({ code: c, desc: hit.desc, level: hit.level, group: hit.group.replace(/Kelompok Layanan /i,'') });
                           }
                        }
                     }
                   });
-                  warnings = [...new Set(warnings)];
+                  const uniqueWarnings = Array.from(new Map(warnings.map(item => [item.code, item])).values());
 
                   return (
                     <tr key={i} className={`border-b border-slate-50 hover:bg-teal-50/30 transition-colors ${i%2===0?'':'bg-slate-50/20'}`}>
@@ -495,9 +495,18 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                       </td>
                       <td className="px-3 py-2 font-mono text-slate-700 max-w-[120px] truncate" title={r['DIAGLIST']||''}>{mainDiag}</td>
                       <td className="px-3 py-2 text-[10px]">
-                        {warnings.length > 0 ? (
-                           <div className="flex flex-col gap-0.5">
-                             {warnings.map((w, wi) => <span key={wi} className="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded leading-tight">{w}</span>)}
+                        {uniqueWarnings.length > 0 ? (
+                           <div className="flex flex-col gap-1.5">
+                             {uniqueWarnings.map((w, wi) => (
+                               <div key={wi} className="bg-rose-50 border border-rose-100 rounded p-1.5 flex flex-col gap-0.5">
+                                 <div className="flex items-start justify-between gap-2">
+                                   <span className="font-bold text-rose-700">{w.code}</span>
+                                   <span className="text-[9px] font-black bg-rose-200/50 text-rose-800 px-1 py-0.5 rounded whitespace-nowrap">Butuh {w.level}</span>
+                                 </div>
+                                 <p className="text-[9.5px] text-rose-600/90 leading-tight">{w.desc}</p>
+                                 <p className="text-[9px] text-rose-500 font-medium italic mt-0.5">{w.group}</p>
+                               </div>
+                             ))}
                            </div>
                         ) : (
                            <span className="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Sesuai</span>
