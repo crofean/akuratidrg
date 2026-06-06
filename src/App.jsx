@@ -4757,7 +4757,8 @@ export default function App() {
         let medSurgWarning = '';
         
         // Pengecualian khusus (kasus yang dianggap selalu sesuai)
-        const isException = (inaCode === 'Z-3-23-0' && drgCode === '9047120') ||
+        const isException = (sDiag === 100 && sProc === 100) ||
+                            (inaCode === 'Z-3-23-0' && drgCode === '9047120') ||
                             (inaCode === 'C-3-10-0' && drgCode === '3444120') ||
                             (inaCode === 'Z-3-19-0' && drgCode === '3446120') ||
                             (inaDesc.includes('kemoterapi') || drgDesc.includes('chemotherapy')) ||
