@@ -4793,7 +4793,9 @@ export default function App() {
              diag1: dList,
              proc1: pList,
              diag2: idrgDList,
-             proc2: idrgPList
+             proc2: idrgPList,
+             scoreDiag: sDiag,
+             scoreProc: sProc
            });
            stats.medSurgMismatchCount = (stats.medSurgMismatchCount || 0) + 1;
         }
@@ -6421,10 +6423,12 @@ export default function App() {
                              <span className="px-2 py-1 bg-slate-100 text-slate-700 font-bold rounded-md text-xs border border-slate-200 whitespace-nowrap h-fit">{d.ina}</span>
                              <span className="text-xs text-slate-600 leading-tight">{d.descIna}</span>
                           </div>
-                          <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-1.5">
-                             {d.diag1?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Diag:</span>{d.diag1.map((c, idx) => { const isDiff = !d.diag2?.includes(c); return <span key={`d1-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
-                             {d.proc1?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Proc:</span>{d.proc1.map((c, idx) => { const isDiff = !d.proc2?.includes(c); return <span key={`p1-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
-                          </div>
+                          {(d.scoreDiag < 100 || d.scoreProc < 100) && (
+                            <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-1.5">
+                               {d.diag1?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Diag:</span>{d.diag1.map((c, idx) => { const isDiff = !d.diag2?.includes(c); return <span key={`d1-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
+                               {d.proc1?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Proc:</span>{d.proc1.map((c, idx) => { const isDiff = !d.proc2?.includes(c); return <span key={`p1-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">iDRG</span>
@@ -6432,10 +6436,12 @@ export default function App() {
                              <span className="px-2 py-1 bg-slate-100 text-slate-700 font-bold rounded-md text-xs border border-slate-200 whitespace-nowrap h-fit">{d.idrg}</span>
                              <span className="text-xs text-slate-600 leading-tight capitalize">{d.descIdrg}</span>
                           </div>
-                          <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-1.5">
-                             {d.diag2?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Diag:</span>{d.diag2.map((c, idx) => { const isDiff = !d.diag1?.includes(c); return <span key={`d2-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
-                             {d.proc2?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Proc:</span>{d.proc2.map((c, idx) => { const isDiff = !d.proc1?.includes(c); return <span key={`p2-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
-                          </div>
+                          {(d.scoreDiag < 100 || d.scoreProc < 100) && (
+                            <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-1.5">
+                               {d.diag2?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Diag:</span>{d.diag2.map((c, idx) => { const isDiff = !d.diag1?.includes(c); return <span key={`d2-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
+                               {d.proc2?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Proc:</span>{d.proc2.map((c, idx) => { const isDiff = !d.proc1?.includes(c); return <span key={`p2-${i}-${idx}`} className={`text-[10px] border px-1 py-0.5 rounded cursor-help ${isDiff ? 'bg-rose-50 border-rose-200 text-rose-700 font-bold' : 'bg-white border-slate-200 text-slate-700'}`} title={dashData.icdDescIndex?.[c] || c}>{c} <span className={`font-normal italic ml-0.5 ${isDiff ? 'text-rose-500' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </td>
