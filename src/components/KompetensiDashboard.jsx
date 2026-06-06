@@ -965,7 +965,33 @@ export default function KompetensiDashboard({ rows, onBack }) {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
-                    data={filteredGroups.filter(r=>r.hasData || search)}
+                    data={filteredGroups.filter(r=>r.hasData || search).map(r => {
+                      let sesuai = 0;
+                      let tidakSesuai = 0;
+                      let rsLevel = 'Campuran/Tidak Spesifik';
+                      if (config) {
+                        if (config[r.name]) rsLevel = config[r.name];
+                        else {
+                          const noPrefix = r.name.replace(/Kelompok Layanan /i, '').trim();
+                          const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
+                          if (matchingKey) rsLevel = config[matchingKey];
+                        }
+                      }
+                      const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
+                      
+                      [...LEVEL_ORDER, 'unknown'].forEach(lv => {
+                         const kasus = (r.ranap[lv]?.kasus || 0) + (r.rajal[lv]?.kasus || 0);
+                         if (lv === 'unknown' || rsLevel === 'Campuran/Tidak Spesifik' || rsLevel === 'Belum Ada Mapping') {
+                             sesuai += kasus;
+                         } else {
+                             const lvIdx = LEVEL_ORDER.indexOf(lv);
+                             if (lvIdx <= rsIdx) sesuai += kasus;
+                             else tidakSesuai += kasus;
+                         }
+                      });
+                      
+                      return { ...r, sesuaiKasus: sesuai, lossKasus: tidakSesuai };
+                    })}
                     margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                     barSize={16}
                   >
