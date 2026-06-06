@@ -4764,7 +4764,9 @@ export default function App() {
                             (inaDesc.includes('perawatan luka') || drgDesc.includes('wound care')) ||
                             (inaDesc.includes('ekokardiografi') && drgDesc.includes('other ultrasound diagnostic')) ||
                             ((inaDesc.includes('eeg') || inaDesc.includes('ensefalografi')) && (drgDesc.includes('eeg') || drgDesc.includes('electroencephalography'))) ||
-                            (inaDesc.includes('rehabilitasi') && drgDesc.includes('rehabilitation'));
+                            (inaDesc.includes('rehabilitasi') && drgDesc.includes('rehabilitation')) ||
+                            (inaDesc.includes('ct scan') && drgDesc.includes('ct scan')) ||
+                            ((inaDesc.includes('mri') || inaDesc.includes('magnetic resonance')) && drgDesc.includes('mri'));
 
         if (!isException) {
            if (grpType === '1') {
