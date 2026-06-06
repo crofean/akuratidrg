@@ -1275,7 +1275,27 @@
     "3064210": "Layanan Lainnya",
     "3064211": "Layanan Lainnya",
     "3064212": "Layanan Lainnya",
+    "3101119": {
+      "mdc": "31",
+      "group": "Kelompok Layanan Trauma"
+    },
+    "3102119": {
+      "mdc": "31",
+      "group": "Kelompok Layanan Trauma"
+    },
+    "3104119": {
+      "mdc": "31",
+      "group": "Kelompok Layanan Trauma"
+    },
     "3105119": "Trauma dan Multiple Trauma",
+    "3106119": {
+      "mdc": "31",
+      "group": "Kelompok Layanan Trauma"
+    },
+    "3108119": {
+      "mdc": "31",
+      "group": "Kelompok Layanan Trauma"
+    },
     "3109119": "Trauma dan Multiple Trauma",
     "3161119": "Trauma dan Multiple Trauma",
     "3201119": "Luka Bakar/Burn",
@@ -1365,6 +1385,10 @@
     "9047120": "Ibu dan Ginekologi"
   },
   "mdc_dc": {
+    "31": {
+      "name": "MDC 31",
+      "group": "Kelompok Layanan Trauma"
+    },
     "10-10011": "Pencernaan dan Hepatobiliar",
     "10-10021": "Jantung & Pembuluh darah",
     "10-10031": "Syaraf - Neuroscience",
