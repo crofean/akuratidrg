@@ -444,7 +444,7 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                           const icdIdx = LEVEL_ORDER.indexOf(hit.level);
                           const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
                           if (icdIdx > -1 && (rsIdx === -1 || icdIdx > rsIdx)) {
-                             warnings.push(`${c}: Butuh ${hit.level} (${hit.group.replace(/Kelompok Layanan /i,'')})`);
+                             warnings.push(`${c} (${hit.desc}): Butuh ${hit.level} (${hit.group.replace(/Kelompok Layanan /i,'')})`);
                           }
                        }
                     }
