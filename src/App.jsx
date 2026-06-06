@@ -3329,7 +3329,7 @@ export default function App() {
   const [icdDescIndex, setIcdDescIndex] = useState({});
 
   // Heavy tabs that need loading animation
-  const HEAVY_TABS = ['mapping', 'sl_cl_analysis', 'kompetensi', 'dept', 'ksm', 'dpjp', 'kpi_coder', 'naik_kelas', 'icu', 'readmisi'];
+  const HEAVY_TABS = ['mapping', 'sl_cl_analysis', 'kompetensi', 'dept', 'ksm', 'dpjp', 'kpi_coder', 'naik_kelas', 'icu', 'readmisi', 'medsurg_valid'];
   const switchSubTab = (tabId) => {
     if (HEAVY_TABS.includes(tabId) && tabId !== subTab) {
       setIsTabLoading(true);
@@ -4753,15 +4753,28 @@ export default function App() {
         const isIdrgSurgical = !isNaN(parseInt(idrgDigits)) && parseInt(idrgDigits) >= 1 && parseInt(idrgDigits) <= 40;
         const grpType = inaCode.includes('-') ? inaCode.split('-')[1] : '0';
         const drgDesc = String(r['IDRG_DRG_DESCRIPTION'] || r['IDRG_DRG_DESC'] || '').toLowerCase();
+        const inaDesc = String(r['DESKRIPSI_INACBG'] || r['INACBG_DESC'] || '').toLowerCase();
         let medSurgWarning = '';
         
-        if (grpType === '1') {
-           if (!isIdrgSurgical) medSurgWarning = 'Tidak sesuai (INA-CBG Surgical, iDRG Medical)';
-        } else if (grpType === '2' || grpType === '3') {
-           const hasProcText = drgDesc.includes('prosedur') || drgDesc.includes('proc');
-           if (!(isIdrgSurgical || hasProcText)) medSurgWarning = 'Tidak sesuai (Status Prosedur Rawat Jalan tidak tercermin di iDRG)';
-        } else {
-           if (isIdrgSurgical) medSurgWarning = 'Tidak sesuai (INA-CBG Medical, tetapi iDRG Surgical)';
+        // Pengecualian khusus (kasus yang dianggap selalu sesuai)
+        const isException = (inaCode === 'Z-3-23-0' && drgCode === '9047120') ||
+                            (inaCode === 'C-3-10-0' && drgCode === '3444120') ||
+                            (inaCode === 'Z-3-19-0' && drgCode === '3446120') ||
+                            (inaDesc.includes('kemoterapi') || drgDesc.includes('chemotherapy')) ||
+                            (inaDesc.includes('perawatan luka') || drgDesc.includes('wound care')) ||
+                            (inaDesc.includes('ekokardiografi') && drgDesc.includes('other ultrasound diagnostic')) ||
+                            ((inaDesc.includes('eeg') || inaDesc.includes('ensefalografi')) && (drgDesc.includes('eeg') || drgDesc.includes('electroencephalography'))) ||
+                            (inaDesc.includes('rehabilitasi') && drgDesc.includes('rehabilitation'));
+
+        if (!isException) {
+           if (grpType === '1') {
+              if (!isIdrgSurgical) medSurgWarning = 'Tidak sesuai (INA-CBG Surgical, iDRG Medical)';
+           } else if (grpType === '2' || grpType === '3') {
+              const hasProcText = drgDesc.includes('prosedur') || drgDesc.includes('proc');
+              if (!(isIdrgSurgical || hasProcText)) medSurgWarning = 'Tidak sesuai (Status Prosedur Rawat Jalan tidak tercermin di iDRG)';
+           } else {
+              if (isIdrgSurgical) medSurgWarning = 'Tidak sesuai (INA-CBG Medical, tetapi iDRG Surgical)';
+           }
         }
         
         if (medSurgWarning) {
