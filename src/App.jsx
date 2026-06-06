@@ -4505,9 +4505,9 @@ export default function App() {
       const dU = String(r['DIAG_UTAMA'] || r['DIAGUTAMA'] || '').trim();
       const descU = String(r['DESKRIPSI_DIAGUTAMA'] || r['DESKRIPSI_INACBG'] || '').trim();
       if (dU && descU && !maps.icdDesc[dU]) maps.icdDesc[dU] = descU;
-      // Also index secondary diags if available
+      // Also index secondary diags if available, but DO NOT store empty strings which would overwrite fallback dict!
       const diagsRaw = String(r['DIAGLIST'] || r['DIAG_LIST'] || '').split(';');
-      diagsRaw.forEach(d => { const c = d.trim(); if (c && !maps.icdDesc[c]) maps.icdDesc[c] = ''; });
+      diagsRaw.forEach(d => { const c = d.trim(); if (c && maps.icdDesc[c] === undefined) maps.icdDesc[c] = null; });
       const tRS = parseFloat(r['TARIF_RS']) || parseFloat(r['BIAYA_RS']) || parseFloat(r['TOTAL_TARIF_RS']) || parseFloat(r['TARIF_RS_COST']) || 0;
       const sel = tIdrg - tIna; const inaCode = String(r['INACBG'] || '').trim(); const drgCode = String(r['IDRG_DRG_CODE'] || '').trim();
       const ptd = String(r['PTD'] || '').trim();
@@ -4865,21 +4865,39 @@ export default function App() {
       inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies },
       auditFindings: maps.audit, kpiCoderArray: Object.values(maps.coder).sort((a, b) => b.cases - a.cases), naikKelasStats: Object.values(maps.naikKelas).sort((a, b) => b.totalNilai - a.totalNilai), icuStats: maps.icu,
       topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai },
-      icdDescIndex: new Proxy({ ...icdDescIndex, ...maps.icdDesc }, {
+      icdDescIndex: new Proxy({ ...icdDescIndex }, {
         get(target, prop) {
           if (typeof prop !== 'string') return target[prop];
-          if (target[prop]) return target[prop];
+          let val = target[prop] || maps.icdDesc[prop];
+          if (val) return val;
           // Fallback to 3-char root (e.g. "A41.5" -> "A41")
           const base = prop.split('.')[0];
-          if (target[base]) return target[base];
+          val = target[base] || maps.icdDesc[base];
+          if (val) return val;
           // Fallback to no dot (e.g. "Z99.9" -> "Z999")
           const nodot = prop.replace(/\./g, '');
-          if (target[nodot]) return target[nodot];
+          val = target[nodot] || maps.icdDesc[nodot];
+          if (val) return val;
           return undefined;
         }
       })
     };
   }, [uploadedFiles, globalFilter, ksmOverrides, excludeCodes, icdDescIndex]);
+
+  const formatIcdList = useCallback((listStr) => {
+    if (!listStr || listStr === '-') return '-';
+    const codes = listStr.split(';').map(c => c.trim()).filter(Boolean);
+    return codes.map(c => {
+      const desc = dashData?.icdDescIndex?.[c];
+      return desc ? (
+        <div key={c} className="mb-0.5" title={desc}>
+          <span className="font-black">{c}</span> <span className="text-[9px] italic opacity-80 font-normal">({desc.substring(0, 30)}{desc.length > 30 ? '...' : ''})</span>
+        </div>
+      ) : (
+        <div key={c} className="mb-0.5"><span className="font-black">{c}</span></div>
+      );
+    });
+  }, [dashData?.icdDescIndex]);
 
   const { totalReviewed, totalSesuai, totalTidak } = useMemo(() => {
     const findings = dashData?.auditFindings || [];
@@ -9344,8 +9362,8 @@ export default function App() {
                         <p className="font-bold text-teal-700 text-[11px]">{f.coderId || '-'}</p>
                         <p className="text-[10px] text-slate-400 font-bold">{formatRp(f.totalTarif || 0)}</p>
                       </td>
-                      <td className="p-4 border-r border-slate-100 align-top font-mono text-[10px] text-slate-600 max-w-[176px] break-words leading-relaxed" title={f.diaglist}>{f.diaglist || '-'}</td>
-                      <td className="p-4 border-r border-slate-100 align-top font-mono text-[10px] text-slate-600 max-w-[176px] break-words leading-relaxed" title={f.proclist}>{f.proclist || '-'}</td>
+                      <td className="p-4 border-r border-slate-100 align-top font-mono text-[10px] text-slate-600 max-w-[176px] break-words leading-relaxed" title={f.diaglist}>{formatIcdList(f.diaglist)}</td>
+                      <td className="p-4 border-r border-slate-100 align-top font-mono text-[10px] text-slate-600 max-w-[176px] break-words leading-relaxed" title={f.proclist}>{formatIcdList(f.proclist)}</td>
                       <td className="p-4 text-center align-top">
                         <div className="flex gap-2 justify-center">
                           <button onClick={(e) => { e.stopPropagation(); setVerdict(key, v === 'sesuai' ? undefined : 'sesuai'); }}
@@ -10458,10 +10476,10 @@ export default function App() {
                                   <span className="text-[9px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{f.ruleId}</span>
                                 </td>
                                 <td className="px-4 py-3 border-r border-slate-100 text-xs whitespace-normal min-w-[250px]">{f.warning}</td>
-                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-blue-700 font-mono whitespace-normal min-w-[180px] leading-relaxed">{f.diaglist || '-'}</td>
-                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-violet-700 font-mono whitespace-normal min-w-[180px] leading-relaxed">{f.diaglistIdrg || f.diaglist || '-'}</td>
-                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-blue-600 font-mono whitespace-normal min-w-[150px] leading-relaxed">{f.proclist || '-'}</td>
-                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-violet-600 font-mono whitespace-normal min-w-[150px] leading-relaxed">{f.proclistIdrg || f.proclist || '-'}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-blue-700 font-mono whitespace-normal min-w-[180px] leading-relaxed">{formatIcdList(f.diaglist)}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-violet-700 font-mono whitespace-normal min-w-[180px] leading-relaxed">{formatIcdList(f.diaglistIdrg || f.diaglist)}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-blue-600 font-mono whitespace-normal min-w-[150px] leading-relaxed">{formatIcdList(f.proclist)}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-violet-600 font-mono whitespace-normal min-w-[150px] leading-relaxed">{formatIcdList(f.proclistIdrg || f.proclist)}</td>
                                 <td className="px-4 py-3 text-center">
                                   <div className="flex flex-col gap-1.5 items-center">
                                     {verdict !== 'belum' && (
