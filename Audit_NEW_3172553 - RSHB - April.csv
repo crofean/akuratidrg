@@ -1,0 +1,1042 @@
+KODE_RS,NAMA_PASIEN,MRN,SEP,NAMA_KODER,INACBG,DIAGLIST,PROCLIST,AUDIT ID,AUDIT CASE,WARNING,TARIF RS,TARIF INACBG
+3172553,DAMAN,01000617,0113R0270426V000227,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.2;I10;E78.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,509669,205900
+3172553,M MUHDHOR,580823,0113R0270426V000089,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,588893,205900
+3172553,SUNARTI,01044085,0113R0270426V000156,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M17.9;G56.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",533188,463400
+3172553,DASMIYATI,00244202,0113R0270426V000503,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,SUSWANTI,00874113,0113R0270426V000229,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,550426,205900
+3172553,LINA RAHAYU,00052102,0113R0270426V000448,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,SAPRI ALI,00477320,0113R0270426V000292,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,544541,205900
+3172553,"ENDAH WAHYUNING PRASTITI, SP",01007524,0113R0270426V000236,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,781457,205900
+3172553,FIENY MOKOGINTA,00908905,0113R0270426V000210,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,448372,205900
+3172553,ASNI ANTHONI.H,00478712,0113R0270426V000306,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,737165,205900
+3172553,BAMBANG WALUYO,00594519,0113R0270426V000238,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532844,463400
+3172553,HJ. MAKHIYAH,00637506,0113R0270426V000664,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.3,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,221663,205900
+3172553,MOH RIZAL,00110068,0113R0270426V000933,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M47.92,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",533485,463400
+3172553,PAINEM,00495616,0113R0270426V001088,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,UMI HIDAYATI,00987208,0113R0270426V001143,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,700780,205900
+3172553,AI MUDRIKAH,01034164,0113R0270426V000984,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",579661,463400
+3172553,NURYANTI,01049857,0113R0270426V001023,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M75.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,TITI SURYATI,01032191,0113R0270426V000949,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;I10;N18.3,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,597015,205900
+3172553,NENENG SHOLIHAT,01001386,0113R0270426V000676,R**I W*********;3471016007890001;,N-3-11-0,Z09.8;K80.8;M17.9,89.06;81.92;90.59;89.24,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1088400,541700
+3172553,JERINA BR SIMANJUNTAK,00887117,0113R0270426V001427,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,278104,205900
+3172553,MASTIURLAN SITUMEANG,00859006,0113R0270426V001825,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;J18.0;J44.9,89.06,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,473163,205900
+3172553,MASRACHMAN,01011163,0113R0270426V001979,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,869693,205900
+3172553,M.ASRI,00780623,0113R0270426V001775,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;J18.0;J44.9,89.06,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,267997,205900
+3172553,SYAMSUL RIZAL,00942408,0113R0270426V001754,V**L* ******* ********;3175045402860004;,Z-3-16-0,Z09.8;N18.5;I10,89.06;88.93;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,2793998,3034500
+3172553,CUT FITRIANA,01050461,0113R0270426V001714,V**L* ******* ********;3175045402860004;,M-3-11-0,M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",539960,463400
+3172553,HESTI PUJI RAHAYU,00204195,0113R0270426V002854,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M50.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535548,463400
+3172553,BARIYAH,00472221,0113R0270426V002457,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;E11.9;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,548223,205900
+3172553,MADRAL HERY,00723315,0113R0270426V002588,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;K30;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,567436,205900
+3172553,AP. RATNANINGSIH,620912,0113R0270426V002556,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,528827,205900
+3172553,WIYONO,01025615,0113R0270426V002427,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;B20.0;A16.9,89.06,AUDIT-COD-33,HIV + Tuberkulosis,Kode Kombinasi: HIV + TB HARUS menggunakan B20.0 (HIV resulting in mycobacterial infection). Kode TB (A15/A16) TIDAK BOLEH dikoding terpisah.,159840,205900
+3172553,ELLY MIRIATI TANJUNG,00734804,0113R0270426V002878,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535237,463400
+3172553,HERDA MUTHIA LESTARI,00461719,0113R0270426V003595,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M65.4,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",341157,463400
+3172553,PARLINA,01050301,0113R0270426V003608,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",341157,463400
+3172553,SUPARTI,00301367,0113R0270426V003313,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;E11.9;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,1119596,205900
+3172553,TATI MARIATI,01048885,0113R0270426V003165,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10;E11.9,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,214948,205900
+3172553,YATI SURYATI,01027402,0113R0270426V003447,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;E11.9;I10,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,362943,205900
+3172553,KADIR,00798720,0113R0270426V003915,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;E11.9;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,492159,205900
+3172553,IR.SUPRIYATNO,00996603,0113R0270426V004363,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.4;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,404971,205900
+3172553,ROSMAWATY SARAGIH,01030784,0113R0270426V004006,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,413750,205900
+3172553,NYAI,00466307,0113R0270426V004374,S**T*A** ******;3276026410920012;*****,Q-5-43-0,N18.5;I10,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,196030,289700
+3172553,TIGOR P SIMANJUNTAK,01001109,0113R0270426V004173,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535173,463400
+3172553,SUTJIPTO,01046958,0113R0270426V004610,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;E11.9;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,404469,205900
+3172553,JUMSIAH,00111403,0113R0270426V004973,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;G56.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",530611,463400
+3172553,UMAR,01032282,0113R0270426V005089,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,372717,205900
+3172553,ROKAYAH,557720,0113R0270426V004901,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343974,463400
+3172553,RAESA RESMALA RANTY,01001910,0113R0270426V004499,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;E11.9;G56.0;M72.2,89.06;90.59;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1122246,463400
+3172553,SANTA HIDAYAT,00593817,0113R0270426V005230,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10;M17.9,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,428238,205900
+3172553,ANASTASIA MEICY SUMARTIO,00282214,0113R0270426V005402,R**I W*********;3471016007890001;,M-3-11-0,S91.3,89.06;93.57;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",719376,463400
+3172553,I'I RATNA SARI,01050303,0113R0270426V006136,V**L* ******* ********;3175045402860004;,Q-5-43-0,N18.9;I10,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,201085,289700
+3172553,KAVI RUZAYN HURRAHMAN,01049493,0113R0270426V006110,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;J18.0;B05.9,89.06,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",199675,205900
+3172553,WEGI SABDA DIHARJA,00430791,0113R0270426V005767,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.2,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,449575,205900
+3172553,SOEWARNO,00532113,0113R0270426V005756,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,481108,205900
+3172553,IDA SAIDA,01049952,0113R0270426V006060,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M48.06,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927754,463400
+3172553,IMAN NURIMAN,00434405,0113R0270426V005746,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,926563,205900
+3172553,FAISAL ANWAR,01027367,0113R0270426V005707,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;A16.9;B20.0,89.06;87.49,AUDIT-COD-33,HIV + Tuberkulosis,Kode Kombinasi: HIV + TB HARUS menggunakan B20.0 (HIV resulting in mycobacterial infection). Kode TB (A15/A16) TIDAK BOLEH dikoding terpisah.,350809,205900
+3172553,KETTY AISYAH BALA,00617910,0113R0270426V005757,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",534084,463400
+3172553,ERMAWITA.N,00215082,0113R0270426V006109,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M72.2,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,WAHIDI,01047618,0113R0270426V005541,D**A* ********;3276025308930004;,M-3-11-0,Z09.8;M15.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535406,463400
+3172553,EMMA EMSI SINURAT,01003245,0113R0270426V006712,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,NUNUNG,00824601,0113R0270426V006343,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,572742,205900
+3172553,ADE SUKARNI,00969211,0113R0270426V006790,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.5,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,227942,205900
+3172553,ARTHUR SALIM HARAHAP,01049070,0113R0270426V006877,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;J18.0;B05.9,89.06,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",184438,205900
+3172553,MOH. ASHARI,00494410,0113R0270426V006329,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,412714,205900
+3172553,ASMIAN B.BARA,00110019,0113R0270426V006530,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;E11.9;I10;I25.0,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,606754,205900
+3172553,ARIDAH,01050035,0113R0270426V006743,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M48.06,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927754,463400
+3172553,SUNARTI,01006576,0113R0270426V007464,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M48.06,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927754,463400
+3172553,ERWIN SIMBOLON,01036095,0113R0270426V007400,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M75.4,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927754,463400
+3172553,ASEP TURYADI,00469115,0113R0270426V007299,A**I M*******;3276026310920010;,Q-5-44-0,Z09.8;E11.9;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,477595,205900
+3172553,"ZUHRIATY, SE",00080995,0113R0270426V007535,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;E11.9;I11.9;M65.3,89.06;90.59;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1512832,463400
+3172553,WAWAN MARYONO,00428301,0113R0270426V007756,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.4;E11.9;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,924592,205900
+3172553,SUWARTI,01032285,0113R0270426V008111,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M75.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,TASIRAH,01049250,0113R0270426V008134,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M19.01,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532877,463400
+3172553,VERGINA VALENCIA SUPARTO,00943709,0113R0270426V007749,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,619592,205900
+3172553,BAMBANG TRISNO WIDAYAT KUSOMO,00857800,0113R0270426V007778,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,422632,205900
+3172553,SUKINAH,01051582,0113R0270426V008255,S**T*A** ******;3276026410920012;*****,Q-5-44-0,I10;N18.3,89.06;90.59;87.49,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,544368,205900
+3172553,IDA WIDANINGSIH,00468617,0113R0270426V007793,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,854276,205900
+3172553,PAINO UTOMO,01010731,0113R0270426V007832,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,512747,205900
+3172553,ROSA ROSANA SITEPU,01049310,0113R0270426V008865,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M48.06,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927754,463400
+3172553,SURYANI,01049819,0113R0270426V008885,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M48.06,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927754,463400
+3172553,HJ HURIYAH,00469701,0113R0270426V008386,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10;K80.8,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,539964,205900
+3172553,ETY SUGIARTI,600719,0113R0270426V008349,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,340524,205900
+3172553,TATI RISNAWATI,00569508,0113R0270426V008414,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M75.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",543972,463400
+3172553,WATIRAH,00011114,0113R0270426V009337,R**I W*********;3471016007890001;,L-3-12-0,S81.9,89.06;86.59;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",761700,309600
+3172553,MIYANTO,988618,0113R0270426V009569,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,483814,205900
+3172553,TRI KOMARIAH,01049155,0113R0270426V009481,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",536393,463400
+3172553,OLIVIA THEODORA TIAR SAPUTRI,01048388,0113R0270426V009515,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M67.4,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532394,463400
+3172553,PATMI,01047510,0113R0270426V009696,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;E11.9;I10;N18.3,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,527113,205900
+3172553,SUMILAH,00466423,0113R0270426V009782,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,843704,205900
+3172553,BEIHESYAH ANAYA GIZARA DAMANIK,00153418,0113R0270426V009909,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;G56.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927864,463400
+3172553,NIMROT HUTAJULU,01029427,0113R0270426V009642,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",534926,463400
+3172553,YULIA SEKAR SARI,00236452,0113R0270426V009964,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;E11.9;I10;N18.4,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,874922,205900
+3172553,DRS.EMRA TARIGAN,00931918,0113R0270426V009621,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,674173,205900
+3172553,RATNA WIDIYANINGSIH,00537322,0113R0270426V009684,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.3;E11.9;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,438688,205900
+3172553,RIZAL SIDABUTAR,00571415,0113R0270426V010409,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;N18.2;I10;K30,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,672929,205900
+3172553,RIEN RIZKY,01051023,0113R0270426V010573,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M51.2,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927864,463400
+3172553,YUNI SUSANA,00434910,0113R0270426V010300,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;E11.9;I10;N18.3,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,704239,205900
+3172553,T A Y E M,01033002,0113R0270426V010230,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;E11.9;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,586996,205900
+3172553,TITIN HERMAYANTI,01050744,0113R0270426V010722,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M54.5,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532754,463400
+3172553,SUPRIYONO,01010071,0113R0270426V010613,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;I10;E11.9;N18.3,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,861971,205900
+3172553,SITI LATIFAH,01050058,0113R0270426V011338,V**L* ******* ********;3175045402860004;,Z-3-16-0,Z09.8;M48.06,89.06;88.93;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",3188864,3034500
+3172553,MAIMUNAH,00059802,0113R0270426V011021,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,512217,205900
+3172553,SOELARTI,01050298,0113R0270426V011033,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M75.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",533376,463400
+3172553,WAGIYATI,00434466,0113R0270426V011565,A**I M*******;3276026310920010;,Q-5-44-0,Z09.8;N18.3;K30;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,520162,205900
+3172553,SRI MARYANI,01047772,0113R0270426V011594,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.3;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,473864,205900
+3172553,M HAIKAL ROYAN,01051780,0113R0270426V011875,R**I W*********;3471016007890001;,M-3-11-0,M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",539850,463400
+3172553,WALJIATI,00988410,0113R0270426V011902,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;G56.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,ISAH,00623408,0113R0270426V011876,S**T*A** ******;3276026410920012;*****,M-3-11-0,M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535173,463400
+3172553,SANAH,01026488,0113R0270426V012362,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.4;I10;K30,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,598549,205900
+3172553,HJ YULIATI,01024785,0113R0270426V012742,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;I10;N18.5,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,209152,205900
+3172553,ABDUL KHOLIK,01005070,0113R0270426V012693,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;G56.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",530157,463400
+3172553,YATINI,01020150,0113R0270426V012223,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M75.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532909,463400
+3172553,"MARIA ERNA KUSWINARTI,S.PD",00703613,0113R0270426V012628,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M75.8,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,MUSRI PARDEDE,00986021,0113R0270426V012357,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.3,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,502927,205900
+3172553,IPAH KHADIJAH,01003823,0113R0270426V012299,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535082,463400
+3172553,ENDAH TRISNOWATI,01051720,0113R0270426V013059,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59;87.49,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,1192000,205900
+3172553,ABDUL AZIZ,00713018,0113R0270426V013529,S**T*A** ******;3276026410920012;*****,Q-5-27-0,I63.9,89.06,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",169199,168700
+3172553,IIN KUMIARSIH,00299510,0113R0270426V013292,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,874459,205900
+3172553,NYUTRISNO,00965909,0113R0270426V013328,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,459792,205900
+3172553,EUIS SUMARTINI,00069972,0113R0270426V013751,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,DRS. H. WARSITO,00428071,0113R0270426V014089,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,553669,205900
+3172553,HASANAH,01026068,0113R0270426V014162,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M51.8,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",268427,463400
+3172553,TUTI,00218558,0113R0270426V014092,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,1096536,205900
+3172553,IIS,00659720,0113R0270426V014410,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",544958,463400
+3172553,ROKAYAH,00427897,0113R0270426V014456,S**T*A** ******;3276026410920012;*****,Q-5-44-0,Z09.8;I10;N18.5,89.06,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,200880,205900
+3172553,RONA SYARIFAH HARAHAP,00987503,0113R0270426V014484,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",535693,463400
+3172553,NUNUNG,00824601,0113R0270426V014580,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",701851,463400
+3172553,PUPU,00771811,0113R0270426V014588,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M17.9,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",701540,463400
+3172553,ATHAYA FARUQI,00329402,0113R0270426V014171,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;N48.4,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",248336,463400
+3172553,MARTHARIA H,00889106,0113R0270426V014119,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,440027,205900
+3172553,MUHAMAD ABDUH ARSYULUDDIN,01002462,0113R0270426V014513,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M75.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,HANY SRI WIRYANTI,01002712,0113R0270426V015073,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;I10;N18.5,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,1165495,205900
+3172553,JULIPER PASARIBU,00662414,0113R0270426V014778,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;G56.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532850,463400
+3172553,DIAN TRIYONO SAPUTRO,00124811,0113R0270426V015278,V**L* ******* ********;3175045402860004;,M-3-11-0,Z09.8;M75.8,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",980053,463400
+3172553,ERNIDA,00745522,0113R0270426V015238,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M72.2,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",971000,463400
+3172553,ALDILA DIRGANTORO,01045830,0113R0270426V014798,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;E11.9;M65.3,89.06;90.59;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",762386,463400
+3172553,ANWAR,00570711,0113R0270426V014714,V**L* ******* ********;3175045402860004;,N-3-15-0,Z49.0;N18.5;I10,39.95;99.29;89.52,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,2194896,941600
+3172553,YUNIATI,00526910,0113R0270426V015120,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;M75.1,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",343754,463400
+3172553,SAUDIN RABIBI,00083358,0113R0270426V015545,R**I W*********;3471016007890001;,Q-5-44-0,Z09.8;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,425217,205900
+3172553,AMELIA SOLEKHA,01051399,0113R0270426V015832,S**T*A** ******;3276026410920012;*****,M-3-11-0,Z09.8;G54.0,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",927598,463400
+3172553,DIAH AULIANIH,01026425,0113R0270426V015706,R**I W*********;3471016007890001;,M-3-11-0,Z09.8;M65.3,89.06;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",532876,463400
+3172553,CHAIRANUM SIREGAR,00456802,0113R0270426V015487,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;E11.9;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,756812,205900
+3172553,YAYAH SITI NURIYAH,00788220,0113R0270426V015464,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;E11.9;N18.5;I10,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,542692,205900
+3172553,EDY EFENDY,00126301,0113R0270426V015406,V**L* ******* ********;3175045402860004;,Q-5-44-0,Z09.8;N18.5;I10;K76.0,89.06;90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,464491,205900
+3172553,TITIEK SUNARTI,982023,0113R0270326V010402,R**D*;;,J-1-02-II,E10.1;R41.8;L89.9;E88.0,90.59;87.49;96.72;89.52;57.94;38.97;93.94,AUDIT-COD-08,DM dengan Ulkus/Gangren,Kode Kombinasi: DM dengan gangren/ulkus diabetik HARUS menggunakan kode E10.5 / E11.5 / E14.5. Gangren (R02) tidak dikode terpisah.,56832468,71271000
+3172553,SITI FATIMAH,01018348,0113R0270426V003122,N**O S******;3175100603830003;,N-1-12-I,N18.5,39.42,AUDIT-COD-37,Pembuatan AV Shunt (Cimino) Baru vs Revisi,Koreksi Spesifisitas: AV Shunt BARU menggunakan 39.27. Kode 39.42 HANYA untuk REVISI shunt lama.,18332535,7899700

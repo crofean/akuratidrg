@@ -81,14 +81,15 @@ export default function PasswordModal({ isOpen, onClose, onSuccess, fileName = '
       <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
         <div style={{
           background: 'linear-gradient(145deg, #ffffff, #f8fafc)',
-          borderRadius: '1.5rem',
-          padding: '2.5rem',
+          borderRadius: '1.25rem',
+          padding: '1.5rem',
           width: '100%',
-          maxWidth: '440px',
+          maxWidth: '420px',
+          maxHeight: 'calc(100vh - 2rem)',
+          overflowY: 'auto',
           boxShadow: '0 25px 60px -12px rgba(0,0,0,0.35)',
           border: '1px solid rgba(226,232,240,0.8)',
           position: 'relative',
-          overflow: 'hidden',
           animation: shake ? 'shake 0.5s ease' : 'slideUp 0.3s ease',
         }}>
           {/* Top gradient bar */}
@@ -102,12 +103,12 @@ export default function PasswordModal({ isOpen, onClose, onSuccess, fileName = '
           </button>
 
           {/* Icon */}
-          <div style={{ width: '64px', height: '64px', borderRadius: '1rem', background: 'linear-gradient(135deg, var(--primary, #005c8d), #0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', boxShadow: '0 8px 20px rgba(0,92,141,0.3)' }}>
-            <ShieldCheck size={30} color="#fff" />
+          <div style={{ width: '56px', height: '56px', borderRadius: '1rem', background: 'linear-gradient(135deg, var(--primary, #005c8d), #0ea5e9)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem', boxShadow: '0 8px 20px rgba(0,92,141,0.3)' }}>
+            <ShieldCheck size={26} color="#fff" />
           </div>
 
           {/* Title */}
-          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.5rem' }}>
               Proteksi File Excel
             </h2>
@@ -206,9 +207,9 @@ export default function PasswordModal({ isOpen, onClose, onSuccess, fileName = '
             )}
 
             {/* Info box */}
-            <div style={{ padding: '0.75rem', backgroundColor: 'rgba(0,92,141,0.05)', borderRadius: '0.75rem', marginBottom: '1.25rem', border: '1px solid rgba(0,92,141,0.12)' }}>
-              <p style={{ margin: 0, fontSize: '0.74rem', color: '#475569', lineHeight: 1.6 }}>
-                ⚠️ <strong>Simpan password ini!</strong> Password tidak dapat dipulihkan jika lupa. File akan terenkripsi dan hanya bisa dibuka di Excel dengan password yang sama.
+            <div style={{ padding: '0.6rem 0.75rem', backgroundColor: 'rgba(0,92,141,0.05)', borderRadius: '0.6rem', marginBottom: '1rem', border: '1px solid rgba(0,92,141,0.12)' }}>
+              <p style={{ margin: 0, fontSize: '0.74rem', color: '#475569', lineHeight: 1.5 }}>
+                ⚠️ <strong>Simpan password ini!</strong> File akan terenkripsi dan hanya bisa dibuka di Excel dengan password ini.
               </p>
             </div>
 

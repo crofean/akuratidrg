@@ -1173,7 +1173,7 @@ const TABS = [
   { id: 'executive', label: 'Executive', icon: PieChart }, { id: 'report', label: 'Laporan', icon: Table2 }, { id: 'rekap', label: 'Rekap Kasus', icon: Layers },
   { id: 'mapping', label: 'Peta iDRG', icon: GitMerge }, { id: 'sl_cl_analysis', label: 'Analisis SL/CL', icon: Layers }, { id: 'dept', label: 'Kinerja Departemen', icon: Building2 }, { id: 'ksm', label: 'Kinerja KSM', icon: Users }, { id: 'dpjp', label: 'Kinerja DPJP', icon: User },
   { id: 'insight_sosialisasi', label: 'Insight Sosialisasi', icon: Sparkles },
-  { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award }, { id: 'readmisi', label: 'Readmisi & Fragmentasi', icon: RefreshCw },
+  { id: 'naik_kelas', label: 'Hak Kelas', icon: BarChart3 }, { id: 'icu', label: 'Intensif ICU', icon: ActivitySquare }, { id: 'topup', label: 'Potensi Top Up', icon: ArrowUpCircle }, { id: 'discrepancy', label: 'Akurasi Input INA-iDRG', icon: FileCode }, { id: 'medsurg_valid', label: 'Validasi Med-Surg', icon: ActivitySquare }, { id: 'audit', label: 'Audit Coding', icon: CheckSquare }, { id: 'kpi_coder', label: 'KPI Coder', icon: Award }, { id: 'readmisi', label: 'Readmisi & Fragmentasi', icon: RefreshCw },
   { id: 'pending_sakti', label: 'Analisis Pending', icon: FileSpreadsheet },
   { id: 'kompetensi', label: 'Kompetensi Layanan', icon: ShieldAlert },
   { id: 'settings_ksm', label: 'Pengaturan KSM', icon: Settings },
@@ -3369,6 +3369,7 @@ export default function App() {
   });
   const [isScrolled, setIsScrolled] = useState(false);
   const [reportSubTab, setReportSubTab] = useState('summary');
+  const [procGroupFilter, setProcGroupFilter] = useState('ALL');
   const [excludeProcFilter, setExcludeProcFilter] = useState(() => localStorage.getItem('sak_exclude_proc_filter') === 'true');
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [showKompPopup, setShowKompPopup] = useState(false);
@@ -4496,7 +4497,7 @@ export default function App() {
     let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, scoredCount: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0, totalDiagUCount: 0, totalDiagSCount: 0, totalProcCount: 0 };
     const uniqueRs = new Set(rows.map(r => String(r['KODE_RS'] || '').trim()).filter(Boolean));
     const multipleRs = uniqueRs.size > 1;
-    let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], audit: [], topUp: {}, ksmEfficiency: {}, icdDesc: {} };
+    let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], medSurgMismatches: [], audit: [], topUp: {}, ksmEfficiency: {}, icdDesc: {} };
     const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
 
     rows.forEach((r, idx) => {
@@ -4652,7 +4653,10 @@ export default function App() {
           return clean.startsWith(cleanExc) || cleanNoDot.startsWith(noDotExc);
         });
         if (isExcluded) return;
-        maps.proc[p] = (maps.proc[p] || 0) + 1;
+        const groupType = inaCode.includes('-') ? inaCode.split('-')[1] : '0';
+        if (!maps.proc[p]) maps.proc[p] = { count: 0, byGroup: {} };
+        maps.proc[p].count++;
+        maps.proc[p].byGroup[groupType] = (maps.proc[p].byGroup[groupType] || 0) + 1;
         stats.totalProcCount++;
       });
 
@@ -4741,6 +4745,43 @@ export default function App() {
       if (sDiag < 100 || sProc < 100) {
         maps.discrepancies.push({ ...r, rowIdx: idx, mrn: String(r['MRN'] || ''), sep: String(r['SEP'] || ''), diag1: dList, diag2: idrgDList, scoreDiag: sDiag, proc1: pList, proc2: idrgPList, scoreProc: sProc });
         maps.coder[cId].discrepancyCount++;
+      }
+
+      if (inaCode && drgCode) {
+        stats.medSurgTotalCount = (stats.medSurgTotalCount || 0) + 1;
+        const idrgDigits = drgCode.substring(2, 4);
+        const isIdrgSurgical = !isNaN(parseInt(idrgDigits)) && parseInt(idrgDigits) >= 1 && parseInt(idrgDigits) <= 40;
+        const grpType = inaCode.includes('-') ? inaCode.split('-')[1] : '0';
+        const drgDesc = String(r['IDRG_DRG_DESCRIPTION'] || r['IDRG_DRG_DESC'] || '').toLowerCase();
+        let medSurgWarning = '';
+        
+        if (grpType === '1') {
+           if (!isIdrgSurgical) medSurgWarning = 'Tidak sesuai (INA-CBG Surgical, iDRG Medical)';
+        } else if (grpType === '2' || grpType === '3') {
+           const hasProcText = drgDesc.includes('prosedur') || drgDesc.includes('proc');
+           if (!(isIdrgSurgical || hasProcText)) medSurgWarning = 'Tidak sesuai (Status Prosedur Rawat Jalan tidak tercermin di iDRG)';
+        } else {
+           if (isIdrgSurgical) medSurgWarning = 'Tidak sesuai (INA-CBG Medical, tetapi iDRG Surgical)';
+        }
+        
+        if (medSurgWarning) {
+           maps.medSurgMismatches.push({ 
+             mrn: String(r['MRN'] || '-'), 
+             sep: String(r['SEP'] || '-'), 
+             ina: inaCode, 
+             descIna: String(r['DESKRIPSI_INACBG'] || r['INACBG_DESC'] || '-'),
+             idrg: drgCode, 
+             descIdrg: drgDesc, 
+             tarifIna: tIna, 
+             tarifIdrg: tIdrg, 
+             warning: medSurgWarning,
+             diag1: dList,
+             proc1: pList,
+             diag2: idrgDList,
+             proc2: idrgPList
+           });
+           stats.medSurgMismatchCount = (stats.medSurgMismatchCount || 0) + 1;
+        }
       }
 
       const acRow = [...dList, ...pList]; let hit = false;
@@ -4872,7 +4913,7 @@ export default function App() {
       topDefisitIna: inaArr.filter(x => x.totalSelisih < 0).sort((a, b) => a.totalSelisih - b.totalSelisih).slice(0, 10), topSurplusIna: inaArr.filter(x => x.totalSelisih > 0).sort((a, b) => b.totalSelisih - a.totalSelisih).slice(0, 10),
       dpjpSummaryArray: Object.values(maps.dpjp).sort((a, b) => b.count - a.count),
       ksmSummaryArray, deptSummaryArray, topKsmSurplusIna, topKsmDefisitIna, topKsmSurplusIdrg, topKsmDefisitIdrg, ksmEfficiencyTree,
-      topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1] - a[1]).slice(0, 10),
+      topDiagUtama: Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]).slice(0, 10), topDiagSekunder: Object.entries(maps.diagS).sort((a, b) => b[1] - a[1]).slice(0, 10), topProc: Object.entries(maps.proc).sort((a, b) => b[1].count - a[1].count).slice(0, 10),
       diagUtamaFull: (() => {
         const entries = Object.entries(maps.diagU).sort((a, b) => b[1] - a[1]);
         return entries.map(([code, count]) => ({ code, count, pct: (count / (stats.totalDiagUCount || 1)) * 100 }));
@@ -4882,12 +4923,12 @@ export default function App() {
         return entries.map(([code, count]) => ({ code, count, pct: (count / (stats.totalDiagSCount || 1)) * 100 }));
       })(),
       procFull: (() => {
-        const entries = Object.entries(maps.proc).sort((a, b) => b[1] - a[1]);
-        return entries.map(([code, count]) => ({ code, count, pct: (count / (stats.totalProcCount || 1)) * 100 }));
+        const entries = Object.entries(maps.proc).sort((a, b) => b[1].count - a[1].count);
+        return entries.map(([code, data]) => ({ code, count: data.count, byGroup: data.byGroup, pct: (data.count / (stats.totalProcCount || 1)) * 100 }));
       })(),
       dischargeStats: maps.discharge,
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
-      inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies },
+      inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies, medSurgMismatches: maps.medSurgMismatches, medSurgTotalCount: stats.medSurgTotalCount || 0, medSurgMismatchCount: stats.medSurgMismatchCount || 0 },
       auditFindings: maps.audit, kpiCoderArray: Object.values(maps.coder).sort((a, b) => b.cases - a.cases), naikKelasStats: Object.values(maps.naikKelas).sort((a, b) => b.totalNilai - a.totalNilai), icuStats: maps.icu,
       topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai },
       icdDescIndex: new Proxy({ ...icdDescIndex }, {
@@ -5210,6 +5251,16 @@ export default function App() {
     </div>
   );
 
+  const getFilteredProcFull = () => {
+    if (!dashData?.procFull) return [];
+    if (procGroupFilter === 'ALL') return dashData.procFull;
+    const totalGrp = dashData.procFull.reduce((s, x) => s + (x.byGroup[procGroupFilter] || 0), 0) || 1;
+    return dashData.procFull.map(p => {
+      const matchedCount = p.byGroup[procGroupFilter] || 0;
+      return { ...p, count: matchedCount, pct: (matchedCount / totalGrp) * 100 };
+    }).filter(p => p.count > 0).sort((a, b) => b.count - a.count);
+  };
+
   const renderExecutive = () => {
     const isSelPos = dashData.selisihTotal > 0;
     const dp = dashData.dischargeStats, t = dashData.totalRows || 1;
@@ -5434,17 +5485,25 @@ export default function App() {
                   <ActivitySquare size={16} className="text-emerald-600" />
                   <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-tight">Top 10 Tindakan</h3>
                 </div>
-                <label className="flex items-center gap-1.5 cursor-pointer select-none text-[10px] font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
-                  <input 
-                    type="checkbox"
-                    checked={excludeProcCodes}
-                    onChange={(e) => handleToggleAllExclusions(e.target.checked)}
-                    className="w-3 h-3 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded cursor-pointer"
-                  />
-                  <span>Kecualikan Kode Umum</span>
-                </label>
+                <div className="flex items-center gap-2">
+                  <select value={procGroupFilter} onChange={e => setProcGroupFilter(e.target.value)} className="text-[10px] font-bold text-emerald-700 bg-white px-2 py-1 rounded-lg border border-emerald-200 outline-none cursor-pointer">
+                    <option value="ALL">Semua Kasus</option>
+                    <option value="1">1 - RI</option>
+                    <option value="2">2 - Besar RJ</option>
+                    <option value="3">3 - Sig RJ</option>
+                  </select>
+                  <label className="flex items-center gap-1.5 cursor-pointer select-none text-[10px] font-bold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors">
+                    <input 
+                      type="checkbox"
+                      checked={excludeProcCodes}
+                      onChange={(e) => handleToggleAllExclusions(e.target.checked)}
+                      className="w-3 h-3 text-emerald-600 focus:ring-emerald-500 border-slate-300 rounded cursor-pointer"
+                    />
+                    <span>Kecualikan Kode Umum</span>
+                  </label>
+                </div>
               </div>
-              <MiniTable data={dashData.topProc} columns={[{ header: 'No', className: 'w-8 text-center text-slate-400 font-bold', render: (r, i) => i + 1 }, { header: 'Kode', className: 'font-extrabold text-slate-700', render: (r) => r[0] }, { header: 'Deskripsi', className: 'text-[10px] text-slate-500 max-w-[150px] truncate', render: (r) => getIcdDescription(r[0]) || '-' }, { header: 'Kasus', className: 'text-right font-black text-emerald-600', render: (r) => r[1].toLocaleString() }]} />
+              <MiniTable data={getFilteredProcFull().map(p => [p.code, p.count]).slice(0, 10)} columns={[{ header: 'No', className: 'w-8 text-center text-slate-400 font-bold', render: (r, i) => i + 1 }, { header: 'Kode', className: 'font-extrabold text-slate-700', render: (r) => r[0] }, { header: 'Deskripsi', className: 'text-[10px] text-slate-500 max-w-[150px] truncate', render: (r) => getIcdDescription(r[0]) || '-' }, { header: 'Kasus', className: 'text-right font-black text-emerald-600', render: (r) => r[1].toLocaleString() }]} />
             </Card>
           </div>
 
@@ -5498,7 +5557,7 @@ export default function App() {
       const diagSekunderRows = dashData.diagSekunderFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
 
       const tindakanHeaders = ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'];
-      const tindakanRows = dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
+      const tindakanRows = getFilteredProcFull().map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]);
 
       const detailHeaders = ['Code', 'Deskripsi', 'Jumlah', 'ALOS', 'Subtotal RS', 'Subtotal INA', 'Perpasien iDRG', 'Cost Weight', 'NBR', 'Adj Factor', 'Avg RS', 'Subtotal iDRG', 'Selisih'];
       const detailRanapRows = dashData.drgSummaryRanap.map(r => [r.code, r.desc, r.count, r.avgLos, r.sumRS, r.sumIna, r.avgIdrg, r.avgCW, r.avgNBR, r.avgAF, r.avgRS, r.sumIdrg, r.selisih]);
@@ -5787,7 +5846,19 @@ export default function App() {
 
         {reportSubTab === 'procedure' && (
           <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
-            <SectionHeader icon={Scissors} title="Laporan Tindakan" desc={`Daftar tindakan (procedure) terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-purple-50 text-purple-600" highlightClass="bg-purple-500/5" exportAction={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'], dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]))} />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-purple-50 p-5 rounded-3xl border border-purple-100">
+              <SectionHeader icon={Scissors} title="Laporan Tindakan" desc={`Daftar tindakan (procedure) terbanyak. Periode: ${globalFilter.periode.length > 0 ? globalFilter.periode.join(', ') : 'Semua Periode'}`} colorClass="bg-transparent text-purple-600 mb-0" highlightClass="bg-purple-500/5" exportAction={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'], getFilteredProcFull().map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]))} />
+              
+              <div className="flex items-center gap-3 shrink-0 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+                <span className="text-xs font-black text-slate-500 uppercase">Case Group:</span>
+                <select value={procGroupFilter} onChange={e => setProcGroupFilter(e.target.value)} className="text-sm font-bold text-purple-700 bg-purple-50/50 px-3 py-2 rounded-xl border border-purple-200 outline-none cursor-pointer hover:bg-purple-100 transition-colors min-w-[200px]">
+                  <option value="ALL">Semua Case Group</option>
+                  <option value="1">1 - Prosedur Rawat Inap</option>
+                  <option value="2">2 - Prosedur Besar Rawat Jalan</option>
+                  <option value="3">3 - Prosedur Signifikan Rawat Jalan</option>
+                </select>
+              </div>
+            </div>
             
             <div className="bg-purple-50/40 border border-purple-100/60 p-5 rounded-3xl backdrop-blur-md shadow-sm space-y-4">
               <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -5846,26 +5917,25 @@ export default function App() {
                   </h4>
                   <p className="text-xs text-slate-500 mt-1 font-medium">Klik pada baris tindakan untuk melihat detail analisis kasus secara instan.</p>
                 </div>
-                <button
-                  onClick={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'], dashData.procFull.map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]))}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-2xl text-xs font-black flex items-center gap-2 transition-all shadow-lg shadow-purple-600/20 hover:-translate-y-0.5 shrink-0"
-                >
-                  <Download size={14} /> Ekspor Excel (Rapi & Auto-Width)
-                </button>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-colors shadow-sm border border-emerald-100"
+                    onClick={() => exportToXlsx('Laporan_Tindakan', ['No', 'Kode Tindakan', 'Deskripsi Resmi', 'Jumlah', 'Persentase (%)'], getFilteredProcFull().map((d, i) => [i + 1, d.code, getIcdDescription(d.code) || '-', d.count, d.pct]))}
+                  ><Download size={14} /> Export XLS</button>
+                </div>
               </div>
-              <div className="overflow-x-auto custom-scrollbar max-h-[700px]">
-                <table className="w-full text-sm border-collapse">
-                  <thead className="bg-slate-900 text-white sticky top-0 z-10">
+              <div className="overflow-x-auto max-h-[700px] custom-scrollbar">
+                <table className="w-full text-sm text-left border-collapse">
+                  <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest sticky top-0 z-40">
                     <tr>
-                      <th className="p-4 text-center border-r border-white/10 w-16">NO</th>
+                      <th className="p-4 text-center w-16 border-r border-white/10 rounded-tl-xl">NO</th>
                       <th className="p-4 text-left border-r border-white/10">KODE TINDAKAN (ICD 9-CM)</th>
-                      <th className="p-4 text-left border-r border-white/10 min-w-[250px]">DESKRIPSI RESMI (ICD 9-CM)</th>
+                      <th className="p-4 text-left border-r border-white/10">DESKRIPSI TINDAKAN</th>
                       <th className="p-4 text-center border-r border-white/10">JUMLAH TINDAKAN</th>
-                      <th className="p-4 text-center">PERSENTASE (%)</th>
+                      <th className="p-4 text-center rounded-tr-xl">PERSENTASE (%)</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white">
-                    {dashData.procFull.map((d, i) => (
+                  <tbody className="divide-y divide-slate-100">
+                    {getFilteredProcFull().map((d, i) => (
                       <tr key={i} className="hover:bg-purple-50/30 transition-colors cursor-pointer" onClick={() => openDrilldown(`Tindakan: ${d.code}`, r => {
                         const pList = String(r['PROCLIST'] || '').replace(/"/g, '').split(';').map(x => x.trim()).filter(x => x && x !== '-' && x.toLowerCase() !== 'none');
                         return pList.some(proc => proc.toUpperCase() === d.code.toUpperCase());
@@ -6273,8 +6343,110 @@ export default function App() {
           </table>
         </div>
       </Card>
+
     </div>
   );
+
+  const renderMedSurgValidation = () => {
+    const totalCount = dashData.scorecard.medSurgTotalCount || 0;
+    const mismatchedCount = dashData.scorecard.medSurgMismatchCount || 0;
+    const matchedCount = totalCount - mismatchedCount;
+    const matchedPct = totalCount ? ((matchedCount / totalCount) * 100).toFixed(1) : 0;
+    const mismatchedPct = totalCount ? ((mismatchedCount / totalCount) * 100).toFixed(1) : 0;
+
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <SectionHeader icon={ActivitySquare} title="Kesesuaian Medical VS Surgical" desc="Validasi kesesuaian case group (INA-CBG) dengan status prosedur iDRG." colorClass="bg-rose-50 text-rose-600" highlightClass="bg-rose-500/5" exportAction={() => exportToXlsx('Validasi_MedSurg', ['MRN', 'SEP', 'Kode INA', 'Deskripsi INA', 'Kode iDRG', 'Deskripsi iDRG', 'Tarif INA', 'Tarif iDRG', 'Warning'], (dashData.scorecard.medSurgMismatches || []).map(d => [d.mrn, d.sep, d.ina, d.descIna, d.idrg, d.descIdrg, d.tarifIna, d.tarifIdrg, d.warning]))} exportText="Ekspor Kasus Mismatch" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="p-6 flex flex-col justify-center border-l-4 border-l-slate-400">
+            <p className="text-slate-400 font-extrabold text-[10px] uppercase tracking-widest mb-2">Total Kasus Dievaluasi</p>
+            <h2 className="text-3xl font-black text-slate-800 tracking-tight">{totalCount.toLocaleString()} <span className="text-sm font-bold text-slate-500">Kasus</span></h2>
+          </Card>
+          <Card className="p-6 flex flex-col justify-center border-l-4 border-l-emerald-500">
+            <p className="text-emerald-600 font-extrabold text-[10px] uppercase tracking-widest mb-2 flex items-center gap-1.5"><CheckCircle size={14}/> Kasus Sesuai (Matched)</p>
+            <div className="flex items-end gap-3">
+               <h2 className="text-3xl font-black text-emerald-600 tracking-tight">{matchedCount.toLocaleString()}</h2>
+               <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded mb-1">{matchedPct}%</span>
+            </div>
+          </Card>
+          <Card className="p-6 flex flex-col justify-center border-l-4 border-l-rose-500">
+            <p className="text-rose-600 font-extrabold text-[10px] uppercase tracking-widest mb-2 flex items-center gap-1.5"><AlertTriangle size={14}/> Kasus Tidak Sesuai (Mismatched)</p>
+            <div className="flex items-end gap-3">
+               <h2 className="text-3xl font-black text-rose-600 tracking-tight">{mismatchedCount.toLocaleString()}</h2>
+               <span className="text-sm font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded mb-1">{mismatchedPct}%</span>
+            </div>
+          </Card>
+        </div>
+
+        <Card className="flex flex-col">
+          <div className="p-6 bg-slate-50/50 border-b border-slate-200"><h3 className="text-base font-extrabold text-slate-800 tracking-tight">Detail Log Ketidaksesuaian ({mismatchedCount.toLocaleString()} Kasus)</h3></div>
+          <div className="overflow-x-auto max-h-[600px] custom-scrollbar">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-white border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider text-slate-400 sticky top-0 z-40">
+                <tr>
+                  <th className="p-4 border-r border-slate-100 w-48">Pasien (MRN / SEP)</th>
+                  <th className="p-4 border-r border-slate-100 w-[45%]">Kesesuaian Kode (INA-CBG vs iDRG)</th>
+                  <th className="p-4 border-r border-slate-100 w-48">Finansial (INA vs iDRG)</th>
+                  <th className="p-4 border-r border-slate-100">Keterangan / Warning</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {(dashData.scorecard.medSurgMismatches || []).map((d, i) => (
+                  <tr key={`ms-${i}`} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="p-4 align-top border-r border-slate-50">
+                      <span className="font-extrabold text-slate-800 block text-base">{String(d.mrn)}</span>
+                      <span className="text-[11px] font-mono font-medium text-slate-500 mt-1 block">{String(d.sep)}</span>
+                    </td>
+                    <td className="p-4 align-top border-r border-slate-50">
+                      <div className="space-y-4">
+                        <div>
+                          <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">INA-CBG (Case Group)</span>
+                          <div className="flex gap-2 mb-2">
+                             <span className="px-2 py-1 bg-slate-100 text-slate-700 font-bold rounded-md text-xs border border-slate-200 whitespace-nowrap h-fit">{d.ina}</span>
+                             <span className="text-xs text-slate-600 leading-tight">{d.descIna}</span>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-1.5">
+                             {d.diag1?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Diag:</span>{d.diag1.map((c, idx) => <span key={`d1-${i}-${idx}`} className="text-[10px] bg-white border border-slate-200 px-1 py-0.5 rounded cursor-help" title={dashData.icdDescIndex?.[c] || c}>{c} <span className="text-slate-400 font-normal italic ml-0.5">{dashData.icdDescIndex?.[c]}</span></span>)}</div>}
+                             {d.proc1?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Proc:</span>{d.proc1.map((c, idx) => <span key={`p1-${i}-${idx}`} className="text-[10px] bg-white border border-slate-200 px-1 py-0.5 rounded cursor-help" title={dashData.icdDescIndex?.[c] || c}>{c} <span className="text-slate-400 font-normal italic ml-0.5">{dashData.icdDescIndex?.[c]}</span></span>)}</div>}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">iDRG</span>
+                          <div className="flex gap-2 mb-2">
+                             <span className="px-2 py-1 bg-slate-100 text-slate-700 font-bold rounded-md text-xs border border-slate-200 whitespace-nowrap h-fit">{d.idrg}</span>
+                             <span className="text-xs text-slate-600 leading-tight capitalize">{d.descIdrg}</span>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 space-y-1.5">
+                             {d.diag2?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Diag:</span>{d.diag2.map((c, idx) => <span key={`d2-${i}-${idx}`} className="text-[10px] bg-white border border-slate-200 px-1 py-0.5 rounded cursor-help" title={dashData.icdDescIndex?.[c] || c}>{c} <span className="text-slate-400 font-normal italic ml-0.5">{dashData.icdDescIndex?.[c]}</span></span>)}</div>}
+                             {d.proc2?.length > 0 && <div className="flex flex-wrap gap-1 items-start"><span className="text-[9px] font-bold text-slate-400 uppercase mr-1 mt-0.5">Proc:</span>{d.proc2.map((c, idx) => <span key={`p2-${i}-${idx}`} className="text-[10px] bg-white border border-slate-200 px-1 py-0.5 rounded cursor-help" title={dashData.icdDescIndex?.[c] || c}>{c} <span className="text-slate-400 font-normal italic ml-0.5">{dashData.icdDescIndex?.[c]}</span></span>)}</div>}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 align-top border-r border-slate-50">
+                      <div className="space-y-3">
+                         <div><span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Tarif INA-CBG</span><span className="text-sm font-black text-sky-700 block">{formatRp(d.tarifIna)}</span></div>
+                         <div><span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1">Tarif iDRG</span><span className="text-sm font-black text-orange-600 block">{formatRp(d.tarifIdrg)}</span></div>
+                      </div>
+                    </td>
+                    <td className="p-4 align-top border-r border-slate-50">
+                      <div className="p-3 bg-rose-50 border border-rose-100 rounded-xl text-rose-700 font-bold text-xs flex items-start gap-2 shadow-sm">
+                        <AlertTriangle size={16} className="mt-0.5 shrink-0" /> {d.warning}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {(dashData.scorecard.medSurgMismatches || []).length === 0 && (
+                  <tr><td colSpan="4" className="p-10 text-center text-slate-400 text-sm font-semibold">Tidak ditemukan ketidaksesuaian Medical vs Surgical. Semua sejalan!</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+    );
+  };
 
   const renderRekap = () => {
     const inaList = (dashData?.inaSummary || []).slice(0, 20);
@@ -10011,7 +10183,7 @@ export default function App() {
                 <div className="mt-3">
                   <button type="button" onClick={() => setShowRegister(true)} className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</button>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.7.5 (310520261642)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.7.6 (060620262220)</p>
               </div>
             </div>
           </div>
@@ -10742,7 +10914,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.7.5 (310520261642)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.7.6 (060620262220)</span>
                 </div>
               )}
             </div>
@@ -10932,7 +11104,7 @@ export default function App() {
                         {subTab === 'executive' && renderExecutive()} {subTab === 'report' && renderReport()} {subTab === 'rekap' && renderRekap()} {subTab === 'readmisi' && renderReadmisiFragmentasi()}
                         {subTab === 'topup' && renderTopUp()}
                         {subTab === 'sl_cl_analysis' && renderSlClAnalysis()} {subTab === 'dept' && renderDepartemen()} {subTab === 'ksm' && renderKsm()} {subTab === 'dpjp' && renderDpjp()} {subTab === 'kpi_coder' && renderKpiCoder()}
-                        {subTab === 'mapping' && renderPemetaan()} {subTab === 'discrepancy' && renderKetepatan()} {subTab === 'audit' && renderAudit()}
+                        {subTab === 'mapping' && renderPemetaan()} {subTab === 'discrepancy' && renderKetepatan()} {subTab === 'medsurg_valid' && renderMedSurgValidation()} {subTab === 'audit' && renderAudit()}
                         {subTab === 'naik_kelas' && renderNaikKelas()} {subTab === 'icu' && renderICU()}
                         {subTab === 'insight_sosialisasi' && (
                           <InsightSosialisasiComponent
@@ -10973,7 +11145,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.7.5</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.7.6</span>
             </p>
           </footer>
         </div>

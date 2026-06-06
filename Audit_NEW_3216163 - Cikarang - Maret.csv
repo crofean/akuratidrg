@@ -1,0 +1,769 @@
+KODE_RS,NAMA_PASIEN,MRN,SEP,NAMA_KODER,INACBG,DIAGLIST,PROCLIST,AUDIT ID,AUDIT CASE,WARNING,TARIF RS,TARIF INACBG
+3216163,AAM MAULANA,00328273,1014R0050226V013655,W**A* *******;3275085302900003;*****,I-1-40-III,I21.0;R57.0;I50.0,00.66;88.55;36.07;00.45;00.40;90.59;89.52;88.72;93.96,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,59529261,46888000
+3216163,ADELIA APRIYANI,00327650,1014R0050226V014280,W**A* *******;3275085302900003;*****,W-1-20-I,O64.2;O11;O82.1;Z37.0,74.1;65.89;75.32;89.52;90.59;88.78;97.16;93.96,AUDIT-COD-26,Unbundling SC & Adhesiolysis,Unbundling Prosedur: Lisis perlengketan (65.89/54.59) akibat riwayat SC sebelumnya SUDAH INCLUDE dalam prosedur Seksio Sesarea (74.-).,42583133,11571100
+3216163,JUDIN NUR,00328212,1014R0050226V013141,W**A* *******;3275085302900003;*****,G-4-14-II,I63.9;G81.9;A16.2,90.59;87.44;89.52;93.19;93.96,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",13644905,7273200
+3216163,SUKIMAH,00324136,1014R0050326V001164,W**A* *******;3275085302900003;*****,I-1-20-II,I77.0;N18.5;D63.8,39.52;88.77;90.59;87.44;99.04;39.95;93.96,AUDIT-COD-37,Pembuatan AV Shunt (Cimino) Baru vs Revisi,Koreksi Spesifisitas: AV Shunt BARU menggunakan 39.27. Kode 39.42 HANYA untuk REVISI shunt lama.,29390123,23540000
+3216163,WANDI,00328524,1014R0050326V000748,E**A S********;;,I-1-40-II,I21.0;I50.0,00.66;88.55;36.07;00.40;00.45;88.72;90.59;89.52;93.94;93.96,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,55447949,46734800
+3216163,WARSIYAH,00196726,1014R0050326V001263,W**A* *******;3275085302900003;*****,G-4-14-I,I63.9;A09.9,90.59;87.44;89.52;93.96,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",9636134,7019200
+3216163,NAZEERA HILLEL EILIYAH,249048,1014R0050326V001941,E**A S********;;,A-4-13-III,B05.9;J18.0;K12.1;A09.0,90.59;87.44;93.94,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",6027217,4742900
+3216163,MARIA QIBTIYAH,00328850,1014R0050326V003613,E**A S********;;,W-1-20-I,O65.4;O71.1;O82.1;Z37.0,74.1;65.89;69.41;90.59;75.32;89.52;97.16;93.96,AUDIT-COD-26,Unbundling SC & Adhesiolysis,Unbundling Prosedur: Lisis perlengketan (65.89/54.59) akibat riwayat SC sebelumnya SUDAH INCLUDE dalam prosedur Seksio Sesarea (74.-).,12667006,8700100
+3216163,CARSA,00328831,1014R0050326V003568,W**A* *******;3275085302900003;*****,I-1-40-II,I21.0;I50.0,00.66;88.55;36.07;00.45;88.72;89.52;90.59;87.44;93.96;00.40,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,58176459,37800200
+3216163,JAJANG NURJAMAN,00329030,1014R0050326V005672,E**A S********;;,I-1-40-II,I21.0;I50.0,00.66;88.55;36.07;00.45;00.40;89.52;90.59;88.72;93.96,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,56893189,37800200
+3216163,NATASYA SHIDQIA RAMADHANI,00329057,1014R0050326V005755,W**A* *******;3275085302900003;*****,J-4-16-I,J18.0;B05.9;E86,90.59;87.44;93.94;93.96,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",4650966,3803500
+3216163,KARSIH,00329149,1014R0050326V006703,W**A* *******;3275085302900003;*****,I-1-40-III,I21.0;I46.9;I50.0,00.66;88.55;36.07;00.45;00.40;88.72;89.52;90.59;87.44;87.03;99.60,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,66645180,46888000
+3216163,AZZAKY IDRIS APRIANSYAH,00311098,1014R0050326V006698,W**A* *******;3275085302900003;*****,A-4-13-III,B05.9;J18.9,87.44;90.59;93.94;93.96,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",5064443,3566100
+3216163,AHMAD ROYANI,00329381,1014R0050326V008655,E**A S********;;,I-1-40-II,I21.0;I50.0,00.66;88.55;36.07;00.40;00.45;88.72;89.52;90.59;93.96,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,58706704,46734800
+3216163,SUKASNO RUSDI,00329390,1014R0050326V008805,E**A S********;;,I-1-15-II,I21.0;I50.0;N18.4;E11.9,88.55;88.72;90.59;87.44;89.52;93.96,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,18158299,8877800
+3216163,NURYATI,00317552,1014R0050326V009307,E**A S********;;,I-1-15-III,I21.0;E11.9;J81;I50.0,88.55;88.72;90.59;87.44;89.52;93.96,AUDIT-COD-19,CHF dengan Edema Paru,"Kaidah Kombinasi: Edema Paru (J81) bersamaan dengan CHF (I50.0), cukup gunakan kode tunggal I50.1 (Left ventricular failure).",15574261,12853600
+3216163,NURYATI,00317552,1014R0050326V009307,E**A S********;;,I-1-15-III,I21.0;E11.9;J81;I50.0,88.55;88.72;90.59;87.44;89.52;93.96,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,15574261,12853600
+3216163,DEWI ANGGRAENI,101377,1014R0050326V010652,W**A* *******;3275085302900003;*****,K-1-40-I,O11;O63.0;O69.9;O82.1;Z37.0,74.1;66.39;65.89;54.4;90.59;75.32;89.52;97.16;93.96,AUDIT-COD-26,Unbundling SC & Adhesiolysis,Unbundling Prosedur: Lisis perlengketan (65.89/54.59) akibat riwayat SC sebelumnya SUDAH INCLUDE dalam prosedur Seksio Sesarea (74.-).,19736903,10909500
+3216163,SYAUQI AHMAD EL FATHAN,00324018,1014R0050326V010110,C**R* ********;3208094407850009;*****,A-4-13-III,B05.8;J18.0,90.59;93.94;93.96,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",4603897,3566100
+3216163,"ACEP BAEPAGIH, H",00195555,1014R0050326V008937,E**A S********;;,G-4-14-II,I63.9;R56.8;E87.1,90.59;87.44;89.52;93.94;93.96,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",22604543,7273200
+3216163,ALLEA KHANZA JELYTA,00304061,1014R0050326V009728,W**A* *******;3275085302900003;*****,A-4-13-III,B05.8;J18.0,90.59;87.44;93.94,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",5443117,4742900
+3216163,LUKMAN NUL HAKIM,00323282,1014R0050326V010088,D*.R*T** ****;3275035603830026;*****,J-4-17-I,J47;L89.3;I10;E11.9,90.59;87.44;89.52;93.94;97.16;93.96,AUDIT-COD-08,DM dengan Ulkus/Gangren,Kode Kombinasi: DM dengan gangren/ulkus diabetik HARUS menggunakan kode E10.5 / E11.5 / E14.5. Gangren (R02) tidak dikode terpisah.,14843327,4077100
+3216163,RULIYANTO,00327918,1014R0050326V000580,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I21.0;I50.0,,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,309904,205900
+3216163,SITI HAJAR,322077,1014R0050326V000593,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I21.0;I50.0,,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,308144,205900
+3216163,MUCHTAR,322921,1014R0050326V000205,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,176400
+3216163,NUNUNG ROSITA,00325750,1014R0050326V000245,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,KHOLIDAH,310167,1014R0050326V000552,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I11.9;I25.1,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,346984,205900
+3216163,AMINAH,323789,1014R0050326V000609,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,261315,205900
+3216163,M.YUNUS,302448,1014R0050326V000606,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I11.9;I25.1,89.52,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,327570,205900
+3216163,M.AMIRUDIN BAKRI,322014,1014R0050326V000406,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I61.9,93.34;93.19;93.13,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,EKA WIDIATMIKO,030404,1014R0050326V000660,N**A H*********;3214115803020003;,Q-5-27-0,I61.9;G81.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",160893,168700
+3216163,MULYADI ANAS,00327871,1014R0050326V000555,S**I M*******;3205295708980002;****,Q-5-44-0,Z09.8;I21.0;I50.0,89.52,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,357738,205900
+3216163,SUYONO,328504,1014R0050326V000649,S**I M*******;3205295708980002;****,Q-5-27-0,I63.9,90.59,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",285989,168700
+3216163,SUMIATI,187681,1014R0050326V000539,S**I M*******;3205295708980002;****,Q-5-44-0,Z09.8;I20.9;I25.1;E11.9;I50.0,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,555621,205900
+3216163,ERI HAJAIRIN,00225735,1014R0050326V000582,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,HENING CIPTANINGSIH,00078145,1014R0050326V000420,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,IR BUDI SUSETYO,00321105,1014R0050326V000672,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DAUD SALIM,00309087,1014R0050326V000460,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,EMI BINTI EMAN,00246507,1014R0050326V000414,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,ROULI TAMPUBOLON,328547,1014R0050326V000971,N**A H*********;3214115803020003;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",300144,168700
+3216163,TARJUKI,325654,1014R0050326V001168,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,DONIH BT DULLOH,180647,1014R0050326V001182,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,213973,205900
+3216163,SUBADI,326352,1014R0050326V001043,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;G57.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",993977,463400
+3216163,M.ABDULLAH,323043,1014R0050326V001075,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,ASTU,237627,1014R0050326V001213,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,289861,205900
+3216163,SUPRIYONO,078296,1014R0050326V000788,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9;G81.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MUHIPAH,00312256,1014R0050326V001144,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYATI,00265278,1014R0050326V000778,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,NOPALINA,324428,1014R0050326V000792,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MOINA SIAGIAN,00255805,1014R0050326V000795,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYONO,328504,1014R0050326V001109,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,MICAH,300028,1014R0050326V001125,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,VERONICA JAMILAH,00324109,1014R0050326V001157,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V001140,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,UNAH BINTI UNIN,00239479,1014R0050326V000983,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.12;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,YULIANUS HANDOYO,00264144,1014R0050326V000779,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,EKA WIDIATMIKO,030404,1014R0050326V001596,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I61.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,FITRIANAH,00326898,1014R0050326V001745,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,279510,205900
+3216163,WAWAN,00328083,1014R0050326V001789,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.0;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,216290,205900
+3216163,RIYAN HIDAYAT,318241,1014R0050326V001432,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1106199,463400
+3216163,ATIN KARMILAH,00326476,1014R0050326V001796,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,198923,205900
+3216163,NAMAH,302061,1014R0050326V001448,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;I60.9;M79.1,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1024365,463400
+3216163,NURYANI,280789,1014R0050326V001629,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M54.5;M65.3,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1025423,463400
+3216163,WANAH,164811,1014R0050326V001860,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I25.1;I20.9,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,428402,205900
+3216163,ISAN BIN ASIM,220173,1014R0050326V001865,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I25.1;I20.9;I10,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,454659,205900
+3216163,MUCHTAR,00322921,1014R0050326V001342,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MADIN,205590,1014R0050326V001598,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I61.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,JANNES SIHOMBING,00305714,1014R0050326V001461,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,MARISI MARBUN,00074792,1014R0050326V001579,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",365090,138000
+3216163,ANYI BINTI OMIN,00319120,1014R0050326V001603,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",365090,138000
+3216163,BUDIAWAN ARIFIANTO,00318492,1014R0050326V001897,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MUHIPAH,312256,1014R0050326V002030,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9;M17.9,93.39;93.35;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,MULYADI,316574,1014R0050326V002004,N**A H*********;3214115803020003;,Q-5-27-0,I63.9,90.59,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",331326,168700
+3216163,SURYANIH,316494,1014R0050326V002003,N**A H*********;3214115803020003;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",205326,168700
+3216163,YUSIMAH,328561,1014R0050326V002019,N**A H*********;3214115803020003;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",205326,168700
+3216163,PEPPY S.PURWATININGSIH,328668,1014R0050326V002062,N**A H*********;3214115803020003;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",205326,168700
+3216163,RIMAN,292884,1014R0050326V002249,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M54.5;M17.9,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",577622,463400
+3216163,UTI,176278,1014R0050326V002287,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M72.26;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1025878,463400
+3216163,INAH MARINA,322663,1014R0050326V002294,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1011511,463400
+3216163,KUSNADI,309294,1014R0050326V002177,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,RAINIH,00328227,1014R0050326V002304,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;J18.9;J44.9,,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,227017,205900
+3216163,HASAN,00327180,1014R0050326V002312,M**T*H**** ************;1202091602860006;,J-3-16-0,Z09.8;J44.9;J18.9,89.37,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,374332,579700
+3216163,MICAH,300028,1014R0050326V002313,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,HENING CIPTANINGSIH,00078145,1014R0050326V002044,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,EMI BINTI EMAN,246507,1014R0050326V002152,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SYARIYATULILLAH,00138682,1014R0050326V002188,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",366135,138000
+3216163,SUKAMTI,00302993,1014R0050326V002183,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,ERI HAJAIRIN,00225735,1014R0050326V002315,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,HARYANTA,00326848,1014R0050326V002250,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,SRI WAHYUNI,00320197,1014R0050326V002158,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",365090,138000
+3216163,NUNUNG ROSITA,00325750,1014R0050326V002018,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I61.9;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,EKO INDRIAWAN,327246,1014R0050326V002633,M**T*H**** ************;1202091602860006;,Q-5-27-0,I61.9;G81.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",292876,168700
+3216163,NOPALINA,324428,1014R0050326V002553,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SUPRIYONO,078296,1014R0050326V002551,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9;G81.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,MOCHAMAD RIDWAN,218032,1014R0050326V002934,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,89.52,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,417380,205900
+3216163,NICAN BIN INAM,00326530,1014R0050326V002774,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9;G81.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,RATNASIH,299850,1014R0050326V002817,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;G57.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1021678,463400
+3216163,SYAMSIDAR,327736,1014R0050326V002787,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9;I10,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",269926,168700
+3216163,YULIANUS HANDOYO,264144,1014R0050326V002545,S**I M*******;3205295708980002;****,Z-3-12-0,Z50.8;I63.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,VERONICA JAMILAH,00324109,1014R0050326V002981,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,M.AMIRUDIN BAKRI,00322014,1014R0050326V002730,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",364834,138000
+3216163,DAUD SALIM,00309087,1014R0050326V002976,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.12;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DADANG,00327624,1014R0050326V003258,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I50.9;I20.0;I10,,AUDIT-COD-16,Hipertensi dengan Gagal Jantung,Kaidah Kombinasi: Heart Failure (I50.-) akibat Hipertensi (I10) HARUS digabung menjadi I11.0. Keduanya tidak boleh dipisah.,214233,205900
+3216163,IKAH,195186,1014R0050326V003198,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M17.9,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",541239,463400
+3216163,SAHIDIN,323691,1014R0050326V003248,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,213142,205900
+3216163,WACIH,00328382,1014R0050326V003288,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.0;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,218743,205900
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V003211,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,HARYANTA,326848,1014R0050326V003430,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SURYO HADI WALUYO,226147,1014R0050326V003283,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,410546,205900
+3216163,JANNES SIHOMBING,00305714,1014R0050326V003194,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUKAMTI,00302993,1014R0050326V003399,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MARISI MARBUN,00074792,1014R0050326V003454,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MOINA SIAGIAN,00255805,1014R0050326V003116,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;M54.5;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MADIN,205590,1014R0050326V003419,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I61.9,93.12;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYATI,00265278,1014R0050326V003108,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9;M75.0,93.12;93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,UNAH BINTI UNIN,00239479,1014R0050326V003210,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,BUDIAWAN ARIFIANTO,00318492,1014R0050326V003412,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,M.ABDULLAH,00323043,1014R0050326V003364,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.12;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SYARIYATULILLAH,00138682,1014R0050326V003146,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.12;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,EMI,246507,1014R0050326V003959,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,RANI,324832,1014R0050326V003790,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1102269,463400
+3216163,SUHERLINA,00168457,1014R0050326V003755,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1110363,463400
+3216163,LILIS HERLIANI,325329,1014R0050326V004147,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I50.0;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,248585,205900
+3216163,ACAH,316066,1014R0050326V004098,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,321729,205900
+3216163,MUCHTAR,322921,1014R0050326V003809,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SRI WAHYUNI,320197,1014R0050326V004261,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,MADIN,205590,1014R0050326V004320,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I61.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,HENING CIPTANINGSIH,00078145,1014R0050326V003724,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MICAH,300028,1014R0050326V004241,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,NUNUNG ROSITA,00325750,1014R0050326V003710,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I61.9;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYONO,328504,1014R0050326V004212,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUKAMTI,302993,1014R0050326V004562,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SAIRIN,00328346,1014R0050326V004591,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;J44.9;J18.0,,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,195488,205900
+3216163,JUBAEDAH,315425,1014R0050326V004551,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1025423,463400
+3216163,HARYANTA,326848,1014R0050326V004665,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,ERSIH SUGIARSIH,280165,1014R0050326V004865,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,197661,205900
+3216163,ROHADA,296204,1014R0050326V004917,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I25.1;I20.9,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,290339,205900
+3216163,PRIYANA BIN DARMO SUWITO,276664,1014R0050326V004869,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,178396,205900
+3216163,SUGIYANTO,00327139,1014R0050326V004837,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,SYARIYATULILLAH,00138682,1014R0050326V004402,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,VERI ZUZANTO,00240427,1014R0050326V004791,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,SUPRIYONO,078296,1014R0050326V004397,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9;G81.9,93.34;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MOINA SIAGIAN,00255805,1014R0050326V004780,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;M54.5;I63.9,93.39;93.12;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,BUDIAWAN ARIFIANTO,00318492,1014R0050326V004892,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,ATI BINTI KAMAN,287122,1014R0050326V004877,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,185163,205900
+3216163,AMAD BIN SIMAN,295773,1014R0050326V004919,S**I M*******;3205295708980002;****,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,202665,205900
+3216163,M.ABDULLAH,00323043,1014R0050326V004834,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,MICAH,300028,1014R0050326V005541,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,I KETUT SUARTHA,329027,1014R0050326V005464,M**T*H**** ************;1202091602860006;,Q-5-43-0,I20.9;I25.1,89.52,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,319724,289700
+3216163,JANNES SIHOMBING,00305714,1014R0050326V005263,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MARISI MARBUN,00074792,1014R0050326V005623,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,VERONICA JAMILAH,00324109,1014R0050326V005607,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V005652,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYATI,00265278,1014R0050326V005276,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9;M75.0,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,MASNARIA SARAGIH,00318494,1014R0050326V005838,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1110767,463400
+3216163,MADIN,205590,1014R0050326V006086,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I61.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,NINING ZUBAEDAH,315949,1014R0050326V005893,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;M54.5;M75.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1033401,463400
+3216163,NUNUNG ROSITA,00325750,1014R0050326V005845,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I61.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,EMI,246507,1014R0050326V005860,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,UNAH BINTI UNINH,239479,1014R0050326V005906,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,LIM AH KIAT,034761,1014R0050326V005836,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;M54.5;M17.9,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1031568,463400
+3216163,AHMAD HASAN,183669,1014R0050326V006183,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,218718,205900
+3216163,SUYAMTI,329064,1014R0050326V005796,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",201663,168700
+3216163,SURIPTO BUDIONO,329062,1014R0050326V005784,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",207990,168700
+3216163,HAMDAN,071074,1014R0050326V006233,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,206607,205900
+3216163,ARMANAH,296656,1014R0050326V006212,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,196353,205900
+3216163,RAIS,305781,1014R0050326V006241,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,246793,205900
+3216163,NIMU,292499,1014R0050326V006246,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,216790,205900
+3216163,SITI UMAINAH,318480,1014R0050326V006103,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,156690,205900
+3216163,HENING CIPTANINGSIH,00078145,1014R0050326V005726,S**I M*******;3205295708980002;****,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,MUCHTAR,00322921,1014R0050326V005769,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DAUD SALIM,00309087,1014R0050326V005959,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SRI WAHYUNI,00320197,1014R0050326V006155,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,ABBAS,322666,1014R0050326V006644,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I11.9;I25.1,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,463393,205900
+3216163,HARYANTA,326848,1014R0050326V006702,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,IWAN HERMAWAN,00328434,1014R0050326V006682,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I50.0;I21.0,89.52,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,323718,205900
+3216163,ETI HERMAWATI,308353,1014R0050326V006596,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;G54.2,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",992011,463400
+3216163,AIP SUNOTO,00231407,1014R0050326V006657,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,276463,205900
+3216163,SYARIYATULILLAH,00138682,1014R0050326V006339,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.39;93.12;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MARISI MARBUN,00074792,1014R0050326V006715,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,VERONICA JAMILAH,00324109,1014R0050326V006691,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUGIYANTO,00327139,1014R0050326V006417,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,ABU SOPYAN,00328229,1014R0050326V007083,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,280880,205900
+3216163,BUDIAWAN ARIFIANTO,318492,1014R0050326V007101,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SAMSURI,00328366,1014R0050326V006945,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,247952,205900
+3216163,M.ABDULLAH,00323043,1014R0050326V007055,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,JANNES SIHOMBING,00305714,1014R0050326V006849,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MOINA SIAGIAN,00255805,1014R0050326V006823,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,VERI ZUZANTO,00240427,1014R0050326V007085,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V007264,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYATI,00265278,1014R0050326V006864,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9;M75.0,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,RENYIH,199637,1014R0050326V007673,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I50.0;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,257647,205900
+3216163,NENENG BT ATUNG,224701,1014R0050326V007862,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,233767,205900
+3216163,MOINA SIAGIAN,00255805,1014R0050326V007406,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,YASMA JAYA,00229234,1014R0050326V007847,S**I M*******;3205295708980002;****,Q-5-44-0,Z09.8;I20.9;I50.0;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,245218,205900
+3216163,M.ABDULLAH,323043,1014R0050326V008185,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,IYAH BINTI AJIJIH,177281,1014R0050326V008109,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M65.3,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1033658,463400
+3216163,SELVI ARIS SETIANINGSIH,096024,1014R0050326V008129,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",988478,463400
+3216163,FRANSISKA SUSWANTARI,329203,1014R0050326V008085,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",210972,168700
+3216163,KANANG BIN ANAN,242841,1014R0050326V008262,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,198865,205900
+3216163,NYAI,294049,1014R0050326V008284,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,209952,205900
+3216163,SRI WAHYUNI,320197,1014R0050326V008049,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,YATIH,324955,1014R0050326V008257,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,181821,205900
+3216163,JUNAENAH,327640,1014R0050326V008058,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;M17.9,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",993782,463400
+3216163,SUGIYANTO,00327139,1014R0050326V008110,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,TUKARTI,329368,1014R0050326V008443,P**R* *********;3216105509970003;*****,J-3-13-0,R06.0;I10;I50.9,89.52;90.59;93.96,AUDIT-COD-16,Hipertensi dengan Gagal Jantung,Kaidah Kombinasi: Heart Failure (I50.-) akibat Hipertensi (I10) HARUS digabung menjadi I11.0. Keduanya tidak boleh dipisah.,467600,352800
+3216163,BUDIAWAN ARIFIANTO,318492,1014R0050326V008429,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,MOINA SIAGIAN,255805,1014R0050326V008403,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9;M54.5,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,VERI ZUZANTO,00240427,1014R0050326V008437,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYATI,00265278,1014R0050326V008397,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9;M75.0,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,VERI ZUZANTO,00240427,1014R0050326V009152,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DEDE MULYANTO,00252710,1014R0050326V009122,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,BUDIAWAN ARIFIANTO,00318492,1014R0050326V009104,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9;G81.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,EMI BINTI EMAN,246507,1014R0050326V009177,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9;M51.2,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,FAUZI ZAWAJ,00327512,1014R0050326V009144,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",365090,138000
+3216163,SUYATI,265278,1014R0050326V009334,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9;M75.0,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,AHMAD DASENG,066018,1014R0050326V009557,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,229696,205900
+3216163,SUGIYANTO,00327139,1014R0050326V009555,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,176400
+3216163,GLENN NORTHON LENGKONG,329537,1014R0050326V009368,N**A H*********;3214115803020003;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",205326,168700
+3216163,MUTAR,308418,1014R0050326V009470,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;E11.9;N18.5;I10,90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,235638,205900
+3216163,INGKE YOSI HERMAWATY,313335,1014R0050326V009441,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;G57.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",991442,463400
+3216163,ASIH,327467,1014R0050326V009440,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M17.9,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1031422,463400
+3216163,SURATMAN,00310070,1014R0050326V009512,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,VERONICA JAMILAH,00324109,1014R0050326V009518,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",374322,138000
+3216163,SYARIYATULILLAH,00138682,1014R0050326V009511,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,KAINIH BINTI KININ,220916,1014R0050326V010025,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,275899,205900
+3216163,LISTIYOWATI,00328982,1014R0050326V009992,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,270630,205900
+3216163,WAJIDI,00223675,1014R0050326V009775,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;G56.0;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1078329,463400
+3216163,JANNES SIHOMBING,00305714,1014R0050326V009762,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",363627,138000
+3216163,MADIN,205590,1014R0050326V009907,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I61.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V009798,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,ULUNG BIN ILANG,00216123,1014R0050326V009847,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;J44.9;J18.0,,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,172315,205900
+3216163,MARISI MARBUN,00074792,1014R0050326V009862,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,138000
+3216163,RINI,00259790,1014R0050326V009723,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,HARYANTA,00326848,1014R0050326V010380,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,VERI ZUZANTO,240427,1014R0050326V010297,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,176400
+3216163,ASNIJAH,00328121,1014R0050326V010308,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.39;93.35;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,BANJENG HIDAYAT,00319184,1014R0050326V010247,M**T*H**** ************;1202091602860006;,Q-5-44-0,R42;G81.9;I10;I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",240823,205900
+3216163,M.OLAN,184951,1014R0050326V010502,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,211288,205900
+3216163,RONA HUTAHURUK,262187,1014R0050326V010520,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,229917,205900
+3216163,NASIR,00329646,1014R0050326V010421,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I20.9;I25.1,89.52;90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,539301,205900
+3216163,SUGIYANTO,00327139,1014R0050326V010462,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,EMIS MINTARSIH,196446,1014R0050326V010430,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,292108,205900
+3216163,ADE NURJANAH,143982,1014R0050326V010446,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M53.1,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",556460,463400
+3216163,MARIA,00308464,1014R0050326V010522,S**I M*******;3205295708980002;****,Q-5-44-0,Z09.8;I25.1;I20.9;J40,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,352156,205900
+3216163,FAUZI ZAWAJ,00327512,1014R0050326V010221,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DEDE MULYANTO,00252710,1014R0050326V010191,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,EMI BINTI EMAN,246507,1014R0050326V010301,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,PEPPY S.PURWATININGSIH,00328668,1014R0050326V010212,N**A H*********;3214115803020003;,Q-5-14-0,Z01.2;I63.9,89.52;87.44;90.59,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",924000,184800
+3216163,INDRASARI,00327318,1014R0050326V010263,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,NUNUNG ROSITA,00325750,1014R0050326V010884,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I61.9;I63.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",362000,176400
+3216163,UPIK ALAWIAH,248504,1014R0050326V010865,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.35;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,BUDIAWAN ARIFIANTO,00318492,1014R0050326V010789,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,NURDI,00316860,1014R0050326V010944,M**T*H**** ************;1202091602860006;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,205640,205900
+3216163,MARYANIH,00314163,1014R0050326V010992,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M75.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1045523,463400
+3216163,SUYANTI,00323835,1014R0050326V010885,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",999458,463400
+3216163,JUMINIH BINTI CARITA,238187,1014R0050326V010879,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M17.9;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1022678,463400
+3216163,SYARIYATULILLAH,00138682,1014R0050326V010698,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SITI FAOZAH,151863,1014R0050326V010838,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9;M54.5,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,MARISI MARBUN,00074792,1014R0050326V011059,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,RINI,00259790,1014R0050326V010692,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,IR BUDI SUSETYO,00321105,1014R0050326V010810,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,VERONICA JAMILAH,00324109,1014R0050326V011053,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.39;93.35;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V011065,N**A H*********;3214115803020003;,M-3-16-0,Z50.8;I63.9;G81.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,MADIN,205590,1014R0050326V011190,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I61.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,MAMAN HERMAWAN,00328322,1014R0050326V011360,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,316212,205900
+3216163,SUKASNO RUSDI,00329390,1014R0050326V011334,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I21.0;I50.0,,AUDIT-COD-61,AMI dan CHF (Kondisi Akut),AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah.,231670,205900
+3216163,MAUREEN RUBBY,00329272,1014R0050326V011253,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",201790,168700
+3216163,JANNES SIHOMBING,00305714,1014R0050326V011246,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,KUSNADI,00309294,1014R0050326V011287,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9;G81.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,BUDI SETIAWAN,166289,1014R0050326V011228,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;M17.9;M54.16,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",653278,463400
+3216163,ILIS MAWATUNISA,00329784,1014R0050326V011556,N**A H*********;3214115803020003;,Q-5-42-0,S09.9;I61.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",176381,213900
+3216163,TAMYIZ BAKHTIAR,00329745,1014R0050326V011235,M**T*H**** ************;1202091602860006;,Q-5-43-0,G20;I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",286990,289700
+3216163,DEWI MURNIATI,00309018,1014R0050326V011417,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;E11.9;I10;N18.5,90.59,AUDIT-COD-17,Hipertensi dengan Gagal Ginjal Kronis (CKD),Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17).,304998,205900
+3216163,HARYANTA,00326848,1014R0050326V011329,P**R* *********;3216105509970003;*****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,INDRASARI,00327318,1014R0050326V011243,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,VERI ZUZANTO,00240427,1014R0050326V011450,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,SUYATI BINTI NGADIMIN,265278,1014R0050326V011844,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,MARSELUS NOE,072395,1014R0050326V011862,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,SUGIYO,00319292,1014R0050326V012104,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M54.5;G57.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",999458,463400
+3216163,ENENG BINTI TOLIB,299617,1014R0050326V012186,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;M17.9,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",613804,463400
+3216163,YANTO ARASID,00328648,1014R0050326V011926,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;J18.9;J44.9,87.44,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,332003,205900
+3216163,SURATMAN,00310070,1014R0050326V011984,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;G83.3;I63.9,93.39;93.19;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,REJA BIN SAARIH,00319192,1014R0050326V011942,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.39;93.35;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,ROSAM,00329714,1014R0050326V011825,M**T*H**** ************;1202091602860006;,Q-5-44-0,I10;I63.9,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",295870,205900
+3216163,YULIA CHRISTY P,188816,1014R0050326V011817,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9;I10,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",240088,168700
+3216163,HOTLER MARBUN,296453,1014R0050326V012400,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,207496,205900
+3216163,SURYADI ARDIANA,225582,1014R0050326V012387,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I20.9;I25.1,90.59,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,319521,205900
+3216163,HALIMAH,00329848,1014R0050326V012310,P**R* *********;3216105509970003;*****,Q-5-27-0,I63.9,90.59,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",328554,168700
+3216163,MARISI MARBUN,074792,1014R0050326V012334,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,DEBBY SEBASTIAN,00326649,1014R0050326V012386,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,ICIN BIN IKO,00303848,1014R0050326V012224,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,198230,205900
+3216163,EMI BINTI EMAN,246507,1014R0050326V012052,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,HARRY SUMIHAR SIAGIAN,00152017,1014R0050326V012221,N**A H*********;3214115803020003;,M-3-11-0,Z09.8;M17.9;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",519522,463400
+3216163,KARMAN,00310673,1014R0050326V012203,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,328091,205900
+3216163,SINTA BUDIATI,261998,1014R0050326V012038,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",374322,176400
+3216163,HENING CIPTANINGSIH,00078145,1014R0050326V011897,S**I M*******;3205295708980002;****,Z-3-12-0,Z50.8;I63.9,93.39;93.35;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,SYARIYATULILLAH,138682,1014R0050326V011782,S**I M*******;3205295708980002;****,Z-3-12-0,Z50.8;I63.9,93.35;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,NACIH,298108,1014R0050326V011884,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.39;93.34;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,138000
+3216163,FAUZI ZAWAJ,00327512,1014R0050326V011986,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,NUNUNG ROSITA,00325750,1014R0050326V012293,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I61.9;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,DANI ROSIDI,151981,1014R0050326V012249,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;I25.1;I20.9,89.52,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,456319,205900
+3216163,HALIMAH,00329848,1014R0050326V012861,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",365090,176400
+3216163,KUBIL BIN MAIRUN,239470,1014R0050326V012845,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;J44.9;J18.9,,AUDIT-COD-20,PPOK dengan Pneumonia,Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH.,156200,205900
+3216163,YULIANUS HANDOYO,264144,1014R0050326V012834,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,SUPRIYONO,078296,1014R0050326V012837,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",374322,176400
+3216163,VERONICA JAMILAH,00324109,1014R0050326V012626,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SITI FAOZAH,151863,1014R0050326V012634,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,SUGIYANTO,00327139,1014R0050326V012615,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I63.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,UNAH BINTI UNIN,239479,1014R0050326V012893,P**R* *********;3216105509970003;*****,Z-3-12-0,Z50.8;I63.9,93.34;93.39;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,MISKAR HIDAYAT,00324953,1014R0050326V012810,P**R* *********;3216105509970003;*****,Q-5-44-0,Z09.8;E11.9;E14.4;G63.2;N18.5,90.59,AUDIT-COD-09,DM Neuropati (Dagger Asterisk),"Dagger & Asterisk: Polineuropati diabetik dikode E11.4+/E14.4+ sebagai Diagnosis Utama, dan G63.2* sebagai Diagnosis Sekunder.",232649,205900
+3216163,SRI ROKHAYATI,00317830,1014R0050326V012817,P**R* *********;3216105509970003;*****,M-3-11-0,Z09.8;G57.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",989925,463400
+3216163,M.ABDULLAH,00323043,1014R0050326V012919,N**A H*********;3214115803020003;,Z-3-12-0,Z50.8;I63.9,93.39;93.34;93.19,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",377412,176400
+3216163,AGUNG GANDA KURNIAWAN,00310466,1014R0050326V012933,N**A H*********;3214115803020003;,Q-5-44-0,Z09.8;I25.1;I20.9,,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,215115,205900
+3216163,MADIN,205590,1014R0050326V012479,M**T*H**** ************;1202091602860006;,Z-3-12-0,Z50.8;I61.9,93.34;93.19;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,176400
+3216163,NANIK SUWARNI,00303552,1014R0050326V012583,M**T*H**** ************;1202091602860006;,M-3-11-0,Z09.8;M54.5,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",1099839,463400
+3216163,DADANG MUTHOHAR,183135,1014R0050326V012507,M**T*H**** ************;1202091602860006;,Q-5-27-0,I63.9;I10,,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",252048,168700
+3216163,VERI ZUZANTO,00240427,1014R0050326V012802,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,HARYANTA,00326848,1014R0050326V012867,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.35;93.39;93.12,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000
+3216163,JANNES SIHOMBING,00305714,1014R0050326V012522,S**I M*******;3205295708980002;****,M-3-16-0,Z50.8;I63.9,93.34;93.12;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",235000,138000

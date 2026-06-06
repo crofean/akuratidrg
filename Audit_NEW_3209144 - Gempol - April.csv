@@ -1,0 +1,655 @@
+KODE_RS,NAMA_PASIEN,MRN,SEP,NAMA_KODER,INACBG,DIAGLIST,PROCLIST,AUDIT ID,AUDIT CASE,WARNING,TARIF RS,TARIF INACBG
+3209144,MOHAMAD AMIN,00008253,0125R0210426V000959,R**N* ***** ********;3175054901820003;,J-1-01-III,I63.9;E87.6;J96.0;R57.1,87.44;90.54;31.1;89.52;57.94;99.60;96.72,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",64193488,56036200
+3209144,KARNESIH,00006072,0125R0210426V000073,Y**I* *********;3210094107970121;,M-3-11-0,Z09.8;M65.34;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",324579,444300
+3209144,SURYATI,00005277,0125R0210426V000108,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,89.07;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",218000,134300
+3209144,LILIS PUSPITAWATI,00008557,0125R0210426V000156,L**F* ******* *****;3210176605020041;,M-3-11-0,G57.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",470007,444300
+3209144,MOMON SUPARMAN,00004220,0125R0210426V000159,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",393382,444300
+3209144,RAMINI,00006864,0125R0210426V000626,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",333089,444300
+3209144,HJ. AMIMAH,00007356,0125R0210426V000628,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",331060,444300
+3209144,IKHA CRISYANA,00006852,0125R0210426V000630,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M51.1,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",447220,444300
+3209144,SURYATI,00005277,0125R0210426V000570,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",111000,134300
+3209144,WASIAH,00003333,0125R0210426V000581,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;M54.59;I63.9,89.07;93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",222000,134300
+3209144,FAIJAH,00007479,0125R0210426V000586,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I61.9,89.07;93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",243890,134300
+3209144,CHAYUNIPAH,00004563,0125R0210426V000725,L**F* ******* *****;3210176605020041;,Q-5-44-0,Z09.8;B20.0;A16.2,,AUDIT-COD-33,HIV + Tuberkulosis,Kode Kombinasi: HIV + TB HARUS menggunakan B20.0 (HIV resulting in mycobacterial infection). Kode TB (A15/A16) TIDAK BOLEH dikoding terpisah.,417425,196100
+3209144,IRMAWATI,00008449,0125R0210426V000770,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M65.87,88.27;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",643069,444300
+3209144,WASIAH,00003333,0125R0210426V000924,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,KAENI,00006307,0125R0210426V000895,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",450153,444300
+3209144,SURYATI,00005277,0125R0210426V000915,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",111000,134300
+3209144,KURINI,00006697,0125R0210426V001013,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97;S72.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",360118,444300
+3209144,WASIAH,00003333,0125R0210426V001141,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,HJ TUMINAH,00005408,0125R0210426V001193,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M51.1,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",333586,444300
+3209144,HJ. NURHAYATI,00008737,0125R0210426V001185,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92;89.07;93.39;93.35,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",601516,444300
+3209144,MASRIAH,00008754,0125R0210426V001190,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92;89.07;93.39;93.35,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",524577,444300
+3209144,SANTA,00008773,0125R0210426V001303,L**F* ******* *****;3210176605020041;,Z-3-27-0,Z48.0;I61.1,97.89;93.57,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",272560,201000
+3209144,TALIM SUYATNO,00008637,0125R0210426V001311,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92;89.07;93.39;93.35,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",556016,444300
+3209144,SURYATI,00005277,0125R0210426V001364,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;89.07,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",246215,134300
+3209144,WASIAH,00003333,0125R0210426V001379,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,ROKANI,00004038,0125R0210426V001352,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,ACHMAD WARSONO,00007891,0125R0210426V001516,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,WASIAH,00003333,0125R0210426V001518,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9;G81.9,93.35;93.39;89.07,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",232835,134300
+3209144,SURYATI,00005277,0125R0210426V001500,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,ROKANI,00004038,0125R0210426V001499,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,TUTI MAESATI,00008895,0125R0210426V001543,R**N* ***** ********;3175054901820003;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",380867,444300
+3209144,MASNIA,00007499,0125R0210426V001768,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",380439,444300
+3209144,MUDRONI,00005041,0125R0210426V001734,L**F* ******* *****;3210176605020041;,Q-5-44-0,Z09.8;I20.0;I25.1,90.54,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,302995,196100
+3209144,WASIAH,00003333,0125R0210426V001836,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9;G81.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",111000,134300
+3209144,ROKANI,00004038,0125R0210426V001806,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,SUKMINA,00006186,0125R0210426V001811,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9;I10,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,SUMARNI,00007200,0125R0210426V001818,L**F* ******* *****;3210176605020041;,M-3-11-0,Z50.1;M19.97,93.39;93.35;81.92;89.07,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",408290,444300
+3209144,HERLIYANAH,00006728,0125R0210426V001790,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M75.0;M75.1;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",399149,444300
+3209144,REYNAND AL FATIH,00008896,0125R0210426V001868,L**F* ******* *****;3210176605020041;,Q-5-44-0,Z09.8;B05.9;J18.0,,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",149372,196100
+3209144,ACHMAD WARSONO,00007891,0125R0210426V001822,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,MASIRAH,00009065,0125R0210426V001946,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",380285,444300
+3209144,RAJI SUGIANTO,00008987,0125R0210426V001935,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",438350,444300
+3209144,RATNA NINGSIH,00009017,0125R0210426V001936,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",387138,444300
+3209144,RUMINAH,00008118,0125R0210426V001993,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,89.07;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",209000,134300
+3209144,CASADI,00007687,0125R0210426V002031,L**F* ******* *****;3210176605020041;,J-3-13-0,Z09.8;A16.2;J18.0,93.94,AUDIT-COD-50,Pneumonia pada Tuberkulosis Paru,Kaidah Includes: Kondisi Tuberculous Pneumonia sudah TERMASUK (Include) di dalam kode A15.2 / A16.2. Kode Pneumonia (J18.-) tidak boleh ditagihkan sebagai diagnosis sekunder.,231240,338300
+3209144,ROKANI,00004038,0125R0210426V001997,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,89.07;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",227395,134300
+3209144,SURYATI,00005277,0125R0210426V001986,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,MOHAMAD AMIN,00008253,0125R0210426V000959,R**N* ***** ********;3175054901820003;,J-1-01-III,I63.9;E87.6;J96.0;R57.1,87.44;90.54;31.1;89.52;57.94;99.60;96.72,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",64193488,56036200
+3209144,KARNESIH,00006072,0125R0210426V000073,Y**I* *********;3210094107970121;,M-3-11-0,Z09.8;M65.34;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",324579,444300
+3209144,SURYATI,00005277,0125R0210426V000108,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,89.07;93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",218000,134300
+3209144,LILIS PUSPITAWATI,00008557,0125R0210426V000156,L**F* ******* *****;3210176605020041;,M-3-11-0,G57.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",470007,444300
+3209144,MOMON SUPARMAN,00004220,0125R0210426V000159,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",393382,444300
+3209144,RAMINI,00006864,0125R0210426V000626,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",333089,444300
+3209144,HJ. AMIMAH,00007356,0125R0210426V000628,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",331060,444300
+3209144,IKHA CRISYANA,00006852,0125R0210426V000630,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M51.1,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",447220,444300
+3209144,SURYATI,00005277,0125R0210426V000570,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",111000,134300
+3209144,WASIAH,00003333,0125R0210426V000581,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;M54.59;I63.9,89.07;93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",222000,134300
+3209144,FAIJAH,00007479,0125R0210426V000586,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I61.9,89.07;93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",243890,134300
+3209144,CHAYUNIPAH,00004563,0125R0210426V000725,L**F* ******* *****;3210176605020041;,Q-5-44-0,Z09.8;B20.0;A16.2,,AUDIT-COD-33,HIV + Tuberkulosis,Kode Kombinasi: HIV + TB HARUS menggunakan B20.0 (HIV resulting in mycobacterial infection). Kode TB (A15/A16) TIDAK BOLEH dikoding terpisah.,417425,196100
+3209144,IRMAWATI,00008449,0125R0210426V000770,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M65.87,88.27;81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",643069,444300
+3209144,WASIAH,00003333,0125R0210426V000924,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,KAENI,00006307,0125R0210426V000895,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",450153,444300
+3209144,SURYATI,00005277,0125R0210426V000915,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",111000,134300
+3209144,KURINI,00006697,0125R0210426V001013,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97;S72.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",360118,444300
+3209144,WASIAH,00003333,0125R0210426V001141,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,HJ TUMINAH,00005408,0125R0210426V001193,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M51.1,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",333586,444300
+3209144,HJ. NURHAYATI,00008737,0125R0210426V001185,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92;89.07;93.39;93.35,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",601516,444300
+3209144,MASRIAH,00008754,0125R0210426V001190,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92;89.07;93.39;93.35,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",524577,444300
+3209144,SANTA,00008773,0125R0210426V001303,L**F* ******* *****;3210176605020041;,Z-3-27-0,Z48.0;I61.1,97.89;93.57,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",272560,201000
+3209144,TALIM SUYATNO,00008637,0125R0210426V001311,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92;89.07;93.39;93.35,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",556016,444300
+3209144,SURYATI,00005277,0125R0210426V001364,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;89.07,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",246215,134300
+3209144,WASIAH,00003333,0125R0210426V001379,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,ROKANI,00004038,0125R0210426V001352,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,ACHMAD WARSONO,00007891,0125R0210426V001516,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,WASIAH,00003333,0125R0210426V001518,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9;G81.9,93.35;93.39;89.07,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",232835,134300
+3209144,SURYATI,00005277,0125R0210426V001500,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,ROKANI,00004038,0125R0210426V001499,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,TUTI MAESATI,00008895,0125R0210426V001543,R**N* ***** ********;3175054901820003;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",380867,444300
+3209144,MASNIA,00007499,0125R0210426V001768,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",380439,444300
+3209144,MUDRONI,00005041,0125R0210426V001734,L**F* ******* *****;3210176605020041;,Q-5-44-0,Z09.8;I20.0;I25.1,90.54,AUDIT-COD-12,IHD dengan Angina Pectoris,Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah.,302995,196100
+3209144,WASIAH,00003333,0125R0210426V001836,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9;G81.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",111000,134300
+3209144,ROKANI,00004038,0125R0210426V001806,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,SUKMINA,00006186,0125R0210426V001811,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9;I10,93.35;93.39,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
+3209144,SUMARNI,00007200,0125R0210426V001818,L**F* ******* *****;3210176605020041;,M-3-11-0,Z50.1;M19.97,93.39;93.35;81.92;89.07,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",408290,444300
+3209144,HERLIYANAH,00006728,0125R0210426V001790,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M75.0;M75.1;G56.0,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",399149,444300
+3209144,REYNAND AL FATIH,00008896,0125R0210426V001868,L**F* ******* *****;3210176605020041;,Q-5-44-0,Z09.8;B05.9;J18.0,,AUDIT-COD-52,Measles dengan Komplikasi Pneumonia,"Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder).",149372,196100
+3209144,ACHMAD WARSONO,00007891,0125R0210426V001822,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.39;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",115000,134300
+3209144,MASIRAH,00009065,0125R0210426V001946,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",380285,444300
+3209144,RAJI SUGIANTO,00008987,0125R0210426V001935,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",438350,444300
+3209144,RATNA NINGSIH,00009017,0125R0210426V001936,L**F* ******* *****;3210176605020041;,M-3-11-0,Z09.8;M19.97,81.92,AUDIT-COD-62,Injeksi Intraartikular (81.92),"⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT).",387138,444300
+3209144,RUMINAH,00008118,0125R0210426V001993,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,89.07;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",209000,134300
+3209144,CASADI,00007687,0125R0210426V002031,L**F* ******* *****;3210176605020041;,J-3-13-0,Z09.8;A16.2;J18.0,93.94,AUDIT-COD-50,Pneumonia pada Tuberkulosis Paru,Kaidah Includes: Kondisi Tuberculous Pneumonia sudah TERMASUK (Include) di dalam kode A15.2 / A16.2. Kode Pneumonia (J18.-) tidak boleh ditagihkan sebagai diagnosis sekunder.,231240,338300
+3209144,ROKANI,00004038,0125R0210426V001997,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,89.07;93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",227395,134300
+3209144,SURYATI,00005277,0125R0210426V001986,L**F* ******* *****;3210176605020041;,M-3-16-0,Z50.1;I63.9,93.35,AUDIT-COD-60,Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI),"Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64.",104000,134300
