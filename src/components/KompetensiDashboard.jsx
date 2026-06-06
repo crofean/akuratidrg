@@ -898,9 +898,9 @@ export default function KompetensiDashboard({ rows, onBack }) {
               </div>
               <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18}/></div>
             </div>
-            <div style={{ height: 320, width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={strategicData.top5} layout="vertical" margin={{top:5, right:30, left:40, bottom:5}}>
+            <div style={{ height: 320, width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
+              <div style={{ minWidth: 500, height: 300 }}>
+                <BarChart width={500} height={300} data={strategicData.top5} layout="vertical" margin={{top:5, right:60, left:40, bottom:5}}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0"/>
                   <XAxis type="number" tickFormatter={(val) => 'Rp '+(val/1000000).toFixed(0)+'M'} style={{fontSize:'10px'}}/>
                   <YAxis type="category" dataKey="name" style={{fontSize:'11px', fontWeight:'bold'}} width={100}/>
@@ -909,7 +909,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                     <LabelList dataKey="revenue" position="right" formatter={(val) => 'Rp '+(val/1000000).toFixed(1)+'M'} style={{fontSize:'10px', fill:'#64748b', fontWeight:'bold'}} />
                   </Bar>
                 </BarChart>
-              </ResponsiveContainer>
+              </div>
             </div>
           </div>
         </div>
@@ -921,9 +921,9 @@ export default function KompetensiDashboard({ rows, onBack }) {
             <h3 className="text-base font-black text-slate-800">Matriks Kuadran Prioritas</h3>
           </div>
           <p className="text-xs text-slate-500 mb-6">Sumbu horizontal: Volume Kasus. Sumbu vertikal: Rata-rata Tarif. Ukuran Gelembung: Total Potensi Pendapatan.</p>
-          <div style={{ height: 420, width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <div style={{ height: 420, width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
+            <div style={{ minWidth: 600, height: 400 }}>
+              <ScatterChart width={600} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
                 <XAxis type="number" dataKey="volume" name="Volume Kasus" style={{fontSize:'11px'}} domain={[0, strategicData.maxVol]} />
                 <YAxis type="number" dataKey="avgTariff" name="Rata-rata Tarif" tickFormatter={(val) => 'Rp '+(val/1000000).toFixed(0)+'M'} style={{fontSize:'11px'}} domain={[0, strategicData.maxTariff]} />
@@ -939,7 +939,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                   <LabelList dataKey="name" position="top" style={{fontSize:'10px', fontWeight:'bold', fill:'#334155'}} />
                 </Scatter>
               </ScatterChart>
-            </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>
