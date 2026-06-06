@@ -898,15 +898,18 @@ export default function KompetensiDashboard({ rows, onBack }) {
               </div>
               <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18}/></div>
             </div>
-            <div style={{ height: 320, width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
-              <div style={{ minWidth: 500, height: 300 }}>
-                <BarChart width={500} height={300} data={strategicData.top5} layout="vertical">
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" width={150} />
-                  <RechartsTooltip />
-                  <Bar dataKey="revenue" fill="#0d9488" />
-                </BarChart>
-              </div>
+            <div className="space-y-4 pt-2">
+              {strategicData.top5.map((item, i) => (
+                <div key={i} className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs font-bold text-slate-700">
+                    <span>{item.name}</span>
+                    <span className="text-teal-700">Rp {(item.revenue/1000000).toFixed(1)}M</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
+                    <div className="bg-teal-600 h-full rounded-full transition-all duration-1000" style={{ width: `${Math.max(1, (item.revenue / (strategicData.topRevenue[0]?.revenue || 1)) * 100)}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -918,15 +921,23 @@ export default function KompetensiDashboard({ rows, onBack }) {
             <h3 className="text-base font-black text-slate-800">Matriks Kuadran Prioritas</h3>
           </div>
           <p className="text-xs text-slate-500 mb-6">Sumbu horizontal: Volume Kasus. Sumbu vertikal: Rata-rata Tarif. Ukuran Gelembung: Total Potensi Pendapatan.</p>
-          <div style={{ height: 420, width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
-            <div style={{ minWidth: 600, height: 400 }}>
-              <ScatterChart width={600} height={400}>
-                <XAxis type="number" dataKey="volume" name="Volume Kasus" />
-                <YAxis type="number" dataKey="avgTariff" name="Rata-rata Tarif" />
-                <RechartsTooltip />
-                <Scatter name="Layanan" data={strategicData.scatter} fill="#6366f1" />
-              </ScatterChart>
+          <div className="relative w-full h-[350px] border-l-2 border-b-2 border-slate-200 mt-4">
+            {/* Grid lines */}
+            <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 opacity-20 pointer-events-none">
+              {[...Array(16)].map((_, i) => <div key={i} className="border-r border-t border-slate-400 border-dashed"></div>)}
             </div>
+            
+            {strategicData.scatter.map((item, i) => {
+              const xPct = strategicData.maxVol ? (item.volume / strategicData.maxVol) * 95 : 50;
+              const yPct = strategicData.maxTariff ? (item.avgTariff / strategicData.maxTariff) * 95 : 50;
+              const size = Math.max(12, Math.min(50, (item.revenue / (strategicData.topRevenue[0]?.revenue || 1)) * 50));
+              const color = i < 3 ? 'bg-rose-500' : (i < 6 ? 'bg-amber-500' : 'bg-indigo-500');
+              return (
+                <div key={i} className={`absolute rounded-full ${color} opacity-70 hover:opacity-100 hover:z-10 transition-all cursor-pointer shadow-md flex items-center justify-center`}
+                     style={{ left: `${xPct}%`, bottom: `${yPct}%`, width: size, height: size, transform: 'translate(-50%, 50%)' }}
+                     title={`${item.name}\nVolume: ${item.volume}\nRata-rata Tarif: Rp ${(item.avgTariff/1000000).toFixed(1)}M\nTotal Potensi: Rp ${(item.revenue/1000000).toFixed(1)}M`} />
+              );
+            })}
           </div>
         </div>
       </div>
