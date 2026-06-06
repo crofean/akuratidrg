@@ -6332,11 +6332,11 @@ export default function App() {
                       <div className="space-y-4">
                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                           <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2">Terinput di INA-CBG:</span>
-                          <div className="flex flex-wrap gap-1.5">{d.diag1.map((c, idx) => <span key={`d1-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold ${!d.diag2.includes(c) ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`}>{String(c)}</span>)}</div>
+                          <div className="flex flex-wrap gap-1.5">{d.diag1.map((c, idx) => { const isDiff = !d.diag2.includes(c); return <span key={`d1-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold cursor-help ${isDiff ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`} title={dashData.icdDescIndex?.[c] || c}>{String(c)} <span className={`font-normal italic ml-1 ${isDiff ? 'text-orange-600/70' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>
                         </div>
                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                           <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2">Terinput di iDRG:</span>
-                          <div className="flex flex-wrap gap-1.5">{d.diag2.map((c, idx) => <span key={`d2-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold ${!d.diag1.includes(c) ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`}>{String(c)}</span>)}</div>
+                          <div className="flex flex-wrap gap-1.5">{d.diag2.map((c, idx) => { const isDiff = !d.diag1.includes(c); return <span key={`d2-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold cursor-help ${isDiff ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`} title={dashData.icdDescIndex?.[c] || c}>{String(c)} <span className={`font-normal italic ml-1 ${isDiff ? 'text-orange-600/70' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>
                         </div>
                       </div>
                     ) : <div className="h-full w-full flex items-center justify-center p-4 bg-lime-50/50 rounded-xl border border-lime-100"><span className="text-green-600 font-extrabold flex items-center gap-2"><CheckCircle size={18} /> Sangat Sesuai (100%)</span></div>}
@@ -6346,11 +6346,11 @@ export default function App() {
                       <div className="space-y-4">
                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                           <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2">Terinput di INA-CBG:</span>
-                          <div className="flex flex-wrap gap-1.5">{d.proc1.map((c, idx) => <span key={`p1-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold ${!d.proc2.includes(c) ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`}>{String(c)}</span>)}</div>
+                          <div className="flex flex-wrap gap-1.5">{d.proc1.map((c, idx) => { const isDiff = !d.proc2.includes(c); return <span key={`p1-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold cursor-help ${isDiff ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`} title={dashData.icdDescIndex?.[c] || c}>{String(c)} <span className={`font-normal italic ml-1 ${isDiff ? 'text-orange-600/70' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>
                         </div>
                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
                           <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-2">Terinput di iDRG:</span>
-                          <div className="flex flex-wrap gap-1.5">{d.proc2.map((c, idx) => <span key={`p2-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold ${!d.proc1.includes(c) ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`}>{String(c)}</span>)}</div>
+                          <div className="flex flex-wrap gap-1.5">{d.proc2.map((c, idx) => { const isDiff = !d.proc1.includes(c); return <span key={`p2-${i}-${idx}`} className={`px-2 py-1 rounded-md text-xs font-bold cursor-help ${isDiff ? 'bg-orange-100 text-orange-700 border border-orange-200' : 'bg-white border border-slate-200 text-slate-600'}`} title={dashData.icdDescIndex?.[c] || c}>{String(c)} <span className={`font-normal italic ml-1 ${isDiff ? 'text-orange-600/70' : 'text-slate-400'}`}>{dashData.icdDescIndex?.[c]}</span></span>; })}</div>
                         </div>
                       </div>
                     ) : <div className="h-full w-full flex items-center justify-center p-4 bg-lime-50/50 rounded-xl border border-lime-100"><span className="text-green-600 font-extrabold flex items-center gap-2"><CheckCircle size={18} /> Sangat Sesuai (100%)</span></div>}
