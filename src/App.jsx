@@ -4911,15 +4911,15 @@ export default function App() {
 
   const formatIcdList = useCallback((listStr) => {
     if (!listStr || listStr === '-') return '-';
-    const codes = listStr.split(';').map(c => c.trim()).filter(Boolean);
-    return codes.map(c => {
+    const codes = listStr.split(/[;,]/).map(c => c.trim()).filter(Boolean);
+    return codes.map((c, i) => {
       const desc = dashData?.icdDescIndex?.[c];
       return desc ? (
-        <div key={c} className="mb-0.5" title={desc}>
-          <span className="font-black">{c}</span> <span className="text-[9px] italic opacity-80 font-normal">({desc.substring(0, 30)}{desc.length > 30 ? '...' : ''})</span>
+        <div key={`${c}-${i}`} className="mb-1" title={desc}>
+          <span className="font-black">{c}</span> <span className="text-[9px] italic opacity-80 font-normal">({desc})</span>
         </div>
       ) : (
-        <div key={c} className="mb-0.5"><span className="font-black">{c}</span></div>
+        <div key={`${c}-${i}`} className="mb-1"><span className="font-black">{c}</span></div>
       );
     });
   }, [dashData?.icdDescIndex]);
@@ -9356,14 +9356,14 @@ export default function App() {
             <table className="w-full text-sm text-left border-collapse">
               <thead className="bg-slate-900 text-white text-[10px] uppercase font-black tracking-[0.1em] sticky top-0 z-40">
                 <tr>
-                  <th className="p-4 border-r border-white/10 w-24">Rule ID</th>
-                  <th className="p-4 border-r border-white/10">Temuan Audit</th>
-                  <th className="p-4 border-r border-white/10 max-w-[250px]">Pesan Validasi</th>
-                  <th className="p-4 border-r border-white/10 w-28">Identitas</th>
-                  <th className="p-4 border-r border-white/10 w-28">Nama Coder</th>
-                  <th className="p-4 border-r border-white/10 w-44">Diaglist</th>
-                  <th className="p-4 border-r border-white/10 w-44">Proclist</th>
-                  <th className="p-4 text-center">Keputusan</th>
+                  <th className="p-4 border-r border-white/10 w-24 shrink-0">Rule ID</th>
+                  <th className="p-4 border-r border-white/10 min-w-[200px]">Temuan Audit</th>
+                  <th className="p-4 border-r border-white/10 min-w-[350px]">Pesan Validasi</th>
+                  <th className="p-4 border-r border-white/10 min-w-[140px]">Identitas</th>
+                  <th className="p-4 border-r border-white/10 min-w-[140px]">Nama Coder</th>
+                  <th className="p-4 border-r border-white/10 min-w-[220px]">Diaglist</th>
+                  <th className="p-4 border-r border-white/10 min-w-[220px]">Proclist</th>
+                  <th className="p-4 text-center min-w-[160px]">Keputusan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
