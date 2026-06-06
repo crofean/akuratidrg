@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { QRCodeSVG } from 'qrcode.react';
-import { ShieldAlert, Key, CheckCircle, AlertTriangle, Smartphone } from 'lucide-react';
+import { ShieldAlert, Key, CheckCircle, AlertTriangle, Smartphone, Lock } from 'lucide-react';
 
 const MfaSettings = () => {
   const [factors, setFactors] = useState([]);
@@ -57,23 +57,19 @@ const MfaSettings = () => {
       if (challenge.error) throw challenge.error;
       const verify = await supabase.auth.mfa.verify({ factorId, challengeId: challenge.data.id, code: verifyCode });
       if (verify.error) throw verify.error;
+
+      // Tandai mfa_enabled = true di tabel profiles agar Admin bisa memantau
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('profiles').update({ mfa_enabled: true }).eq('id', user.id);
+        }
+      } catch (profileErr) {
+        console.warn('Gagal update mfa_enabled di profiles:', profileErr.message);
+      }
+
       setSuccess('MFA berhasil diaktifkan! Anda akan diminta memasukkan OTP saat login berikutnya.');
       setQrCode(null);
-      loadFactors();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDisableMfa = async (id) => {
-    if (!window.confirm('Yakin ingin menonaktifkan MFA?')) return;
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.mfa.unenroll({ factorId: id });
-      if (error) throw error;
-      setSuccess('MFA dinonaktifkan.');
       loadFactors();
     } catch (err) {
       setError(err.message);
@@ -109,13 +105,22 @@ const MfaSettings = () => {
             <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 flex items-start gap-3">
               <CheckCircle className="text-emerald-500 shrink-0 mt-0.5" size={20} />
               <div>
-                <p className="font-bold text-emerald-800">MFA Aktif</p>
+                <p className="font-bold text-emerald-800">MFA Aktif & Terlindungi</p>
                 <p className="text-xs text-emerald-600 mt-1">Akun Anda dilindungi dengan keamanan berlapis. Anda akan dimintai kode OTP saat masuk dari perangkat baru.</p>
               </div>
             </div>
-            <button onClick={() => handleDisableMfa(factors.find(f => f.status === 'verified').id)} disabled={loading} className="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold rounded-lg text-sm transition-colors cursor-pointer">
-              Nonaktifkan MFA
-            </button>
+
+            {/* Info: Hanya Admin yang bisa menonaktifkan MFA */}
+            <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3">
+              <Lock className="text-amber-600 shrink-0 mt-0.5" size={18} />
+              <div>
+                <p className="font-bold text-amber-800 text-sm">MFA Tidak Dapat Dinonaktifkan Sendiri</p>
+                <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+                  Demi keamanan data klaim JKN, MFA yang sudah diaktifkan <strong>hanya dapat direset oleh Administrator</strong>. 
+                  Jika Anda perlu reset MFA (misalnya ganti HP), silakan hubungi Admin untuk melakukan reset.
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">

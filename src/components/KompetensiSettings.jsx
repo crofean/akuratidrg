@@ -1,28 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Settings, Info, Search } from 'lucide-react';
-import { getAvailableGroups, CONFIG_KEY, levelValues } from '../utils/competencyAnalyzer';
+import { Save, Settings, Info, Search, Building, AlertCircle } from 'lucide-react';
+import Select from 'react-select';
+import { getAvailableGroups, CONFIG_KEY, levelValues, ALL_GROUPS } from '../utils/competencyAnalyzer';
 
 export default function KompetensiSettings() {
   const [config, setConfig] = useState({});
   const [groups, setGroups] = useState([]);
   const [saved, setSaved] = useState(false);
   const [search, setSearch] = useState('');
+  
+  // Hospital auto-selection states
+  const [hospitals, setHospitals] = useState([]);
+  const [kodeRs, setKodeRs] = useState('');
+  const [namaRs, setNamaRs] = useState('');
 
   useEffect(() => {
-    // Need to wait for getAvailableGroups to potentially load the CSV
     const init = async () => {
-      // In case loadCompetencyCSV wasn't called yet
       const { loadCompetencyCSV } = await import('../utils/competencyAnalyzer');
       await loadCompetencyCSV();
       
-      const avGroups = getAvailableGroups();
+      const avGroups = ALL_GROUPS; // We use ALL_GROUPS
       setGroups(avGroups);
       
+      // Load Hospitals
+      try {
+        const hospRes = await fetch('./data/hospitals.json');
+        if (hospRes.ok) {
+          const hospData = await hospRes.json();
+          const options = hospData.map(h => ({
+            value: h.kode_rs,
+            label: `${h.kode_rs} - ${h.nama_rs}`,
+            nama_rs: h.nama_rs
+          }));
+          setHospitals(options);
+        }
+      } catch (e) { console.error('Failed to fetch hospitals', e); }
+
       const savedCfg = localStorage.getItem(CONFIG_KEY);
       if (savedCfg) {
-        setConfig(JSON.parse(savedCfg));
+        const parsed = JSON.parse(savedCfg);
+        setConfig(parsed.competencies || parsed); // support old and new formats
+        setKodeRs(parsed.kodeRs || '');
+        setNamaRs(parsed.namaRs || '');
       } else {
-        // Initialize default all to Tidak Melayani
         const def = {};
         avGroups.forEach(g => def[g] = 'Tidak Melayani');
         setConfig(def);
@@ -31,13 +51,67 @@ export default function KompetensiSettings() {
     init();
   }, []);
 
+  const handleSelectRs = async (selectedOption) => {
+    if (selectedOption) {
+      const newKode = selectedOption.value;
+      setKodeRs(newKode);
+      setNamaRs(selectedOption.nama_rs);
+      
+      try {
+        const rsCompsRes = await fetch('./data/rs_competencies.json');
+        const rsCompsData = await rsCompsRes.json();
+        if (rsCompsData[newKode]) {
+           const newConfig = { ...config };
+           groups.forEach(g => newConfig[g] = 'Tidak Melayani'); // reset
+           for (const [g, lvl] of Object.entries(rsCompsData[newKode])) {
+               // Find matching group in `groups` ignoring prefix and case
+               const stripPrefix = (name) => name.toLowerCase().replace('kelompok layanan ', '').trim();
+               const gStripped = stripPrefix(g);
+               const matchedGroup = groups.find(x => {
+                  const xStripped = stripPrefix(x);
+                  return xStripped === gStripped || 
+                         (xStripped === 'rehabilitasi' && gStripped === 'rehabilitasi medis') ||
+                         (xStripped === 'rehabilitasi medis' && gStripped === 'rehabilitasi') ||
+                         (xStripped.includes('rekonstruksi') && gStripped.includes('rekontruksi')) ||
+                         (xStripped.includes('endokrin') && gStripped.includes('endocrine')) ||
+                         (xStripped.includes('hepatobilier') && gStripped.includes('hepatobiliar'));
+               });
+
+               if (matchedGroup) {
+                   newConfig[matchedGroup] = lvl;
+               } else {
+                   newConfig[g] = lvl; // Fallback
+               }
+           }
+           setConfig(newConfig);
+        } else {
+           const newConfig = {};
+           groups.forEach(g => newConfig[g] = 'Tidak Melayani');
+           setConfig(newConfig);
+        }
+      } catch (e) {
+        console.warn('Failed to load auto competencies', e);
+      }
+    } else {
+      setKodeRs('');
+      setNamaRs('');
+    }
+  };
+
   const handleChange = (group, val) => {
     setConfig(prev => ({ ...prev, [group]: val }));
     setSaved(false);
   };
 
   const handleSave = () => {
-    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+    // Save both the competencies and the RS info
+    const fullConfig = {
+       kodeRs,
+       namaRs,
+       competencies: config,
+       ...config // for backwards compatibility
+    };
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(fullConfig));
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -53,6 +127,45 @@ export default function KompetensiSettings() {
         <div>
           <h2 className="text-2xl font-black text-slate-800">Pemetaan Kompetensi Rumah Sakit</h2>
           <p className="text-sm text-slate-600 mt-1 font-medium">Atur Level Kompetensi Layanan (Dasar, Madya, Utama, Paripurna) yang tersedia di fasilitas Anda.</p>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 p-5 rounded-2xl border border-amber-200 mb-6 flex gap-4 items-start shadow-sm">
+        <AlertCircle className="text-amber-600 mt-0.5 shrink-0" size={24} />
+        <div>
+          <h4 className="font-bold text-amber-900 mb-1">Peringatan Penting</h4>
+          <p className="text-amber-800 text-sm leading-relaxed">
+            Data pemetaan kompetensi yang digunakan pada sistem ini <strong>bukan merupakan rilis resmi dari Kementerian Kesehatan (Kemenkes)</strong> melainkan hasil kompilasi internal. Oleh karena itu, pengisian profil secara otomatis mungkin tidak 100% akurat dengan kondisi nyata. <strong>Anda diwajibkan untuk memeriksa dan menyesuaikan ulang tingkat kompetensi di bawah ini</strong> agar sesuai dengan kapabilitas layanan aktual di Rumah Sakit Anda sebelum melakukan analisis.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <Building className="text-teal-600" size={24} />
+          <h3 className="text-lg font-bold text-slate-800">Pilih Rumah Sakit (Otomatis)</h3>
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold text-slate-700 mb-2">Pilih dari Database Master RS</label>
+          <Select
+            options={hospitals}
+            onChange={handleSelectRs}
+            placeholder="Ketik Kode atau Nama RS..."
+            isClearable
+            isSearchable
+            value={hospitals.find(h => h.value === kodeRs) || null}
+            className="text-sm font-medium"
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+             <label className="block text-sm font-bold text-slate-700 mb-2">Kode RS</label>
+             <input type="text" value={kodeRs} onChange={e => setKodeRs(e.target.value)} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700" placeholder="Kode RS" />
+          </div>
+          <div>
+             <label className="block text-sm font-bold text-slate-700 mb-2">Nama RS</label>
+             <input type="text" value={namaRs} onChange={e => setNamaRs(e.target.value)} className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700" placeholder="Nama RS" />
+          </div>
         </div>
       </div>
 
@@ -109,7 +222,7 @@ export default function KompetensiSettings() {
               ))}
               {filteredGroups.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="p-8 text-center text-slate-500 font-medium">Tidak ada kelompok layanan yang cocok. Pastikan dataset ICD Kompetensi sudah terupload di backend.</td>
+                  <td colSpan={3} className="p-8 text-center text-slate-500 font-medium">Tidak ada kelompok layanan yang cocok.</td>
                 </tr>
               )}
             </tbody>

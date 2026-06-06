@@ -6,6 +6,7 @@ import KompetensiDashboard from './components/KompetensiDashboard.jsx';
 import MfaSettings from './components/MfaSettings.jsx';
 import KompetensiSettings from './components/KompetensiSettings.jsx';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
+import { loadCompetencyCSV, getIcdDescMap, getIcdFallbackMap } from './utils/competencyAnalyzer';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas-pro';
 
@@ -3324,6 +3325,38 @@ const InsightSosialisasiContent = React.memo(({
 export default function App() {
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem('sak_activeTab') || 'upload');
   const [subTab, setSubTab] = useState(() => sessionStorage.getItem('sak_subTab') || 'executive');
+  const [isTabLoading, setIsTabLoading] = useState(false);
+  const [icdDescIndex, setIcdDescIndex] = useState({});
+
+  // Heavy tabs that need loading animation
+  const HEAVY_TABS = ['mapping', 'sl_cl_analysis', 'kompetensi', 'dept', 'ksm', 'dpjp', 'kpi_coder', 'naik_kelas', 'icu', 'readmisi'];
+  const switchSubTab = (tabId) => {
+    if (HEAVY_TABS.includes(tabId) && tabId !== subTab) {
+      setIsTabLoading(true);
+      setTimeout(() => {
+        setSubTab(tabId);
+        setIsTabLoading(false);
+      }, 80);
+    } else {
+      setSubTab(tabId);
+    }
+  };
+
+  // Load ICD description CSV once for use in Peta iDRG & Analisis SL/CL
+  useEffect(() => {
+    loadCompetencyCSV().then(() => {
+      const descMap = getIcdDescMap();
+      const fallbackMap = getIcdFallbackMap();
+      
+      const obj = { ...fallbackMap }; // Start with master fallback map
+      if (descMap && descMap.size > 0) {
+        // Overlay any specific descriptions from competency mapping if available
+        descMap.forEach((desc, code) => { if (desc) obj[code] = desc; });
+      }
+      setIcdDescIndex(obj);
+    }).catch(() => {});
+  }, []);
+
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState('');
@@ -3864,6 +3897,25 @@ export default function App() {
 
   // State untuk feedback reset password per-user
   const [resetPasswordFeedback, setResetPasswordFeedback] = useState({}); // { [userId]: 'loading'|'success'|'error' }
+
+  // Reset MFA user: Admin menonaktifkan flag mfa_enabled di profiles
+  // User akan bisa setup MFA baru saat login berikutnya
+  const handleResetMfa = async (u) => {
+    if (!window.confirm(`Reset MFA untuk user @${u.username}?\n\nUser akan kehilangan akses MFA dan harus mengatur ulang MFA dari awal saat login berikutnya. Lanjutkan?`)) return;
+    setIsProcessingAction(true);
+    setUserManagementError('');
+    setUserManagementSuccess('');
+    try {
+      const { error } = await supabase.from('profiles').update({ mfa_enabled: false }).eq('username', u.username);
+      if (error) throw error;
+      setUserManagementSuccess(`MFA untuk @${u.username} berhasil direset. User perlu setup MFA ulang.`);
+      fetchUserManagementData();
+    } catch (err) {
+      setUserManagementError('Gagal reset MFA: ' + err.message);
+    } finally {
+      setIsProcessingAction(false);
+    }
+  };
 
   const handleAdminResetPassword = async (u) => {
     let targetEmail = u.email;
@@ -4444,11 +4496,18 @@ export default function App() {
     let stats = { tIna: 0, tIdrg: 0, cInaHigh: 0, cIdrgHigh: 0, cEq: 0, selisihList: [], totalScoreDiag: 0, totalScoreProc: 0, scoredCount: 0, ranapCount: 0, anomaliKasus: 0, naikKelasKasus: 0, naikKelasNilai: 0, topUpKasus: 0, topUpNilai: 0, totalDiagUCount: 0, totalDiagSCount: 0, totalProcCount: 0 };
     const uniqueRs = new Set(rows.map(r => String(r['KODE_RS'] || '').trim()).filter(Boolean));
     const multipleRs = uniqueRs.size > 1;
-    let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], audit: [], topUp: {}, ksmEfficiency: {} };
+    let maps = { monthly: {}, drg: {}, report: {}, severity: {}, clReport: {}, dpjp: {}, ksm: {}, dept: {}, diagU: {}, diagS: {}, proc: {}, ina: {}, idrg: {}, slClShift: {}, coder: {}, naikKelas: {}, discharge: { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 }, sev: { "1": 0, "2": 0, "3": 0 }, cl: { "0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "9": 0 }, icu: { total: 0, sev1: 0, sev2: 0, sev3: 0, anomalies: [] }, inaToIdrg: {}, idrgToIna: {}, discrepancies: [], audit: [], topUp: {}, ksmEfficiency: {}, icdDesc: {} };
     const billCols = ["SI", "SD", "SR", "SP", "KODE_SI", "KODE_SD", "KODE_SR", "KODE_SP", "SPECIAL_SI", "SPECIAL_SD", "SPECIAL_SR", "SPECIAL_SP", "SPECIAL_CMG"];
 
     rows.forEach((r, idx) => {
       const tIna = parseFloat(r['TOTAL_TARIF']) || 0; const tIdrg = parseFloat(r['IDRG_TOTAL_TARIF']) || 0;
+      // Build ICD description index from row data
+      const dU = String(r['DIAG_UTAMA'] || r['DIAGUTAMA'] || '').trim();
+      const descU = String(r['DESKRIPSI_DIAGUTAMA'] || r['DESKRIPSI_INACBG'] || '').trim();
+      if (dU && descU && !maps.icdDesc[dU]) maps.icdDesc[dU] = descU;
+      // Also index secondary diags if available
+      const diagsRaw = String(r['DIAGLIST'] || r['DIAG_LIST'] || '').split(';');
+      diagsRaw.forEach(d => { const c = d.trim(); if (c && !maps.icdDesc[c]) maps.icdDesc[c] = ''; });
       const tRS = parseFloat(r['TARIF_RS']) || parseFloat(r['BIAYA_RS']) || parseFloat(r['TOTAL_TARIF_RS']) || parseFloat(r['TARIF_RS_COST']) || 0;
       const sel = tIdrg - tIna; const inaCode = String(r['INACBG'] || '').trim(); const drgCode = String(r['IDRG_DRG_CODE'] || '').trim();
       const ptd = String(r['PTD'] || '').trim();
@@ -4805,9 +4864,22 @@ export default function App() {
       slClShiftArray: Object.values(maps.slClShift).map(item => ({ ...item, topPriDiags: Object.entries(item.priDiags).sort((a, b) => b[1] - a[1]), topSecDiags: Object.entries(item.secDiags).sort((a, b) => b[1] - a[1]), topProcs: Object.entries(item.procs || {}).sort((a, b) => b[1] - a[1]) })).sort((a, b) => { if (a.sev !== b.sev) return (b.sev || 0) - (a.sev || 0); return (b.cl || 0) - (a.cl || 0); }),
       inaToIdrgMap: maps.inaToIdrg, idrgToInaMap: maps.idrgToIna, scorecard: { avgDiag: stats.scoredCount > 0 ? stats.totalScoreDiag / stats.scoredCount : 0, avgProc: stats.scoredCount > 0 ? stats.totalScoreProc / stats.scoredCount : 0, discrepancies: maps.discrepancies },
       auditFindings: maps.audit, kpiCoderArray: Object.values(maps.coder).sort((a, b) => b.cases - a.cases), naikKelasStats: Object.values(maps.naikKelas).sort((a, b) => b.totalNilai - a.totalNilai), icuStats: maps.icu,
-      topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai }
+      topUpStats: { items: Object.values(maps.topUp).sort((a, b) => b.totalPotensi - a.totalPotensi), topUpKasus: stats.topUpKasus, topUpNilai: stats.topUpNilai },
+      icdDescIndex: new Proxy({ ...icdDescIndex, ...maps.icdDesc }, {
+        get(target, prop) {
+          if (typeof prop !== 'string') return target[prop];
+          if (target[prop]) return target[prop];
+          // Fallback to 3-char root (e.g. "A41.5" -> "A41")
+          const base = prop.split('.')[0];
+          if (target[base]) return target[base];
+          // Fallback to no dot (e.g. "Z99.9" -> "Z999")
+          const nodot = prop.replace(/\./g, '');
+          if (target[nodot]) return target[nodot];
+          return undefined;
+        }
+      })
     };
-  }, [uploadedFiles, globalFilter, ksmOverrides, excludeCodes]);
+  }, [uploadedFiles, globalFilter, ksmOverrides, excludeCodes, icdDescIndex]);
 
   const { totalReviewed, totalSesuai, totalTidak } = useMemo(() => {
     const findings = dashData?.auditFindings || [];
@@ -5920,9 +5992,10 @@ export default function App() {
                         <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5"><Stethoscope size={12} className="text-sky-500" /> Diagnosa Utama Terbanyak</p>
                         <div className="max-h-[100px] overflow-y-auto custom-scrollbar pr-2 flex flex-wrap gap-2">
                           {item.topPriDiags.length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data diagnosa</span> : item.topPriDiags.slice(0, 8).map((d, i) => (
-                            <div key={`pd-${i}`} className="flex items-center gap-1.5 bg-sky-50/50 hover:bg-sky-100 border border-sky-100 rounded-md px-2 py-1 transition-colors">
+                            <div key={`pd-${i}`} className="flex items-center gap-1.5 bg-sky-50/50 hover:bg-sky-100 border border-sky-100 rounded-md px-2 py-1 transition-colors cursor-help" title={dashData?.icdDescIndex?.[d[0]] || d[0]}>
                               <span className="text-[11px] font-black text-sky-800">{d[0]}</span>
                               <span className="text-[10px] font-bold text-sky-600/70">{d[1]}</span>
+                              {dashData?.icdDescIndex?.[d[0]] && <span className="text-[9px] text-sky-500 italic truncate max-w-[80px]">{dashData.icdDescIndex[d[0]]}</span>}
                             </div>
                           ))}
                         </div>
@@ -5931,9 +6004,10 @@ export default function App() {
                         <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5"><Activity size={12} className="text-orange-500" /> Diagnosa Sekunder Dominan</p>
                         <div className="max-h-[100px] overflow-y-auto custom-scrollbar pr-2 flex flex-wrap gap-2">
                           {item.topSecDiags.length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa diag sekunder</span> : item.topSecDiags.slice(0, 10).map((d, i) => (
-                            <div key={`sd-${i}`} className="flex items-center gap-1.5 bg-slate-100/80 hover:bg-slate-200 border border-slate-200 rounded-md px-2 py-1 transition-colors">
+                            <div key={`sd-${i}`} className="flex items-center gap-1.5 bg-slate-100/80 hover:bg-slate-200 border border-slate-200 rounded-md px-2 py-1 transition-colors cursor-help" title={dashData?.icdDescIndex?.[d[0]] || d[0]}>
                               <span className="text-[11px] font-bold text-slate-700">{d[0]}</span>
                               <span className="text-[10px] font-semibold text-white bg-slate-400 rounded-sm px-1.5">{d[1]}</span>
+                              {dashData?.icdDescIndex?.[d[0]] && <span className="text-[9px] text-slate-500 italic truncate max-w-[80px]">{dashData.icdDescIndex[d[0]]}</span>}
                             </div>
                           ))}
                         </div>
@@ -5942,9 +6016,10 @@ export default function App() {
                         <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-1.5"><FileText size={12} className="text-indigo-500" /> Prosedur Signifikan</p>
                         <div className="max-h-[100px] overflow-y-auto custom-scrollbar pr-2 flex flex-wrap gap-2">
                           {item.topProcs.length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data prosedur</span> : item.topProcs.slice(0, 8).map((p, i) => (
-                            <div key={`pr-${i}`} className="flex items-center gap-1.5 bg-indigo-50/50 hover:bg-indigo-100 border border-indigo-100 rounded-md px-2 py-1 transition-colors">
+                            <div key={`pr-${i}`} className="flex items-center gap-1.5 bg-indigo-50/50 hover:bg-indigo-100 border border-indigo-100 rounded-md px-2 py-1 transition-colors cursor-help" title={dashData?.icdDescIndex?.[p[0]] || p[0]}>
                               <span className="text-[11px] font-black text-indigo-800">{p[0]}</span>
-                              <span className="text-[10px] font-bold text-indigo-600/70">{p[1]}</span>
+                              <span className="text-[10px] font-bold text-indigo-500/70">{p[1]}</span>
+                              {dashData?.icdDescIndex?.[p[0]] && <span className="text-[9px] text-indigo-400 italic truncate max-w-[80px]">{dashData.icdDescIndex[p[0]]}</span>}
                             </div>
                           ))}
                         </div>
@@ -6075,11 +6150,11 @@ export default function App() {
                                 <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-md border ${isReverse ? 'text-sky-700 bg-sky-50 border-sky-100' : 'text-orange-700 bg-orange-50 border-orange-100'}`}>Avg {isReverse ? 'INA' : 'iDRG'}: {formatRp(data[isReverse ? 'sumIna' : 'sumIdrg'] / data.count)}</span>
                               </div>
                             </div>
-                            {!isReverse && (
-                              <div className="space-y-3 mt-2">
-                                <div className="bg-sky-50 p-2 rounded-lg border border-sky-100"><p className="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Layers size={10} /> Diagnosa Utama</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.priDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.priDiags).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pd, k) => (<span key={`pd-${k}`} className="text-[10px] font-black text-sky-800 bg-white border border-sky-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-sky-50">{pd[0]} <span className="text-sky-400 font-bold ml-0.5">({pd[1]})</span></span>))}</div></div>
-                                <div className="bg-slate-50 p-2 rounded-lg border border-slate-100"><p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Stethoscope size={10} /> Diagnosa Sekunder Penyerta</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.secDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.secDiags).sort((a, b) => b[1] - a[1]).slice(0, 15).map((sd, k) => (<span key={`sd-${k}`} className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-slate-100">{sd[0]} <span className="text-slate-400 font-semibold ml-0.5">({sd[1]})</span></span>))}</div></div>
-                                <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100"><p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><FileCode size={10} /> Prosedur Terkait</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{!data.procs || Object.entries(data.procs).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.procs).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pr, k) => (<span key={`pr-${k}`} className="text-[10px] font-black text-indigo-800 bg-white border border-indigo-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-indigo-50">{pr[0]} <span className="text-indigo-400 font-bold ml-0.5">({pr[1]})</span></span>))}</div></div>
+                                  {!isReverse && (
+                                <div className="space-y-3 mt-2">
+                                  <div className="bg-sky-50 p-2 rounded-lg border border-sky-100"><p className="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Layers size={10} /> Diagnosa Utama</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.priDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.priDiags).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pd, k) => (<span key={`pd-${k}`} className="text-[10px] font-black text-sky-800 bg-white border border-sky-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-sky-50 cursor-help" title={dashData?.icdDescIndex?.[pd[0]] || pd[0]}>{pd[0]} <span className="text-sky-400 font-bold ml-0.5">({pd[1]})</span>{dashData?.icdDescIndex?.[pd[0]] && <span className="font-normal text-[9px] text-sky-500 ml-1 italic">– {dashData.icdDescIndex[pd[0]].substring(0,25)}{dashData.icdDescIndex[pd[0]].length > 25 ? '…' : ''}</span>}</span>))}</div></div>
+                                <div className="bg-slate-50 p-2 rounded-lg border border-slate-100"><p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><Stethoscope size={10} /> Diagnosa Sekunder Penyerta</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{Object.entries(data.secDiags).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.secDiags).sort((a, b) => b[1] - a[1]).slice(0, 15).map((sd, k) => (<span key={`sd-${k}`} className="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-slate-100 cursor-help" title={dashData?.icdDescIndex?.[sd[0]] || sd[0]}>{sd[0]} <span className="text-slate-400 font-semibold ml-0.5">({sd[1]})</span>{dashData?.icdDescIndex?.[sd[0]] && <span className="font-normal text-[9px] text-slate-400 ml-1 italic">– {dashData.icdDescIndex[sd[0]].substring(0,25)}{dashData.icdDescIndex[sd[0]].length > 25 ? '…' : ''}</span>}</span>))}</div></div>
+                                <div className="bg-indigo-50 p-2 rounded-lg border border-indigo-100"><p className="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest mb-1.5 flex items-center gap-1"><FileCode size={10} /> Prosedur Terkait</p><div className="flex flex-wrap gap-1.5 max-h-[100px] overflow-y-auto custom-scrollbar">{!data.procs || Object.entries(data.procs).length === 0 ? <span className="text-[10px] text-slate-400 italic">Tanpa data</span> : Object.entries(data.procs).sort((a, b) => b[1] - a[1]).slice(0, 10).map((pr, k) => (<span key={`pr-${k}`} className="text-[10px] font-black text-indigo-800 bg-white border border-indigo-200 px-1.5 py-0.5 rounded shadow-sm hover:bg-indigo-50 cursor-help" title={dashData?.icdDescIndex?.[pr[0]] || pr[0]}>{pr[0]} <span className="text-indigo-400 font-bold ml-0.5">({pr[1]})</span>{dashData?.icdDescIndex?.[pr[0]] && <span className="font-normal text-[9px] text-indigo-400 ml-1 italic">– {dashData.icdDescIndex[pr[0]].substring(0,25)}{dashData.icdDescIndex[pr[0]].length > 25 ? '…' : ''}</span>}</span>))}</div></div>
                               </div>
                             )}
                           </div>
@@ -8071,10 +8146,13 @@ export default function App() {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (r.discrepancyCount > 0) {
+                              const targetRawId = r.rawId || r.id; // rawId = original unmask ID stored at data build time
                               const discRows = (dashData?.rawRows || []).filter(row => {
                                 const raw = String(row['CODER_ID'] || row['USER_CODER'] || row['CODER'] || '').trim().toUpperCase();
                                 const c = raw.includes(';') ? raw.split(';')[0].trim() : raw;
-                                if (maskName(c) !== r.id) return false;
+                                // Match by rawId first, fallback to masked id comparison
+                                const isThisCoder = c === targetRawId || maskName(c) === r.id;
+                                if (!isThisCoder) return false;
                                 const d1 = String(row['DIAGLIST'] || '').split(';').map(d => d.trim()).filter(d => d);
                                 const p1 = String(row['PROCLIST'] || '').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
                                 const d2 = String(row['IDRG_DIAG_LISTS'] || '').split(';').map(d => d.trim()).filter(d => d);
@@ -8124,7 +8202,12 @@ export default function App() {
                                   mrn: String(row['MRN'] || '-'),
                                   tglMasuk: String(row['ADMISSION_DATE'] || '-'),
                                   tglKeluar: String(row['DISCHARGE_DATE'] || '-'),
-                                  coderId: r.id
+                                  coderId: r.id,
+                                  diaglist: d1.join('; '),
+                                  proclist: p1.join('; '),
+                                  diaglistIdrg: d2.join('; '),
+                                  proclistIdrg: p2.join('; '),
+                                  dOnlyInIna, dOnlyInIdrg, pOnlyInIna, pOnlyInIdrg
                                 };
                               });
 
@@ -8928,6 +9011,7 @@ export default function App() {
                   <th className="px-5 py-4">Email</th>
                   <th className="px-5 py-4">Masa Berlaku Akses</th>
                   <th className="px-5 py-4 text-center">Status Keaktifan</th>
+                  <th className="px-5 py-4 text-center bg-teal-50/50 text-teal-700">🔐 Status MFA</th>
                   <th className="px-5 py-4 text-center">Tindakan Kontrol</th>
                 </tr>
               </thead>
@@ -8980,6 +9064,27 @@ export default function App() {
                             <span className="bg-rose-100 text-rose-800 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Expired</span>
                           ) : (
                             <span className="bg-emerald-100 text-emerald-800 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Aktif</span>
+                          )}
+                        </td>
+                        {/* MFA Status Column */}
+                        <td className="px-5 py-4 text-center bg-teal-50/20">
+                          {u.mfa_enabled ? (
+                            <div className="flex flex-col items-center gap-1.5">
+                              <span className="bg-teal-100 text-teal-800 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                🔐 MFA Aktif
+                              </span>
+                              {u.role !== 'admin' && (
+                                <button
+                                  onClick={() => handleResetMfa(u)}
+                                  disabled={isProcessingAction}
+                                  className="px-2.5 py-1 rounded-lg text-[9px] font-black bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-600 hover:text-white transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                  ↺ Reset MFA
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="bg-slate-100 text-slate-500 text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">Tidak Aktif</span>
                           )}
                         </td>
                         <td className="px-5 py-4 text-center">
@@ -10323,16 +10428,17 @@ export default function App() {
                       <table className="w-full text-sm text-left whitespace-nowrap">
                         <thead className="bg-white text-slate-500 sticky top-0 z-30 shadow-sm border-b border-slate-200 text-[10px] uppercase font-extrabold tracking-wider">
                           <tr>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 w-12 text-center">No</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-white">SEP</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[100px]">Tgl Masuk</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[100px]">Tgl Keluar</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50">Rule ID</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[200px]">Temuan / Kasus</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[300px]">Warning Message</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-white min-w-[150px]">Diaglist</th>
-                            <th className="px-5 py-4 border-r border-slate-100 bg-slate-50 min-w-[150px]">Proclist</th>
-                            <th className="px-5 py-4 bg-white text-center">Status</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-slate-50 w-10 text-center">No</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-white min-w-[130px]">SEP / MRN</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-slate-50 min-w-[90px]">Tgl Masuk</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-white min-w-[90px]">Tgl Keluar</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-slate-50">Rule</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-orange-50 min-w-[250px] text-orange-700">Detail Perbedaan Koding</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-blue-50 min-w-[180px] text-blue-700">Diaglist INA (INA-CBG)</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-violet-50 min-w-[180px] text-violet-700">Diaglist iDRG</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-blue-50 min-w-[150px] text-blue-700">Proclist INA</th>
+                            <th className="px-4 py-4 border-r border-slate-100 bg-violet-50 min-w-[150px] text-violet-700">Proclist iDRG</th>
+                            <th className="px-4 py-4 bg-white text-center min-w-[160px]">Review Langsung</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100 bg-white">
@@ -10340,20 +10446,50 @@ export default function App() {
                             const key = `${f.sep}|${f.ruleId}`;
                             const verdict = auditVerdicts[key] || 'belum';
                             return (
-                              <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                <td className="px-5 py-3 border-r border-slate-50 text-center text-slate-400 font-semibold">{idx + 1}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 font-mono text-xs text-slate-500">{f.sep}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-slate-600">{f.tglMasuk ? f.tglMasuk.substring(0, 10) : '-'}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-slate-600">{f.tglKeluar ? f.tglKeluar.substring(0, 10) : '-'}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 font-black text-slate-700 text-xs">{f.ruleId}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 text-xs font-bold text-slate-600 truncate max-w-[250px]" title={f.case}>{f.case}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-rose-600 font-medium whitespace-normal min-w-[300px]">{f.warning}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-slate-500 font-mono whitespace-normal min-w-[150px]">{f.diaglist || '-'}</td>
-                                <td className="px-5 py-3 border-r border-slate-50 text-xs text-slate-500 font-mono whitespace-normal min-w-[150px]">{f.proclist || '-'}</td>
-                                <td className="px-5 py-3 text-center">
-                                  <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase ${verdict === 'sesuai' ? 'bg-emerald-100 text-emerald-700' : verdict === 'tidak' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-500'}`}>
-                                    {verdict === 'sesuai' ? 'Sesuai' : verdict === 'tidak' ? 'Tidak Sesuai' : 'Belum Review'}
-                                  </span>
+                              <tr key={idx} className={`transition-colors ${verdict === 'sesuai' ? 'bg-emerald-50/40 hover:bg-emerald-50' : verdict === 'tidak' ? 'bg-rose-50/40 hover:bg-rose-50' : 'hover:bg-slate-50'}`}>
+                                <td className="px-4 py-3 border-r border-slate-100 text-center text-slate-400 font-semibold text-xs">{idx + 1}</td>
+                                <td className="px-4 py-3 border-r border-slate-100">
+                                  <div className="font-mono font-black text-[11px] text-slate-700">{f.sep}</div>
+                                  <div className="text-[10px] text-slate-400 font-medium mt-0.5">MRN: {f.mrn}</div>
+                                </td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-xs text-slate-500">{f.tglMasuk ? f.tglMasuk.substring(0, 10) : '-'}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-xs text-slate-500">{f.tglKeluar ? f.tglKeluar.substring(0, 10) : '-'}</td>
+                                <td className="px-4 py-3 border-r border-slate-100">
+                                  <span className="text-[9px] font-black bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{f.ruleId}</span>
+                                </td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-xs whitespace-normal min-w-[250px]">{f.warning}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-blue-700 font-mono whitespace-normal min-w-[180px] leading-relaxed">{f.diaglist || '-'}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-violet-700 font-mono whitespace-normal min-w-[180px] leading-relaxed">{f.diaglistIdrg || f.diaglist || '-'}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-blue-600 font-mono whitespace-normal min-w-[150px] leading-relaxed">{f.proclist || '-'}</td>
+                                <td className="px-4 py-3 border-r border-slate-100 text-[10px] text-violet-600 font-mono whitespace-normal min-w-[150px] leading-relaxed">{f.proclistIdrg || f.proclist || '-'}</td>
+                                <td className="px-4 py-3 text-center">
+                                  <div className="flex flex-col gap-1.5 items-center">
+                                    {verdict !== 'belum' && (
+                                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${verdict === 'sesuai' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                                        {verdict === 'sesuai' ? '✓ Sesuai' : '✗ Tidak Sesuai'}
+                                      </span>
+                                    )}
+                                    <div className="flex gap-1">
+                                      <button
+                                        onClick={() => { const newV = {...auditVerdicts}; newV[key] = 'sesuai'; setAuditVerdicts(newV); }}
+                                        className={`px-2 py-1 rounded-lg text-[9px] font-black transition-all border ${
+                                          verdict === 'sesuai'
+                                            ? 'bg-emerald-600 text-white border-emerald-700 shadow'
+                                            : 'bg-white text-emerald-600 border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-700'
+                                        }`}>
+                                        ✓ Sesuai
+                                      </button>
+                                      <button
+                                        onClick={() => { const newV = {...auditVerdicts}; newV[key] = 'tidak'; setAuditVerdicts(newV); }}
+                                        className={`px-2 py-1 rounded-lg text-[9px] font-black transition-all border ${
+                                          verdict === 'tidak'
+                                            ? 'bg-rose-600 text-white border-rose-700 shadow'
+                                            : 'bg-white text-rose-600 border-rose-200 hover:bg-rose-600 hover:text-white hover:border-rose-700'
+                                        }`}>
+                                        ✗ Tidak
+                                      </button>
+                                    </div>
+                                  </div>
                                 </td>
                               </tr>
                             );
@@ -10616,7 +10752,7 @@ export default function App() {
                     setShowKompPopup(true);
                   } else {
                     setActiveTab('dashboard'); 
-                    setSubTab(t.id); 
+                    switchSubTab(t.id); 
                     if (window.innerWidth < 1024) setIsSidebarOpen(false);
                   }
                 }} className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all group ${isActive ? 'bg-teal-50 text-teal-700 font-bold border border-teal-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800 font-medium border border-transparent'} ${!isSidebarOpen && 'justify-center'}`} title={t.label}>
@@ -10726,6 +10862,25 @@ export default function App() {
                     </div>
 
                     {/* Horizontal tabs removed; handled by Sidebar */}
+
+                    {/* Tab Loading Overlay */}
+                    {isTabLoading && (
+                      <div className="fixed inset-0 z-[8000] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-150">
+                        <div className="bg-white rounded-2xl shadow-2xl px-10 py-8 flex flex-col items-center gap-4 border border-slate-200/60">
+                          <div className="relative w-14 h-14">
+                            <div className="absolute inset-0 rounded-full border-4 border-teal-100"></div>
+                            <div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent animate-spin"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="w-4 h-4 rounded-full bg-teal-500 animate-pulse"></div>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-slate-800 font-black text-base tracking-tight">Memuat Data...</p>
+                            <p className="text-slate-400 text-xs font-medium mt-1">Menyiapkan tampilan</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {dashData.isEmptyAfterFilter ? (
                       <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-16 rounded-2xl text-center mt-6 max-w-2xl mx-auto shadow-sm animate-in zoom-in-95 duration-300"><div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6"><AlertCircle className="text-slate-400" size={40} /></div><h2 className="text-2xl font-black mb-3 text-slate-700 tracking-tight">Tidak Ada Data Ditemukan</h2><p className="text-slate-500 font-medium">Kriteria filter yang Anda pilih tidak memiliki kecocokan record dalam dataset yang sedang aktif. Silakan ubah filter Periode, Rawat, Kelas, atau DPJP.</p></div>

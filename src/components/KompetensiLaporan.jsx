@@ -3,7 +3,7 @@ import { exportToExcel } from '../utils/exportUtils.js';
 import PasswordModal from './PasswordModal';
 import { FileText, Download, Table as TableIcon, AlertCircle, TrendingUp, Activity, Layers, ActivitySquare, Ban, HelpCircle } from 'lucide-react';
 
-export default function KompetensiLaporan({ reports }) {
+export default function KompetensiLaporan({ reports, onDrillDown }) {
   const [activeTab, setActiveTab] = useState('inaCbg');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
@@ -190,10 +190,10 @@ export default function KompetensiLaporan({ reports }) {
             <tr key={i}>
               <td className="text-center">{i + 1}</td>
               <td className="font-black">{formatMonthIndo(d.monthKey)}</td>
-              <td className="text-center">{formatNumber(d.sl0_c)}</td>
-              <td className="text-center">{formatNumber(d.sl1_c)}</td>
-              <td className="text-center">{formatNumber(d.sl2_c)}</td>
-              <td className="text-center">{formatNumber(d.sl3_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim INA-CBG: ${d.monthKey} (SL 0)`, filterFn:r=>!r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.severity===0})}>{formatNumber(d.sl0_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim INA-CBG: ${d.monthKey} (SL 1)`, filterFn:r=>!r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.severity===1})}>{formatNumber(d.sl1_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim INA-CBG: ${d.monthKey} (SL 2)`, filterFn:r=>!r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.severity===2})}>{formatNumber(d.sl2_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim INA-CBG: ${d.monthKey} (SL 3)`, filterFn:r=>!r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.severity===3})}>{formatNumber(d.sl3_c)}</td>
               <td className="text-right">{formatRupiah(d.sl0_t)}</td>
               <td className="text-right">{formatRupiah(d.sl1_t)}</td>
               <td className="text-right">{formatRupiah(d.sl2_t)}</td>
@@ -250,15 +250,15 @@ export default function KompetensiLaporan({ reports }) {
             <tr key={i}>
               <td className="text-center">{i + 1}</td>
               <td className="font-black">{formatMonthIndo(d.monthKey)}</td>
-              <td className="text-center">{formatNumber(d.d_c)}</td>
-              <td className="text-center">{formatNumber(d.m_c)}</td>
-              <td className="text-center">{formatNumber(d.u_c)}</td>
-              <td className="text-center">{formatNumber(d.p_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim iDRG: ${d.monthKey} (Dasar)`, filterFn:r=>r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.highestLevelName==='Dasar'})}>{formatNumber(d.d_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim iDRG: ${d.monthKey} (Madya)`, filterFn:r=>r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.highestLevelName==='Madya'})}>{formatNumber(d.m_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim iDRG: ${d.monthKey} (Utama)`, filterFn:r=>r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.highestLevelName==='Utama'})}>{formatNumber(d.u_c)}</td>
+              <td className="text-center cursor-pointer hover:bg-teal-50" onClick={()=>onDrillDown&&onDrillDown({title:`Klaim iDRG: ${d.monthKey} (Paripurna)`, filterFn:r=>r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.highestLevelName==='Paripurna'})}>{formatNumber(d.p_c)}</td>
               <td className="text-right">{formatRupiah(d.d_t)}</td>
               <td className="text-right">{formatRupiah(d.m_t)}</td>
               <td className="text-right">{formatRupiah(d.u_t)}</td>
               <td className="text-right">{formatRupiah(d.p_t)}</td>
-              <td className="text-center font-black" style={{ color: 'var(--danger)' }}>{formatNumber(d.unmapped_c)}</td>
+              <td className="text-center font-black cursor-pointer hover:bg-rose-50" style={{ color: 'var(--danger)' }} onClick={()=>onDrillDown&&onDrillDown({title:`Klaim iDRG: ${d.monthKey} (Belum Mapping)`, filterFn:r=>r._meta?.isOutsideOverall&&r._meta?.monthKey===d.monthKey&&r._meta?.isUnmapped})}>{formatNumber(d.unmapped_c)}</td>
               <td className="text-right font-black" style={{ color: 'var(--danger)' }}>{formatRupiah(d.unmapped_t)}</td>
               <td className="text-center">{formatNumber(d.topup_c)}</td>
               <td className="text-right text-success">{formatRupiah(d.topup_t)}</td>
@@ -432,22 +432,15 @@ export default function KompetensiLaporan({ reports }) {
       <table className="elite-table">
         <thead>
           <tr>
-            <th>No</th>
-            <th>MRN</th>
-            <th>SEP</th>
-            <th>Nama Pasien</th>
-            <th>Deskripsi / Kode DRG / INACBG</th>
-            <th>Kode ICD</th>
-            <th>Jenis Layanan</th>
-            <th>Keterangan</th>
+            <th>No</th><th>MRN</th><th>SEP</th><th>Nama Pasien</th>
+            <th>Deskripsi / Kode DRG / INACBG</th><th>Kode ICD</th><th>Jenis Layanan</th><th>Keterangan</th>
           </tr>
         </thead>
         <tbody>
           {data.map((d, i) => (
             <tr key={i}>
               <td className="text-center">{i + 1}</td>
-              <td>{d.mrn}</td>
-              <td>{d.sep}</td>
+              <td>{d.mrn}</td><td>{d.sep}</td>
               <td className="font-black">{maskName(d.nama)}</td>
               <td>{d.desc}</td>
               <td style={{ color: 'var(--primary)', fontWeight: 700 }}>{d.icd}</td>
@@ -456,6 +449,94 @@ export default function KompetensiLaporan({ reports }) {
             </tr>
           ))}
           {data.length === 0 && <tr><td colSpan="8" className="text-center text-muted">Tidak ada kasus anomali ditemukan.</td></tr>}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderUnmappedList = (data, title) => (
+    <div className="elite-table-container">
+      <div style={{ padding: '1rem 1.25rem', fontWeight: 900, backgroundColor: '#fff7ed', borderBottom: '2px solid #fed7aa', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+        <span>{title}</span>
+        <span style={{ marginLeft: 'auto', fontSize: '0.72rem', fontWeight: 600, color: '#92400e', backgroundColor: '#fef3c7', padding: '2px 10px', borderRadius: 20, border: '1px solid #fbbf24' }}>
+          {data.length} Kasus
+        </span>
+      </div>
+      <table className="elite-table">
+        <thead>
+          <tr>
+            <th style={{ width: 40 }}>No</th>
+            <th>MRN / SEP</th>
+            <th>Nama Pasien</th>
+            <th style={{ backgroundColor: '#eff6ff', color: '#1d4ed8' }}>Kode iDRG &amp; INACBG</th>
+            <th style={{ backgroundColor: '#eff6ff', color: '#1d4ed8' }}>Deskripsi iDRG</th>
+            <th style={{ backgroundColor: '#f0fdf4', color: '#166534' }}>Diaglist (ICD Diagnosa)</th>
+            <th style={{ backgroundColor: '#faf5ff', color: '#6b21a8' }}>Proclist (ICD Prosedur)</th>
+            <th style={{ backgroundColor: '#fff7ed', color: '#c2410c' }}>⚠ Alasan Belum Mapping</th>
+            <th style={{ width: 70 }}>Jenis</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 && (
+            <tr><td colSpan={9} className="text-center text-muted" style={{ padding: '2rem' }}>Tidak ada kasus belum mapping. Bagus! 🎉</td></tr>
+          )}
+          {data.map((d, i) => {
+            const isDrgReason = d.alasanMapping && d.alasanMapping.includes('DRG');
+            return (
+              <tr key={i} style={{ backgroundColor: i % 2 === 0 ? '#ffffff' : '#fafafa' }}>
+                <td className="text-center" style={{ color: '#94a3b8', fontWeight: 700 }}>{i + 1}</td>
+                <td>
+                  <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.78rem', color: '#334155' }}>{d.mrn}</div>
+                  <div style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: '#64748b', marginTop: 2 }}>{d.sep}</div>
+                </td>
+                <td className="font-black" style={{ fontSize: '0.82rem' }}>{maskName(d.nama)}</td>
+                <td style={{ backgroundColor: '#eff6ff20' }}>
+                  <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '0.82rem', color: '#1d4ed8' }}>{d.drgCode || '-'}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: 2 }}>{d.inacbg || '-'}</div>
+                </td>
+                <td style={{ maxWidth: 180, whiteSpace: 'normal', fontSize: '0.78rem', color: '#374151' }}>{d.desc || '-'}</td>
+                <td style={{ backgroundColor: '#f0fdf420', maxWidth: 200, whiteSpace: 'normal' }}>
+                  {(d.icd || '').split(';').filter(Boolean).map((code, ci) => (
+                    <span key={ci} style={{ display: 'inline-block', margin: '2px 2px', padding: '1px 7px', backgroundColor: '#dcfce7', color: '#166534', border: '1px solid #bbf7d0', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700, fontFamily: 'monospace' }}>
+                      {code.trim()}
+                    </span>
+                  ))}
+                </td>
+                <td style={{ backgroundColor: '#faf5ff20', maxWidth: 200, whiteSpace: 'normal' }}>
+                  {d.proclist && d.proclist !== '-' ? (
+                    (d.proclist || '').split(';').filter(p => p.trim() && p.trim() !== '-' && p.trim().toLowerCase() !== 'none').map((code, ci) => (
+                      <span key={ci} style={{ display: 'inline-block', margin: '2px 2px', padding: '1px 7px', backgroundColor: '#f3e8ff', color: '#6b21a8', border: '1px solid #e9d5ff', borderRadius: 5, fontSize: '0.72rem', fontWeight: 700, fontFamily: 'monospace' }}>
+                        {code.trim()}
+                      </span>
+                    ))
+                  ) : (
+                    <span style={{ color: '#94a3b8', fontSize: '0.72rem', fontStyle: 'italic' }}>Tidak ada prosedur</span>
+                  )}
+                </td>
+                <td style={{ maxWidth: 220, whiteSpace: 'normal' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                    <span style={{ fontSize: '1rem', flexShrink: 0, marginTop: 1 }}>{isDrgReason ? '🔴' : '🟡'}</span>
+                    <div>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 700, color: isDrgReason ? '#c2410c' : '#854d0e', lineHeight: 1.4 }}>
+                        {d.alasanMapping || 'Tidak diketahui'}
+                      </div>
+                      {isDrgReason && (
+                        <div style={{ fontSize: '0.65rem', color: '#9a3412', marginTop: 3, fontStyle: 'italic' }}>
+                          Perlu update file mdc_dc_mapping.json
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+                <td className="text-center">
+                  <span style={{ padding: '3px 8px', borderRadius: 6, fontSize: '0.68rem', fontWeight: 800, backgroundColor: d.type === 'RANAP' ? '#dbeafe' : '#dcfce7', color: d.type === 'RANAP' ? '#1d4ed8' : '#166534', border: `1px solid ${d.type === 'RANAP' ? '#93c5fd' : '#86efac'}` }}>
+                    {d.type}
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -530,7 +611,7 @@ export default function KompetensiLaporan({ reports }) {
         {activeTab === 'idrgRj' && renderDrgTable(r.idrg_rj, 'iDRG RAWAT JALAN')}
         {activeTab === 'gabungan' && renderGabungan()}
         {activeTab === 'ungroupable' && renderSimpleList(r.ungroupable, 'KASUS UNGROUPABLE')}
-        {activeTab === 'unmapped' && renderSimpleList(r.unmapped, 'KASUS BELUM ADA MAPPING KOMPETENSI')}
+        {activeTab === 'unmapped' && renderUnmappedList(r.unmapped, 'KASUS BELUM ADA MAPPING KOMPETENSI')}
       </div>
 
       {showPasswordModal && (

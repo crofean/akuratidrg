@@ -10,6 +10,7 @@ import { exportToExcel } from '../utils/exportUtils';
 import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils/competencyAnalyzer';
 import { copyToClipboardHtml } from '../App';
 import KompetensiLaporan from './KompetensiLaporan';
+import Papa from 'papaparse';
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 const fmt  = (n) => (n || 0).toLocaleString('id-ID');
@@ -98,24 +99,29 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   const [rsMap, setRsMap] = useState({});
   const PER_PAGE = 50;
 
+  const customTitle = typeof group === 'object' && group?.title ? group.title : null;
+  const groupName = typeof group === 'string' ? group : group?.group;
+  const filterLevel = typeof group === 'string' ? null : group?.level;
+
   useEffect(() => {
     fetch('./data/rs_map.json').then(r => r.json()).then(data => setRsMap(data)).catch(console.error);
   }, []);
 
   const matchedRows = useMemo(() => {
     if (!rows || !icdMap) return [];
+    if (typeof group === 'object' && group?.filterFn) {
+       return rows.filter(r => group.filterFn(r));
+    }
+
+    const levelValues = { 'Belum Ada Mapping':0, Dasar:1, Madya:2, Utama:3, Paripurna:4 };
+    
     return rows.filter(row => {
-      const diagStr  = row['DIAGLIST']  || '';
-      const procStr  = row['PROCLIST']  || '';
-      const diaglist = diagStr.split(';').map(d => d.trim()).filter(Boolean);
-      const proclist = procStr.split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
-      const allCodes = [...new Set([...diaglist, ...proclist])];
-      return allCodes.some(d => {
-        const entries = icdMap.get(d);
-        return entries && entries.some(e => e.group === group);
-      });
+      if (!row._meta) return false;
+      if (row._meta.highestGroup !== groupName) return false;
+      if (filterLevel && row._meta.highestLevelName !== filterLevel) return false;
+      return true;
     });
-  }, [rows, icdMap, group]);
+  }, [rows, icdMap, group, groupName, filterLevel]);
 
   const filtered = useMemo(() => {
     if (!search) return matchedRows;
@@ -130,21 +136,31 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   // ICD summary — scan both DIAGLIST and PROCLIST
   const icdSummary = useMemo(() => {
     const map = {};
+    const inaTotal = parseFloat(matchedRows.reduce((s, r) => s + (parseFloat(r['TOTAL_TARIF'] || 0) || 0), 0));
+    const idrgTotal = parseFloat(matchedRows.reduce((s, r) => s + (parseFloat(r['IDRG_TOTAL_TARIF'] || 0) || 0), 0));
+    
     matchedRows.forEach(row => {
+      const ina = parseFloat(row['TOTAL_TARIF'] || 0) || 0;
+      const idrg = parseFloat(row['IDRG_TOTAL_TARIF'] || 0) || 0;
+      const pGroup = row._meta?.highestGroup;
       const diagStr  = row['DIAGLIST'] || '';
       const procStr  = row['PROCLIST'] || '';
       const diaglist = diagStr.split(';').map(d => d.trim()).filter(Boolean);
       const proclist = procStr.split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
       const allCodes = [...new Set([...diaglist, ...proclist])];
-      allCodes.forEach(d => {
-        const entries = icdMap?.get(d);
-        if (!entries) return;
-        const hit = entries.find(e => e.group === group);
-        if (!hit) return;
-        if (!map[d]) map[d] = { code:d, level:hit.level, desc:hit.desc, count:0, ina:0, idrg:0 };
-        map[d].count++;
-        map[d].ina  += parseFloat(row['TOTAL_TARIF']||0)||0;
-        map[d].idrg += parseFloat(row['IDRG_TOTAL_TARIF']||0)||0;
+      
+      allCodes.forEach(c => {
+        const entries = icdMap.get(c) || icdMap.get(c.replace('.',''));
+        if(entries){
+          const hit = entries.find(e=>e.group===(groupName || pGroup)) || entries[0];
+          if(hit){
+            if (filterLevel && hit.level !== filterLevel) return;
+            if(!map[c]) map[c]={code:c, desc:hit.desc, level:hit.level, count:0, ina:0, idrg:0};
+            map[c].count++;
+            map[c].ina += ina;
+            map[c].idrg += idrg;
+          }
+        }
       });
     });
     return Object.values(map).sort((a,b)=>b.count-a.count);
@@ -222,14 +238,15 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   const pageData = filtered.slice(page*PER_PAGE, (page+1)*PER_PAGE);
 
   return (
-    <div className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[200] bg-black/20 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden"
            onClick={e=>e.stopPropagation()}>
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-5 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-teal-50 to-white border-b border-slate-100 p-5 flex items-center justify-between">
           <div>
-            <p className="text-xs text-teal-400 font-black uppercase tracking-widest">Drill-Down Detail</p>
-            <h2 className="text-lg font-black mt-0.5">{dn(group)}</h2>
+            <p className="text-xs text-teal-600 font-black uppercase tracking-widest">
+               {customTitle || `Drill-Down Detail ${filterLevel ? `(Level ${filterLevel})` : ''}`}
+            </p>
             <p className="text-xs text-slate-400 mt-0.5">{fmt(matchedRows.length)} kasus terdampak</p>
           </div>
           <div className="flex items-center gap-3">
@@ -388,7 +405,7 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
             <table className="w-full text-xs">
               <thead className="bg-slate-50 sticky top-0">
                 <tr>
-                  {['No','Rumah Sakit','SEP / No Klaim','Nama Pasien','DPJP','Jenis','Diagnosa Utama','INA-CBG','iDRG','Selisih'].map(h=>(
+                  {['No','Rumah Sakit','SEP / No Klaim','Nama Pasien','DPJP','Jenis','Diagnosa Utama','Peringatan Kompetensi','Selisih'].map(h=>(
                     <th key={h} className="px-3 py-2.5 text-left font-black text-slate-500 uppercase text-[10px] border-b border-slate-200">{h}</th>
                   ))}
                 </tr>
@@ -405,6 +422,35 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                   const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
                   const sel = idrg - ina;
                   const isRanap = String(r['PTD']||'').trim()==='1';
+                  
+                  // Compute warnings
+                  let warnings = [];
+                  const diagStr = r['DIAGLIST'] || '';
+                  const procStr = r['PROCLIST'] || '';
+                  const codes = [...diagStr.split(';'), ...procStr.split(';')].map(d=>d.trim()).filter(d=>d&&d!=='-'&&d.toLowerCase()!=='none');
+                  codes.forEach(c => {
+                    const eList = icdMap?.get(c) || icdMap?.get(c.replace('.',''));
+                    if (eList && eList.length > 0) {
+                       const hit = eList.find(x => x.group === groupName) || eList[0];
+                       if (hit && hit.level && hit.level !== 'Belum Ada Mapping') {
+                          // Try to check rs level
+                          let rsLevel = config[hit.group];
+                          if (!rsLevel) {
+                             const noPrefix = hit.group.replace(/Kelompok Layanan /i, '').trim();
+                             const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
+                             if (matchingKey) rsLevel = config[matchingKey];
+                          }
+                          rsLevel = rsLevel || 'Tidak Melayani';
+                          const icdIdx = LEVEL_ORDER.indexOf(hit.level);
+                          const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
+                          if (icdIdx > -1 && (rsIdx === -1 || icdIdx > rsIdx)) {
+                             warnings.push(`${c}: Butuh ${hit.level} (${hit.group.replace(/Kelompok Layanan /i,'')})`);
+                          }
+                       }
+                    }
+                  });
+                  warnings = [...new Set(warnings)];
+
                   return (
                     <tr key={i} className={`border-b border-slate-50 hover:bg-teal-50/30 transition-colors ${i%2===0?'':'bg-slate-50/20'}`}>
                       <td className="px-3 py-2 text-slate-400">{page*PER_PAGE+i+1}</td>
@@ -418,8 +464,15 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                         </span>
                       </td>
                       <td className="px-3 py-2 font-mono text-slate-700 max-w-[120px] truncate" title={r['DIAGLIST']||''}>{mainDiag}</td>
-                      <td className="px-3 py-2 text-right text-blue-700 font-bold">{fmtRp(ina)}</td>
-                      <td className="px-3 py-2 text-right text-violet-700 font-bold">{fmtRp(idrg)}</td>
+                      <td className="px-3 py-2 text-[10px]">
+                        {warnings.length > 0 ? (
+                           <div className="flex flex-col gap-0.5">
+                             {warnings.map((w, wi) => <span key={wi} className="bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded leading-tight">{w}</span>)}
+                           </div>
+                        ) : (
+                           <span className="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Sesuai</span>
+                        )}
+                      </td>
                       <td className="px-3 py-2 text-right font-black">
                         <span className={sel>=0?'text-emerald-600':'text-rose-600'}>{sel>=0?'+':''}{fmtRp(sel)}</span>
                       </td>
@@ -445,10 +498,11 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                   const c   = LC[d.level]||LC['Belum Ada Mapping'];
                   const sel = d.idrg - d.ina;
                   
-                  const rsLevel = config && config[group] ? config[group] : 'Belum Ada Mapping';
+                  const actualGroupName = typeof group === 'string' ? group : group?.groupName || groupName;
+                  const rsLevel = (actualGroupName && config && config[actualGroupName]) ? config[actualGroupName] : 'Campuran/Tidak Spesifik';
                   const rsLevelIdx = LEVEL_ORDER.indexOf(rsLevel);
                   const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
-                  const isSesuai = rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx;
+                  const isSesuai = rsLevel === 'Campuran/Tidak Spesifik' ? true : (rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx);
                   const cRs = LC[rsLevel] || LC['Belum Ada Mapping'];
 
                   return (
@@ -548,7 +602,7 @@ function Top10Table({ title, data }) {
   );
 }
 
-function DetailKelompokTable({ data }) {
+function DetailKelompokTable({ data, onDrillDown }) {
   if (!data || data.length === 0) return null;
   const sorted = [...data].sort((a,b) => {
     if (a.name === 'KASUS BELUM MAPPING') return 1;
@@ -563,26 +617,26 @@ function DetailKelompokTable({ data }) {
       <div className="overflow-x-auto">
         <table className="w-full text-xs min-w-[1000px]">
           <thead>
-            <tr className="bg-slate-800 text-white text-[10px] uppercase">
-              <th className="px-3 py-3 text-left w-[250px]">Kelompok Layanan</th>
-              <th className="px-3 py-3 text-right">Total Kasus</th>
-              <th className="px-3 py-3 text-right bg-emerald-900/30">Sesuai (Kasus)</th>
-              <th className="px-3 py-3 text-right bg-emerald-900/30">Sesuai (Tarif INA)</th>
-              <th className="px-3 py-3 text-right bg-emerald-900/30">Sesuai (iDRG)</th>
-              <th className="px-3 py-3 text-right bg-rose-900/30">Tidak Sesuai (Kasus)</th>
-              <th className="px-3 py-3 text-right bg-rose-900/30">Tidak Sesuai (INA)</th>
-              <th className="px-3 py-3 text-right bg-rose-900/30">Potensi Loss (iDRG)</th>
+            <tr className="bg-slate-50 border-y border-slate-200 text-slate-600 text-[10px] uppercase">
+              <th className="px-3 py-3 text-left w-[250px] font-black border-r border-slate-200">Kelompok Layanan</th>
+              <th className="px-3 py-3 text-right font-black border-r border-slate-200">Total Kasus</th>
+              <th className="px-3 py-3 text-right font-black bg-emerald-50/50">Sesuai (Kasus)</th>
+              <th className="px-3 py-3 text-right font-black bg-emerald-50/50">Sesuai (Tarif INA)</th>
+              <th className="px-3 py-3 text-right font-black bg-emerald-50/50 border-r border-emerald-100">Sesuai (iDRG)</th>
+              <th className="px-3 py-3 text-right font-black bg-rose-50/50">Tidak Sesuai (Kasus)</th>
+              <th className="px-3 py-3 text-right font-black bg-rose-50/50">Tidak Sesuai (INA)</th>
+              <th className="px-3 py-3 text-right font-black bg-rose-50/50">Potensi Loss (iDRG)</th>
             </tr>
           </thead>
           <tbody>
             {sorted.map((d, i) => (
-              <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50">
-                <td className="px-3 py-2.5 font-bold text-slate-700">{d.name}</td>
-                <td className="px-3 py-2.5 text-right font-black text-slate-800">{fmt(d.totalKasus)}</td>
-                <td className="px-3 py-2.5 text-right font-bold text-emerald-700">{fmt(d.sesuaiKasus)}</td>
+              <tr key={i} className="border-b border-slate-50">
+                <td className="px-3 py-2.5 font-bold text-slate-700 cursor-pointer hover:bg-slate-100" onClick={() => onDrillDown && onDrillDown(d.name)}>{d.name}</td>
+                <td className="px-3 py-2.5 text-right font-black text-slate-800 cursor-pointer hover:bg-slate-100" onClick={() => onDrillDown && onDrillDown(d.name)}>{fmt(d.totalKasus)}</td>
+                <td className="px-3 py-2.5 text-right font-bold text-emerald-700 cursor-pointer hover:bg-emerald-100/50" onClick={() => onDrillDown && onDrillDown({ title: `Detail ${dn(d.name)} (Sesuai)`, filterFn: r => r._meta?.highestGroup === d.name && !r._meta?.isOutsideOverall })}>{fmt(d.sesuaiKasus)}</td>
                 <td className="px-3 py-2.5 text-right text-emerald-600">{fmtRp(d.sesuaiIna)}</td>
                 <td className="px-3 py-2.5 text-right text-emerald-600 font-bold">{fmtRp(d.sesuaiIdrg)}</td>
-                <td className="px-3 py-2.5 text-right font-bold text-rose-700">{fmt(d.lossKasus)}</td>
+                <td className="px-3 py-2.5 text-right font-bold text-rose-700 cursor-pointer hover:bg-rose-100/50" onClick={() => onDrillDown && onDrillDown({ title: `Detail ${dn(d.name)} (Tidak Sesuai)`, filterFn: r => r._meta?.highestGroup === d.name && r._meta?.isOutsideOverall })}>{fmt(d.lossKasus)}</td>
                 <td className="px-3 py-2.5 text-right text-rose-600">{fmtRp(d.lossIna)}</td>
                 <td className="px-3 py-2.5 text-right text-rose-600 font-bold">{fmtRp(d.lossIdrg)}</td>
               </tr>
@@ -596,13 +650,14 @@ function DetailKelompokTable({ data }) {
 
 
 export default function KompetensiDashboard({ rows, onBack }) {
-  const [data,    setData]    = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [tab,     setTab]     = useState('overview');  // overview | table1 | table2
-  const [drill,   setDrill]   = useState(null);        // group name for drill-down
-  const [icdMap,  setIcdMap]  = useState(null);
-  const [search,  setSearch]  = useState('');
-  const [config,  setConfig]  = useState({});
+  const [data,       setData]       = useState(null);
+  const [loading,    setLoading]    = useState(true);
+  const [tab,        setTab]        = useState('overview');  // overview | table1 | table2
+  const [drill,      setDrill]      = useState(null);        // group name for drill-down
+  const [icdMap,     setIcdMap]     = useState(null);
+  const [icdDescMap, setIcdDescMap] = useState(null);
+  const [search,     setSearch]     = useState('');
+  const [config,     setConfig]     = useState({});
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [pendingExport, setPendingExport] = useState(null);
@@ -669,9 +724,10 @@ export default function KompetensiDashboard({ rows, onBack }) {
         setConfig(parsedCfg);
         const res  = await analyzeCompetency(rows, parsedCfg);
         setData(res);
-        // expose icdMap for drill-down (re-parse CSV)
-        const { _icdMap } = res;
+        // expose icdMap and icdDescMap for drill-down
+        const { _icdMap, _icdDescMap } = res;
         if (_icdMap) setIcdMap(_icdMap);
+        if (_icdDescMap) setIcdDescMap(_icdDescMap);
       } catch(e){ console.error(e); }
       finally{ setLoading(false); }
     })();
@@ -701,9 +757,17 @@ export default function KompetensiDashboard({ rows, onBack }) {
              lk:a.lk+(s.lossKasus||0),   li:a.li+(s.lossIna||0),   ld:a.ld+(s.lossIdrg||0) };
   },{sk:0,si:0,sd:0,lk:0,li:0,ld:0});
 
-  // Groups sorted: data first, unknown last
+  // Groups sorted: data first, unknown last. KASUS BELUM MAPPING and LAYANAN LAINNYA at the bottom.
   const sortedGroups = [
-    ...data.groupTableRows.filter(r=>r.hasData).sort((a,b)=>b.totalKasus-a.totalKasus),
+    ...data.groupTableRows.filter(r=>r.hasData).sort((a,b)=>{
+       const an = dn(a.name).toUpperCase();
+       const bn = dn(b.name).toUpperCase();
+       const aBot = an === 'KASUS BELUM MAPPING' || an === 'LAYANAN LAINNYA';
+       const bBot = bn === 'KASUS BELUM MAPPING' || bn === 'LAYANAN LAINNYA';
+       if (aBot && !bBot) return 1;
+       if (!aBot && bBot) return -1;
+       return b.totalKasus - a.totalKasus;
+    }),
     ...data.groupTableRows.filter(r=>!r.hasData),
   ];
 
@@ -725,26 +789,26 @@ export default function KompetensiDashboard({ rows, onBack }) {
     {id:'laporan',  icon:<FileSpreadsheet size={14}/>, label:'Tabel Laporan'},
   ];
 
-  return createPortal(<div className="fixed inset-0 z-[9999] bg-slate-100 flex flex-col" style={{fontFamily:'inherit'}}>
+  return createPortal(<div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 flex flex-col" style={{fontFamily:'inherit'}}>
 
       {/* ── Sticky Header ── */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-3 shrink-0 z-20 shadow-2xl border-b border-teal-500/30">
+      <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-5 py-3 shrink-0 z-20 shadow-sm">
         <div className="max-w-screen-2xl mx-auto flex items-center gap-4">
-          <button onClick={onBack} className="p-2 rounded-xl hover:bg-white/10 transition-colors shrink-0">
+          <button onClick={onBack} className="p-2 rounded-xl hover:bg-slate-100 transition-colors shrink-0 text-slate-500">
             <ArrowLeft size={20}/>
           </button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <ShieldAlert className="text-teal-400" size={18}/>
-              <h1 className="font-black text-base">Analisis Kompetensi Layanan</h1>
-              <span className="text-[10px] bg-teal-500/20 text-teal-300 px-2 py-0.5 rounded-full font-black">LIVE</span>
+              <ShieldAlert className="text-teal-600" size={18}/>
+              <h1 className="font-black text-base text-slate-800">Analisis Kompetensi Layanan</h1>
+              <span className="text-[10px] bg-teal-50 text-teal-600 border border-teal-200 px-2 py-0.5 rounded-full font-black shadow-sm">LIVE</span>
             </div>
           </div>
           {/* Tab nav in header */}
           <div className="flex gap-1">
             {TABS.map(t=>(
               <button key={t.id} onClick={()=>setTab(t.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${tab===t.id?'bg-teal-500 text-white shadow':'text-slate-400 hover:text-white hover:bg-white/10'}`}>
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${tab===t.id?'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md shadow-teal-500/20':'text-slate-500 hover:text-teal-600 hover:bg-teal-50'}`}>
                 {t.icon}{t.label}
               </button>
             ))}
@@ -758,18 +822,18 @@ export default function KompetensiDashboard({ rows, onBack }) {
         {/* ── KPI Row ── */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            {label:'Total Kasus', val:fmt(data.totalPatients), sub:fmtRp(data.totalTarifInacbg)+' INA-CBG', color:'from-slate-800 to-slate-700', icon:<Activity size={20} className="text-teal-400"/>},
-            {label:'Sesuai Kompetensi', val:fmt(data.patientsWithinCompetency), sub:`${(100-pctOut)}% dari total · ${fmtRp(data.tarifWithinCompetency)}`, color:'from-emerald-700 to-emerald-600', icon:<CheckCircle size={20} className="text-white"/>},
-            {label:'Di Luar Kompetensi', val:fmt(data.patientsOutsideCompetency), sub:`${pctOut}% dari total · ${fmtRp(data.tarifOutsideCompetency)}`, color:'from-rose-700 to-rose-600', icon:<AlertCircle size={20} className="text-white"/>},
-            {label:'Potensi Loss Total', val:fmtRp(data.tarifOutsideCompetency), sub:'Tarif INA-CBG kebocoran', color:'from-orange-700 to-orange-600', icon:<TrendingDown size={20} className="text-white"/>},
+            {label:'Total Kasus', val:fmt(data.totalPatients), sub:fmtRp(data.totalTarifInacbg)+' INA-CBG', color:'from-white to-slate-50 border-slate-200 text-slate-800', subColor:'text-slate-500', icon:<Activity size={20} className="text-slate-400"/>},
+            {label:'Sesuai Kompetensi', val:fmt(data.patientsWithinCompetency), sub:`${(100-pctOut)}% dari total · ${fmtRp(data.tarifWithinCompetency)}`, color:'from-emerald-50 to-emerald-100/30 border-emerald-200 text-emerald-900', subColor:'text-emerald-700/80', icon:<CheckCircle size={20} className="text-emerald-600"/>},
+            {label:'Di Luar Kompetensi', val:fmt(data.patientsOutsideCompetency), sub:`${pctOut}% dari total · ${fmtRp(data.tarifOutsideCompetency)}`, color:'from-rose-50 to-rose-100/30 border-rose-200 text-rose-900', subColor:'text-rose-700/80', icon:<AlertCircle size={20} className="text-rose-600"/>},
+            {label:'Potensi Loss Total', val:fmtRp(data.tarifOutsideCompetency), sub:'Tarif INA-CBG kebocoran', color:'from-amber-50 to-amber-100/30 border-amber-200 text-amber-900', subColor:'text-amber-700/80', icon:<TrendingDown size={20} className="text-amber-600"/>},
           ].map((k,i)=>(
-            <div key={i} className={`bg-gradient-to-br ${k.color} rounded-2xl p-4 text-white shadow-lg`}>
+            <div key={i} className={`bg-gradient-to-br ${k.color} border rounded-2xl p-4 shadow-sm`}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[10px] font-black uppercase tracking-widest opacity-80">{k.label}</p>
                 {k.icon}
               </div>
               <p className="text-2xl font-black">{k.val}</p>
-              <p className="text-[11px] opacity-70 mt-0.5">{k.sub}</p>
+              <p className={`text-[11px] font-medium mt-0.5 ${k.subColor}`}>{k.sub}</p>
             </div>
           ))}
         </div>
@@ -940,10 +1004,10 @@ export default function KompetensiDashboard({ rows, onBack }) {
                             {lv}
                           </span>
                         </td>
-                        <td className="px-3 py-3 text-right font-black text-emerald-700">{fmt(s.sesuaiKasus)}</td>
+                        <td onClick={()=>setDrill({ title:`Distribusi Level ${lv} (Sesuai)`, filterFn:r=>r._meta?.highestLevelName===lv && !r._meta?.isOutsideOverall })} className="cursor-pointer hover:bg-emerald-100/50 px-3 py-3 text-right font-black text-emerald-700">{fmt(s.sesuaiKasus)}</td>
                         <td className="px-3 py-3 text-right text-emerald-600">{fmtRp(s.sesuaiIna)}</td>
                         <td className="px-3 py-3 text-right text-emerald-600 border-r border-slate-100">{fmtRp(s.sesuaiIdrg)}</td>
-                        <td className="px-3 py-3 text-right font-black text-rose-700">{fmt(s.lossKasus)}</td>
+                        <td onClick={()=>setDrill({ title:`Distribusi Level ${lv} (Potensi Loss)`, filterFn:r=>r._meta?.highestLevelName===lv && r._meta?.isOutsideOverall })} className="cursor-pointer hover:bg-rose-100/50 px-3 py-3 text-right font-black text-rose-700">{fmt(s.lossKasus)}</td>
                         <td className="px-3 py-3 text-right text-rose-600">{fmtRp(s.lossIna)}</td>
                         <td className="px-3 py-3 text-right text-rose-600 border-r border-slate-100">{fmtRp(s.lossIdrg)}</td>
                         <td className="px-3 py-3 text-center">
@@ -972,7 +1036,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
               </table>
             </div>
 
-            <DetailKelompokTable data={data.groupDetails} />
+            <DetailKelompokTable data={data.groupDetails} onDrillDown={setDrill} />
           </div>
         )}
 
@@ -993,27 +1057,27 @@ export default function KompetensiDashboard({ rows, onBack }) {
             <div className="overflow-x-auto">
               <table className="w-full text-xs min-w-[900px]">
                 <thead>
-                  <tr className="bg-slate-800 text-white text-[10px]">
-                    <th className="px-3 py-3 text-left font-black w-6">No</th>
-                    <th className="px-4 py-3 text-left font-black">Kelompok Layanan</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-l border-slate-600">Jumlah Kasus</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-l border-slate-600 bg-blue-900/40">Tarif INA-CBG</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-l border-slate-600 bg-violet-900/40">Tarif iDRG</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-l border-slate-600">Selisih</th>
-                    <th className="px-3 py-3 text-center font-black border-l border-slate-600">Level Mix</th>
-                    <th className="px-3 py-3 text-center font-black border-l border-slate-600">Detail</th>
+                  <tr className="bg-slate-50 text-slate-600 text-[10px] border-y border-slate-200">
+                    <th className="px-3 py-3 text-left font-black w-6 border-r border-slate-200">No</th>
+                    <th className="px-4 py-3 text-left font-black border-r border-slate-200">Kelompok Layanan</th>
+                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200">Jumlah Kasus</th>
+                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200 bg-blue-50/50">Tarif INA-CBG</th>
+                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200 bg-violet-50/50">Tarif iDRG</th>
+                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200">Selisih</th>
+                    <th className="px-3 py-3 text-center font-black border-r border-slate-200">Level Mix</th>
+                    <th className="px-3 py-3 text-center font-black">Detail</th>
                   </tr>
-                  <tr className="bg-slate-700 text-slate-300 text-[10px]">
-                    <th/><th/>
-                    <th className="px-3 py-1.5 text-center border-l border-slate-600">RI</th>
-                    <th className="px-3 py-1.5 text-center">RJ</th>
-                    <th className="px-3 py-1.5 text-center border-l border-slate-600 text-blue-300">RI</th>
-                    <th className="px-3 py-1.5 text-center text-blue-300">RJ</th>
-                    <th className="px-3 py-1.5 text-center border-l border-slate-600 text-violet-300">RI</th>
-                    <th className="px-3 py-1.5 text-center text-violet-300">RJ</th>
-                    <th className="px-3 py-1.5 text-center border-l border-slate-600">Rp</th>
-                    <th className="px-3 py-1.5 text-center">%</th>
-                    <th/><th/>
+                  <tr className="bg-slate-100/50 text-slate-500 text-[10px] border-b border-slate-200">
+                    <th className="border-r border-slate-200"/><th className="border-r border-slate-200"/>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200">RI</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200">RJ</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-blue-600 bg-blue-50/30">RI</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-blue-600 bg-blue-50/30">RJ</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-violet-600 bg-violet-50/30">RI</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-violet-600 bg-violet-50/30">RJ</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200">Rp</th>
+                    <th className="px-3 py-1.5 text-center border-r border-slate-200">%</th>
+                    <th className="border-r border-slate-200"/><th/>
                   </tr>
                 </thead>
                 <tbody>
@@ -1024,7 +1088,31 @@ export default function KompetensiDashboard({ rows, onBack }) {
                         onClick={()=>setDrill(r.name)}
                         className={`border-b border-slate-100 cursor-pointer transition-colors ${i%2===0?'bg-white':'bg-slate-50/30'} hover:bg-teal-50/40 hover:border-teal-200`}>
                         <td className="px-3 py-2.5 text-slate-400 text-center">{i+1}</td>
-                        <td className="px-4 py-2.5 font-bold text-slate-800">{dn(r.name)}</td>
+                        <td className="px-4 py-2.5">
+                          <div className="font-bold text-slate-800">{dn(r.name)}</div>
+                          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
+                            Kompetensi RS: <span className="text-teal-600 font-black">{config[r.name] || 'Belum Mapping'}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {LEVEL_ORDER.map(lv => {
+                              const k = (r.ranap[lv]?.kasus||0) + (r.rajal[lv]?.kasus||0);
+                              const idrg = (r.ranap[lv]?.idrg||0) + (r.rajal[lv]?.idrg||0);
+                              if (k === 0) return null;
+                              const pct = r.totalIdrg > 0 ? ((idrg / r.totalIdrg) * 100).toFixed(1) : 0;
+                              const rsLevel = config[r.name] || 'Tidak Melayani';
+                              const isOutside = LEVEL_ORDER.indexOf(lv) > LEVEL_ORDER.indexOf(rsLevel);
+                              const txtColor = isOutside ? 'text-rose-700' : 'text-slate-600';
+                              const bgClass = isOutside ? 'bg-rose-50 border-rose-200' : 'bg-slate-100 border-slate-200';
+                              return (
+                                <span key={lv} 
+                                      onClick={(e) => { e.stopPropagation(); setDrill({ group: r.name, level: lv }); }}
+                                      className={`cursor-pointer hover:ring-2 hover:ring-slate-300 transition-all text-[9px] px-1.5 py-0.5 rounded border ${bgClass} ${txtColor}`}>
+                                  <span className="font-black">{lv}</span>: {k} kss <span className="opacity-90 font-bold">({pct}%)</span>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </td>
                         <td className="px-3 py-2.5 text-right font-bold text-slate-700 border-l border-slate-100">{fmt(r.totalKasusRI)}</td>
                         <td className="px-3 py-2.5 text-right text-slate-600">{fmt(r.totalKasusRJ)}</td>
                         <td className="px-3 py-2.5 text-right text-blue-600 border-l border-slate-100">{fmtRp(r.totalInaRI)}</td>
@@ -1060,13 +1148,13 @@ export default function KompetensiDashboard({ rows, onBack }) {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white font-black text-[11px]">
-                    <td colSpan={2} className="px-4 py-3">TOTAL</td>
-                    <td colSpan={2} className="px-3 py-3 text-right border-l border-slate-600">{fmt(gt.totalKasus)}</td>
-                    <td colSpan={2} className="px-3 py-3 text-right text-blue-300 border-l border-slate-600">{fmtRp(gt.totalIna)}</td>
-                    <td colSpan={2} className="px-3 py-3 text-right text-violet-300 border-l border-slate-600">{fmtRp(gt.totalIdrg)}</td>
-                    <td className={`px-3 py-3 text-right border-l border-slate-600 ${gt.selisih>=0?'text-emerald-300':'text-rose-300'}`}>{fmtRp(gt.selisih)}</td>
-                    <td className="px-3 py-3 text-center text-amber-300">
+                  <tr className="bg-slate-50 text-slate-700 font-black text-[11px] border-t border-slate-200">
+                    <td colSpan={2} className="px-4 py-3 border-r border-slate-200 uppercase tracking-wider text-right">TOTAL</td>
+                    <td colSpan={2} className="px-3 py-3 text-center border-r border-slate-200">{fmt(gt.totalKasus)}</td>
+                    <td colSpan={2} className="px-3 py-3 text-right text-blue-700 border-r border-slate-200 bg-blue-50/50">{fmtRp(gt.totalIna)}</td>
+                    <td colSpan={2} className="px-3 py-3 text-right text-violet-700 border-r border-slate-200 bg-violet-50/50">{fmtRp(gt.totalIdrg)}</td>
+                    <td className={`px-3 py-3 text-right border-r border-slate-200 ${gt.selisih>=0?'text-emerald-600':'text-rose-600'}`}>{fmtRp(gt.selisih)}</td>
+                    <td className="px-3 py-3 text-center font-bold text-amber-600 border-r border-slate-200">
                       {gt.totalIna>0?fmtPct(gt.selisih/gt.totalIna*100):'0%'}
                     </td>
                     <td colSpan={2}/>
@@ -1077,15 +1165,14 @@ export default function KompetensiDashboard({ rows, onBack }) {
           </div>
         )}
 
-      </div>
-
-      {/* ══════════════ LAPORAN TAB ══════════════ */}
-        {tab === 'laporan' && (
+        {/* ══════════════ LAPORAN TAB ══════════════ */}
+        {tab==='laporan' && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-             <KompetensiLaporan reports={data.reports} />
+             <KompetensiLaporan reports={data.reports} onDrillDown={setDrill} />
           </div>
         )}
 
+      </div>
       </div>
 
       {/* Password Modal for Exports */}
@@ -1108,10 +1195,11 @@ export default function KompetensiDashboard({ rows, onBack }) {
       )}
 
       {/* ── Drill-Down Modal ── */}
-      {drill && (
-        <DrillDownWrapper
+      {drill && icdMap && (
+        <DrillDown
           group={drill}
           rows={rows}
+          icdMap={icdMap}
           config={config}
           onClose={()=>setDrill(null)}
           onExport={handleExportDrillDown}
@@ -1120,40 +1208,3 @@ export default function KompetensiDashboard({ rows, onBack }) {
     </div>, document.body);
 }
 
-/* wrapper loads icdMap from CSV */
-function DrillDownWrapper({ group, rows, config, onClose, onExport }) {
-  const [icdMap, setIcdMap] = useState(null);
-  useEffect(()=>{
-    (async()=>{
-      const map = new Map();
-      try {
-        const res = await fetch('./data/ICD Kompetensi Layanan.csv');
-        if(res.ok){
-          const text = await res.text();
-          for(const line of text.split(/\r?\n/)){
-            if(!line.match(/^\d+;/)) continue;
-            const parts=line.split(';');
-            if(parts.length<6) continue;
-            const g=parts[2].trim();
-            const code=parts[3].replace(/['"]/g,'').trim();
-            const desc=parts[4].replace(/['"]/g,'').trim();
-            const lv=parts[5].replace(/['"]/g,'').trim();
-            const level=lv.charAt(0).toUpperCase()+lv.slice(1).toLowerCase();
-            if(!map.has(code)) map.set(code,[]);
-            if(!map.get(code).find(e=>e.group===g)) map.get(code).push({group:g,level,desc});
-          }
-        }
-      } catch(e){}
-      setIcdMap(map);
-    })();
-  },[]);
-  if(!icdMap) return (
-    <div className="fixed inset-0 z-[200] bg-black/50 flex items-center justify-center">
-      <div className="bg-white rounded-2xl p-8 flex items-center gap-3">
-        <Activity className="animate-spin text-teal-500" size={24}/>
-        <span className="font-bold text-slate-700">Memuat data detail...</span>
-      </div>
-    </div>
-  );
-  return <DrillDown group={group} rows={rows} icdMap={icdMap} config={config} onClose={onClose} onExport={onExport}/>;
-}
