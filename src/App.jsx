@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect, useId } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useId, useCallback } from 'react';
 import { supabase } from './supabaseClient';
 import { UploadCloud, Folder, FileText, CheckCircle, Trash2, AlertCircle, X, BarChart3, PieChart, Activity, Layers, Search, Table2, GitMerge, FileCode, CheckSquare, AlertTriangle, Stethoscope, User, Users, ActivitySquare, Download, TrendingUp, TrendingDown, ChevronRight, ChevronDown, Zap, Award, ArrowUpCircle, LogIn, LogOut, Menu, Printer, Moon, Sun, Calendar, Bed, Building2, LayoutDashboard, Bot, Sparkles, ClipboardList, Scissors, Settings, FileSpreadsheet, Eye, EyeOff, RefreshCw, Key, Send, Save, Plus, ShieldAlert, Copy } from 'lucide-react';
 import { generateExecutivePPTX, generateAuditPPTX, generatePendingPPTX, generateKpiCoderPPTX, generateSosialisasiPPTX } from './utils/pptxExport';
