@@ -134,6 +134,32 @@ export function getIcdFallbackMap() {
 }
 
 export async function analyzeCompetency(rows, myCompetencies = {}) {
+  const parseTariff = (val) => {
+    if (!val) return 0;
+    if (typeof val === 'number') return val;
+    let s = String(val).trim();
+    if (!s) return 0;
+    s = s.replace(/Rp\.?\s*/ig, '');
+    if (s.indexOf('.') > -1 && s.indexOf(',') === -1) {
+        if (s.split('.').length > 2) {
+            s = s.replace(/\./g, '');
+        } else {
+            if (/\.\d{3}$/.test(s)) s = s.replace('.', '');
+        }
+    } else if (s.indexOf(',') > -1 && s.indexOf('.') === -1) {
+        if (s.split(',').length > 2) {
+            s = s.replace(/,/g, '');
+        } else {
+            if (/,\d{3}$/.test(s)) s = s.replace(',', '');
+            else s = s.replace(',', '.');
+        }
+    } else if (s.indexOf('.') > -1 && s.indexOf(',') > -1) {
+        if (s.indexOf('.') < s.indexOf(',')) s = s.replace(/\./g, '').replace(',', '.');
+        else s = s.replace(/,/g, '');
+    }
+    return parseFloat(s) || 0;
+  };
+
   await loadCompetencyCSV(true);
 
   const levelStats = {};
@@ -191,9 +217,8 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
     const mainDiag = diaglist[0] || '';
     const procStr = row['PROCLIST'] || '';
     const proclist = procStr.split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
-
-    const tIna = parseFloat(row['TOTAL_TARIF'] || 0) || 0;
-    const tIdrg = parseFloat(row['IDRG_TOTAL_TARIF'] || 0) || 0;
+    const tIna = parseTariff(row['TOTAL_TARIF']);
+    const tIdrg = parseTariff(row['IDRG_TOTAL_TARIF']);
     const isRanap = String(row['PTD'] || row['JENIS_RAWAT'] || row['PELAYANAN'] || '').trim() === '1';
     
     let monthKey = '0000-00';
@@ -235,9 +260,8 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
     }
     const drgCode = String(row['IDRG_DRG_CODE'] || row['INACBG'] || row['inacbg'] || row['cbg'] || row['CBG'] || row['KODE_INACBG'] || '').trim();
     const mdcNum = row['IDRG_MDC_NUMBER'] || row['MDC'] || '';
-    const drgDesc = row['IDRG_DRG_DESCRIPTION'] || row['IDRG_DESKRIPSI'] || '';
-    const topUp = parseFloat(row['IDRG_TOP_UP'] || 0) || 0;
-    const tarifRs = parseFloat(row['TARIF_RS'] || 0) || 0;
+    const drgDesc = row['IDRG_DRG_DESCRIPTION'] || row['IDRG_DESKRIPSI'] || '';    const topUp = parseTariff(row['IDRG_TOP_UP']);
+    const tarifRs = parseTariff(row['TARIF_RS']);
     const isUngroupable = drgCode === 'UNGROUPABLE' || (row['IDRG_UNGROUPABLE'] === '1') || !drgCode || String(mdcNum).trim() === '36';
     const patientName = row['NAMA_PASIEN'] || row['NAMA'] || 'Unknown';
     const mrn = row['MRN'] || row['NO_RM'] || '-';
