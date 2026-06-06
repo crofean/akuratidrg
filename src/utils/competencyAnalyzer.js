@@ -254,11 +254,10 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       const cleanDrg = String(drgCode).trim();
       if (mdcDcMap.drg && mdcDcMap.drg[cleanDrg]) {
         primaryGroup = mdcDcMap.drg[cleanDrg];
-        // Ensure prefix if AKSI uses different names vs SAK-iDRG
-        // Wait, mdc_dc_mapping returns e.g. "Jantung & Pembuluh darah"
-        // But ALL_GROUPS uses "Kelompok Layanan Jantung & Pembuluh Darah"
-        // Let's try to match it case-insensitively with groupsToTrack
-        const matchedGroup = groupsToTrack.find(g => g.toLowerCase() === primaryGroup.toLowerCase() || g.toLowerCase().replace('kelompok layanan ', '') === primaryGroup.toLowerCase());
+        if (primaryGroup && typeof primaryGroup !== 'string') primaryGroup = String(primaryGroup);
+    
+        // Normalize primaryGroup if needed
+        const matchedGroup = primaryGroup ? groupsToTrack.find(g => g.toLowerCase() === primaryGroup.toLowerCase() || g.toLowerCase().replace('kelompok layanan ', '') === primaryGroup.toLowerCase()) : null;
         if (matchedGroup) {
             primaryGroup = matchedGroup;
         }
@@ -267,7 +266,7 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
     }
 
     if (primaryGroup) {
-      const gLower = primaryGroup.toLowerCase();
+      const gLower = primaryGroup ? primaryGroup.toLowerCase() : '';
       const isMale = ['1', 'L', 'M', 'LAKI', 'LAKI-LAKI', 'MALE'].includes(sexVal.toString().trim().toUpperCase());
       
       let shouldExclude = false;
@@ -315,7 +314,7 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
         if ((gNameLower.includes('obgyn') || gNameLower.includes('kandungan') || gNameLower.includes('ibu dan') || gNameLower.includes('obstetri')) && isMale) continue;
         if (gNameLower.includes('rehabilitasi') && !isRanap && String(mdcNum).trim() !== '35') continue;
 
-        if (n.group === primaryGroup || (primaryGroup && n.group.toLowerCase().replace('kelompok layanan ', '') === primaryGroup.toLowerCase().replace('kelompok layanan ', ''))) {
+        if (primaryGroup && (n.group === primaryGroup || (n.group.toLowerCase().replace('kelompok layanan ', '') === primaryGroup.toLowerCase().replace('kelompok layanan ', '')))) {
            if (n.levelInt > primaryLevelInt) {
               primaryLevelInt = n.levelInt;
               primaryLevelStr = n.level;

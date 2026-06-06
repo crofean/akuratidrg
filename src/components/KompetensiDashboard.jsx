@@ -156,7 +156,7 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
           const hit = entries.find(e=>e.group===(groupName || pGroup)) || entries[0];
           if(hit){
             if (filterLevel && hit.level !== filterLevel) return;
-            if(!map[c]) map[c]={code:c, desc:hit.desc, level:hit.level, count:0, ina:0, idrg:0};
+            if(!map[c]) map[c]={code:c, desc:hit.desc, level:hit.level, group:hit.group, count:0, ina:0, idrg:0};
             map[c].count++;
             map[c].ina += ina;
             map[c].idrg += idrg;
@@ -537,8 +537,18 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                   const c   = LC[d.level]||LC['Belum Ada Mapping'];
                   const sel = d.idrg - d.ina;
                   
-                  const actualGroupName = typeof group === 'string' ? group : group?.groupName || groupName;
-                  const rsLevel = (actualGroupName && config && config[actualGroupName]) ? config[actualGroupName] : 'Campuran/Tidak Spesifik';
+                  const actualGroupName = d.group || (typeof group === 'string' ? group : group?.groupName || groupName);
+                  let rsLevel = 'Campuran/Tidak Spesifik';
+                  if (actualGroupName && config) {
+                    if (config[actualGroupName]) {
+                      rsLevel = config[actualGroupName];
+                    } else {
+                      const noPrefix = actualGroupName.replace(/Kelompok Layanan /i, '').trim();
+                      const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
+                      if (matchingKey) rsLevel = config[matchingKey];
+                    }
+                  }
+                  
                   const rsLevelIdx = LEVEL_ORDER.indexOf(rsLevel);
                   const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
                   const isSesuai = rsLevel === 'Campuran/Tidak Spesifik' ? true : (rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx);
