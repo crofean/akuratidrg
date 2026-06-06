@@ -900,12 +900,11 @@ export default function KompetensiDashboard({ rows, onBack }) {
             </div>
             <div style={{ height: 320, width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
               <div style={{ minWidth: 500, height: 300 }}>
-                <BarChart width={500} height={300} data={strategicData.top5} layout="vertical" margin={{top:5, right:60, left:40, bottom:5}}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0"/>
-                  <XAxis type="number" style={{fontSize:'10px'}}/>
-                  <YAxis type="category" dataKey="name" style={{fontSize:'11px', fontWeight:'bold'}} width={100}/>
-                  <RechartsTooltip contentStyle={{borderRadius:'8px', border:'none', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1)'}}/>
-                  <Bar dataKey="revenue" fill="#0d9488" radius={[0,4,4,0]} />
+                <BarChart width={500} height={300} data={strategicData.top5} layout="vertical">
+                  <XAxis type="number" />
+                  <YAxis type="category" dataKey="name" width={150} />
+                  <RechartsTooltip />
+                  <Bar dataKey="revenue" fill="#0d9488" />
                 </BarChart>
               </div>
             </div>
@@ -921,12 +920,10 @@ export default function KompetensiDashboard({ rows, onBack }) {
           <p className="text-xs text-slate-500 mb-6">Sumbu horizontal: Volume Kasus. Sumbu vertikal: Rata-rata Tarif. Ukuran Gelembung: Total Potensi Pendapatan.</p>
           <div style={{ height: 420, width: '100%', overflowX: 'auto', overflowY: 'hidden' }}>
             <div style={{ minWidth: 600, height: 400 }}>
-              <ScatterChart width={600} height={400} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
-                <XAxis type="number" dataKey="volume" name="Volume Kasus" style={{fontSize:'11px'}} domain={[0, strategicData.maxVol]} />
-                <YAxis type="number" dataKey="avgTariff" name="Rata-rata Tarif" style={{fontSize:'11px'}} domain={[0, strategicData.maxTariff]} />
-                <ZAxis type="number" dataKey="revenue" range={[100, 1500]} name="Total Potensi" />
-                <RechartsTooltip cursor={{strokeDasharray: '3 3'}} contentStyle={{borderRadius:'8px', border:'none', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize:'12px'}}/>
+              <ScatterChart width={600} height={400}>
+                <XAxis type="number" dataKey="volume" name="Volume Kasus" />
+                <YAxis type="number" dataKey="avgTariff" name="Rata-rata Tarif" />
+                <RechartsTooltip />
                 <Scatter name="Layanan" data={strategicData.scatter} fill="#6366f1" />
               </ScatterChart>
             </div>
