@@ -961,85 +961,58 @@ export default function KompetensiDashboard({ rows, onBack }) {
                     className="pl-7 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-1 focus:ring-teal-400 outline-none w-44"/>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 550, marginTop: '1rem' }}>
-                <ResponsiveContainer width="100%" height={550}>
-                  <BarChart
-                    layout="vertical"
-                    data={filteredGroups.filter(r=>r.hasData || search).map(r => {
-                      let sesuai = 0;
-                      let tidakSesuai = 0;
-                      let rsLevel = 'Campuran/Tidak Spesifik';
-                      if (config) {
-                        if (config[r.name]) rsLevel = config[r.name];
-                        else {
-                          const noPrefix = r.name.replace(/Kelompok Layanan /i, '').trim();
-                          const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
-                          if (matchingKey) rsLevel = config[matchingKey];
-                        }
-                      }
-                      const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
-                      
-                      [...LEVEL_ORDER, 'unknown'].forEach(lv => {
-                         const kasus = (r.ranap[lv]?.kasus || 0) + (r.rajal[lv]?.kasus || 0);
-                         if (lv === 'unknown' || rsLevel === 'Campuran/Tidak Spesifik' || rsLevel === 'Belum Ada Mapping') {
-                             sesuai += kasus;
-                         } else {
-                             const lvIdx = LEVEL_ORDER.indexOf(lv);
-                             if (lvIdx <= rsIdx) sesuai += kasus;
-                             else tidakSesuai += kasus;
-                         }
-                      });
-                      
-                      return { ...r, sesuaiKasus: sesuai, lossKasus: tidakSesuai };
-                    })}
-                    margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-                    barSize={16}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
-                    <XAxis type="number" tick={{fontSize: 10, fill: '#94a3b8'}} stroke="#cbd5e1" axisLine={false} tickLine={false} />
-                    <YAxis dataKey="name" type="category" width={160} tick={{fontSize: 10, fontWeight: 700, fill: '#475569'}} axisLine={false} tickLine={false} tickFormatter={(val) => {
-                      const s = dn(val);
-                      return s.length > 22 ? s.substring(0, 22) + '...' : s;
-                    }} />
-                    <RechartsTooltip
-                      cursor={{fill: '#f8fafc'}}
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const d = payload[0].payload;
-                          const selPct = d.selisihPct;
-                          return (
-                            <div className="bg-white p-3 rounded-xl shadow-xl border border-slate-200 min-w-[200px]">
-                              <p className="font-black text-slate-800 mb-1 leading-tight">{dn(d.name)}</p>
-                              <div className="flex items-center justify-between mb-2 pb-2 border-b border-slate-100">
-                                <span className="text-[10px] text-slate-500">Total Kasus</span>
-                                <span className="font-black text-slate-700">{fmt(d.totalKasus)}</span>
-                              </div>
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500"></div> Sesuai Kompetensi</span>
-                                <span className="font-black text-emerald-700">{fmt(d.sesuaiKasus)}</span>
-                              </div>
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-[10px] text-rose-600 font-bold flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-rose-500"></div> Di Luar Kompetensi</span>
-                                <span className="font-black text-rose-700">{fmt(d.lossKasus)}</span>
-                              </div>
-                              <div className="pt-2 mt-1 border-t border-slate-100 flex justify-between items-center">
-                                <span className="text-[10px] text-slate-500">Selisih Tarif</span>
-                                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${selPct>=0?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700'}`}>
-                                  {selPct>=0?'+':''}{selPct.toFixed(1)}%
-                                </span>
-                              </div>
-                              <p className="text-[9px] text-slate-400 mt-2 text-center">(Klik bar untuk melihat detail pasien)</p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', paddingTop: '10px' }} />
-                    <Bar dataKey="sesuaiKasus" name="Sesuai Kompetensi" stackId="a" fill="#10b981" radius={[0,0,0,0]} onClick={(data) => setDrill(data.name)} style={{cursor:'pointer'}} />
-                    <Bar dataKey="lossKasus" name="Di Luar Kompetensi" stackId="a" fill="#f43f5e" radius={[0,4,4,0]} onClick={(data) => setDrill(data.name)} style={{cursor:'pointer'}} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="flex flex-col gap-4 mt-5 overflow-y-auto pr-2" style={{ maxHeight: 550 }}>
+                {filteredGroups.filter(r=>r.hasData || search).map(r => {
+                  let sesuai = 0;
+                  let tidakSesuai = 0;
+                  let rsLevel = 'Campuran/Tidak Spesifik';
+                  if (config) {
+                    if (config[r.name]) rsLevel = config[r.name];
+                    else {
+                      const noPrefix = r.name.replace(/Kelompok Layanan /i, '').trim();
+                      const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
+                      if (matchingKey) rsLevel = config[matchingKey];
+                    }
+                  }
+                  const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
+                  
+                  [...LEVEL_ORDER, 'unknown'].forEach(lv => {
+                     const kasus = (r.ranap[lv]?.kasus || 0) + (r.rajal[lv]?.kasus || 0);
+                     if (lv === 'unknown' || rsLevel === 'Campuran/Tidak Spesifik' || rsLevel === 'Belum Ada Mapping') {
+                         sesuai += kasus;
+                     } else {
+                         const lvIdx = LEVEL_ORDER.indexOf(lv);
+                         if (lvIdx <= rsIdx) sesuai += kasus;
+                         else tidakSesuai += kasus;
+                     }
+                  });
+
+                  const total = sesuai + tidakSesuai;
+                  const pctSesuai = total > 0 ? (sesuai / total) * 100 : 0;
+                  const pctLoss = total > 0 ? (tidakSesuai / total) * 100 : 0;
+
+                  return (
+                    <div key={r.name} className="flex flex-col gap-1.5 cursor-pointer group" onClick={() => setDrill(r.name)}>
+                      <div className="flex justify-between items-end">
+                        <span className="text-[11px] font-bold text-slate-700 group-hover:text-teal-600 transition-colors truncate pr-2" title={dn(r.name)}>
+                          {dn(r.name)}
+                        </span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1" title="Sesuai Kompetensi">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>{fmt(sesuai)}
+                          </span>
+                          <span className="text-[10px] font-bold text-rose-600 flex items-center gap-1" title="Di Luar Kompetensi">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500"></div>{fmt(tidakSesuai)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex">
+                         {sesuai > 0 && <div style={{width: `${pctSesuai}%`}} className="h-full bg-emerald-500 transition-all group-hover:brightness-110" />}
+                         {tidakSesuai > 0 && <div style={{width: `${pctLoss}%`}} className="h-full bg-rose-500 transition-all group-hover:brightness-110" />}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
               <div className="mt-4">
                 {filteredGroups.filter(r=>!r.hasData).length>0 && (
