@@ -4748,10 +4748,10 @@ export default function App() {
         const op = ru.condition?.operator || "OR"; let matched = false;
         if (ru.condition?.type === 'grouped') {
           matched = op === 'AND' ? ru.condition.groups.every(g => {
-            const hasMatch = g.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+            const hasMatch = g.codes.some(c => acRow.some(ac => ac.startsWith(c) || (g.operator === 'REGEX' && new RegExp(c).test(ac))));
             return g.operator === 'NOT' ? !hasMatch : hasMatch;
           }) : ru.condition.groups.some(g => {
-            const hasMatch = g.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+            const hasMatch = g.codes.some(c => acRow.some(ac => ac.startsWith(c) || (g.operator === 'REGEX' && new RegExp(c).test(ac))));
             return g.operator === 'NOT' ? !hasMatch : hasMatch;
           });
         }
@@ -4768,7 +4768,32 @@ export default function App() {
             else if (!hasExclude) matched = true; // Rajal/Others: flag only if no Z08/Z09
           }
         }
+        else if (ru.condition?.type === 'custom_age') {
+          const umurStr = r['UMUR_TAHUN'];
+          if (umurStr !== undefined) {
+             const umur = parseInt(umurStr, 10);
+             const hasWrongCode = ru.condition.rules.some(rule => {
+                const hasCode = acRow.some(ac => ac.startsWith(rule.code));
+                if (!hasCode) return false;
+                if (isNaN(umur)) return true; // Flag for manual check if age is missing/invalid
+                if (rule.op === '<' && umur >= rule.limit) return true;
+                if (rule.op === '>' && umur <= rule.limit) return true;
+                return false;
+             });
+             if (hasWrongCode) matched = true;
+          } else {
+             // If UMUR_TAHUN column doesn't even exist, we just flag it if code exists so auditor checks
+             const hasAnyCode = ru.condition.rules.some(rule => acRow.some(ac => ac.startsWith(rule.code)));
+             if (hasAnyCode) matched = true;
+          }
+        }
         else if (ru.condition?.codes) matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+
+        if (matched && ru.requires_primary) {
+          const mainDiag = dList.length > 0 ? dList[0] : '';
+          const hasPrimary = ru.requires_primary.some(c => mainDiag.startsWith(c) || new RegExp(c).test(mainDiag));
+          if (hasPrimary) matched = false; // Only flag if it's NOT primary!
+        }
 
         if (matched) {
           maps.audit.push({
