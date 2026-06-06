@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import {
   Activity, ShieldAlert, ArrowLeft, TrendingDown, TrendingUp,
   ChevronRight, X, Search, AlertCircle, CheckCircle,
-  BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy, FileSpreadsheet
+  BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy, FileSpreadsheet,
+  Lightbulb, Target, ArrowUpRight
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis, Cell, LabelList, ComposedChart, Line } from 'recharts';
 import PasswordModal from './PasswordModal';
 import { exportToExcel } from '../utils/exportUtils';
 import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils/competencyAnalyzer';
@@ -831,12 +832,117 @@ export default function KompetensiDashboard({ rows, onBack }) {
     {totalKasus:0,totalIna:0,totalIdrg:0,selisih:0}
   );
 
+  const strategicData = useMemo(() => {
+    if (!data || !data.groupDetails) return null;
+    const validGroups = data.groupDetails.filter(g => g.name !== 'KASUS BELUM MAPPING' && g.lossKasus > 0);
+    const list = validGroups.map(g => ({
+      name: g.name,
+      volume: g.lossKasus,
+      revenue: g.lossIna,
+      avgTariff: g.lossKasus > 0 ? (g.lossIna / g.lossKasus) : 0
+    }));
+    const topRevenue = [...list].sort((a, b) => b.revenue - a.revenue);
+    const top5 = topRevenue.slice(0, 5);
+    const recs = [];
+    if (top5[0]) recs.push({ title: `Prioritas 1: ${top5[0].name}`, text: `Terdapat ${top5[0].volume} kasus anomali dengan potensi pendapatan Rp ${top5[0].revenue.toLocaleString('id-ID')}. Sangat direkomendasikan untuk memprioritaskan peningkatan kompetensi layanan ini.` });
+    if (top5[1]) recs.push({ title: `Prioritas 2: ${top5[1].name}`, text: `Mencatatkan potensi pendapatan sebesar Rp ${top5[1].revenue.toLocaleString('id-ID')} dari ${top5[1].volume} kasus. Pertimbangkan untuk merekrut SDM atau menambah alat medis.` });
+    if (top5[2]) recs.push({ title: `Prioritas 3: ${top5[2].name}`, text: `Layanan ini kehilangan peluang penanganan optimal pada ${top5[2].volume} kasus dengan nilai Rp ${top5[2].revenue.toLocaleString('id-ID')}.` });
+    if (top5[3]) recs.push({ title: `Prioritas 4: ${top5[3].name}`, text: `Menghasilkan Rp ${top5[3].revenue.toLocaleString('id-ID')} potensi tarif dari ${top5[3].volume} kasus yang dirujuk/anomali.` });
+    if (top5[4]) recs.push({ title: `Prioritas 5: ${top5[4].name}`, text: `Potensi Rp ${top5[4].revenue.toLocaleString('id-ID')} dari ${top5[4].volume} pasien.` });
+    
+    const maxVol = Math.max(...list.map(d => d.volume), 10);
+    const maxTariff = Math.max(...list.map(d => d.avgTariff), 10000000);
+    return { scatter: list, top5, topRevenue, recs, maxVol, maxTariff };
+  }, [data]);
+
   const TABS = [
     {id:'overview', icon:<BarChart3 size={14}/>, label:'Overview'},
+    {id:'strategic',icon:<Lightbulb size={14}/>, label:'Executive Insight'},
     {id:'table1',   icon:<TableIcon size={14}/>, label:'Tabel Distribusi Level'},
     {id:'table2',   icon:<Grid3X3 size={14}/>,   label:'Per Kelompok Layanan'},
     {id:'laporan',  icon:<FileSpreadsheet size={14}/>, label:'Tabel Laporan'},
   ];
+
+  const renderStrategicTab = () => {
+    if (!strategicData) return null;
+    return (
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Rekomendasi Naratif */}
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center"><Lightbulb size={16}/></div>
+              <h2 className="text-lg font-black text-slate-800">Top 5 Rekomendasi Prioritas</h2>
+            </div>
+            {strategicData.recs.map((r, i) => (
+              <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">{i+1}</div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 mb-1">{r.title}</h3>
+                    <p className="text-xs text-slate-600 leading-relaxed">{r.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Bar Chart - Top Lost Revenue */}
+          <div className="w-full md:w-[60%] bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-base font-black text-slate-800">Potensi Pendapatan (Lost Revenue)</h3>
+                <p className="text-xs text-slate-500">Berdasarkan akumulasi tarif kasus anomali</p>
+              </div>
+              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUpIcon size={18}/></div>
+            </div>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={strategicData.top5} layout="vertical" margin={{top:5, right:30, left:40, bottom:5}}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0"/>
+                  <XAxis type="number" tickFormatter={(val) => 'Rp '+(val/1000000).toFixed(0)+'M'} style={{fontSize:'10px'}}/>
+                  <YAxis type="category" dataKey="name" style={{fontSize:'11px', fontWeight:'bold'}} width={100}/>
+                  <RechartsTooltip formatter={(val) => ['Rp '+val.toLocaleString('id-ID'), 'Potensi Tarif']} contentStyle={{borderRadius:'8px', border:'none', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1)'}}/>
+                  <Bar dataKey="revenue" fill="#0d9488" radius={[0,4,4,0]}>
+                    <LabelList dataKey="revenue" position="right" formatter={(val) => 'Rp '+(val/1000000).toFixed(1)+'M'} style={{fontSize:'10px', fill:'#64748b', fontWeight:'bold'}} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Scatter Plot - Opportunity Quadrant */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Target className="text-indigo-600" size={20}/>
+            <h3 className="text-base font-black text-slate-800">Matriks Kuadran Prioritas</h3>
+          </div>
+          <p className="text-xs text-slate-500 mb-6">Sumbu horizontal: Volume Kasus. Sumbu vertikal: Rata-rata Tarif. Ukuran Gelembung: Total Potensi Pendapatan.</p>
+          <div className="h-[400px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+                <XAxis type="number" dataKey="volume" name="Volume Kasus" style={{fontSize:'11px'}} domain={[0, strategicData.maxVol]} />
+                <YAxis type="number" dataKey="avgTariff" name="Rata-rata Tarif" tickFormatter={(val) => 'Rp '+(val/1000000).toFixed(0)+'M'} style={{fontSize:'11px'}} domain={[0, strategicData.maxTariff]} />
+                <ZAxis type="number" dataKey="revenue" range={[100, 1500]} name="Total Potensi" />
+                <RechartsTooltip cursor={{strokeDasharray: '3 3'}} formatter={(value, name) => {
+                  if (name === 'Volume Kasus') return [value, name];
+                  return ['Rp '+value.toLocaleString('id-ID'), name];
+                }} contentStyle={{borderRadius:'8px', border:'none', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize:'12px'}}/>
+                <Scatter name="Layanan" data={strategicData.scatter} fill="#6366f1">
+                  {strategicData.scatter.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={index < 3 ? '#ef4444' : (index < 6 ? '#f59e0b' : '#6366f1')} opacity={0.7} />
+                  ))}
+                  <LabelList dataKey="name" position="top" style={{fontSize:'10px', fontWeight:'bold', fill:'#334155'}} />
+                </Scatter>
+              </ScatterChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return createPortal(<div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 flex flex-col" style={{fontFamily:'inherit'}}>
 
@@ -920,6 +1026,8 @@ export default function KompetensiDashboard({ rows, onBack }) {
         </div>
 
         {/* ══════════════ OVERVIEW TAB ══════════════ */}
+        {tab==='strategic' && renderStrategicTab()}
+
         {tab==='overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Left: Donut + legend */}
