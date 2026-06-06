@@ -213,7 +213,7 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   };
 
   const exportToExcel = () => {
-    let csv = "No,Rumah Sakit,SEP / No Klaim,Nama Pasien,DPJP,Jenis,Diagnosa Utama,INA-CBG,iDRG,Selisih\n";
+    let csv = "No,Rumah Sakit,SEP / No Klaim,Nama Pasien,DPJP,Jenis,Diagnosa Utama,Peringatan Kompetensi,INA-CBG,iDRG,Selisih\n";
     matchedRows.forEach((r, i) => {
       const kodeRs = String(r['KODE_RS']||'').trim();
       const namaRs = rsMap[kodeRs] ? `${kodeRs} - ${rsMap[kodeRs]}` : kodeRs || '-';
@@ -225,7 +225,36 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
       const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
       const sel = idrg - ina;
       const jenis = String(r['PTD']||'').trim()==='1' ? 'Ranap' : 'Rajal';
-      csv += `${i+1},"${namaRs}","${sep}","${patientName}","${dpjp}","${jenis}","${mainDiag}",${ina},${idrg},${sel}\n`;
+
+      // Compute warnings
+      let warnings = [];
+      const diagStr = r['DIAGLIST'] || '';
+      const procStr = r['PROCLIST'] || '';
+      const codes = [...diagStr.split(';'), ...procStr.split(';')].map(d=>d.trim()).filter(d=>d&&d!=='-'&&d.toLowerCase()!=='none');
+      codes.forEach(c => {
+        const eList = icdMap?.get(c) || icdMap?.get(c.replace('.',''));
+        if (eList && eList.length > 0) {
+           const hit = eList.find(x => x.group === groupName) || eList[0];
+           if (hit && hit.level && hit.level !== 'Belum Ada Mapping') {
+              let rsLevel = config[hit.group];
+              if (!rsLevel) {
+                 const noPrefix = hit.group.replace(/Kelompok Layanan /i, '').trim();
+                 const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
+                 if (matchingKey) rsLevel = config[matchingKey];
+              }
+              rsLevel = rsLevel || 'Tidak Melayani';
+              const icdIdx = LEVEL_ORDER.indexOf(hit.level);
+              const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
+              if (icdIdx > -1 && (rsIdx === -1 || icdIdx > rsIdx)) {
+                 warnings.push(`${c} (${hit.desc}): Butuh ${hit.level} (${hit.group.replace(/Kelompok Layanan /i,'')})`);
+              }
+           }
+        }
+      });
+      warnings = [...new Set(warnings)];
+      const warningStr = warnings.length > 0 ? warnings.join(' | ') : 'Sesuai';
+
+      csv += `${i+1},"${namaRs}","${sep}","${patientName}","${dpjp}","${jenis}","${mainDiag}","${warningStr}",${ina},${idrg},${sel}\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
