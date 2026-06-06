@@ -503,9 +503,10 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       reports.idrg[monthKey].unmapped_c++; reports.idrg[monthKey].unmapped_t += tIdrg;
       // Determine exact reason for being unmapped
       const drgNotInMap = drgCode && (!mdcDcMap?.drg || !mdcDcMap.drg[String(drgCode).trim()]);
+      const icdInfo = unmappedIcds.length > 0 ? ` (${unmappedIcds.join(', ')})` : '';
       const alasanMapping = drgNotInMap
         ? `DRG "${drgCode}" belum terdaftar di tabel referensi MDC/DC Mapping`
-        : `Kode ICD tidak ditemukan di referensi kelompok kompetensi`;
+        : `Kode ICD${icdInfo} tidak ditemukan di referensi kelompok kompetensi`;
       if (reports.unmapped.length < 500) reports.unmapped.push({
         mrn, sep, nama: patientName,
         desc: drgDesc || '-',
@@ -516,7 +517,7 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
         unmappedCodes: unmappedIcds,
         alasanMapping,
         type: isRanap ? 'RANAP' : 'RAJAL',
-        ket: 'Belum Mapping'
+        ket: alasanMapping
       });
     } else {
       const lvlMap = { Dasar: 'd', Madya: 'm', Utama: 'u', Paripurna: 'p' };

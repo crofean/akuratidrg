@@ -142,7 +142,7 @@ export default function KompetensiLaporan({ reports, onDrillDown }) {
         { header: 'DESKRIPSI', key: 'desc', width: 40 },
         { header: 'KODE ICD', key: 'icd', width: 15 },
         { header: 'JENIS LAYANAN', key: 'type', width: 15 },
-        { header: 'KETERANGAN', key: 'ket', width: 20 }
+        { header: 'KETERANGAN', key: 'ket', width: 60 }
     ];
     const mapSimple = (d, i) => ({
         no: i + 1, mrn: d.mrn, sep: d.sep, nama: maskName(d.nama),
