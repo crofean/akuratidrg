@@ -783,6 +783,29 @@ export default function KompetensiDashboard({ rows, onBack }) {
     })();
   },[rows]);
 
+  const strategicData = useMemo(() => {
+    if (!data || !data.groupDetails) return null;
+    const validGroups = data.groupDetails.filter(g => g.name !== 'KASUS BELUM MAPPING' && g.lossKasus > 0);
+    const list = validGroups.map(g => ({
+      name: g.name,
+      volume: g.lossKasus,
+      revenue: g.lossIna,
+      avgTariff: g.lossKasus > 0 ? (g.lossIna / g.lossKasus) : 0
+    }));
+    const topRevenue = [...list].sort((a, b) => b.revenue - a.revenue);
+    const top5 = topRevenue.slice(0, 5);
+    const recs = [];
+    if (top5[0]) recs.push({ title: `Prioritas 1: ${top5[0].name}`, text: `Terdapat ${top5[0].volume} kasus anomali dengan potensi pendapatan Rp ${top5[0].revenue.toLocaleString('id-ID')}. Sangat direkomendasikan untuk memprioritaskan peningkatan kompetensi layanan ini.` });
+    if (top5[1]) recs.push({ title: `Prioritas 2: ${top5[1].name}`, text: `Mencatatkan potensi pendapatan sebesar Rp ${top5[1].revenue.toLocaleString('id-ID')} dari ${top5[1].volume} kasus. Pertimbangkan untuk merekrut SDM atau menambah alat medis.` });
+    if (top5[2]) recs.push({ title: `Prioritas 3: ${top5[2].name}`, text: `Layanan ini kehilangan peluang penanganan optimal pada ${top5[2].volume} kasus dengan nilai Rp ${top5[2].revenue.toLocaleString('id-ID')}.` });
+    if (top5[3]) recs.push({ title: `Prioritas 4: ${top5[3].name}`, text: `Menghasilkan Rp ${top5[3].revenue.toLocaleString('id-ID')} potensi tarif dari ${top5[3].volume} kasus yang dirujuk/anomali.` });
+    if (top5[4]) recs.push({ title: `Prioritas 5: ${top5[4].name}`, text: `Potensi Rp ${top5[4].revenue.toLocaleString('id-ID')} dari ${top5[4].volume} pasien.` });
+    
+    const maxVol = Math.max(...list.map(d => d.volume), 10);
+    const maxTariff = Math.max(...list.map(d => d.avgTariff), 10000000);
+    return { scatter: list, top5, topRevenue, recs, maxVol, maxTariff };
+  }, [data]);
+
   const donutData = useMemo(()=>{
     if(!data) return [];
     return LEVEL_ORDER.map(lv=>({name:lv,value:data.levelDistribution[lv]||0})).filter(d=>d.value>0);
@@ -832,28 +855,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
     {totalKasus:0,totalIna:0,totalIdrg:0,selisih:0}
   );
 
-  const strategicData = useMemo(() => {
-    if (!data || !data.groupDetails) return null;
-    const validGroups = data.groupDetails.filter(g => g.name !== 'KASUS BELUM MAPPING' && g.lossKasus > 0);
-    const list = validGroups.map(g => ({
-      name: g.name,
-      volume: g.lossKasus,
-      revenue: g.lossIna,
-      avgTariff: g.lossKasus > 0 ? (g.lossIna / g.lossKasus) : 0
-    }));
-    const topRevenue = [...list].sort((a, b) => b.revenue - a.revenue);
-    const top5 = topRevenue.slice(0, 5);
-    const recs = [];
-    if (top5[0]) recs.push({ title: `Prioritas 1: ${top5[0].name}`, text: `Terdapat ${top5[0].volume} kasus anomali dengan potensi pendapatan Rp ${top5[0].revenue.toLocaleString('id-ID')}. Sangat direkomendasikan untuk memprioritaskan peningkatan kompetensi layanan ini.` });
-    if (top5[1]) recs.push({ title: `Prioritas 2: ${top5[1].name}`, text: `Mencatatkan potensi pendapatan sebesar Rp ${top5[1].revenue.toLocaleString('id-ID')} dari ${top5[1].volume} kasus. Pertimbangkan untuk merekrut SDM atau menambah alat medis.` });
-    if (top5[2]) recs.push({ title: `Prioritas 3: ${top5[2].name}`, text: `Layanan ini kehilangan peluang penanganan optimal pada ${top5[2].volume} kasus dengan nilai Rp ${top5[2].revenue.toLocaleString('id-ID')}.` });
-    if (top5[3]) recs.push({ title: `Prioritas 4: ${top5[3].name}`, text: `Menghasilkan Rp ${top5[3].revenue.toLocaleString('id-ID')} potensi tarif dari ${top5[3].volume} kasus yang dirujuk/anomali.` });
-    if (top5[4]) recs.push({ title: `Prioritas 5: ${top5[4].name}`, text: `Potensi Rp ${top5[4].revenue.toLocaleString('id-ID')} dari ${top5[4].volume} pasien.` });
-    
-    const maxVol = Math.max(...list.map(d => d.volume), 10);
-    const maxTariff = Math.max(...list.map(d => d.avgTariff), 10000000);
-    return { scatter: list, top5, topRevenue, recs, maxVol, maxTariff };
-  }, [data]);
+
 
   const TABS = [
     {id:'overview', icon:<BarChart3 size={14}/>, label:'Overview'},
