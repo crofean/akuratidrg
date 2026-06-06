@@ -25,7 +25,7 @@ const fmtR = (n) => {
 };
 const fmtRp  = (n) => `Rp ${fmtR(n)}`;
 const fmtPct = (n) => `${(n||0).toFixed(1)}%`;
-const dn = (s) => s.replace(/^kelompok\s+layanan\s+/i,'').trim();
+const dn = (s) => typeof s === 'string' ? s.replace(/^kelompok\s+layanan\s+/i,'').trim() : String(s||'');
 // Mask name: keep first word + asterisks
 const maskName = (s) => {
   if (!s || s === '-') return '-';
