@@ -905,9 +905,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                   <XAxis type="number" tickFormatter={(val) => 'Rp '+(val/1000000).toFixed(0)+'M'} style={{fontSize:'10px'}}/>
                   <YAxis type="category" dataKey="name" style={{fontSize:'11px', fontWeight:'bold'}} width={100}/>
                   <RechartsTooltip formatter={(val) => ['Rp '+val.toLocaleString('id-ID'), 'Potensi Tarif']} contentStyle={{borderRadius:'8px', border:'none', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1)'}}/>
-                  <Bar dataKey="revenue" fill="#0d9488" radius={[0,4,4,0]}>
-                    <LabelList dataKey="revenue" position="right" formatter={(val) => 'Rp '+(val/1000000).toFixed(1)+'M'} style={{fontSize:'10px', fill:'#64748b', fontWeight:'bold'}} />
-                  </Bar>
+                  <Bar dataKey="revenue" fill="#0d9488" radius={[0,4,4,0]} />
                 </BarChart>
               </div>
             </div>
@@ -932,12 +930,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                   if (name === 'Volume Kasus') return [value, name];
                   return ['Rp '+value.toLocaleString('id-ID'), name];
                 }} contentStyle={{borderRadius:'8px', border:'none', boxShadow:'0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize:'12px'}}/>
-                <Scatter name="Layanan" data={strategicData.scatter} fill="#6366f1">
-                  {strategicData.scatter.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index < 3 ? '#ef4444' : (index < 6 ? '#f59e0b' : '#6366f1')} opacity={0.7} />
-                  ))}
-                  <LabelList dataKey="name" position="top" style={{fontSize:'10px', fontWeight:'bold', fill:'#334155'}} />
-                </Scatter>
+                <Scatter name="Layanan" data={strategicData.scatter} fill="#6366f1" />
               </ScatterChart>
             </div>
           </div>
