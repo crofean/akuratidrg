@@ -898,7 +898,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
               </div>
               <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18}/></div>
             </div>
-            <div className="h-[300px]">
+            <div style={{ height: 320, width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={strategicData.top5} layout="vertical" margin={{top:5, right:30, left:40, bottom:5}}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0"/>
@@ -921,7 +921,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
             <h3 className="text-base font-black text-slate-800">Matriks Kuadran Prioritas</h3>
           </div>
           <p className="text-xs text-slate-500 mb-6">Sumbu horizontal: Volume Kasus. Sumbu vertikal: Rata-rata Tarif. Ukuran Gelembung: Total Potensi Pendapatan.</p>
-          <div className="h-[400px]">
+          <div style={{ height: 420, width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
