@@ -896,7 +896,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                 <h3 className="text-base font-black text-slate-800">Potensi Pendapatan (Lost Revenue)</h3>
                 <p className="text-xs text-slate-500">Berdasarkan akumulasi tarif kasus anomali</p>
               </div>
-              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUpIcon size={18}/></div>
+              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18}/></div>
             </div>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
