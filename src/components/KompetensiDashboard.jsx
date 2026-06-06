@@ -961,7 +961,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                     className="pl-7 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-1 focus:ring-teal-400 outline-none w-44"/>
                 </div>
               </div>
-              <div className="flex flex-col gap-4 mt-5 overflow-y-auto pr-2" style={{ maxHeight: 550 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-5 overflow-y-auto pr-2 pb-4" style={{ maxHeight: 650 }}>
                 {filteredGroups.filter(r=>r.hasData || search).map(r => {
                   let sesuai = 0;
                   let tidakSesuai = 0;
@@ -992,23 +992,47 @@ export default function KompetensiDashboard({ rows, onBack }) {
                   const pctLoss = total > 0 ? (tidakSesuai / total) * 100 : 0;
 
                   return (
-                    <div key={r.name} className="flex flex-col gap-1.5 cursor-pointer group" onClick={() => setDrill(r.name)}>
-                      <div className="flex justify-between items-end">
-                        <span className="text-[11px] font-bold text-slate-700 group-hover:text-teal-600 transition-colors truncate pr-2" title={dn(r.name)}>
+                    <div key={r.name} onClick={() => setDrill(r.name)} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:border-teal-300 transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col justify-between h-[150px]">
+                      <div className="absolute -right-4 -bottom-4 opacity-[0.02] group-hover:opacity-[0.06] transition-opacity duration-500 group-hover:scale-110 group-hover:-rotate-12 pointer-events-none">
+                        <Activity size={120} />
+                      </div>
+                      
+                      <div className="relative z-10 flex justify-between items-start mb-2">
+                        <h4 className="text-[11px] font-extrabold text-slate-700 uppercase tracking-widest leading-relaxed line-clamp-2 pr-2" title={dn(r.name)}>
                           {dn(r.name)}
-                        </span>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1" title="Sesuai Kompetensi">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>{fmt(sesuai)}
-                          </span>
-                          <span className="text-[10px] font-bold text-rose-600 flex items-center gap-1" title="Di Luar Kompetensi">
-                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500"></div>{fmt(tidakSesuai)}
-                          </span>
+                        </h4>
+                        <div className="bg-slate-50 border border-slate-100 px-2 py-1 rounded-lg text-center min-w-[48px] shrink-0 shadow-sm group-hover:bg-teal-50 group-hover:border-teal-100 transition-colors">
+                          <p className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover:text-teal-500 transition-colors">TOTAL</p>
+                          <p className="text-sm font-black text-slate-800 leading-none group-hover:text-teal-700 transition-colors">{fmt(total)}</p>
                         </div>
                       </div>
-                      <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex">
-                         {sesuai > 0 && <div style={{width: `${pctSesuai}%`}} className="h-full bg-emerald-500 transition-all group-hover:brightness-110" />}
-                         {tidakSesuai > 0 && <div style={{width: `${pctLoss}%`}} className="h-full bg-rose-500 transition-all group-hover:brightness-110" />}
+
+                      <div className="relative z-10 space-y-2.5 mt-auto">
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]"></div>
+                              Sesuai
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-600">{fmt(sesuai)} <span className="text-slate-400 font-medium ml-0.5">({pctSesuai.toFixed(0)}%)</span></span>
+                          </div>
+                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                            <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out" style={{width: `${pctSesuai}%`}}></div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_4px_rgba(244,63,94,0.5)]"></div>
+                              Di Luar
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-600">{fmt(tidakSesuai)} <span className="text-slate-400 font-medium ml-0.5">({pctLoss.toFixed(0)}%)</span></span>
+                          </div>
+                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                            <div className="h-full bg-gradient-to-r from-rose-400 to-rose-500 rounded-full transition-all duration-1000 ease-out" style={{width: `${pctLoss}%`}}></div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
