@@ -903,7 +903,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
                 <div key={i} className="flex flex-col gap-1.5">
                   <div className="flex justify-between text-xs font-bold text-slate-700">
                     <span>{item.name}</span>
-                    <span className="text-teal-700">Rp {(item.revenue/1000000).toFixed(1)}M</span>
+                    <span className="text-teal-700">{fmtRp(item.revenue)}</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
                     <div className="bg-teal-600 h-full rounded-full transition-all duration-1000" style={{ width: `${Math.max(1, (item.revenue / (strategicData.topRevenue[0]?.revenue || 1)) * 100)}%` }} />
@@ -935,7 +935,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
               return (
                 <div key={i} className={`absolute rounded-full ${color} opacity-70 hover:opacity-100 hover:z-10 transition-all cursor-pointer shadow-md flex items-center justify-center`}
                      style={{ left: `${xPct}%`, bottom: `${yPct}%`, width: size, height: size, transform: 'translate(-50%, 50%)' }}
-                     title={`${item.name}\nVolume: ${item.volume}\nRata-rata Tarif: Rp ${(item.avgTariff/1000000).toFixed(1)}M\nTotal Potensi: Rp ${(item.revenue/1000000).toFixed(1)}M`} />
+                     title={`${item.name}\nVolume: ${item.volume}\nRata-rata Tarif: ${fmtRp(item.avgTariff)}\nTotal Potensi: ${fmtRp(item.revenue)}`} />
               );
             })}
           </div>
