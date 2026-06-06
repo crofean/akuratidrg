@@ -961,8 +961,8 @@ export default function KompetensiDashboard({ rows, onBack }) {
                     className="pl-7 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-1 focus:ring-teal-400 outline-none w-44"/>
                 </div>
               </div>
-              <div style={{ width: '100%', height: 480, marginTop: '1rem' }}>
-                <ResponsiveContainer width="100%" height="100%">
+              <div style={{ width: '100%', height: 550, marginTop: '1rem' }}>
+                <ResponsiveContainer width="100%" height={550}>
                   <BarChart
                     layout="vertical"
                     data={filteredGroups.filter(r=>r.hasData || search).map(r => {
