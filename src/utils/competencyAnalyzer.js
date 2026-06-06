@@ -233,7 +233,7 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       else if (roman === 'II') severity = 2;
       else if (roman === 'III') severity = 3;
     }
-    const drgCode = row['IDRG_DRG_CODE'] || '';
+    const drgCode = String(row['IDRG_DRG_CODE'] || row['INACBG'] || row['inacbg'] || row['cbg'] || row['CBG'] || row['KODE_INACBG'] || '').trim();
     const mdcNum = row['IDRG_MDC_NUMBER'] || row['MDC'] || '';
     const drgDesc = row['IDRG_DRG_DESCRIPTION'] || row['IDRG_DESKRIPSI'] || '';
     const topUp = parseFloat(row['IDRG_TOP_UP'] || 0) || 0;

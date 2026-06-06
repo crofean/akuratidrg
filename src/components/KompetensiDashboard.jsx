@@ -1093,6 +1093,8 @@ export default function KompetensiDashboard({ rows, onBack }) {
                           <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
                             Kompetensi RS: <span className="text-teal-600 font-black">{config[r.name] || 'Belum Mapping'}</span>
                           </div>
+                        </td>
+                        <td className="px-4 py-2.5">
                           <div className="flex flex-wrap gap-1 mt-1.5">
                             {LEVEL_ORDER.map(lv => {
                               const k = (r.ranap[lv]?.kasus||0) + (r.rajal[lv]?.kasus||0);
