@@ -34,7 +34,21 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A01.0"] }, { "operator": "OR", "codes": ["O98", "O98.8"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A01.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "O98",
+            "O98.8"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Koreksi Koding: Jika tidak ada penyulit lain, pengkodean tifoid pada kehamilan HARUS menggunakan O98.8 sebagai Diagnosis Utama dan A01.0 sebagai Diagnosis Sekunder."
@@ -48,7 +62,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["N20", "N21", "N22", "N23"] }, { "operator": "OR", "codes": ["N39.0"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "N20",
+            "N21",
+            "N22",
+            "N23"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "N39.0"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Excludes: ISK (N39.0) SUDAH INCLUDE dalam Batu Saluran Kemih (N20-N23). ISK tidak boleh ditagihkan sebagai diagnosis sekunder terpisah."
@@ -62,7 +92,24 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["K80", "K80.0", "K80.1", "K80.2"] }, { "operator": "OR", "codes": ["K83.1", "K83.0"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "K80",
+            "K80.0",
+            "K80.1",
+            "K80.2"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "K83.1",
+            "K83.0"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi: K83.1 (Obstruksi) dan K83.0 (Cholangitis) TIDAK DIKODE TERPISAH jika ada Cholelithiasis. Gunakan gabungan K80.3 atau K80.4."
@@ -76,7 +123,20 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["K35.2"] }, { "operator": "OR", "codes": ["K63.1"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "K35.2"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "K63.1"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Unbundling: Peritonitis/perforasi sudah terwakili dalam K35.2. Perforation of intestine (K63.1) TIDAK BOLEH dikoding terpisah."
@@ -90,7 +150,9 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "simple",
       "operator": "OR",
-      "codes": ["84.91"]
+      "codes": [
+        "84.91"
+      ]
     },
     "validation_action": {
       "warning_message": "Kurang Spesifik: Jangan gunakan 84.91 (Amputation, NOS). Gunakan: Jari tangan (84.01), Ibu jari tangan (84.02), Jari kaki (84.11)."
@@ -104,7 +166,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["E10", "E11", "E14"] }, { "operator": "OR", "codes": ["R02", "L89"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "E10",
+            "E11",
+            "E14"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "R02",
+            "L89"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kode Kombinasi: DM dengan gangren/ulkus diabetik HARUS menggunakan kode E10.5 / E11.5 / E14.5. Gangren (R02) tidak dikode terpisah."
@@ -118,7 +196,22 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["E14.9", "E11.9", "E10.9"] }, { "operator": "OR", "codes": ["G63.2"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "E14.9",
+            "E11.9",
+            "E10.9"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "G63.2"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Dagger & Asterisk: Polineuropati diabetik dikode E11.4+/E14.4+ sebagai Diagnosis Utama, dan G63.2* sebagai Diagnosis Sekunder."
@@ -132,7 +225,25 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["B20.0", "B20.1", "B20.4", "B20.8"] }, { "operator": "OR", "codes": ["J15.9", "J15.2", "J18.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "B20.0",
+            "B20.1",
+            "B20.4",
+            "B20.8"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J15.9",
+            "J15.2",
+            "J18.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kode Kombinasi HIV: Jika infeksi penyerta >1 (misal Kandidiasis + Pneumonia), gunakan B20.7 (HIV resulting in multiple infections) sebagai Diagnosis Utama."
@@ -146,7 +257,21 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A91", "A90"] }, { "operator": "OR", "codes": ["D69.6"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A91",
+            "A90"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "D69.6"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding Simtom: Trombositopenia (D69.6) merupakan tanda klinis DHF (A91). Tidak boleh dikoding sebagai diagnosis sekunder."
@@ -160,26 +285,30 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["I25", "I25.1", "I25.9"] }, { "operator": "OR", "codes": ["I20", "I20.0", "I20.1", "I20.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "I25",
+            "I25.1",
+            "I25.9"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "I20",
+            "I20.0",
+            "I20.1",
+            "I20.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding Simtom: Angina Pectoris (I20.-) adalah bagian (include) dari IHD (I25.-). Tidak perlu dikode terpisah."
     },
     "PTD": "1/2"
-  },
-  {
-    "id": "AUDIT-COD-14",
-    "case": "Gangguan Elektrolit (Upcoding Severity)",
-    "category": "Coding",
-    "condition": {
-      "type": "simple",
-      "operator": "OR",
-      "codes": ["E87", "E87.0", "E87.1", "E87.2", "E87.3", "E87.4", "E87.5", "E87.6", "E87.7", "E87.8"]
-    },
-    "validation_action": {
-      "warning_message": "Validasi Severity Level: Gangguan elektrolit (E87.-) TIDAK BISA dijadikan diagnosis sekunder hanya dari hasil lab. Harus disertai bukti terapi intravena koreksi / gangguan organ berat."
-    },
-    "PTD": "1"
   },
   {
     "id": "AUDIT-COD-15",
@@ -188,7 +317,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["O80.0", "O80.9", "73.59"] }, { "operator": "OR", "codes": ["O70.0", "O70.1"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "O80.0",
+            "O80.9",
+            "73.59"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "O70.0",
+            "O70.1"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding: Ruptur perineum derajat 1 dan 2 (O70.0, O70.1) adalah bagian normal persalinan. Tidak dikoding terpisah."
@@ -202,7 +347,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["I10"] }, { "operator": "OR", "codes": ["I50", "I50.0", "I50.1", "I50.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "I10"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "I50",
+            "I50.0",
+            "I50.1",
+            "I50.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi: Heart Failure (I50.-) akibat Hipertensi (I10) HARUS digabung menjadi I11.0. Keduanya tidak boleh dipisah."
@@ -216,7 +377,22 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["I10"] }, { "operator": "OR", "codes": ["N18", "N18.9", "N19"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "I10"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "N18",
+            "N18.9",
+            "N19"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi: Hipertensi (I10) dengan CKD (N18.-) menggunakan kode kombinasi I12.-. (Tidak berlaku untuk AKI N17)."
@@ -230,7 +406,32 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["I10", "I11.0", "I12.0"] }, { "operator": "OR", "codes": ["N18", "N18.9", "N19"] }, { "operator": "OR", "codes": ["I50", "I50.0", "I50.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "I10",
+            "I11.0",
+            "I12.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "N18",
+            "N18.9",
+            "N19"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "I50",
+            "I50.0",
+            "I50.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi Lengkap: HT dengan CKD (N18) yang disertai CHF (I50) dikoding dengan I13.2. Gejala edema paru tidak dikoding terpisah."
@@ -244,7 +445,20 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["I50.0"] }, { "operator": "OR", "codes": ["J81"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "I50.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J81"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi: Edema Paru (J81) bersamaan dengan CHF (I50.0), cukup gunakan kode tunggal I50.1 (Left ventricular failure)."
@@ -258,7 +472,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["J44.0", "J44.9"] }, { "operator": "OR", "codes": ["J18", "J18.9", "J15"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "J44.0",
+            "J44.9"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J18",
+            "J18.9",
+            "J15"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi: PPOK (J44.9) + Pneumonia (J18.-) digabung menjadi J44.0. PENGECUALIAN: PPOK Eksaserbasi Akut (J44.1) + Pneumonia (J18.9) DIKODING TERPISAH."
@@ -272,7 +502,21 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A01", "A01.0"] }, { "operator": "OR", "codes": ["A09"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A01",
+            "A01.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "A09"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding (Excludes): Gastroenteritis (A09) tidak dikoding lagi jika Typhoid Fever (A01.0) sudah tegak."
@@ -286,7 +530,22 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A01", "A01.0"] }, { "operator": "OR", "codes": ["J18", "J18.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A01",
+            "A01.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J18",
+            "J18.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Dagger & Asterisk: Pneumonia pada Typhoid Fever BUKAN J18.9. Gunakan A01.0+ (Utama) dan J17.0* (Sekunder)."
@@ -300,7 +559,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["O41.0"] }, { "operator": "OR", "codes": ["O42", "O42.0", "O42.1", "O42.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "O41.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "O42",
+            "O42.0",
+            "O42.1",
+            "O42.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding (Excludes): Jika ada oligohidroamnion (O41.0) disertai KPD (O42.-), maka HANYA digunakan kode O42.-."
@@ -314,7 +589,25 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["R57.1", "R57", "R57.9"] }, { "operator": "OR", "codes": ["S06", "S06.8", "S36", "T09"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "R57.1",
+            "R57",
+            "R57.9"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "S06",
+            "S06.8",
+            "S36",
+            "T09"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Excludes R57: Syok hipovolemik (R57.1) akibat cedera/trauma HARUS diganti menjadi Traumatic shock (T79.4)."
@@ -328,7 +621,24 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["53.0", "53.00", "53.01", "53.02"] }, { "operator": "OR", "codes": ["54.59", "K66.0"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "53.0",
+            "53.00",
+            "53.01",
+            "53.02"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "54.59",
+            "K66.0"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Unbundling Prosedur: Tindakan Adhesiolysis (54.59) TIDAK LAZIM dikoding bersamaan dengan Hernia Inguinal murni. Berisiko menaikkan tarif secara tidak wajar."
@@ -342,7 +652,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["74.1", "74.4", "74.99"] }, { "operator": "OR", "codes": ["65.89", "54.59"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "74.1",
+            "74.4",
+            "74.99"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "65.89",
+            "54.59"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Unbundling Prosedur: Lisis perlengketan (65.89/54.59) akibat riwayat SC sebelumnya SUDAH INCLUDE dalam prosedur Seksio Sesarea (74.-)."
@@ -356,7 +682,21 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["O60.0"] }, { "operator": "OR", "codes": ["O47.0", "O47.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "O60.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "O47.0",
+            "O47.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Excludes: False Labour (O47.0) TIDAK BISA dikoding bersamaan dengan Preterm Labour (O60.0)."
@@ -370,7 +710,24 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["36.0", "36.01", "36.02", "36.06"] }, { "operator": "OR", "codes": ["I49.3", "I49.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "36.0",
+            "36.01",
+            "36.02",
+            "36.06"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "I49.3",
+            "I49.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding Komplikasi: Gangguan irama sesaat (VPD / I49.3) EFEK DARI prosedur PCI tidak boleh dimasukkan sebagai diagnosis sekunder."
@@ -384,7 +741,22 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["D61.9", "D61.0"] }, { "operator": "OR", "codes": ["Z51.1", "C"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "D61.9",
+            "D61.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "Z51.1",
+            "C"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kesalahan ICD: Pansitopenia efek kemoterapi BUKAN dikode Anemia Aplastik idiopatik (D61.9/D61.0). Harus dikode terkait efek obat (D61.1)."
@@ -398,7 +770,25 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["B20", "B20.0"] }, { "operator": "OR", "codes": ["A15", "A15.0", "A16", "A16.0", "A16.2"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "B20",
+            "B20.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "A15",
+            "A15.0",
+            "A16",
+            "A16.0",
+            "A16.2"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kode Kombinasi: HIV + TB HARUS menggunakan B20.0 (HIV resulting in mycobacterial infection). Kode TB (A15/A16) TIDAK BOLEH dikoding terpisah."
@@ -412,7 +802,25 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["54.11", "54.19"] }, { "operator": "OR", "codes": ["68.4", "68.5", "68.9", "47.0", "54.4"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "54.11",
+            "54.19"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "68.4",
+            "68.5",
+            "68.9",
+            "47.0",
+            "54.4"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Omit Code: Laparotomi (54.11/54.19) SEBAGAI JALAN MASUK untuk operasi utama (misal Histerektomi/Apendiktomi) adalah OMIT CODE (tidak dikoding)."
@@ -426,7 +834,21 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["O80.0", "O80.9"] }, { "operator": "OR", "codes": ["75.69"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "O80.0",
+            "O80.9"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "75.69"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding Prosedur: Repair episiotomi rutin dikoding 73.6. Kode 75.69 (Repair Perineum) HANYA untuk robekan derajat 3/4."
@@ -440,7 +862,22 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["N18.5", "Z49.1"] }, { "operator": "OR", "codes": ["39.42", "39.52"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "N18.5",
+            "Z49.1"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "39.42",
+            "39.52"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Koreksi Spesifisitas: AV Shunt BARU menggunakan 39.27. Kode 39.42 HANYA untuk REVISI shunt lama."
@@ -454,7 +891,21 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["K05.1", "K05.2"] }, { "operator": "OR", "codes": ["24.4"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "K05.1",
+            "K05.2"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "24.4"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Koreksi Anatomi: Eksisi di gusi/gingiva dikode 24.31. Jangan gunakan 24.4 (untuk kista di dalam tulang rahang/mandibula)."
@@ -468,7 +919,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["M51.2", "D16.6", "M51.-"] }, { "operator": "OR", "codes": ["G82.2", "G82.-"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "M51.2",
+            "D16.6",
+            "M51.-"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "G82.2",
+            "G82.-"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Underlying Cause: Paraplegia (G82.2) sebagai manifestasi HNP/Neoplasma (D16.6) TIDAK PERLU dikoding terpisah jika diagnosis utamanya sudah ditangani."
@@ -482,7 +949,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["S06", "S06.2", "S06.4", "S06.8"] }, { "operator": "OR", "codes": ["G93.5"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "S06",
+            "S06.2",
+            "S06.4",
+            "S06.8"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "G93.5"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Includes: G93.5 (Compression of brain) INCLUDE di dalam cedera intrakranial traumatik (S06.-). G93.5 hanya untuk kompresi otak NON-TRAUMATIK."
@@ -496,7 +979,28 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["N21", "N21.0"] }, { "operator": "OR", "codes": ["N13", "N13.2"] }, { "operator": "OR", "codes": ["N20.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "N21",
+            "N21.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "N13",
+            "N13.2"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "N20.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Ketidaksesuaian Anatomi: N20.9 HANYA untuk Batu Ginjal & Ureter. Jangan gunakan N20.9 untuk menggabungkan Batu Buli (N21.0) dengan Hidronefrosis (N13.2)."
@@ -510,7 +1014,20 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["N20.1"] }, { "operator": "OR", "codes": ["N10"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "N20.1"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "N10"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kombinasi: Batu Ureter (N20.1) & Pyelonephritis (N10) DIGABUNG menjadi N20.9 (Urinary calculus with pyelonephritis)."
@@ -524,7 +1041,9 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "simple",
       "operator": "OR",
-      "codes": ["73.4"]
+      "codes": [
+        "73.4"
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Omit Code: 73.4 (Medical induction) TIDAK BOLEH digunakan jika tujuannya hanya 'augmentasi' (memperkuat kontraksi/HIS yang sudah ada). Augmentasi adalah OMIT CODE."
@@ -538,7 +1057,27 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["J85.0", "J85.2", "J85.3"] }, { "operator": "OR", "codes": ["J18", "J18.0", "J18.1", "J18.2", "J18.8", "J18.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "J85.0",
+            "J85.2",
+            "J85.3"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J18",
+            "J18.0",
+            "J18.1",
+            "J18.2",
+            "J18.8",
+            "J18.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Kode Kombinasi: Abses Paru tidak boleh dikoding terpisah dengan Pneumonia Unspecified (J18.-). Gunakan KODE KOMBINASI J85.1 sebagai Diagnosis Utama."
@@ -552,7 +1091,27 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["J85.1"] }, { "operator": "OR", "codes": ["J10", "J11", "J12", "J13", "J14", "J15", "J16", "J15.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "J85.1"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J10",
+            "J11",
+            "J12",
+            "J13",
+            "J14",
+            "J15",
+            "J16",
+            "J15.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Excludes: Kode J85.1 memiliki Excludes untuk pneumonia bakterial/spesifik (J10-J16). Gunakan kode spesifik pneumonianya (J15.-) ditambah J85.2. JANGAN gunakan J85.1."
@@ -566,7 +1125,25 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A15", "A15.2", "A16", "A16.2"] }, { "operator": "OR", "codes": ["J18", "J18.9", "J15"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A15",
+            "A15.2",
+            "A16",
+            "A16.2"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J18",
+            "J18.9",
+            "J15"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Includes: Kondisi Tuberculous Pneumonia sudah TERMASUK (Include) di dalam kode A15.2 / A16.2. Kode Pneumonia (J18.-) tidak boleh ditagihkan sebagai diagnosis sekunder."
@@ -580,7 +1157,20 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A90"] }, { "operator": "OR", "codes": ["A91"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A90"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "A91"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Mutually Exclusive: Kode Dengue Fever (A90) mengeksklusi DHF (A91). Anda tidak boleh mengoding keduanya secara bersamaan dalam satu episode rawat."
@@ -594,7 +1184,22 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["B05.9", "B05"] }, { "operator": "OR", "codes": ["J18", "J18.9"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "B05.9",
+            "B05"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "J18",
+            "J18.9"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Dagger & Asterisk: Measles tanpa komplikasi adalah B05.9. Jika disertai Pneumonia, dilarang menggunakan J18.9. Gunakan sistem dagger-asterisk: B05.2+ (Utama) dan J17.1* (Sekunder)."
@@ -608,7 +1213,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["A15", "A15.0", "A16", "A16.0"] }, { "operator": "OR", "codes": ["R04.2"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "A15",
+            "A15.0",
+            "A16",
+            "A16.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "R04.2"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Overcoding Simtom: Hemoptisis (batuk darah / R04.2) merupakan bagian dari manifestasi klinis Tuberkulosis Paru. Tidak boleh dikode terpisah sebagai diagnosis sekunder."
@@ -622,7 +1243,23 @@ const DEFAULT_AUDIT_RULES = [
     "condition": {
       "type": "grouped",
       "operator": "AND",
-      "groups": [{ "operator": "OR", "codes": ["M84.0"] }, { "operator": "OR", "codes": ["S72", "S82", "S52", "S-"] }]
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "M84.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "S72",
+            "S82",
+            "S52",
+            "S-"
+          ]
+        }
+      ]
     },
     "validation_action": {
       "warning_message": "Kaidah Excludes: Jika episode perawatan adalah penanganan Malunion / Non-union (M84.0), kode diagnosa Fraktur akut (S-codes) TIDAK DIKODE bersamaan."
@@ -637,14 +1274,295 @@ const DEFAULT_AUDIT_RULES = [
       "type": "grouped",
       "operator": "AND",
       "groups": [
-        { "operator": "OR", "codes": ["F29"] },
-        { "operator": "OR", "codes": ["G40"] }
+        {
+          "operator": "OR",
+          "codes": [
+            "F29"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "G40"
+          ]
+        }
       ]
     },
     "validation_action": {
       "warning_message": "Koreksi Koding: Jika Kasus Psikosis dan terdapat Epilepsi Psikosis gunakan Kode F06.8 (Sumber: Aturan ICD 10 2010)."
     },
     "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-60",
+    "case": "Stroke Akut Tanpa Bukti Radiologi (CT Scan/MRI)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "custom_missing",
+      "requires": [
+        "I60",
+        "I61",
+        "I62",
+        "I63"
+      ],
+      "missing": [
+        "87.03",
+        "88.91"
+      ],
+      "excludes": [
+        "Z08",
+        "Z09"
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Bukti Medis Tidak Lengkap / Upcoding: Klaim stroke akut (I60-I63) WAJIB disertai tindakan CT-Scan Kepala (87.03) atau MRI (88.91). Jika tidak ada dan BUKAN pasien kontrol (Z08/Z09), turunkan koding menjadi I64."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-61",
+    "case": "AMI dan CHF (Kondisi Akut)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "grouped",
+      "operator": "AND",
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "I21.0"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "I50.0"
+          ]
+        }
+      ]
+    },
+    "validation_action": {
+      "warning_message": "AMI adalah kondisi akut yang dapat menyebabkan gagal jantung krn kerusakan otot jantung. CHF merupakan bagian dari manifestasi AMI --> diagnosa yg menjadi bagian diagnosa utama tidak dapat dikoding terpisah. Sesuai hasil TKMKB tahun 2020 CHF pada kasus AMI tidak perlu untuk dikoding terpisah."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-62",
+    "case": "Injeksi Intraartikular (81.92)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "simple",
+      "operator": "OR",
+      "codes": [
+        "81.92"
+      ]
+    },
+    "validation_action": {
+      "warning_message": "⚠️ WARNING KLAIM KODE 81.92 (Injeksi Intraartikular) Rekomendasi TKMKB Tahun 2020⚠️
+1. CEK STATUS RAWAT (RAJAL VS RANAP)
+Default tindakan ini adalah Rawat Jalan
+.
+Boleh Rawat Inap HANYA JIKA tertulis di rekam medis: Nyeri hebat (Skala VAS ≥ 7) yang membatasi pergerakan dan tidak mempan obat anti nyeri oral, atau ada nyeri lokal sementara pasca-injeksi
+.
+2. CEK OBAT FARMASI & INTERVAL WAKTU
+Steroid: Wajib berjarak minimal 3-4 bulan dari suntikan sebelumnya (untuk mencegah osteoporosis)
+.
+Asam Hialuronat: Batas maksimalnya 1x/minggu (selama 5 minggu berturut-turut) ATAU 1x/6 bulan
+.
+Lidocain Murni: DITOLAK jika diresepkan sebagai terapi tunggal (lidocain hanya boleh untuk menyertai terapi utama)
+.
+3. CEK KOMPETENSI DOKTER (DPJP)
+Tindakan HANYA SAH jika dikerjakan oleh DPJP (Spesialis Neurologi, Orthopedi, Rheumatologi, Anestesi, atau Rehabilitasi Medik) yang wajib melampirkan Sertifikat Kompetensi Tambahan (SKT)."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-63",
+    "case": "Persalinan SC Tidak Spesifik (O82.9)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "simple",
+      "operator": "OR",
+      "codes": [
+        "O82.9"
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Kurang Spesifik: Jangan gunakan kode O82.9 (Delivery by caesarean section, unspecified). Gunakan kode SC yang lebih spesifik: O82.0 (Elektif/Repeat), O82.1 (Emergensi), O82.2 (Histerektomi), atau O82.8."
+    },
+    "PTD": "1"
+  },
+  {
+    "id": "AUDIT-COD-64",
+    "case": "Anemia Tanpa Transfusi",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "custom_missing",
+      "requires": [
+        "D64.9",
+        "D64.8",
+        "D64.0"
+      ],
+      "missing": [
+        "99.03",
+        "99.04"
+      ],
+      "excludes": []
+    },
+    "validation_action": {
+      "warning_message": "Bukti Medis Tidak Lengkap: Penagihan kondisi Anemia (D64.-) sebagai diagnosa sekunder harus disertai tindakan transfusi. Jika tidak ada transfusi darah, maka kode Anemia harus dihapus."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-65",
+    "case": "Gagal Jantung (CHF) tanpa Echocardiography",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "custom_missing",
+      "requires": [
+        "I50",
+        "I50.0",
+        "I50.1",
+        "I50.9",
+        "I11.0",
+        "I13.0",
+        "I13.2"
+      ],
+      "missing": [
+        "88.52",
+        "88.53",
+        "88.54",
+        "88.72"
+      ],
+      "excludes": []
+    },
+    "validation_action": {
+      "warning_message": "Bukti Medis Tidak Lengkap: Penegakan diagnosa Heart Failure / Penyakit Jantung dengan gagal jantung wajib disertai dengan pemeriksaan penunjang Echocardiography. Mohon lengkapi berkas atau hapus kodenya."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-66",
+    "case": "Unbundling RJP dan ETT",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "grouped",
+      "operator": "AND",
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "99.60"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "96.04"
+          ]
+        }
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Overcoding Prosedur: Tindakan Pemasangan ETT (96.04) sudah termasuk (include) di dalam tindakan Resusitasi Jantung Paru (RJP / 99.60). Cukup gunakan 99.60."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-67",
+    "case": "Stomatitis K12.1",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "simple",
+      "operator": "OR",
+      "codes": [
+        "K12.1"
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Koreksi Koding: Kode Stomatitis K12.1 seharusnya dikoding sebagai K12.0 (Recurrent oral aphthae / stomatitis NOS)."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-68",
+    "case": "Kesalahan Prosedur 86.09 (Insisi Kulit)",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "simple",
+      "operator": "OR",
+      "codes": [
+        "86.09"
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Koreksi Prosedur: Prosedur 86.09 (Other incision of skin) kurang tepat. Periksa apakah prosedur sebenarnya adalah insisi dan drainase 86.04."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-69",
+    "case": "K56 pada Bayi Baru Lahir",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "custom_age",
+      "requires": [
+        "K56"
+      ],
+      "max_age_days": 28
+    },
+    "validation_action": {
+      "warning_message": "Kesesuaian Umur: Diagnosa K56 (Paralytic ileus/intestinal obstruction) pada bayi baru lahir (< 28 hari) seharusnya dikode khusus neonatus, yaitu P76.8."
+    },
+    "PTD": "1/2"
+  },
+  {
+    "id": "AUDIT-COD-70",
+    "case": "Kuretase BO dan Mole di Rawat Inap",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "grouped",
+      "operator": "AND",
+      "groups": [
+        {
+          "operator": "OR",
+          "codes": [
+            "O02.0",
+            "O01"
+          ]
+        },
+        {
+          "operator": "OR",
+          "codes": [
+            "69.0",
+            "69.01",
+            "69.02",
+            "69.09"
+          ]
+        }
+      ]
+    },
+    "validation_action": {
+      "warning_message": "Kesesuaian Jenis Rawat: Tindakan Kuretase untuk Blighted Ovum (O02.0) dan Mola (O01.-) seharusnya ditagihkan sebagai Rawat Jalan (RJTL), bukan Rawat Inap."
+    },
+    "PTD": "1"
+  },
+  {
+    "id": "AUDIT-COD-71",
+    "case": "Ventilator >96 Jam dengan LOS Pendek",
+    "category": "Coding Audit",
+    "condition": {
+      "type": "custom_los",
+      "requires": [
+        "96.72"
+      ],
+      "max_los_days": 3
+    },
+    "validation_action": {
+      "warning_message": "Kesesuaian LOS: Terdapat prosedur Ventilator >96 jam (96.72), namun Lama Hari Rawat (LOS) < 4 hari. Mohon koreksi menjadi Ventilator <96 jam (96.71)."
+    },
+    "PTD": "1"
   }
 ];
 
@@ -1548,10 +2466,48 @@ export default function App() {
       }
 
       const acRow = [...dList, ...pList]; let hit = false;
+      const ptdVal = String(r['PTD'] || '').trim();
+      const umurHari = Number(r['UMUR_HARI']) || 9999;
+      const los = Number(r['LOS']) || 9999;
+      
       DEFAULT_AUDIT_RULES.forEach(ru => {
         const op = ru.condition?.operator || "OR"; let matched = false;
-        if (ru.condition?.type === 'grouped') matched = op === 'AND' ? ru.condition.groups.every(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c)))) : ru.condition.groups.some(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c))));
-        else if (ru.condition?.codes) matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+        const type = ru.condition?.type;
+        
+        if (type === 'grouped') {
+          matched = op === 'AND' 
+            ? ru.condition.groups.every(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c)))) 
+            : ru.condition.groups.some(g => g.codes.some(c => acRow.some(ac => ac.startsWith(c))));
+        } else if (type === 'custom_missing') {
+          const reqs = ru.condition.requires || [];
+          const missings = ru.condition.missing || [];
+          const excludes = ru.condition.excludes || [];
+          const hasReq = reqs.some(c => acRow.some(ac => ac.startsWith(c)));
+          const hasMissing = missings.some(c => acRow.some(ac => ac.startsWith(c)));
+          const hasExclude = excludes.some(c => acRow.some(ac => ac.startsWith(c)));
+          if (hasReq && !hasMissing) {
+             if (ptdVal === '1') matched = true;
+             else if (!hasExclude) matched = true;
+          }
+        } else if (type === 'custom_age') {
+          const reqs = ru.condition.requires || [];
+          const maxAge = ru.condition.max_age_days || 999;
+          const hasReq = reqs.some(c => acRow.some(ac => ac.startsWith(c)));
+          if (hasReq && umurHari <= maxAge) matched = true;
+        } else if (type === 'custom_los') {
+          const reqs = ru.condition.requires || [];
+          const maxLos = ru.condition.max_los_days || 999;
+          const hasReq = reqs.some(c => acRow.some(ac => ac.startsWith(c)));
+          if (hasReq && los <= maxLos) matched = true;
+        } else if (ru.condition?.codes) {
+          matched = ru.condition.codes.some(c => acRow.some(ac => ac.startsWith(c)));
+        }
+
+        if (matched && type !== 'custom_missing') {
+          const rulePtd = String(ru.PTD || '').trim();
+          if (rulePtd === '1' && ptdVal !== '1' && ptdVal !== '') matched = false;
+          else if (rulePtd === '2' && ptdVal !== '2' && ptdVal !== '') matched = false;
+        }
 
         if (matched) {
           maps.audit.push({ ruleId: String(ru.id || 'N/A'), case: String(ru.case || 'Spesifik'), warning: String(ru.validation_action?.warning_message || ""), mrn: String(r['MRN'] || '-'), sep: String(r['SEP'] || '-'), codes: acRow.join(', '), coderId: cId });

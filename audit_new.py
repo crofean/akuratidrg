@@ -110,8 +110,42 @@ def main():
                             matched = True
                         elif not has_exclude:
                             matched = True
+                elif condition.get("type") == "custom_age":
+                    reqs = condition.get("requires", [])
+                    max_age = condition.get("max_age_days", 999)
+                    
+                    has_req = any(any(ac.startswith(c) for ac in ac_row) for c in reqs)
+                    umur_hari_str = str(row.get("UMUR_HARI", "")).strip()
+                    try:
+                        umur_hari = int(float(umur_hari_str)) if umur_hari_str else 9999
+                    except ValueError:
+                        umur_hari = 9999
+                        
+                    if has_req and umur_hari <= max_age:
+                        matched = True
+                elif condition.get("type") == "custom_los":
+                    reqs = condition.get("requires", [])
+                    max_los = condition.get("max_los_days", 999)
+                    
+                    has_req = any(any(ac.startswith(c) for ac in ac_row) for c in reqs)
+                    los_str = str(row.get("LOS", "")).strip()
+                    try:
+                        los = int(float(los_str)) if los_str else 9999
+                    except ValueError:
+                        los = 9999
+                        
+                    if has_req and los <= max_los:
+                        matched = True
                 elif "codes" in condition:
                     matched = any(any(ac.startswith(c) for ac in ac_row) for c in condition.get("codes", []))
+                    
+                if matched and condition.get("type") != "custom_missing":
+                    rule_ptd = str(ru.get("PTD", "")).strip()
+                    ptd = str(row.get("PTD", "")).strip()
+                    if rule_ptd == "1" and ptd not in ["1", ""]:
+                        matched = False
+                    elif rule_ptd == "2" and ptd not in ["2", ""]:
+                        matched = False
                     
                 if matched:
                     results[group_key]["audit"].append({
