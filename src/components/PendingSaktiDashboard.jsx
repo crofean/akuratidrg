@@ -6,6 +6,7 @@ import {
   ChevronDown, ChevronUp, FileText, UserCheck, ShieldCheck, Stethoscope, Layers
 } from 'lucide-react';
 import html2canvas from 'html2canvas-pro';
+import GlobalLoader from './GlobalLoader';
 
 // Default API Key for Gemini AI
 // API Key default dikosongkan untuk keamanan - masukkan key Anda di kolom input
@@ -2760,11 +2761,11 @@ Berikan jawaban audit komprehensif dalam format JSON berikut (HANYA JSON murni, 
 
       {/* MAPPING DATA LOADING ANIMATION OVERLAY */}
       {isMappingLoading && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[5000] flex flex-col items-center justify-center space-y-4">
-          <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-white text-sm font-black uppercase tracking-widest animate-pulse">Menghubungkan &amp; Menganalisis Data iDRG...</div>
-          <div className="text-teal-300 text-[10px] font-bold uppercase tracking-wide">Mencocokkan KSM, Coder, dan Resume Medis</div>
-        </div>
+        <GlobalLoader 
+          title="MENGHUBUNGKAN & MENGANALISIS DATA IDRG..."
+          subtitle="MENCOCOKKAN KSM, CODER, DAN RESUME MEDIS"
+          fullScreen={true}
+        />
       )}
 
     </div>

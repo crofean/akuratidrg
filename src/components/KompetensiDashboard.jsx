@@ -4,7 +4,7 @@ import {
   Activity, ShieldAlert, ArrowLeft, TrendingDown, TrendingUp,
   ChevronRight, X, Search, AlertCircle, CheckCircle,
   BarChart3, TableIcon, Grid3X3, Users, FileText, Filter, Download, Copy, FileSpreadsheet,
-  Lightbulb, Target, ArrowUpRight
+  Lightbulb, Target, ArrowUpRight, Zap, Award, AlertTriangle, Eye, Building2, User
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis, Cell, LabelList, ComposedChart, Line } from 'recharts';
 import PasswordModal from './PasswordModal';
@@ -13,6 +13,7 @@ import { analyzeCompetency, CONFIG_KEY, LEVEL_ORDER, ALL_GROUPS } from '../utils
 import { copyToClipboardHtml } from '../App';
 import KompetensiLaporan from './KompetensiLaporan';
 import Papa from 'papaparse';
+import GlobalLoader from './GlobalLoader';
 
 /* ─── Helpers ──────────────────────────────────────────────────────────────── */
 const fmt  = (n) => (n || 0).toLocaleString('id-ID');
@@ -27,7 +28,6 @@ const fmtR = (n) => {
 const fmtRp  = (n) => `Rp ${fmtR(n)}`;
 const fmtPct = (n) => `${(n||0).toFixed(1)}%`;
 const dn = (s) => typeof s === 'string' ? s.replace(/^kelompok\s+layanan\s+/i,'').trim() : String(s||'');
-// Mask name: keep first word + asterisks
 const maskName = (s) => {
   if (!s || s === '-') return '-';
   const parts = s.trim().split(/\s+/);
@@ -37,21 +37,161 @@ const maskName = (s) => {
 
 /* ─── Color Tokens ─────────────────────────────────────────────────────────── */
 const LC = {
-  Dasar:             { bar:'#10b981', badge:'bg-emerald-100 text-emerald-800', dot:'#10b981' },
-  Madya:             { bar:'#3b82f6', badge:'bg-blue-100 text-blue-800',    dot:'#3b82f6' },
-  Utama:             { bar:'#f59e0b', badge:'bg-amber-100 text-amber-800',  dot:'#f59e0b' },
-  Paripurna:         { bar:'#8b5cf6', badge:'bg-violet-100 text-violet-800',dot:'#8b5cf6' },
-  'Belum Ada Mapping':{ bar:'#94a3b8', badge:'bg-slate-100 text-slate-600', dot:'#94a3b8' },
+  Dasar:             { bar:'#10b981', badge:'bg-emerald-100 text-emerald-800', dot:'#10b981', glow:'rgba(16,185,129,0.3)' },
+  Madya:             { bar:'#3b82f6', badge:'bg-blue-100 text-blue-800',    dot:'#3b82f6', glow:'rgba(59,130,246,0.3)' },
+  Utama:             { bar:'#f59e0b', badge:'bg-amber-100 text-amber-800',  dot:'#f59e0b', glow:'rgba(245,158,11,0.3)' },
+  Paripurna:         { bar:'#8b5cf6', badge:'bg-violet-100 text-violet-800',dot:'#8b5cf6', glow:'rgba(139,92,246,0.3)' },
+  'Belum Ada Mapping':{ bar:'#94a3b8', badge:'bg-slate-100 text-slate-600', dot:'#94a3b8', glow:'rgba(148,163,184,0.3)' },
 };
 
+/* ─── Inline Styles ─────────────────────────────────────────────────────────── */
+const styles = `
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20,184,166,0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(20,184,166,0); }
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-4px); }
+}
+
+.komp-fade-up { animation: fadeInUp 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+.komp-fade-up-1 { animation: fadeInUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.05s both; }
+.komp-fade-up-2 { animation: fadeInUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.10s both; }
+.komp-fade-up-3 { animation: fadeInUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.15s both; }
+.komp-fade-up-4 { animation: fadeInUp 0.5s cubic-bezier(0.22,1,0.36,1) 0.20s both; }
+.spin-slow { animation: spin-slow 8s linear infinite; }
+.float-icon { animation: float 3s ease-in-out infinite; }
+
+.glass-card {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.glass-card:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+.group-card {
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+.group-card:hover {
+  border-color: #14b8a6;
+  box-shadow: 0 8px 24px rgba(20,184,166,0.15), 0 0 0 3px rgba(20,184,166,0.08);
+  transform: translateY(-3px) scale(1.01);
+}
+.group-card-danger:hover {
+  border-color: #f43f5e;
+  box-shadow: 0 8px 24px rgba(244,63,94,0.12), 0 0 0 3px rgba(244,63,94,0.06);
+}
+
+.tab-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 10px;
+  font-size: 12px; font-weight: 800;
+  transition: all 0.2s cubic-bezier(0.22,1,0.36,1);
+  border: none; cursor: pointer; outline: none;
+  white-space: nowrap;
+}
+.tab-btn-active {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: white;
+  box-shadow: 0 3px 10px rgba(13,148,136,0.25);
+}
+.tab-btn-inactive {
+  background: transparent;
+  color: #64748b;
+}
+.tab-btn-inactive:hover {
+  background: #f0fdfa;
+  color: #0d9488;
+}
+
+.stat-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 999px;
+}
+
+.progress-bar {
+  height: 6px; border-radius: 999px; overflow: hidden;
+  background: rgba(0,0,0,0.06);
+}
+.progress-fill {
+  height: 100%; border-radius: 999px;
+  transition: width 1.2s cubic-bezier(0.22,1,0.36,1);
+}
+
+.komp-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+.komp-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.komp-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+.komp-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.header-light {
+  background: white;
+  border-bottom: 1.5px solid #e2e8f0;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+
+.kpi-card-sesuai {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1.5px solid #a7f3d0;
+}
+.kpi-card-luar {
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  border: 1.5px solid #fecdd3;
+}
+.kpi-card-loss {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px solid #fde68a;
+}
+.kpi-card-total {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1.5px solid #e2e8f0;
+}
+
+.drill-modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(15,23,42,0.6);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.drill-modal-box {
+  background: white; border-radius: 24px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+  width: 100%; max-width: 1100px; max-height: 92vh;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+`;
+
 /* ─── Pure SVG Ring ───────────────────────────────────────────────────────── */
-function Ring({ data, total, size=160 }) {
+function Ring({ data, total, size=180 }) {
   if (!data?.length || !total) return (
-    <div className="flex items-center justify-center" style={{width:size,height:size}}>
-      <span className="text-slate-300 text-xs">Tidak ada data</span>
+    <div style={{width:size,height:size,display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{color:'#94a3b8',fontSize:12}}>Tidak ada data</span>
     </div>
   );
-  const cx=size/2, cy=size/2, R=size*0.42, ir=size*0.27;
+  const cx=size/2, cy=size/2, R=size*0.40, ir=size*0.26;
   let cum = -Math.PI/2;
   const segs = data.map(d=>{
     const angle=(d.value/total)*2*Math.PI;
@@ -66,9 +206,20 @@ function Ring({ data, total, size=160 }) {
   });
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      {segs.map((s,i)=><path key={i} d={s.path} fill={s.color} opacity={0.9}/>)}
-      <text x={cx} y={cy-4} textAnchor="middle" fontSize={size*0.09} fontWeight="900" fill="#1e293b">{fmt(total)}</text>
-      <text x={cx} y={cy+10} textAnchor="middle" fontSize={size*0.07} fill="#94a3b8">kasus</text>
+      <defs>
+        {segs.map((s,i)=>(
+          <filter key={i} id={`glow${i}`}>
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        ))}
+      </defs>
+      {segs.map((s,i)=>(
+        <path key={i} d={s.path} fill={s.color} opacity={0.92} style={{filter:`drop-shadow(0 2px 4px ${s.color}66)`}}/>
+      ))}
+      <circle cx={cx} cy={cy} r={ir-2} fill="white" opacity={0.95}/>
+      <text x={cx} y={cy-6} textAnchor="middle" fontSize={size*0.09} fontWeight="900" fill="#0f172a">{fmt(total)}</text>
+      <text x={cx} y={cy+10} textAnchor="middle" fontSize={size*0.065} fill="#94a3b8" fontWeight="600">kasus</text>
     </svg>
   );
 }
@@ -79,15 +230,15 @@ function MiniLevelBar({ ranap, rajal }) {
   const total = levels.reduce((s,lv)=>{
     return s + (ranap[lv]?.kasus||0) + (rajal[lv]?.kasus||0);
   },0);
-  if(!total) return <div className="h-3 bg-slate-100 rounded-full"/>;
+  if(!total) return <div style={{height:8,background:'#f1f5f9',borderRadius:999}}/>;
   return (
-    <div className="flex h-3 rounded-full overflow-hidden gap-px">
+    <div style={{display:'flex',height:8,borderRadius:999,overflow:'hidden',gap:1}}>
       {levels.map(lv=>{
         const k=(ranap[lv]?.kasus||0)+(rajal[lv]?.kasus||0);
         if(!k) return null;
         const w=(k/total)*100;
         return <div key={lv} title={`${lv}: ${fmt(k)}`}
-          style={{width:`${w}%`,background:LC[lv].dot}} />;
+          style={{width:`${w}%`,background:LC[lv].dot,boxShadow:`inset 0 1px 2px rgba(255,255,255,0.4)`}} />;
       })}
     </div>
   );
@@ -96,7 +247,7 @@ function MiniLevelBar({ ranap, rajal }) {
 /* ─── Drill-Down Modal ────────────────────────────────────────────────────── */
 function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   const [search, setSearch] = useState('');
-  const [tab, setTab] = useState('patients'); // patients | icds
+  const [tab, setTab] = useState('patients');
   const [page, setPage] = useState(0);
   const [rsMap, setRsMap] = useState({});
   const PER_PAGE = 50;
@@ -114,9 +265,6 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
     if (typeof group === 'object' && group?.filterFn) {
        return rows.filter(r => group.filterFn(r));
     }
-
-    const levelValues = { 'Belum Ada Mapping':0, Dasar:1, Madya:2, Utama:3, Paripurna:4 };
-    
     return rows.filter(row => {
       if (!row._meta) return false;
       if (row._meta.highestGroup !== groupName) return false;
@@ -135,22 +283,15 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
     );
   }, [matchedRows, search]);
 
-  // ICD summary — scan both DIAGLIST and PROCLIST
   const icdSummary = useMemo(() => {
     const map = {};
-    const inaTotal = parseFloat(matchedRows.reduce((s, r) => s + (parseFloat(r['TOTAL_TARIF'] || 0) || 0), 0));
-    const idrgTotal = parseFloat(matchedRows.reduce((s, r) => s + (parseFloat(r['IDRG_TOTAL_TARIF'] || 0) || 0), 0));
-    
     matchedRows.forEach(row => {
       const ina = parseFloat(row['TOTAL_TARIF'] || 0) || 0;
       const idrg = parseFloat(row['IDRG_TOTAL_TARIF'] || 0) || 0;
       const pGroup = row._meta?.highestGroup;
-      const diagStr  = row['DIAGLIST'] || '';
-      const procStr  = row['PROCLIST'] || '';
-      const diaglist = diagStr.split(';').map(d => d.trim()).filter(Boolean);
-      const proclist = procStr.split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
+      const diaglist = (row['DIAGLIST']||'').split(';').map(d => d.trim()).filter(Boolean);
+      const proclist = (row['PROCLIST']||'').split(';').map(p => p.trim()).filter(p => p && p !== '-' && p.toLowerCase() !== 'none');
       const allCodes = [...new Set([...diaglist, ...proclist])];
-      
       allCodes.forEach(c => {
         const entries = icdMap.get(c) || icdMap.get(c.replace('.',''));
         if(entries){
@@ -168,12 +309,11 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
     return Object.values(map).sort((a,b)=>b.count-a.count);
   }, [matchedRows, icdMap, group]);
 
-  // Pre-compute totals once
   const totIna  = matchedRows.reduce((s,r)=>s+(parseFloat(r['TOTAL_TARIF'])||0),0);
   const totIdrg = matchedRows.reduce((s,r)=>s+(parseFloat(r['IDRG_TOTAL_TARIF'])||0),0);
   const totSel  = totIdrg - totIna;
 
-    const copyTable = () => {
+  const copyTable = () => {
     if (tab === 'patients') {
       const headers = ["No", "Rumah Sakit", "SEP / No Klaim", "Nama Pasien", "DPJP", "Jenis", "Diagnosa Utama", "INA-CBG", "iDRG", "Selisih"];
       const r = matchedRows.map((r, i) => {
@@ -187,12 +327,7 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
         const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
         const sel = idrg - ina;
         const jenis = String(r['PTD']||'').trim()==='1' ? 'Ranap' : 'Rajal';
-        return [
-          i+1, namaRs, sep, patientName, dpjp, jenis, mainDiag,
-          `Rp ${ina.toLocaleString('id-ID')}`,
-          `Rp ${idrg.toLocaleString('id-ID')}`,
-          `${sel >= 0 ? '+' : ''}Rp ${sel.toLocaleString('id-ID')}`
-        ];
+        return [i+1, namaRs, sep, patientName, dpjp, jenis, mainDiag, `Rp ${ina.toLocaleString('id-ID')}`, `Rp ${idrg.toLocaleString('id-ID')}`, `${sel >= 0 ? '+' : ''}Rp ${sel.toLocaleString('id-ID')}`];
       });
       copyToClipboardHtml(headers, r, `Data Pasien: ${dn(group)}`);
     } else {
@@ -203,18 +338,13 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
         const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
         const isSesuai = rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx;
         const sel = d.idrg - d.ina;
-        return [
-          i+1, d.code, d.desc, rsLevel, d.level, isSesuai ? 'Sesuai' : 'Tidak Sesuai', d.count,
-          `Rp ${d.ina.toLocaleString('id-ID')}`,
-          `Rp ${d.idrg.toLocaleString('id-ID')}`,
-          `${sel >= 0 ? '+' : ''}Rp ${sel.toLocaleString('id-ID')}`
-        ];
+        return [i+1, d.code, d.desc, rsLevel, d.level, isSesuai ? 'Sesuai' : 'Tidak Sesuai', d.count, `Rp ${d.ina.toLocaleString('id-ID')}`, `Rp ${d.idrg.toLocaleString('id-ID')}`, `${sel >= 0 ? '+' : ''}Rp ${sel.toLocaleString('id-ID')}`];
       });
       copyToClipboardHtml(headers, r, `Ringkasan ICD: ${dn(group)}`);
     }
   };
 
-  const exportToExcel = () => {
+  const exportToExcelLocal = () => {
     let csv = "No,Rumah Sakit,SEP / No Klaim,Nama Pasien,DPJP,Jenis,Diagnosa Utama,Peringatan Kompetensi,INA-CBG,iDRG,Selisih\n";
     matchedRows.forEach((r, i) => {
       const kodeRs = String(r['KODE_RS']||'').trim();
@@ -227,12 +357,8 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
       const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
       const sel = idrg - ina;
       const jenis = String(r['PTD']||'').trim()==='1' ? 'Ranap' : 'Rajal';
-
-      // Compute warnings
       let warnings = [];
-      const diagStr = r['DIAGLIST'] || '';
-      const procStr = r['PROCLIST'] || '';
-      const codes = [...diagStr.split(';'), ...procStr.split(';')].map(d=>d.trim()).filter(d=>d&&d!=='-'&&d.toLowerCase()!=='none');
+      const codes = [...(r['DIAGLIST']||'').split(';'), ...(r['PROCLIST']||'').split(';')].map(d=>d.trim()).filter(d=>d&&d!=='-'&&d.toLowerCase()!=='none');
       codes.forEach(c => {
         const eList = icdMap?.get(c) || icdMap?.get(c.replace('.',''));
         if (eList && eList.length > 0) {
@@ -255,7 +381,6 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
       });
       const uniqueWarnings = Array.from(new Map(warnings.map(item => [item.code, item])).values());
       const warningStr = uniqueWarnings.length > 0 ? uniqueWarnings.map(w => `${w.code} (${w.desc}): Butuh ${w.level} (${w.group})`).join(' | ') : 'Sesuai';
-
       csv += `${i+1},"${namaRs}","${sep}","${patientName}","${dpjp}","${jenis}","${mainDiag}","${warningStr}",${ina},${idrg},${sel}\n`;
     });
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -269,87 +394,47 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   const pageData = filtered.slice(page*PER_PAGE, (page+1)*PER_PAGE);
 
   return (
-    <div className="fixed inset-0 z-[200] bg-black/20 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden"
-           onClick={e=>e.stopPropagation()}>
-        {/* Modal Header */}
-        <div className="bg-gradient-to-r from-teal-50 to-white border-b border-slate-100 p-5 flex items-center justify-between">
+    <div className="drill-modal-overlay" onClick={onClose}>
+      <div className="drill-modal-box" onClick={e=>e.stopPropagation()}>
+
+        {/* Modal Header — dark gradient */}
+        <div style={{background:'linear-gradient(135deg,#0f172a 0%,#1e293b 100%)',padding:'20px 24px',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
           <div>
-            <p className="text-xs text-teal-600 font-black uppercase tracking-widest">
-               {customTitle || `Drill-Down Detail ${filterLevel ? `(Level ${filterLevel})` : ''}`}
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">{fmt(matchedRows.length)} kasus terdampak</p>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+              <div style={{width:28,height:28,borderRadius:8,background:'rgba(20,184,166,0.2)',border:'1px solid rgba(20,184,166,0.3)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                <Eye size={14} color="#14b8a6"/>
+              </div>
+              <p style={{fontSize:10,fontWeight:800,color:'#14b8a6',letterSpacing:'0.12em',textTransform:'uppercase'}}>
+                {customTitle || `Drill-Down Detail${filterLevel ? ` · Level ${filterLevel}` : ''}`}
+              </p>
+            </div>
+            <p style={{fontSize:13,fontWeight:700,color:'rgba(255,255,255,0.5)',marginTop:2}}>{fmt(matchedRows.length)} kasus terdampak</p>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={copyTable} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-sky-500 rounded-lg text-xs font-bold transition-colors">
-              <Copy size={14}/> Copy Tabel
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <button onClick={copyTable} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 14px',background:'rgba(255,255,255,0.08)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:10,color:'rgba(255,255,255,0.7)',fontSize:11,fontWeight:700,cursor:'pointer',transition:'all 0.2s'}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(14,165,233,0.2)';e.currentTarget.style.color='#7dd3fc';}}
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.08)';e.currentTarget.style.color='rgba(255,255,255,0.7)';}}>
+              <Copy size={13}/> Copy Tabel
             </button>
-            <button onClick={() => { 
+            <button onClick={() => {
               if(onExport) {
-                const sheetICD = {
-                  name: 'Ringkasan_ICD',
-                  columns: [
-                    { header: 'No', key: 'no', width: 5 },
-                    { header: 'Kode ICD', key: 'code', width: 15 },
-                    { header: 'Deskripsi', key: 'desc', width: 50 },
-                    { header: 'Komp. RS', key: 'komprs', width: 20 },
-                    { header: 'Level ICD', key: 'levelicd', width: 20 },
-                    { header: 'Status', key: 'status', width: 15 },
-                    { header: 'Frekuensi', key: 'freq', width: 10 },
-                    { header: 'INA-CBG', key: 'ina', width: 20 },
-                    { header: 'iDRG', key: 'idrg', width: 20 },
-                    { header: 'Selisih', key: 'selisih', width: 20 }
-                  ],
-                  data: []
-                };
+                const sheetICD = { name:'Ringkasan_ICD', columns:[
+                  {header:'No',key:'no',width:5},{header:'Kode ICD',key:'code',width:15},{header:'Deskripsi',key:'desc',width:50},
+                  {header:'Komp. RS',key:'komprs',width:20},{header:'Level ICD',key:'levelicd',width:20},{header:'Status',key:'status',width:15},
+                  {header:'Frekuensi',key:'freq',width:10},{header:'INA-CBG',key:'ina',width:20},{header:'iDRG',key:'idrg',width:20},{header:'Selisih',key:'selisih',width:20}
+                ], data:[] };
                 if (icdSummary) {
                   icdSummary.forEach((d, i) => {
                     const rsLevel = config && config[group] ? config[group] : 'Belum Ada Mapping';
-                    const rsLevelIdx = LEVEL_ORDER.indexOf(rsLevel);
-                    const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
-                    const isSesuai = rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx;
-            
-                    sheetICD.data.push({
-                      no: i + 1,
-                      code: d.code,
-                      desc: d.desc,
-                      komprs: rsLevel,
-                      levelicd: d.level,
-                      status: isSesuai ? 'Sesuai' : 'Tidak Sesuai',
-                      freq: d.count,
-                      ina: d.ina,
-                      idrg: d.idrg,
-                      selisih: d.idrg - d.ina
-                    });
+                    const isSesuai = rsLevel==='Belum Ada Mapping'?true:LEVEL_ORDER.indexOf(d.level)<=LEVEL_ORDER.indexOf(rsLevel);
+                    sheetICD.data.push({no:i+1,code:d.code,desc:d.desc,komprs:rsLevel,levelicd:d.level,status:isSesuai?'Sesuai':'Tidak Sesuai',freq:d.count,ina:d.ina,idrg:d.idrg,selisih:d.idrg-d.ina});
                   });
                 }
-
-                const sheetPasien = {
-                  name: 'Data_Pasien',
-                  columns: [
-                    { header: 'No', key: 'no', width: 5 },
-                    { header: 'Rumah Sakit', key: 'rs', width: 30 },
-                    { header: 'SEP / No Klaim', key: 'sep', width: 25 },
-                    { header: 'Nama Pasien', key: 'nama', width: 30 },
-                    { header: 'DPJP', key: 'dpjp', width: 30 },
-                    { header: 'Jenis', key: 'jenis', width: 15 },
-                    { header: 'Diagnosa Utama', key: 'diag', width: 20 },
-                    { header: 'INA-CBG', key: 'ina', width: 20 },
-                    { header: 'iDRG', key: 'idrg', width: 20 },
-                    { header: 'Selisih', key: 'selisih', width: 20 }
-                  ],
-                  data: []
-                };
-
-                const maskName = (name) => {
-                  if (!name || name === '-' || name.length < 3) return name;
-                  const parts = name.split(' ');
-                  return parts.map(p => {
-                    if (p.length <= 2) return p;
-                    return p.charAt(0) + '*'.repeat(p.length - 2) + p.charAt(p.length - 1);
-                  }).join(' ');
-                };
-
+                const sheetPasien = { name:'Data_Pasien', columns:[
+                  {header:'No',key:'no',width:5},{header:'Rumah Sakit',key:'rs',width:30},{header:'SEP / No Klaim',key:'sep',width:25},
+                  {header:'Nama Pasien',key:'nama',width:30},{header:'DPJP',key:'dpjp',width:30},{header:'Jenis',key:'jenis',width:15},
+                  {header:'Diagnosa Utama',key:'diag',width:20},{header:'INA-CBG',key:'ina',width:20},{header:'iDRG',key:'idrg',width:20},{header:'Selisih',key:'selisih',width:20}
+                ], data:[] };
                 rows.forEach((r, i) => {
                   const kodeRs = String(r['KODE_RS']||'').trim();
                   const namaRs = rsMap[kodeRs] ? `${kodeRs} - ${rsMap[kodeRs]}` : kodeRs || '-';
@@ -359,85 +444,73 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                   const mainDiag = (r['DIAGLIST']||'').split(';')[0]?.trim()||'-';
                   const ina = parseFloat(r['TOTAL_TARIF'])||0;
                   const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
-                  const sel = idrg - ina;
-                  const jenis = String(r['PTD']||'').trim()==='1' ? 'Ranap' : 'Rajal';
-
-                  sheetPasien.data.push({
-                    no: i + 1,
-                    rs: namaRs,
-                    sep: sep,
-                    nama: patientName,
-                    dpjp: dpjp,
-                    jenis: jenis,
-                    diag: mainDiag,
-                    ina: ina,
-                    idrg: idrg,
-                    selisih: sel
-                  });
+                  sheetPasien.data.push({no:i+1,rs:namaRs,sep,nama:patientName,dpjp,jenis:String(r['PTD']||'').trim()==='1'?'Ranap':'Rajal',diag:mainDiag,ina,idrg,selisih:idrg-ina});
                 });
-
                 onExport(dn(group), [sheetPasien, sheetICD]);
               }
-            }} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-teal-500 rounded-lg text-xs font-bold transition-colors">
-              <Download size={14}/> Download Excel
+            }} style={{display:'flex',alignItems:'center',gap:6,padding:'7px 14px',background:'rgba(20,184,166,0.15)',border:'1px solid rgba(20,184,166,0.3)',borderRadius:10,color:'#5eead4',fontSize:11,fontWeight:700,cursor:'pointer',transition:'all 0.2s'}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(20,184,166,0.25)';}}
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(20,184,166,0.15)';}}>
+              <Download size={13}/> Excel
             </button>
-            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
-              <X size={20}/>
+            <button onClick={onClose} style={{width:32,height:32,borderRadius:10,border:'1px solid rgba(255,255,255,0.12)',background:'rgba(255,255,255,0.06)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'rgba(255,255,255,0.6)',transition:'all 0.2s'}}
+              onMouseEnter={e=>{e.currentTarget.style.background='rgba(239,68,68,0.2)';e.currentTarget.style.color='#fca5a5';}}
+              onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,0.06)';e.currentTarget.style.color='rgba(255,255,255,0.6)';}}>
+              <X size={16}/>
             </button>
           </div>
         </div>
 
         {/* Stats bar */}
-        <div className="grid grid-cols-5 border-b border-slate-100 divide-x divide-slate-100">
+        <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',borderBottom:'1px solid #f1f5f9',background:'#fafafa'}}>
           {[
-            { label:'Total Kasus',  val:fmt(matchedRows.length), sub:'pasien', color:'text-slate-800', bg:'' },
-            { label:'Pendapatan INA-CBG', val:fmtRp(totIna),  sub:'tarif klaim', color:'text-blue-700',   bg:'bg-blue-50/50' },
-            { label:'Pendapatan iDRG',   val:fmtRp(totIdrg), sub:'tarif iDRG',  color:'text-violet-700', bg:'bg-violet-50/50' },
-            { label:'Selisih (iDRG−INA)', val:fmtRp(Math.abs(totSel)),
-              sub: totSel>=0 ? '▲ iDRG lebih tinggi' : '▼ INA-CBG lebih tinggi',
-              color: totSel>=0 ? 'text-emerald-600' : 'text-rose-600',
-              bg: totSel>=0 ? 'bg-emerald-50/50' : 'bg-rose-50/50' },
-            { label:'% Selisih vs INA', val: totIna>0 ? `${totSel>=0?'+':''}${(totSel/totIna*100).toFixed(1)}%` : '–',
-              sub:'perbandingan tarif',
-              color: totSel>=0 ? 'text-emerald-600' : 'text-rose-600',
-              bg: totSel>=0 ? 'bg-emerald-50/30' : 'bg-rose-50/30' },
+            { label:'Total Kasus',  val:fmt(matchedRows.length), sub:'pasien', valColor:'#0f172a' },
+            { label:'Pendapatan INA-CBG', val:fmtRp(totIna),  sub:'tarif klaim', valColor:'#1d4ed8' },
+            { label:'Pendapatan iDRG',   val:fmtRp(totIdrg), sub:'tarif iDRG',  valColor:'#6d28d9' },
+            { label:'Selisih (iDRG−INA)', val:fmtRp(Math.abs(totSel)), sub:totSel>=0?'▲ iDRG lebih tinggi':'▼ INA-CBG lebih tinggi', valColor:totSel>=0?'#059669':'#dc2626' },
+            { label:'% Selisih vs INA', val:totIna>0?`${totSel>=0?'+':''}${(totSel/totIna*100).toFixed(1)}%`:'–', sub:'perbandingan tarif', valColor:totSel>=0?'#059669':'#dc2626' },
           ].map((s,i)=>(
-            <div key={i} className={`p-3 text-center ${s.bg}`}>
-              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-tight">{s.label}</p>
-              <p className={`text-lg font-black mt-1 ${s.color}`}>{s.val}</p>
-              <p className="text-[9px] text-slate-400 mt-0.5">{s.sub}</p>
+            <div key={i} style={{padding:'14px 12px',textAlign:'center',borderRight:i<4?'1px solid #f1f5f9':'none'}}>
+              <p style={{fontSize:9,fontWeight:800,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:4}}>{s.label}</p>
+              <p style={{fontSize:16,fontWeight:900,color:s.valColor,margin:0}}>{s.val}</p>
+              <p style={{fontSize:9,color:'#cbd5e1',marginTop:2}}>{s.sub}</p>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-100">
+        <div style={{display:'flex',borderBottom:'1px solid #f1f5f9',background:'white',flexShrink:0}}>
           {[
-            {id:'patients', icon:<Users size={14}/>, label:`Daftar Pasien (${fmt(matchedRows.length)})`},
-            {id:'icds',     icon:<FileText size={14}/>, label:`Kode ICD (${icdSummary.length})`},
+            {id:'patients', icon:<Users size={13}/>, label:`Daftar Pasien (${fmt(matchedRows.length)})`},
+            {id:'icds',     icon:<FileText size={13}/>, label:`Kode ICD (${icdSummary.length})`},
           ].map(t=>(
             <button key={t.id} onClick={()=>{setTab(t.id);setPage(0);}}
-              className={`flex items-center gap-2 px-5 py-3 text-xs font-black border-b-2 transition-colors ${tab===t.id ? 'border-teal-500 text-teal-700 bg-teal-50/50':'border-transparent text-slate-500 hover:text-slate-700'}`}>
+              style={{display:'flex',alignItems:'center',gap:6,padding:'12px 20px',fontSize:11,fontWeight:800,border:'none',background:'none',cursor:'pointer',
+                borderBottom: tab===t.id ? '2px solid #0d9488':'2px solid transparent',
+                color: tab===t.id ? '#0d9488' : '#94a3b8',
+                transition:'all 0.2s'}}>
               {t.icon}{t.label}
             </button>
           ))}
-          <div className="flex-1 flex items-center justify-end px-4">
-            <div className="relative">
-              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/>
+          <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'flex-end',padding:'0 16px'}}>
+            <div style={{position:'relative'}}>
+              <Search size={12} style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#94a3b8'}}/>
               <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari SEP / DPJP / ICD..."
-                className="pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-1 focus:ring-teal-400 outline-none w-60"/>
+                style={{paddingLeft:30,paddingRight:12,paddingTop:7,paddingBottom:7,fontSize:11,border:'1.5px solid #e2e8f0',borderRadius:10,outline:'none',width:220,color:'#334155',background:'#f8fafc'}}
+                onFocus={e=>{e.target.style.borderColor='#0d9488';e.target.style.background='white';}}
+                onBlur={e=>{e.target.style.borderColor='#e2e8f0';e.target.style.background='#f8fafc';}}/>
             </div>
           </div>
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
+        <div style={{flex:1,overflowY:'auto'}} className="komp-scrollbar">
           {tab==='patients' ? (
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50 sticky top-0">
+            <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
+              <thead style={{background:'#f8fafc',position:'sticky',top:0,zIndex:1}}>
                 <tr>
                   {['No','Rumah Sakit','SEP / No Klaim','Nama Pasien','DPJP','Jenis','Diagnosa Utama','Peringatan Kompetensi','Selisih'].map(h=>(
-                    <th key={h} className="px-3 py-2.5 text-left font-black text-slate-500 uppercase text-[10px] border-b border-slate-200">{h}</th>
+                    <th key={h} style={{padding:'10px 12px',textAlign:'left',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0',whiteSpace:'nowrap'}}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -453,18 +526,13 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                   const idrg = parseFloat(r['IDRG_TOTAL_TARIF'])||0;
                   const sel = idrg - ina;
                   const isRanap = String(r['PTD']||'').trim()==='1';
-                  
-                  // Compute warnings
                   let warnings = [];
-                  const diagStr = r['DIAGLIST'] || '';
-                  const procStr = r['PROCLIST'] || '';
-                  const codes = [...diagStr.split(';'), ...procStr.split(';')].map(d=>d.trim()).filter(d=>d&&d!=='-'&&d.toLowerCase()!=='none');
+                  const codes = [...(r['DIAGLIST']||'').split(';'), ...(r['PROCLIST']||'').split(';')].map(d=>d.trim()).filter(d=>d&&d!=='-'&&d.toLowerCase()!=='none');
                   codes.forEach(c => {
                     const eList = icdMap?.get(c) || icdMap?.get(c.replace('.',''));
                     if (eList && eList.length > 0) {
                        const hit = eList.find(x => x.group === groupName) || eList[0];
                        if (hit && hit.level && hit.level !== 'Belum Ada Mapping') {
-                          // Try to check rs level
                           let rsLevel = config[hit.group];
                           if (!rsLevel) {
                              const noPrefix = hit.group.replace(/Kelompok Layanan /i, '').trim();
@@ -481,55 +549,56 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                     }
                   });
                   const uniqueWarnings = Array.from(new Map(warnings.map(item => [item.code, item])).values());
-
                   return (
-                    <tr key={i} className={`border-b border-slate-50 hover:bg-teal-50/30 transition-colors ${i%2===0?'':'bg-slate-50/20'}`}>
-                      <td className="px-3 py-2 text-slate-400">{page*PER_PAGE+i+1}</td>
-                      <td className="px-3 py-2 text-slate-600 max-w-[120px] truncate" title={namaRs}>{namaRs}</td>
-                      <td className="px-3 py-2 font-mono font-bold text-slate-700">{sep}</td>
-                      <td className="px-3 py-2 text-slate-600 max-w-[140px] truncate" title="(nama disamarkan)">{patientName}</td>
-                      <td className="px-3 py-2 text-slate-600 max-w-[140px] truncate" title="(nama disamarkan)">{maskName(dpjp)}</td>
-                      <td className="px-3 py-2">
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-black ${isRanap?'bg-blue-100 text-blue-700':'bg-orange-100 text-orange-700'}`}>
+                    <tr key={i} style={{borderBottom:'1px solid #f8fafc',background:i%2===0?'white':'#fafafa',transition:'background 0.15s'}}
+                      onMouseEnter={e=>e.currentTarget.style.background='#f0fdfa'}
+                      onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'white':'#fafafa'}>
+                      <td style={{padding:'9px 12px',color:'#94a3b8',fontSize:10}}>{page*PER_PAGE+i+1}</td>
+                      <td style={{padding:'9px 12px',color:'#475569',maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={namaRs}>{namaRs}</td>
+                      <td style={{padding:'9px 12px',fontFamily:'monospace',fontWeight:700,color:'#1e293b',fontSize:11}}>{sep}</td>
+                      <td style={{padding:'9px 12px',color:'#475569',maxWidth:130,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{patientName}</td>
+                      <td style={{padding:'9px 12px',color:'#475569',maxWidth:130,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{maskName(dpjp)}</td>
+                      <td style={{padding:'9px 12px'}}>
+                        <span style={{padding:'2px 8px',borderRadius:999,fontSize:9,fontWeight:800,background:isRanap?'#dbeafe':'#ffedd5',color:isRanap?'#1d4ed8':'#c2410c'}}>
                           {isRanap?'Ranap':'Rajal'}
                         </span>
                       </td>
-                      <td className="px-3 py-2 font-mono text-slate-700 max-w-[120px] truncate" title={r['DIAGLIST']||''}>{mainDiag}</td>
-                      <td className="px-3 py-2 text-[10px]">
+                      <td style={{padding:'9px 12px',fontFamily:'monospace',color:'#334155',maxWidth:110,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={r['DIAGLIST']||''}>{mainDiag}</td>
+                      <td style={{padding:'9px 12px',fontSize:10}}>
                         {uniqueWarnings.length > 0 ? (
-                           <div className="flex flex-col gap-1.5">
+                           <div style={{display:'flex',flexDirection:'column',gap:4}}>
                              {uniqueWarnings.map((w, wi) => (
-                               <div key={wi} className="bg-rose-50 border border-rose-100 rounded p-1.5 flex flex-col gap-0.5">
-                                 <div className="flex items-start justify-between gap-2">
-                                   <span className="font-bold text-rose-700">{w.code}</span>
-                                   <span className="text-[9px] font-black bg-rose-200/50 text-rose-800 px-1 py-0.5 rounded whitespace-nowrap">Butuh {w.level}</span>
+                               <div key={wi} style={{background:'#fff1f2',border:'1px solid #fecdd3',borderRadius:8,padding:'5px 8px',borderLeft:'3px solid #f43f5e'}}>
+                                 <div style={{display:'flex',justifyContent:'space-between',gap:6,marginBottom:2}}>
+                                   <span style={{fontWeight:800,color:'#be123c',fontSize:11}}>{w.code}</span>
+                                   <span style={{fontSize:9,fontWeight:800,background:'#ffe4e6',color:'#9f1239',padding:'1px 6px',borderRadius:999,whiteSpace:'nowrap'}}>Butuh {w.level}</span>
                                  </div>
-                                 <p className="text-[9.5px] text-rose-600/90 leading-tight">{w.desc}</p>
-                                 <p className="text-[9px] text-rose-500 font-medium italic mt-0.5">{w.group}</p>
+                                 <p style={{fontSize:10,color:'#e11d48',margin:0,lineHeight:1.4}}>{w.desc}</p>
+                                 <p style={{fontSize:9,color:'#fb7185',margin:0,fontStyle:'italic',marginTop:1}}>{w.group}</p>
                                </div>
                              ))}
                            </div>
                         ) : (
-                           <span className="text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Sesuai</span>
+                           <span style={{color:'#059669',fontWeight:800,background:'#dcfce7',padding:'3px 10px',borderRadius:999,fontSize:10}}>✓ Sesuai</span>
                         )}
                       </td>
-                      <td className="px-3 py-2 text-right font-black">
-                        <span className={sel>=0?'text-emerald-600':'text-rose-600'}>{sel>=0?'+':''}{fmtRp(sel)}</span>
+                      <td style={{padding:'9px 12px',textAlign:'right',fontWeight:900,fontSize:12}}>
+                        <span style={{color:sel>=0?'#059669':'#dc2626'}}>{sel>=0?'+':''}{fmtRp(sel)}</span>
                       </td>
                     </tr>
                   );
                 })}
                 {pageData.length===0 && (
-                  <tr><td colSpan={8} className="py-12 text-center text-slate-400">Tidak ada data ditemukan</td></tr>
+                  <tr><td colSpan={9} style={{padding:'48px',textAlign:'center',color:'#94a3b8',fontSize:13}}>Tidak ada data ditemukan</td></tr>
                 )}
               </tbody>
             </table>
           ) : (
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50 sticky top-0">
+            <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
+              <thead style={{background:'#f8fafc',position:'sticky',top:0,zIndex:1}}>
                 <tr>
                   {['No','Kode ICD','Deskripsi','Komp. RS','Level Kompetensi','Status','Frekuensi','INA-CBG','iDRG','Selisih'].map(h=>(
-                    <th key={h} className={`px-4 py-2.5 text-left font-black text-slate-500 uppercase text-[10px] border-b border-slate-200 ${h==='INA-CBG'?'text-blue-600':h==='iDRG'?'text-violet-600':h==='Selisih'?'text-slate-600':''}`}>{h}</th>
+                    <th key={h} style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0'}}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -537,54 +606,54 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
                 {(search ? icdSummary.filter(d=>d.code.toLowerCase().includes(search.toLowerCase())) : icdSummary).map((d,i)=>{
                   const c   = LC[d.level]||LC['Belum Ada Mapping'];
                   const sel = d.idrg - d.ina;
-                  
                   const actualGroupName = d.group || (typeof group === 'string' ? group : group?.groupName || groupName);
                   let rsLevel = 'Campuran/Tidak Spesifik';
                   if (actualGroupName && config) {
-                    if (config[actualGroupName]) {
-                      rsLevel = config[actualGroupName];
-                    } else {
+                    if (config[actualGroupName]) rsLevel = config[actualGroupName];
+                    else {
                       const noPrefix = actualGroupName.replace(/Kelompok Layanan /i, '').trim();
                       const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
                       if (matchingKey) rsLevel = config[matchingKey];
                     }
                   }
-                  
                   const rsLevelIdx = LEVEL_ORDER.indexOf(rsLevel);
                   const icdLevelIdx = LEVEL_ORDER.indexOf(d.level);
                   const isSesuai = rsLevel === 'Campuran/Tidak Spesifik' ? true : (rsLevel === 'Belum Ada Mapping' ? true : icdLevelIdx <= rsLevelIdx);
                   const cRs = LC[rsLevel] || LC['Belum Ada Mapping'];
-
                   return (
-                    <tr key={i} className={`border-b border-slate-50 hover:bg-teal-50/30 ${i%2===0?'':'bg-slate-50/20'}`}>
-                      <td className="px-4 py-2.5 text-slate-400 w-8">{i+1}</td>
-                      <td className="px-4 py-2.5 font-mono font-black text-slate-800">{d.code}</td>
-                      <td className="px-4 py-2.5 text-slate-600 max-w-[200px] truncate" title={d.desc}>{d.desc}</td>
-                      <td className="px-4 py-2.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${cRs.badge}`}>{rsLevel}</span>
+                    <tr key={i} style={{borderBottom:'1px solid #f8fafc',background:i%2===0?'white':'#fafafa',transition:'background 0.15s'}}
+                      onMouseEnter={e=>e.currentTarget.style.background='#f0fdfa'}
+                      onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'white':'#fafafa'}>
+                      <td style={{padding:'10px 14px',color:'#94a3b8',width:32}}>{i+1}</td>
+                      <td style={{padding:'10px 14px',fontFamily:'monospace',fontWeight:900,color:'#0f172a',fontSize:12}}>{d.code}</td>
+                      <td style={{padding:'10px 14px',color:'#475569',maxWidth:200,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={d.desc}>{d.desc}</td>
+                      <td style={{padding:'10px 14px'}}>
+                        <span style={{padding:'3px 10px',borderRadius:999,fontSize:10,fontWeight:800}} className={cRs.badge}>{rsLevel}</span>
                       </td>
-                      <td className="px-4 py-2.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${c.badge}`}>{d.level}</span>
+                      <td style={{padding:'10px 14px'}}>
+                        <span style={{padding:'3px 10px',borderRadius:999,fontSize:10,fontWeight:800,display:'inline-flex',alignItems:'center',gap:4}} className={c.badge}>
+                          <span style={{width:6,height:6,borderRadius:'50%',background:c.dot,display:'inline-block'}}/>
+                          {d.level}
+                        </span>
                       </td>
-                      <td className="px-4 py-2.5">
-                        {isSesuai ? (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-700">Sesuai</span>
-                        ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700">Tidak Sesuai</span>
-                        )}
+                      <td style={{padding:'10px 14px'}}>
+                        {isSesuai
+                          ? <span style={{padding:'3px 10px',borderRadius:999,fontSize:10,fontWeight:800,background:'#dcfce7',color:'#166534'}}>✓ Sesuai</span>
+                          : <span style={{padding:'3px 10px',borderRadius:999,fontSize:10,fontWeight:800,background:'#fee2e2',color:'#991b1b'}}>✗ Tidak Sesuai</span>
+                        }
                       </td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-slate-100 rounded-full h-2 max-w-[80px]">
-                            <div className="h-2 rounded-full" style={{width:`${icdSummary[0]?.count ? (d.count/icdSummary[0].count)*100 : 0}%`,background:c.dot}}/>
+                      <td style={{padding:'10px 14px'}}>
+                        <div style={{display:'flex',alignItems:'center',gap:8}}>
+                          <div style={{flex:1,background:'#f1f5f9',borderRadius:999,height:6,maxWidth:80,overflow:'hidden'}}>
+                            <div style={{height:6,borderRadius:999,background:c.dot,width:`${icdSummary[0]?.count ? (d.count/icdSummary[0].count)*100 : 0}%`,transition:'width 0.8s ease'}}/>
                           </div>
-                          <span className="font-black text-slate-800 w-12 text-right">{fmt(d.count)}</span>
+                          <span style={{fontWeight:900,color:'#1e293b',minWidth:36,textAlign:'right'}}>{fmt(d.count)}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-2.5 font-bold text-blue-700 text-right">{fmtRp(d.ina)}</td>
-                      <td className="px-4 py-2.5 font-bold text-violet-700 text-right">{fmtRp(d.idrg)}</td>
-                      <td className="px-4 py-2.5 text-right">
-                        <span className={`font-black text-xs px-1.5 py-0.5 rounded ${sel>=0?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700'}`}>
+                      <td style={{padding:'10px 14px',fontWeight:700,color:'#1d4ed8',textAlign:'right'}}>{fmtRp(d.ina)}</td>
+                      <td style={{padding:'10px 14px',fontWeight:700,color:'#6d28d9',textAlign:'right'}}>{fmtRp(d.idrg)}</td>
+                      <td style={{padding:'10px 14px',textAlign:'right'}}>
+                        <span style={{fontWeight:900,fontSize:11,padding:'3px 8px',borderRadius:8,background:sel>=0?'#f0fdf4':'#fff1f2',color:sel>=0?'#166534':'#9f1239'}}>
                           {sel>=0?'+':''}{fmtRp(sel)}
                         </span>
                       </td>
@@ -596,15 +665,15 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
           )}
         </div>
 
-        {/* Pagination (patient tab only) */}
+        {/* Pagination */}
         {tab==='patients' && pages>1 && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 bg-slate-50">
-            <span className="text-xs text-slate-500">Halaman {page+1} dari {pages} · {fmt(filtered.length)} data</span>
-            <div className="flex gap-2">
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 20px',borderTop:'1px solid #f1f5f9',background:'#fafafa',flexShrink:0}}>
+            <span style={{fontSize:11,color:'#64748b'}}>Halaman {page+1} dari {pages} · {fmt(filtered.length)} data</span>
+            <div style={{display:'flex',gap:8}}>
               <button disabled={page===0} onClick={()=>setPage(p=>p-1)}
-                className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 disabled:opacity-40 hover:bg-white transition-colors font-bold">← Prev</button>
+                style={{padding:'6px 14px',fontSize:11,borderRadius:9,border:'1.5px solid #e2e8f0',background:'white',cursor:page===0?'not-allowed':'pointer',opacity:page===0?0.4:1,fontWeight:700,color:'#475569',transition:'all 0.2s'}}>← Prev</button>
               <button disabled={page===pages-1} onClick={()=>setPage(p=>p+1)}
-                className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 disabled:opacity-40 hover:bg-white transition-colors font-bold">Next →</button>
+                style={{padding:'6px 14px',fontSize:11,borderRadius:9,border:'1.5px solid #e2e8f0',background:'white',cursor:page===pages-1?'not-allowed':'pointer',opacity:page===pages-1?0.4:1,fontWeight:700,color:'#475569',transition:'all 0.2s'}}>Next →</button>
             </div>
           </div>
         )}
@@ -613,36 +682,39 @@ function DrillDown({ group, rows, icdMap, config, onClose, onExport }) {
   );
 }
 
-/* ─── Main Dashboard ──────────────────────────────────────────────────────── */
-
+/* ─── Top10 Table ──────────────────────────────────────────────────────────── */
 function Top10Table({ title, data }) {
   if (!data || data.length === 0) return null;
+  const isDanger = title.toLowerCase().includes('tidak sesuai');
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4">
-      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-        <h3 className="font-black text-sm text-slate-800">{title}</h3>
+    <div style={{background:'white',borderRadius:16,border:`1.5px solid ${isDanger?'#fecdd3':'#e2e8f0'}`,overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+      <div style={{padding:'14px 18px',borderBottom:`1px solid ${isDanger?'#fee2e2':'#f1f5f9'}`,background:isDanger?'linear-gradient(135deg,#fff1f2,#ffe4e6)':'#f8fafc',display:'flex',alignItems:'center',gap:8}}>
+        <div style={{width:6,height:20,borderRadius:3,background:isDanger?'#f43f5e':'#14b8a6'}}/>
+        <h3 style={{fontWeight:800,fontSize:12,color:'#1e293b',margin:0}}>{title}</h3>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs min-w-[500px]">
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',fontSize:11,borderCollapse:'collapse',minWidth:480}}>
           <thead>
-            <tr className="bg-slate-100 text-slate-500 text-[10px] uppercase whitespace-nowrap">
-              <th className="px-3 py-2 text-left w-8">No</th>
-              <th className="px-3 py-2 text-left w-16">ICD</th>
-              <th className="px-3 py-2 text-left w-48">Deskripsi</th>
-              <th className="px-3 py-2 text-right">Kasus</th>
-              <th className="px-3 py-2 text-right text-blue-600">INA-CBG</th>
-              <th className="px-3 py-2 text-right text-violet-600">iDRG</th>
+            <tr style={{background:'#f8fafc',color:'#64748b',fontSize:9,textTransform:'uppercase',letterSpacing:'0.06em'}}>
+              <th style={{padding:'9px 12px',textAlign:'left',fontWeight:800,width:28}}>No</th>
+              <th style={{padding:'9px 12px',textAlign:'left',fontWeight:800,width:60}}>ICD</th>
+              <th style={{padding:'9px 12px',textAlign:'left',fontWeight:800}}>Deskripsi</th>
+              <th style={{padding:'9px 12px',textAlign:'right',fontWeight:800}}>Kasus</th>
+              <th style={{padding:'9px 12px',textAlign:'right',fontWeight:800,color:'#1d4ed8'}}>INA-CBG</th>
+              <th style={{padding:'9px 12px',textAlign:'right',fontWeight:800,color:'#6d28d9'}}>iDRG</th>
             </tr>
           </thead>
           <tbody>
             {data.map((d, i) => (
-              <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 whitespace-nowrap">
-                <td className="px-3 py-2 text-slate-400 font-bold">{i + 1}</td>
-                <td className="px-3 py-2 font-mono font-black text-slate-800">{d.code}</td>
-                <td className="px-3 py-2 text-slate-600 truncate max-w-[150px] 2xl:max-w-[200px]" title={d.desc}>{d.desc}</td>
-                <td className="px-3 py-2 text-right font-black text-slate-700">{fmt(d.kasus)}</td>
-                <td className="px-3 py-2 text-right text-blue-600 font-bold">{fmtRp(d.ina)}</td>
-                <td className="px-3 py-2 text-right text-violet-600 font-bold">{fmtRp(d.idrg)}</td>
+              <tr key={i} style={{borderBottom:'1px solid #f8fafc',background:i%2===0?'white':'#fafafa',transition:'background 0.15s'}}
+                onMouseEnter={e=>e.currentTarget.style.background='#f0fdfa'}
+                onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'white':'#fafafa'}>
+                <td style={{padding:'9px 12px',color:'#94a3b8',fontWeight:700}}>{i + 1}</td>
+                <td style={{padding:'9px 12px',fontFamily:'monospace',fontWeight:900,color:'#0f172a',fontSize:12}}>{d.code}</td>
+                <td style={{padding:'9px 12px',color:'#475569',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:150}} title={d.desc}>{d.desc}</td>
+                <td style={{padding:'9px 12px',textAlign:'right',fontWeight:900,color:'#334155'}}>{fmt(d.kasus)}</td>
+                <td style={{padding:'9px 12px',textAlign:'right',color:'#2563eb',fontWeight:700}}>{fmtRp(d.ina)}</td>
+                <td style={{padding:'9px 12px',textAlign:'right',color:'#7c3aed',fontWeight:700}}>{fmtRp(d.idrg)}</td>
               </tr>
             ))}
           </tbody>
@@ -652,6 +724,7 @@ function Top10Table({ title, data }) {
   );
 }
 
+/* ─── Detail Kelompok Table ────────────────────────────────────────────────── */
 function DetailKelompokTable({ data, onDrillDown }) {
   if (!data || data.length === 0) return null;
   const sorted = [...data].sort((a,b) => {
@@ -660,35 +733,38 @@ function DetailKelompokTable({ data, onDrillDown }) {
     return b.totalKasus - a.totalKasus;
   });
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mt-6">
-      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-        <h3 className="font-black text-sm text-slate-800">Detail Per Kelompok Layanan</h3>
+    <div style={{background:'white',borderRadius:16,border:'1.5px solid #e2e8f0',overflow:'hidden',marginTop:20,boxShadow:'0 2px 12px rgba(0,0,0,0.04)'}}>
+      <div style={{padding:'14px 18px',borderBottom:'1px solid #f1f5f9',background:'#f8fafc',display:'flex',alignItems:'center',gap:8}}>
+        <div style={{width:6,height:20,borderRadius:3,background:'#6366f1'}}/>
+        <h3 style={{fontWeight:800,fontSize:13,color:'#1e293b',margin:0}}>Detail Per Kelompok Layanan</h3>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs min-w-[1000px]">
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',fontSize:11,borderCollapse:'collapse',minWidth:1000}}>
           <thead>
-            <tr className="bg-slate-50 border-y border-slate-200 text-slate-600 text-[10px] uppercase">
-              <th className="px-3 py-3 text-left w-[250px] font-black border-r border-slate-200">Kelompok Layanan</th>
-              <th className="px-3 py-3 text-right font-black border-r border-slate-200">Total Kasus</th>
-              <th className="px-3 py-3 text-right font-black bg-emerald-50/50">Sesuai (Kasus)</th>
-              <th className="px-3 py-3 text-right font-black bg-emerald-50/50">Sesuai (Tarif INA)</th>
-              <th className="px-3 py-3 text-right font-black bg-emerald-50/50 border-r border-emerald-100">Sesuai (iDRG)</th>
-              <th className="px-3 py-3 text-right font-black bg-rose-50/50">Tidak Sesuai (Kasus)</th>
-              <th className="px-3 py-3 text-right font-black bg-rose-50/50">Tidak Sesuai (INA)</th>
-              <th className="px-3 py-3 text-right font-black bg-rose-50/50">Potensi Loss (iDRG)</th>
+            <tr style={{background:'#f8fafc',color:'#64748b',fontSize:9,textTransform:'uppercase',letterSpacing:'0.06em'}}>
+              <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,width:250,borderRight:'1px solid #e2e8f0'}}>Kelompok Layanan</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,borderRight:'1px solid #e2e8f0'}}>Total Kasus</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,background:'#f0fdf4',color:'#166534'}}>Sesuai (Kasus)</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,background:'#f0fdf4',color:'#166534'}}>Sesuai (INA)</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,background:'#f0fdf4',color:'#166534',borderRight:'1px solid #d1fae5'}}>Sesuai (iDRG)</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,background:'#fff1f2',color:'#9f1239'}}>Tdk Sesuai (Kasus)</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,background:'#fff1f2',color:'#9f1239'}}>Tdk Sesuai (INA)</th>
+              <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,background:'#fff1f2',color:'#9f1239'}}>Potensi Loss (iDRG)</th>
             </tr>
           </thead>
           <tbody>
             {sorted.map((d, i) => (
-              <tr key={i} className="border-b border-slate-50">
-                <td className="px-3 py-2.5 font-bold text-slate-700 cursor-pointer hover:bg-slate-100" onClick={() => onDrillDown && onDrillDown(d.name)}>{d.name}</td>
-                <td className="px-3 py-2.5 text-right font-black text-slate-800 cursor-pointer hover:bg-slate-100" onClick={() => onDrillDown && onDrillDown(d.name)}>{fmt(d.totalKasus)}</td>
-                <td className="px-3 py-2.5 text-right font-bold text-emerald-700 cursor-pointer hover:bg-emerald-100/50" onClick={() => onDrillDown && onDrillDown({ title: `Detail ${dn(d.name)} (Sesuai)`, filterFn: r => r._meta?.highestGroup === d.name && !r._meta?.isOutsideOverall })}>{fmt(d.sesuaiKasus)}</td>
-                <td className="px-3 py-2.5 text-right text-emerald-600">{fmtRp(d.sesuaiIna)}</td>
-                <td className="px-3 py-2.5 text-right text-emerald-600 font-bold">{fmtRp(d.sesuaiIdrg)}</td>
-                <td className="px-3 py-2.5 text-right font-bold text-rose-700 cursor-pointer hover:bg-rose-100/50" onClick={() => onDrillDown && onDrillDown({ title: `Detail ${dn(d.name)} (Tidak Sesuai)`, filterFn: r => r._meta?.highestGroup === d.name && r._meta?.isOutsideOverall })}>{fmt(d.lossKasus)}</td>
-                <td className="px-3 py-2.5 text-right text-rose-600">{fmtRp(d.lossIna)}</td>
-                <td className="px-3 py-2.5 text-right text-rose-600 font-bold">{fmtRp(d.lossIdrg)}</td>
+              <tr key={i} style={{borderBottom:'1px solid #f8fafc',background:i%2===0?'white':'#fafafa',transition:'background 0.15s'}}
+                onMouseEnter={e=>e.currentTarget.style.background='#f0fdfa'}
+                onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'white':'#fafafa'}>
+                <td style={{padding:'10px 14px',fontWeight:700,color:'#1e293b',cursor:'pointer',borderRight:'1px solid #f1f5f9'}} onClick={() => onDrillDown && onDrillDown(d.name)}>{d.name}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:900,color:'#0f172a',cursor:'pointer',borderRight:'1px solid #f1f5f9'}} onClick={() => onDrillDown && onDrillDown(d.name)}>{fmt(d.totalKasus)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,color:'#059669',cursor:'pointer',background:'rgba(240,253,244,0.5)'}} onClick={() => onDrillDown && onDrillDown({ title:`Detail ${dn(d.name)} (Sesuai)`, filterFn:r=>r._meta?.highestGroup===d.name&&!r._meta?.isOutsideOverall })}>{fmt(d.sesuaiKasus)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',color:'#16a34a',background:'rgba(240,253,244,0.5)'}}>{fmtRp(d.sesuaiIna)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,color:'#16a34a',background:'rgba(240,253,244,0.5)',borderRight:'1px solid #d1fae5'}}>{fmtRp(d.sesuaiIdrg)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,color:'#dc2626',cursor:'pointer',background:'rgba(255,241,242,0.5)'}} onClick={() => onDrillDown && onDrillDown({ title:`Detail ${dn(d.name)} (Tidak Sesuai)`, filterFn:r=>r._meta?.highestGroup===d.name&&r._meta?.isOutsideOverall })}>{fmt(d.lossKasus)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',color:'#dc2626',background:'rgba(255,241,242,0.5)'}}>{fmtRp(d.lossIna)}</td>
+                <td style={{padding:'10px 14px',textAlign:'right',fontWeight:700,color:'#dc2626',background:'rgba(255,241,242,0.5)'}}>{fmtRp(d.lossIdrg)}</td>
               </tr>
             ))}
           </tbody>
@@ -698,72 +774,45 @@ function DetailKelompokTable({ data, onDrillDown }) {
   );
 }
 
-
-export default function KompetensiDashboard({ rows, onBack }) {
+/* ─── Main Dashboard ──────────────────────────────────────────────────────── */
+export default function KompetensiDashboard({ rows, onBack, resolveKsmDept, ksmOverrides }) {
   const [data,       setData]       = useState(null);
   const [loading,    setLoading]    = useState(true);
-  const [tab,        setTab]        = useState('overview');  // overview | table1 | table2
-  const [drill,      setDrill]      = useState(null);        // group name for drill-down
+  const [tab,        setTab]        = useState('overview');
+  const [drill,      setDrill]      = useState(null);
   const [icdMap,     setIcdMap]     = useState(null);
   const [icdDescMap, setIcdDescMap] = useState(null);
   const [search,     setSearch]     = useState('');
   const [config,     setConfig]     = useState({});
-
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [pendingExport, setPendingExport] = useState(null);
+  const [ksmSubView, setKsmSubView] = useState('dept');
+  const [ksmSearch, setKsmSearch] = useState('');
+  const [ksmSort, setKsmSort] = useState('loss');
 
   const handleExportTop10 = () => {
     if (!data || !data.top10) return;
-    
     const formatSheet = (title, tableData) => {
-      const sheet = {
-        name: title.substring(0, 31),
-        columns: [
-          { header: 'No', key: 'no', width: 5 },
-          { header: 'Kode ICD', key: 'code', width: 15 },
-          { header: 'Deskripsi', key: 'desc', width: 50 },
-          { header: 'Kasus', key: 'kasus', width: 10 },
-          { header: 'INA-CBG', key: 'ina', width: 20 },
-          { header: 'iDRG', key: 'idrg', width: 20 }
-        ],
-        data: []
-      };
-      
-      if (tableData) {
-        tableData.forEach((d, i) => {
-          sheet.data.push({
-            no: i + 1,
-            code: d.code,
-            desc: d.desc,
-            kasus: d.kasus,
-            ina: d.ina,
-            idrg: d.idrg
-          });
-        });
-      }
+      const sheet = { name: title.substring(0, 31), columns:[
+        {header:'No',key:'no',width:5},{header:'Kode ICD',key:'code',width:15},{header:'Deskripsi',key:'desc',width:50},
+        {header:'Kasus',key:'kasus',width:10},{header:'INA-CBG',key:'ina',width:20},{header:'iDRG',key:'idrg',width:20}
+      ], data:[] };
+      if (tableData) tableData.forEach((d, i) => sheet.data.push({no:i+1,code:d.code,desc:d.desc,kasus:d.kasus,ina:d.ina,idrg:d.idrg}));
       return sheet;
     };
-
-    setPendingExport({
-      name: 'Top_10_Kompetensi',
-      sheets: [
-        formatSheet('Diag Sesuai', data.top10.diagSesuai),
-        formatSheet('Tindakan Sesuai', data.top10.procSesuai),
-        formatSheet('Diag Tidak Sesuai', data.top10.diagTidakSesuai),
-        formatSheet('Tindakan Tidak Sesuai', data.top10.procTidakSesuai)
-      ]
-    });
+    setPendingExport({ name:'Top_10_Kompetensi', sheets:[
+      formatSheet('Diag Sesuai', data.top10.diagSesuai),
+      formatSheet('Tindakan Sesuai', data.top10.procSesuai),
+      formatSheet('Diag Tidak Sesuai', data.top10.diagTidakSesuai),
+      formatSheet('Tindakan Tidak Sesuai', data.top10.procTidakSesuai)
+    ]});
     setShowPasswordModal(true);
   };
 
-    const handleExportDrillDown = (title, sheetsArray) => {
-    setPendingExport({
-      name: 'Rincian_' + String(title).replace(/[^a-zA-Z0-9]/g, '_'),
-      sheets: sheetsArray
-    });
+  const handleExportDrillDown = (title, sheetsArray) => {
+    setPendingExport({ name:'Rincian_'+String(title).replace(/[^a-zA-Z0-9]/g,'_'), sheets:sheetsArray });
     setShowPasswordModal(true);
   };
-
 
   useEffect(()=>{
     (async()=>{
@@ -774,7 +823,6 @@ export default function KompetensiDashboard({ rows, onBack }) {
         setConfig(parsedCfg);
         const res  = await analyzeCompetency(rows, parsedCfg);
         setData(res);
-        // expose icdMap and icdDescMap for drill-down
         const { _icdMap, _icdDescMap } = res;
         if (_icdMap) setIcdMap(_icdMap);
         if (_icdDescMap) setIcdDescMap(_icdDescMap);
@@ -783,27 +831,101 @@ export default function KompetensiDashboard({ rows, onBack }) {
     })();
   },[rows]);
 
+  const [ksmData, setKsmData] = useState(null);
+  const [isKsmLoading, setIsKsmLoading] = useState(false);
+
+  // Invalidate KSM data if rows or overrides change
+  useEffect(() => {
+    setKsmData(null);
+  }, [rows, ksmOverrides]);
+
+  useEffect(() => {
+    if (!data || !rows || !resolveKsmDept || tab !== 'ksm') return;
+    if (ksmData) return; // Already computed for current dependencies
+
+    setIsKsmLoading(true);
+
+    // Yield to browser to paint loading state first
+    const timer = setTimeout(() => {
+      const deptMap = {};
+      const ksmMap = {};
+      const dpjpMap = {};
+      const heatmap = {}; // ksmName -> { groupName -> count }
+
+      const parseTariff = v => { if (!v) return 0; if (typeof v==='number') return v; let s=String(v).trim(); s=s.replace(/Rp\.?\s*/ig,''); if(s.indexOf('.')>-1&&s.indexOf(',')===-1){if(s.split('.').length>2)s=s.replace(/\./g,'');else if(/\.\d{3}$/.test(s))s=s.replace('.','');}else if(s.indexOf(',')>-1&&s.indexOf('.')===-1){if(s.split(',').length>2)s=s.replace(/,/g,'');else if(/,\d{3}$/.test(s))s=s.replace(',','');else s=s.replace(',','.');}else if(s.indexOf('.')>-1&&s.indexOf(',')>-1){if(s.indexOf('.')<s.indexOf(','))s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'');} return parseFloat(s)||0; };
+
+      for (const row of rows) {
+        const dpjpRaw = row['DPJP'] || '-';
+        const resolved = resolveKsmDept(dpjpRaw, ksmOverrides || {});
+        const dept = resolved.dept || 'Unknown';
+        const ksm = resolved.ksm || 'Unknown';
+        const isOutside = row._meta?.isOutsideOverall || false;
+        const group = row._meta?.highestGroup || 'Unknown';
+        const level = row._meta?.highestLevelName || 'Belum Ada Mapping';
+        const tarif = parseTariff(row['TOTAL_TARIF']);
+
+        // Dept aggregation
+        if (!deptMap[dept]) deptMap[dept] = { name:dept, total:0, sesuai:0, luar:0, loss:0, groups:{} };
+        deptMap[dept].total++;
+        if (isOutside) { deptMap[dept].luar++; deptMap[dept].loss += tarif; }
+        else deptMap[dept].sesuai++;
+        deptMap[dept].groups[group] = (deptMap[dept].groups[group]||0) + 1;
+
+        // KSM aggregation
+        if (!ksmMap[ksm]) ksmMap[ksm] = { name:ksm, dept, total:0, sesuai:0, luar:0, loss:0, groups:{}, levels:{} };
+        ksmMap[ksm].total++;
+        if (isOutside) { ksmMap[ksm].luar++; ksmMap[ksm].loss += tarif; }
+        else ksmMap[ksm].sesuai++;
+        ksmMap[ksm].groups[group] = (ksmMap[ksm].groups[group]||0) + 1;
+        ksmMap[ksm].levels[level] = (ksmMap[ksm].levels[level]||0) + 1;
+
+        // Heatmap: KSM × Kelompok Layanan (hanya yang di luar)
+        if (isOutside) {
+          if (!heatmap[ksm]) heatmap[ksm] = {};
+          heatmap[ksm][group] = (heatmap[ksm][group]||0) + 1;
+        }
+
+        // DPJP aggregation
+        const dpjpKey = dpjpRaw.trim();
+        if (!dpjpMap[dpjpKey]) dpjpMap[dpjpKey] = { name:dpjpRaw, ksm, dept, total:0, sesuai:0, luar:0, loss:0, groups:{} };
+        dpjpMap[dpjpKey].total++;
+        if (isOutside) { dpjpMap[dpjpKey].luar++; dpjpMap[dpjpKey].loss += tarif; }
+        else dpjpMap[dpjpKey].sesuai++;
+        dpjpMap[dpjpKey].groups[group] = (dpjpMap[dpjpKey].groups[group]||0) + 1;
+      }
+
+      const sortByLoss = (a,b) => b.loss - a.loss;
+      const depts = Object.values(deptMap).sort(sortByLoss);
+      const ksms = Object.values(ksmMap).sort(sortByLoss);
+      const dpjps = Object.values(dpjpMap).sort(sortByLoss);
+
+      // Collect unique groups used in heatmap
+      const heatGroups = new Set();
+      Object.values(heatmap).forEach(g => Object.keys(g).forEach(k => heatGroups.add(k)));
+      const heatGroupList = [...heatGroups].filter(g => g !== 'KASUS BELUM MAPPING').sort();
+
+      setKsmData({ depts, ksms, dpjps, heatmap, heatGroupList });
+      setIsKsmLoading(false);
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [data, rows, resolveKsmDept, ksmOverrides, tab, ksmData]);
+
   const strategicData = useMemo(() => {
     if (!data || !data.groupDetails) return null;
     const validGroups = data.groupDetails.filter(g => g.name !== 'KASUS BELUM MAPPING' && g.lossKasus > 0);
-    const list = validGroups.map(g => ({
-      name: g.name,
-      volume: g.lossKasus,
-      revenue: g.lossIna,
-      avgTariff: g.lossKasus > 0 ? (g.lossIna / g.lossKasus) : 0
-    }));
+    const list = validGroups.map(g => ({ name:g.name, volume:g.lossKasus, revenue:g.lossIna, avgTariff:g.lossKasus>0?(g.lossIna/g.lossKasus):0 }));
     const topRevenue = [...list].sort((a, b) => b.revenue - a.revenue);
     const top5 = topRevenue.slice(0, 5);
     const recs = [];
-    if (top5[0]) recs.push({ title: `Prioritas 1: ${top5[0].name}`, text: `Terdapat ${top5[0].volume} kasus anomali dengan potensi pendapatan Rp ${top5[0].revenue.toLocaleString('id-ID')}. Sangat direkomendasikan untuk memprioritaskan peningkatan kompetensi layanan ini.` });
-    if (top5[1]) recs.push({ title: `Prioritas 2: ${top5[1].name}`, text: `Mencatatkan potensi pendapatan sebesar Rp ${top5[1].revenue.toLocaleString('id-ID')} dari ${top5[1].volume} kasus. Pertimbangkan untuk merekrut SDM atau menambah alat medis.` });
-    if (top5[2]) recs.push({ title: `Prioritas 3: ${top5[2].name}`, text: `Layanan ini kehilangan peluang penanganan optimal pada ${top5[2].volume} kasus dengan nilai Rp ${top5[2].revenue.toLocaleString('id-ID')}.` });
-    if (top5[3]) recs.push({ title: `Prioritas 4: ${top5[3].name}`, text: `Menghasilkan Rp ${top5[3].revenue.toLocaleString('id-ID')} potensi tarif dari ${top5[3].volume} kasus yang dirujuk/anomali.` });
-    if (top5[4]) recs.push({ title: `Prioritas 5: ${top5[4].name}`, text: `Potensi Rp ${top5[4].revenue.toLocaleString('id-ID')} dari ${top5[4].volume} pasien.` });
-    
+    if (top5[0]) recs.push({ title:`Prioritas 1: ${top5[0].name}`, text:`Terdapat ${top5[0].volume} kasus anomali dengan potensi pendapatan Rp ${top5[0].revenue.toLocaleString('id-ID')}. Sangat direkomendasikan untuk memprioritaskan peningkatan kompetensi layanan ini.` });
+    if (top5[1]) recs.push({ title:`Prioritas 2: ${top5[1].name}`, text:`Mencatatkan potensi pendapatan sebesar Rp ${top5[1].revenue.toLocaleString('id-ID')} dari ${top5[1].volume} kasus. Pertimbangkan untuk merekrut SDM atau menambah alat medis.` });
+    if (top5[2]) recs.push({ title:`Prioritas 3: ${top5[2].name}`, text:`Layanan ini kehilangan peluang penanganan optimal pada ${top5[2].volume} kasus dengan nilai Rp ${top5[2].revenue.toLocaleString('id-ID')}.` });
+    if (top5[3]) recs.push({ title:`Prioritas 4: ${top5[3].name}`, text:`Menghasilkan Rp ${top5[3].revenue.toLocaleString('id-ID')} potensi tarif dari ${top5[3].volume} kasus yang dirujuk/anomali.` });
+    if (top5[4]) recs.push({ title:`Prioritas 5: ${top5[4].name}`, text:`Potensi Rp ${top5[4].revenue.toLocaleString('id-ID')} dari ${top5[4].volume} pasien.` });
     const maxVol = Math.max(...list.map(d => d.volume), 10);
     const maxTariff = Math.max(...list.map(d => d.avgTariff), 10000000);
-    return { scatter: list, top5, topRevenue, recs, maxVol, maxTariff };
+    return { scatter:list, top5, topRevenue, recs, maxVol, maxTariff };
   }, [data]);
 
   const donutData = useMemo(()=>{
@@ -811,26 +933,24 @@ export default function KompetensiDashboard({ rows, onBack }) {
     return LEVEL_ORDER.map(lv=>({name:lv,value:data.levelDistribution[lv]||0})).filter(d=>d.value>0);
   },[data]);
 
-  if(loading||!data) return createPortal(<div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-900 to-slate-800 flex flex-col items-center justify-center">
-      <div className="relative">
-        <div className="w-20 h-20 border-4 border-teal-500/30 border-t-teal-400 rounded-full animate-spin"/>
-        <ShieldAlert className="absolute inset-0 m-auto text-teal-400" size={32}/>
-      </div>
-      <h2 className="text-white font-black text-xl mt-6">Menganalisis Kompetensi Layanan</h2>
-      <p className="text-slate-400 text-sm mt-2">Memproses {(rows||[]).length.toLocaleString()} baris data…</p>
-    </div>, document.body);
+  /* ── Loading Screen ── */
+  if(loading||!data) return createPortal(
+    <GlobalLoader 
+      title="Menganalisis Kompetensi Layanan"
+      subtitle={`Memproses ${(rows||[]).length.toLocaleString('id-ID')} baris data...`}
+      fullScreen={true}
+    />,
+    document.body
+  );
 
-  const pctOut = data.totalPatients>0
-    ? (data.patientsOutsideCompetency/data.totalPatients*100).toFixed(1) : 0;
+  const pctOut = data.totalPatients>0 ? (data.patientsOutsideCompetency/data.totalPatients*100).toFixed(1) : 0;
 
-  // Tabel 1 totals
   const t1 = LEVEL_ORDER.reduce((a,lv)=>{
     const s=data.levelStats[lv]||{};
     return { sk:a.sk+(s.sesuaiKasus||0), si:a.si+(s.sesuaiIna||0), sd:a.sd+(s.sesuaiIdrg||0),
              lk:a.lk+(s.lossKasus||0),   li:a.li+(s.lossIna||0),   ld:a.ld+(s.lossIdrg||0) };
   },{sk:0,si:0,sd:0,lk:0,li:0,ld:0});
 
-  // Groups sorted: data first, unknown last. KASUS BELUM MAPPING and LAYANAN LAINNYA at the bottom.
   const sortedGroups = [
     ...data.groupTableRows.filter(r=>r.hasData).sort((a,b)=>{
        const an = dn(a.name).toUpperCase();
@@ -844,98 +964,219 @@ export default function KompetensiDashboard({ rows, onBack }) {
     ...data.groupTableRows.filter(r=>!r.hasData),
   ];
 
-  const filteredGroups = search
-    ? sortedGroups.filter(r=>dn(r.name).toLowerCase().includes(search.toLowerCase()))
-    : sortedGroups;
+  const filteredGroups = search ? sortedGroups.filter(r=>dn(r.name).toLowerCase().includes(search.toLowerCase())) : sortedGroups;
 
-  // Tabel 2 grand total
   const gt = sortedGroups.filter(r=>r.hasData).reduce(
     (a,r)=>({totalKasus:a.totalKasus+r.totalKasus, totalIna:a.totalIna+r.totalIna,
               totalIdrg:a.totalIdrg+r.totalIdrg, selisih:a.selisih+r.selisih}),
     {totalKasus:0,totalIna:0,totalIdrg:0,selisih:0}
   );
 
-
-
   const TABS = [
-    {id:'overview', icon:<BarChart3 size={14}/>, label:'Overview'},
-    {id:'strategic',icon:<Lightbulb size={14}/>, label:'Executive Insight'},
-    {id:'table1',   icon:<TableIcon size={14}/>, label:'Tabel Distribusi Level'},
-    {id:'table2',   icon:<Grid3X3 size={14}/>,   label:'Per Kelompok Layanan'},
-    {id:'laporan',  icon:<FileSpreadsheet size={14}/>, label:'Tabel Laporan'},
+    {id:'overview',  icon:<BarChart3 size={13}/>,       label:'Overview'},
+    {id:'strategic', icon:<Lightbulb size={13}/>,       label:'Executive Insight'},
+    {id:'ksm',       icon:<Building2 size={13}/>,       label:'KSM & Departemen'},
+    {id:'table1',    icon:<TableIcon size={13}/>,       label:'Distribusi Level'},
+    {id:'table2',    icon:<Grid3X3 size={13}/>,         label:'Per Kelompok'},
+    {id:'laporan',   icon:<FileSpreadsheet size={13}/>, label:'Laporan'},
   ];
+
+
 
   const renderStrategicTab = () => {
     if (!strategicData) return null;
     return (
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Rekomendasi Naratif */}
-          <div className="flex-1 space-y-4">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center"><Lightbulb size={16}/></div>
-              <h2 className="text-lg font-black text-slate-800">Top 5 Rekomendasi Prioritas</h2>
-            </div>
-            {strategicData.recs.map((r, i) => (
-              <div key={i} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center font-black text-xs shrink-0 mt-0.5">{i+1}</div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-800 mb-1">{r.title}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">{r.text}</p>
-                  </div>
-                </div>
+      <div style={{display:'flex',flexDirection:'column',gap:24}} className="komp-fade-up">
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1.5fr',gap:20}}>
+          {/* Rekomendasi */}
+          <div style={{display:'flex',flexDirection:'column',gap:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+              <div style={{width:36,height:36,borderRadius:12,background:'linear-gradient(135deg,#fef3c7,#fde68a)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 12px rgba(245,158,11,0.2)'}}>
+                <Lightbulb size={18} color="#d97706"/>
               </div>
-            ))}
+              <div>
+                <h2 style={{fontWeight:900,fontSize:15,color:'#0f172a',margin:0}}>Top 5 Rekomendasi Prioritas</h2>
+                <p style={{fontSize:11,color:'#64748b',margin:0}}>Klik kartu untuk melihat daftar pasien terdampak</p>
+              </div>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {strategicData.recs.map((r, i) => {
+                const groupName = strategicData.top5[i]?.name;
+                const accentColors = ['#f43f5e','#f97316','#eab308','#22c55e','#3b82f6'];
+                const numBg = ['#fff1f2','#fff7ed','#fefce8','#f0fdf4','#eff6ff'];
+                const numColor = ['#e11d48','#ea580c','#ca8a04','#16a34a','#2563eb'];
+                return (
+                  <div key={i}
+                    onClick={() => groupName && setDrill({
+                      title: `Pasien Di Luar Kompetensi — ${dn(groupName)}`,
+                      filterFn: row => row._meta?.highestGroup === groupName && row._meta?.isOutsideOverall
+                    })}
+                    style={{background:'white',border:'1.5px solid #e2e8f0',borderRadius:14,padding:'14px 16px',
+                      boxShadow:'0 2px 8px rgba(0,0,0,0.04)',transition:'all 0.25s',cursor:'pointer',
+                      borderLeft:`4px solid ${accentColors[i]}`}}
+                    onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 8px 24px rgba(0,0,0,0.10)';e.currentTarget.style.transform='translateX(4px)';e.currentTarget.style.background='#fafafa';}}
+                    onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)';e.currentTarget.style.transform='translateX(0)';e.currentTarget.style.background='white';}}>
+                    <div style={{display:'flex',alignItems:'flex-start',gap:10}}>
+                      <div style={{width:24,height:24,borderRadius:8,background:numBg[i],display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontWeight:900,fontSize:11,color:numColor[i]}}>
+                        {i+1}
+                      </div>
+                      <div style={{flex:1}}>
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,marginBottom:4}}>
+                          <h3 style={{fontSize:12,fontWeight:800,color:'#1e293b',margin:0}}>{r.title}</h3>
+                          <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:9,fontWeight:800,color:'#0d9488',background:'#f0fdfa',border:'1px solid #99f6e4',padding:'2px 8px',borderRadius:999,whiteSpace:'nowrap',flexShrink:0}}>
+                            <Users size={9}/> Lihat Pasien
+                          </span>
+                        </div>
+                        <p style={{fontSize:11,color:'#64748b',lineHeight:1.5,margin:0}}>{r.text}</p>
+                        <div style={{marginTop:8,display:'flex',gap:6}}>
+                          <span style={{fontSize:9,fontWeight:700,color:'#dc2626',background:'#fff1f2',border:'1px solid #fecdd3',padding:'2px 8px',borderRadius:999}}>
+                            {fmt(strategicData.top5[i]?.volume)} kasus anomali
+                          </span>
+                          <span style={{fontSize:9,fontWeight:700,color:'#7c3aed',background:'#f5f3ff',border:'1px solid #ddd6fe',padding:'2px 8px',borderRadius:999}}>
+                            {fmtRp(strategicData.top5[i]?.revenue)} potensi
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Bar Chart - Top Lost Revenue */}
-          <div className="w-full md:w-[60%] bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
+          {/* Bar Chart Revenue */}
+          <div style={{background:'white',border:'1.5px solid #e2e8f0',borderRadius:20,padding:24,boxShadow:'0 4px 16px rgba(0,0,0,0.05)'}}>
+            <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:20}}>
               <div>
-                <h3 className="text-base font-black text-slate-800">Potensi Pendapatan (Lost Revenue)</h3>
-                <p className="text-xs text-slate-500">Berdasarkan akumulasi tarif kasus anomali</p>
+                <h3 style={{fontWeight:900,fontSize:15,color:'#0f172a',margin:0}}>Potensi Lost Revenue</h3>
+                <p style={{fontSize:11,color:'#64748b',margin:'4px 0 0 0'}}>Klik baris untuk melihat daftar pasien terdampak</p>
               </div>
-              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><TrendingUp size={18}/></div>
+              <div style={{padding:'8px 10px',background:'#fff1f2',borderRadius:10,border:'1px solid #fecdd3'}}>
+                <TrendingDown size={18} color="#dc2626"/>
+              </div>
             </div>
-            <div className="space-y-4 pt-2">
-              {strategicData.top5.map((item, i) => (
-                <div key={i} className="flex flex-col gap-1.5">
-                  <div className="flex justify-between text-xs font-bold text-slate-700">
-                    <span>{item.name}</span>
-                    <span className="text-teal-700">{fmtRp(item.revenue)}</span>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {strategicData.top5.map((item, i) => {
+                const barColors = [['#f43f5e','#fb7185'],['#f97316','#fb923c'],['#eab308','#facc15'],['#22c55e','#4ade80'],['#3b82f6','#60a5fa']];
+                const shadowColors = ['rgba(244,63,94,0.35)','rgba(249,115,22,0.35)','rgba(234,179,8,0.35)','rgba(34,197,94,0.35)','rgba(59,130,246,0.35)'];
+                return (
+                  <div key={i}
+                    onClick={() => setDrill({
+                      title: `Pasien Di Luar Kompetensi — ${dn(item.name)}`,
+                      filterFn: row => row._meta?.highestGroup === item.name && row._meta?.isOutsideOverall
+                    })}
+                    style={{padding:'10px 12px',borderRadius:12,border:'1.5px solid #f1f5f9',cursor:'pointer',transition:'all 0.2s',background:'#fafafa'}}
+                    onMouseEnter={e=>{e.currentTarget.style.background='#f0fdfa';e.currentTarget.style.borderColor='#99f6e4';e.currentTarget.style.boxShadow='0 4px 12px rgba(13,148,136,0.08)';}}
+                    onMouseLeave={e=>{e.currentTarget.style.background='#fafafa';e.currentTarget.style.borderColor='#f1f5f9';e.currentTarget.style.boxShadow='none';}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+                      <div style={{display:'flex',alignItems:'center',gap:8}}>
+                        <div style={{width:20,height:20,borderRadius:6,background:barColors[i][0],display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:900,color:'white',flexShrink:0}}>{i+1}</div>
+                        <span style={{fontSize:12,fontWeight:700,color:'#334155'}}>{dn(item.name)}</span>
+                      </div>
+                      <div style={{display:'flex',alignItems:'center',gap:8}}>
+                        <span style={{fontSize:12,fontWeight:900,color:barColors[i][0]}}>{fmtRp(item.revenue)}</span>
+                        <span style={{display:'inline-flex',alignItems:'center',gap:3,fontSize:9,fontWeight:800,color:'#0d9488',background:'#f0fdfa',border:'1px solid #99f6e4',padding:'2px 7px',borderRadius:999}}>
+                          <Eye size={9}/> Detail
+                        </span>
+                      </div>
+                    </div>
+                    <div style={{background:'#f1f5f9',borderRadius:999,height:10,overflow:'hidden',position:'relative'}}>
+                      <div style={{
+                        height:'100%',borderRadius:999,
+                        background:`linear-gradient(90deg,${barColors[i][0]},${barColors[i][1]})`,
+                        width:`${Math.max(3,(item.revenue/(strategicData.topRevenue[0]?.revenue||1))*100)}%`,
+                        transition:'width 1.2s cubic-bezier(0.22,1,0.36,1)',
+                        boxShadow:`0 2px 6px ${shadowColors[i]}`
+                      }}/>
+                    </div>
+                    <div style={{display:'flex',justifyContent:'space-between',marginTop:5}}>
+                      <span style={{fontSize:9,color:'#94a3b8',fontWeight:600}}>{fmt(item.volume)} kasus anomali</span>
+                      <span style={{fontSize:9,color:'#94a3b8',fontWeight:600}}>avg {fmtRp(item.avgTariff)}/kasus</span>
+                    </div>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
-                    <div className="bg-teal-600 h-full rounded-full transition-all duration-1000" style={{ width: `${Math.max(1, (item.revenue / (strategicData.topRevenue[0]?.revenue || 1)) * 100)}%` }} />
-                  </div>
+                );
+              })}
+            </div>
+            {strategicData.topRevenue.length > 5 && (
+              <div style={{marginTop:14,paddingTop:12,borderTop:'1px solid #f1f5f9'}}>
+                <p style={{fontSize:10,color:'#94a3b8',fontWeight:700,margin:'0 0 8px 0'}}>Kelompok lainnya ({strategicData.topRevenue.length - 5} lebih)</p>
+                <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                  {strategicData.topRevenue.slice(5).map((item, i) => (
+                    <button key={i}
+                      onClick={() => setDrill({
+                        title: `Pasien Di Luar Kompetensi — ${dn(item.name)}`,
+                        filterFn: row => row._meta?.highestGroup === item.name && row._meta?.isOutsideOverall
+                      })}
+                      style={{fontSize:10,fontWeight:700,color:'#475569',background:'#f8fafc',border:'1.5px solid #e2e8f0',padding:'4px 12px',borderRadius:999,cursor:'pointer',transition:'all 0.2s'}}
+                      onMouseEnter={e=>{e.currentTarget.style.background='#f0fdfa';e.currentTarget.style.borderColor='#99f6e4';e.currentTarget.style.color='#0d9488';}}
+                      onMouseLeave={e=>{e.currentTarget.style.background='#f8fafc';e.currentTarget.style.borderColor='#e2e8f0';e.currentTarget.style.color='#475569';}}>
+                      {dn(item.name)} · {fmtRp(item.revenue)}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Scatter Plot - Opportunity Quadrant */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Target className="text-indigo-600" size={20}/>
-            <h3 className="text-base font-black text-slate-800">Matriks Kuadran Prioritas</h3>
-          </div>
-          <p className="text-xs text-slate-500 mb-6">Sumbu horizontal: Volume Kasus. Sumbu vertikal: Rata-rata Tarif. Ukuran Gelembung: Total Potensi Pendapatan.</p>
-          <div className="relative w-full h-[350px] border-l-2 border-b-2 border-slate-200 mt-4">
-            {/* Grid lines */}
-            <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 opacity-20 pointer-events-none">
-              {[...Array(16)].map((_, i) => <div key={i} className="border-r border-t border-slate-400 border-dashed"></div>)}
+        {/* Scatter / Bubble Chart */}
+        <div style={{background:'white',border:'1.5px solid #e2e8f0',borderRadius:20,padding:24,boxShadow:'0 4px 16px rgba(0,0,0,0.05)'}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+            <div style={{display:'flex',alignItems:'center',gap:10}}>
+              <div style={{width:36,height:36,borderRadius:12,background:'linear-gradient(135deg,#ede9fe,#ddd6fe)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 4px 12px rgba(99,102,241,0.2)'}}>
+                <Target size={18} color="#7c3aed"/>
+              </div>
+              <div>
+                <h3 style={{fontWeight:900,fontSize:15,color:'#0f172a',margin:0}}>Matriks Kuadran Prioritas</h3>
+                <p style={{fontSize:11,color:'#64748b',margin:0}}>Volume Kasus × Rata-rata Tarif · <strong>Klik gelembung</strong> untuk detail pasien</p>
+              </div>
             </div>
-            
+            <div style={{display:'flex',alignItems:'center',gap:8,fontSize:9,color:'#94a3b8',fontWeight:700}}>
+              <div style={{width:8,height:8,borderRadius:'50%',background:'#f43f5e'}}/> Prioritas Tinggi
+              <div style={{width:8,height:8,borderRadius:'50%',background:'#f97316',marginLeft:6}}/> Menengah
+              <div style={{width:8,height:8,borderRadius:'50%',background:'#6366f1',marginLeft:6}}/> Rendah
+            </div>
+          </div>
+          <div style={{position:'relative',width:'100%',height:340,borderLeft:'2px solid #e2e8f0',borderBottom:'2px solid #e2e8f0',marginTop:20}}>
+            <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(226,232,240,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(226,232,240,0.4) 1px,transparent 1px)',backgroundSize:'25% 25%',pointerEvents:'none'}}/>
+            <div style={{position:'absolute',right:8,top:8,fontSize:9,fontWeight:700,color:'#dc2626',background:'#fff1f2',padding:'2px 8px',borderRadius:6,border:'1px solid #fecdd3',pointerEvents:'none'}}>HIGH TARIF · HIGH VOL</div>
+            <div style={{position:'absolute',left:8,top:8,fontSize:9,fontWeight:700,color:'#d97706',background:'#fffbeb',padding:'2px 8px',borderRadius:6,border:'1px solid #fde68a',pointerEvents:'none'}}>HIGH TARIF · LOW VOL</div>
+            <div style={{position:'absolute',right:8,bottom:8,fontSize:9,fontWeight:700,color:'#2563eb',background:'#eff6ff',padding:'2px 8px',borderRadius:6,border:'1px solid #bfdbfe',pointerEvents:'none'}}>LOW TARIF · HIGH VOL</div>
+            <div style={{position:'absolute',left:8,bottom:8,fontSize:9,fontWeight:700,color:'#64748b',background:'#f8fafc',padding:'2px 8px',borderRadius:6,border:'1px solid #e2e8f0',pointerEvents:'none'}}>LOW TARIF · LOW VOL</div>
+            <span style={{position:'absolute',bottom:-22,left:'50%',transform:'translateX(-50%)',fontSize:10,color:'#64748b',fontWeight:700}}>Volume Kasus →</span>
+            <span style={{position:'absolute',left:-36,top:'50%',transform:'translateY(-50%) rotate(-90deg)',fontSize:10,color:'#64748b',fontWeight:700}}>Avg Tarif →</span>
             {strategicData.scatter.map((item, i) => {
-              const xPct = strategicData.maxVol ? (item.volume / strategicData.maxVol) * 95 : 50;
-              const yPct = strategicData.maxTariff ? (item.avgTariff / strategicData.maxTariff) * 95 : 50;
-              const size = Math.max(12, Math.min(50, (item.revenue / (strategicData.topRevenue[0]?.revenue || 1)) * 50));
-              const color = i < 3 ? 'bg-rose-500' : (i < 6 ? 'bg-amber-500' : 'bg-indigo-500');
+              const xPct = strategicData.maxVol ? (item.volume / strategicData.maxVol) * 90 : 50;
+              const yPct = strategicData.maxTariff ? (item.avgTariff / strategicData.maxTariff) * 90 : 50;
+              const sz = Math.max(16, Math.min(56, (item.revenue / (strategicData.topRevenue[0]?.revenue || 1)) * 56));
+              const colors = ['#f43f5e','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#14b8a6','#ec4899','#06b6d4','#84cc16'];
+              const color = colors[i % colors.length];
               return (
-                <div key={i} className={`absolute rounded-full ${color} opacity-70 hover:opacity-100 hover:z-10 transition-all cursor-pointer shadow-md flex items-center justify-center`}
-                     style={{ left: `${xPct}%`, bottom: `${yPct}%`, width: size, height: size, transform: 'translate(-50%, 50%)' }}
-                     title={`${item.name}\nVolume: ${item.volume}\nRata-rata Tarif: ${fmtRp(item.avgTariff)}\nTotal Potensi: ${fmtRp(item.revenue)}`} />
+                <div key={i}
+                  onClick={() => setDrill({
+                    title: `Pasien Di Luar Kompetensi — ${dn(item.name)}`,
+                    filterFn: row => row._meta?.highestGroup === item.name && row._meta?.isOutsideOverall
+                  })}
+                  title={`${dn(item.name)}\nVolume: ${fmt(item.volume)} kasus\nRata-rata: ${fmtRp(item.avgTariff)}\nTotal: ${fmtRp(item.revenue)}\n\nKlik untuk lihat pasien`}
+                  style={{position:'absolute',left:`${xPct}%`,bottom:`${yPct}%`,width:sz,height:sz,
+                    borderRadius:'50%',background:color,opacity:0.78,cursor:'pointer',
+                    transform:'translate(-50%,50%)',transition:'all 0.25s',
+                    boxShadow:`0 4px 12px ${color}55`,
+                    display:'flex',alignItems:'center',justifyContent:'center'}}
+                  onMouseEnter={e=>{
+                    e.currentTarget.style.opacity='1';
+                    e.currentTarget.style.transform='translate(-50%,50%) scale(1.25)';
+                    e.currentTarget.style.zIndex='10';
+                    e.currentTarget.style.boxShadow=`0 8px 24px ${color}77`;
+                  }}
+                  onMouseLeave={e=>{
+                    e.currentTarget.style.opacity='0.78';
+                    e.currentTarget.style.transform='translate(-50%,50%) scale(1)';
+                    e.currentTarget.style.zIndex='1';
+                    e.currentTarget.style.boxShadow=`0 4px 12px ${color}55`;
+                  }}>
+                  {sz >= 26 && <span style={{fontSize:9,fontWeight:900,color:'white',pointerEvents:'none',textShadow:'0 1px 3px rgba(0,0,0,0.5)'}}>{i+1}</span>}
+                </div>
               );
             })}
           </div>
@@ -944,468 +1185,769 @@ export default function KompetensiDashboard({ rows, onBack }) {
     );
   };
 
-  return createPortal(<div className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 flex flex-col" style={{fontFamily:'inherit'}}>
+  return createPortal(
+    <div style={{position:'fixed',inset:0,zIndex:9999,background:'linear-gradient(160deg,#f8fafc 0%,#f0fdfa 40%,#fafafa 100%)',display:'flex',flexDirection:'column',fontFamily:'inherit'}}>
+      <style>{styles}</style>
 
-      {/* ── Sticky Header ── */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-5 py-3 shrink-0 z-20 shadow-sm">
-        <div className="max-w-screen-2xl mx-auto flex items-center gap-4">
-          <button onClick={onBack} className="p-2 rounded-xl hover:bg-slate-100 transition-colors shrink-0 text-slate-500">
-            <ArrowLeft size={20}/>
+      {/* ── Header ── */}
+      <div className="header-light" style={{flexShrink:0,zIndex:20}}>
+        {/* Top bar */}
+        <div style={{padding:'12px 20px',display:'flex',alignItems:'center',gap:16,borderBottom:'1px solid #f1f5f9'}}>
+          <button onClick={onBack} style={{width:36,height:36,borderRadius:10,border:'1.5px solid #e2e8f0',background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',color:'#64748b',transition:'all 0.2s',flexShrink:0}}
+            onMouseEnter={e=>{e.currentTarget.style.background='#f0fdfa';e.currentTarget.style.borderColor='#99f6e4';e.currentTarget.style.color='#0d9488';}}
+            onMouseLeave={e=>{e.currentTarget.style.background='#f8fafc';e.currentTarget.style.borderColor='#e2e8f0';e.currentTarget.style.color='#64748b';}}>
+            <ArrowLeft size={16}/>
           </button>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <ShieldAlert className="text-teal-600" size={18}/>
-              <h1 className="font-black text-base text-slate-800">Analisis Kompetensi Layanan</h1>
-              <span className="text-[10px] bg-teal-50 text-teal-600 border border-teal-200 px-2 py-0.5 rounded-full font-black shadow-sm">LIVE</span>
+
+          <div style={{display:'flex',alignItems:'center',gap:12,flex:1}}>
+            <div style={{width:38,height:38,borderRadius:12,background:'linear-gradient(135deg,#f0fdfa,#ccfbf1)',border:'1.5px solid #99f6e4',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 2px 8px rgba(13,148,136,0.12)'}}>
+              <ShieldAlert size={19} color="#0d9488"/>
+            </div>
+            <div>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <h1 style={{fontWeight:900,fontSize:16,color:'#0f172a',margin:0,letterSpacing:'-0.02em'}}>Analisis Kompetensi Layanan</h1>
+                <span style={{fontSize:9,fontWeight:800,color:'#0d9488',background:'#f0fdfa',border:'1.5px solid #99f6e4',padding:'2px 8px',borderRadius:999,letterSpacing:'0.1em',textTransform:'uppercase'}}>LIVE</span>
+              </div>
+              <p style={{fontSize:11,color:'#64748b',margin:'2px 0 0 0'}}>
+                {fmt(data.totalPatients)} kasus · {fmt(data.patientsOutsideCompetency)} di luar kompetensi ({pctOut}%)
+              </p>
             </div>
           </div>
-          {/* Tab nav in header */}
-          <div className="flex gap-1">
+
+          {/* Tab nav */}
+          <div style={{display:'flex',gap:3,background:'#f8fafc',borderRadius:12,padding:4,border:'1.5px solid #e2e8f0'}}>
             {TABS.map(t=>(
               <button key={t.id} onClick={()=>setTab(t.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${tab===t.id?'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md shadow-teal-500/20':'text-slate-500 hover:text-teal-600 hover:bg-teal-50'}`}>
+                className={`tab-btn ${tab===t.id?'tab-btn-active':'tab-btn-inactive'}`}>
                 {t.icon}{t.label}
               </button>
             ))}
           </div>
         </div>
+
+        {/* KPI strip */}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:0}}>
+          {[
+            { label:'Total Kasus', val:fmt(data.totalPatients), sub:fmtRp(data.totalTarifInacbg)+' INA-CBG', icon:<Activity size={15}/>, iconBg:'#f1f5f9', iconColor:'#64748b', valColor:'#0f172a', accent:'#fafafa', border:'#f1f5f9' },
+            { label:'Sesuai Kompetensi', val:fmt(data.patientsWithinCompetency), sub:`${(100-parseFloat(pctOut)).toFixed(1)}% dari total`, icon:<CheckCircle size={15}/>, iconBg:'#dcfce7', iconColor:'#16a34a', valColor:'#14532d', accent:'#f0fdf4', border:'#bbf7d0' },
+            { label:'Di Luar Kompetensi', val:fmt(data.patientsOutsideCompetency), sub:`${pctOut}% dari total`, icon:<AlertCircle size={15}/>, iconBg:'#fee2e2', iconColor:'#dc2626', valColor:'#7f1d1d', accent:'#fff1f2', border:'#fecdd3' },
+            { label:'Potensi Loss Total', val:fmtRp(data.tarifOutsideCompetency), sub:'Tarif INA-CBG bocor', icon:<TrendingDown size={15}/>, iconBg:'#fef3c7', iconColor:'#d97706', valColor:'#78350f', accent:'#fffbeb', border:'#fde68a' },
+          ].map((k,i)=>(
+            <div key={i} style={{padding:'14px 20px',borderRight:i<3?'1px solid #f1f5f9':'none',background:k.accent,borderTop:`3px solid ${k.border}`,transition:'background 0.2s'}}
+              onMouseEnter={e=>e.currentTarget.style.background='white'}
+              onMouseLeave={e=>e.currentTarget.style.background=k.accent}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                <p style={{fontSize:9,fontWeight:800,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.1em',margin:0}}>{k.label}</p>
+                <div style={{width:26,height:26,borderRadius:8,background:k.iconBg,display:'flex',alignItems:'center',justifyContent:'center',color:k.iconColor}}>
+                  {k.icon}
+                </div>
+              </div>
+              <p style={{fontSize:22,fontWeight:900,color:k.valColor,margin:0,letterSpacing:'-0.02em'}}>{k.val}</p>
+              <p style={{fontSize:10,color:'#94a3b8',margin:'3px 0 0 0'}}>{k.sub}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-5 custom-scrollbar">
-<div className="max-w-screen-2xl mx-auto w-full space-y-5">
+      {/* ── Content ── */}
+      <div style={{flex:1,overflowY:'auto',padding:'24px'}} className="komp-scrollbar">
+        <div style={{maxWidth:1600,margin:'0 auto'}}>
 
-        {/* ── KPI Row ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            {label:'Total Kasus', val:fmt(data.totalPatients), sub:fmtRp(data.totalTarifInacbg)+' INA-CBG', color:'from-white to-slate-50 border-slate-200 text-slate-800', subColor:'text-slate-500', icon:<Activity size={20} className="text-slate-400"/>},
-            {label:'Sesuai Kompetensi', val:fmt(data.patientsWithinCompetency), sub:`${(100-pctOut)}% dari total · ${fmtRp(data.tarifWithinCompetency)}`, color:'from-emerald-50 to-emerald-100/30 border-emerald-200 text-emerald-900', subColor:'text-emerald-700/80', icon:<CheckCircle size={20} className="text-emerald-600"/>},
-            {label:'Di Luar Kompetensi', val:fmt(data.patientsOutsideCompetency), sub:`${pctOut}% dari total · ${fmtRp(data.tarifOutsideCompetency)}`, color:'from-rose-50 to-rose-100/30 border-rose-200 text-rose-900', subColor:'text-rose-700/80', icon:<AlertCircle size={20} className="text-rose-600"/>},
-            {label:'Potensi Loss Total', val:fmtRp(data.tarifOutsideCompetency), sub:'Tarif INA-CBG kebocoran', color:'from-amber-50 to-amber-100/30 border-amber-200 text-amber-900', subColor:'text-amber-700/80', icon:<TrendingDown size={20} className="text-amber-600"/>},
-          ].map((k,i)=>(
-            <div key={i} className={`bg-gradient-to-br ${k.color} border rounded-2xl p-4 shadow-sm`}>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-80">{k.label}</p>
-                {k.icon}
-              </div>
-              <p className="text-2xl font-black">{k.val}</p>
-              <p className={`text-[11px] font-medium mt-0.5 ${k.subColor}`}>{k.sub}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* ── Tarif Summary Bar ── */}
-        <div className="grid grid-cols-3 gap-3">
-          {[{
-            label:'Total Pendapatan INA-CBG', val: fmtRp(data.totalTarifInacbg),
-            sub: `${fmt(data.totalPatients)} kasus`,
-            accent:'border-blue-500', valColor:'text-blue-700', bg:'bg-white',
-            icon:<span className="text-[9px] font-black text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">INA-CBG</span>
-          },{
-            label:'Total Pendapatan iDRG', val: fmtRp(data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)),
-            sub: 'Tarif versi iDRG',
-            accent:'border-violet-500', valColor:'text-violet-700', bg:'bg-white',
-            icon:<span className="text-[9px] font-black text-violet-500 bg-violet-50 px-1.5 py-0.5 rounded">iDRG</span>
-          },{
-            label:'Selisih iDRG vs INA-CBG',
-            val: (() => { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return (t>=0?'+':'')+fmtRp(t); })(),
-            sub: (() => { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0); const sel=t-data.totalTarifInacbg; return data.totalTarifInacbg>0?`${sel>=0?'+':''}${(sel/data.totalTarifInacbg*100).toFixed(1)}% vs INA-CBG`:'-'; })(),
-            accent: (() => { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'border-emerald-500':'border-rose-500'; })(),
-            valColor: (() => { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'text-emerald-600':'text-rose-600'; })(),
-            bg:'bg-white',
-            icon: (() => { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${t>=0?'text-emerald-600 bg-emerald-50':'text-rose-600 bg-rose-50'}`}>{t>=0?'▲ Surplus':'▼ Defisit'}</span>; })()
-          }].map((k,i)=>(
-            <div key={i} className={`${k.bg} rounded-2xl p-5 shadow-sm border-l-4 ${k.accent} border border-slate-100`}>
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{k.label}</p>
-                {k.icon}
-              </div>
-              <p className={`text-2xl font-black mt-2 ${k.valColor}`}>{k.val}</p>
-              <p className="text-[11px] text-slate-400 mt-1">{k.sub}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* ══════════════ OVERVIEW TAB ══════════════ */}
-        {tab==='strategic' && renderStrategicTab()}
-
-        {tab==='overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* Left: Donut + legend */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-              <h3 className="font-black text-slate-800 text-sm mb-4">Distribusi Level Kompetensi</h3>
-              <div className="flex flex-col items-center gap-4">
-                <Ring data={donutData} total={data.totalPatients} size={200}/>
-                <div className="w-full space-y-2">
-                  {donutData.map(d=>{
-                    const c=LC[d.name]||LC['Belum Ada Mapping'];
-                    const pct=(d.value/data.totalPatients*100).toFixed(1);
-                    return (
-                      <div key={d.name} className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{background:c.dot}}/>
-                        <div className="flex-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-slate-700">{d.name}</span>
-                            <span className="text-xs font-black text-slate-800">{pct}%</span>
-                          </div>
-                          <div className="h-1.5 bg-slate-100 rounded-full mt-0.5">
-                            <div className="h-1.5 rounded-full" style={{width:`${pct}%`,background:c.dot}}/>
-                          </div>
-                        </div>
-                        <span className="text-[10px] text-slate-400 w-12 text-right">{fmt(d.value)}</span>
-                      </div>
-                    );
-                  })}
+          {/* ── Tarif Summary ── */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:16,marginBottom:24}} className="komp-fade-up">
+            {[{
+              label:'Total Pendapatan INA-CBG', val:fmtRp(data.totalTarifInacbg),
+              sub:`${fmt(data.totalPatients)} kasus`,
+              accentColor:'#3b82f6', accentBg:'rgba(59,130,246,0.08)',
+              badge:'INA-CBG', badgeBg:'#dbeafe', badgeColor:'#1d4ed8',
+              borderLeft:'4px solid #3b82f6'
+            },{
+              label:'Total Pendapatan iDRG', val:fmtRp(data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)),
+              sub:'Tarif versi iDRG',
+              accentColor:'#8b5cf6', accentBg:'rgba(139,92,246,0.08)',
+              badge:'iDRG', badgeBg:'#ede9fe', badgeColor:'#6d28d9',
+              borderLeft:'4px solid #8b5cf6'
+            },{
+              label:'Selisih iDRG vs INA-CBG',
+              get val() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return (t>=0?'+':'')+fmtRp(t); },
+              get sub() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0); const sel=t-data.totalTarifInacbg; return data.totalTarifInacbg>0?`${sel>=0?'+':''}${(sel/data.totalTarifInacbg*100).toFixed(1)}% vs INA-CBG`:'-'; },
+              get accentColor() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'#10b981':'#ef4444'; },
+              get accentBg() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'rgba(16,185,129,0.08)':'rgba(239,68,68,0.08)'; },
+              get badge() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'▲ Surplus':'▼ Defisit'; },
+              get badgeBg() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'#dcfce7':'#fee2e2'; },
+              get badgeColor() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return t>=0?'#166534':'#991b1b'; },
+              get borderLeft() { const t=data.groupTableRows.reduce((s,r)=>s+r.totalIdrg,0)-data.totalTarifInacbg; return `4px solid ${t>=0?'#10b981':'#ef4444'}`; },
+            }].map((k,i)=>(
+              <div key={i} style={{background:'white',borderRadius:16,padding:'20px 22px',boxShadow:'0 2px 12px rgba(0,0,0,0.05)',borderLeft:k.borderLeft,border:'1.5px solid #f1f5f9',borderLeftWidth:4,transition:'all 0.25s'}}
+                onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 6px 24px rgba(0,0,0,0.09)';e.currentTarget.style.transform='translateY(-2px)';}}
+                onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 2px 12px rgba(0,0,0,0.05)';e.currentTarget.style.transform='translateY(0)';}}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+                  <p style={{fontSize:10,fontWeight:800,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>{k.label}</p>
+                  <span style={{fontSize:10,fontWeight:800,background:k.badgeBg,color:k.badgeColor,padding:'3px 10px',borderRadius:999}}>{k.badge}</span>
                 </div>
+                <p style={{fontSize:22,fontWeight:900,color:k.accentColor,margin:'4px 0',letterSpacing:'-0.02em'}}>{k.val}</p>
+                <p style={{fontSize:11,color:'#94a3b8',margin:0}}>{k.sub}</p>
               </div>
+            ))}
+          </div>
+
+          {/* ── Strategic Tab ── */}
+          {tab==='strategic' && renderStrategicTab()}
+
+          {/* ── KSM & Departemen Tab ── */}
+          {tab==='ksm' && isKsmLoading && (
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'100px 20px',background:'white',borderRadius:20,border:'1.5px solid #e2e8f0',boxShadow:'0 4px 20px rgba(0,0,0,0.05)',marginTop:20}} className="komp-fade-up">
+              <div style={{animation:'spin-slow 1.5s linear infinite',marginBottom:20}}>
+                <Activity size={40} color="#0d9488" />
+              </div>
+              <h3 style={{fontWeight:900,fontSize:18,color:'#0f172a',margin:0}}>Menganalisis Kinerja KSM...</h3>
+              <p style={{fontSize:13,color:'#64748b',margin:'8px 0 0 0'}}>Melakukan pemetaan kompetensi pada seluruh data layanan</p>
             </div>
+          )}
+          {tab==='ksm' && !isKsmLoading && ksmData && (() => {
+            const sortFn = ksmSort==='loss' ? (a,b)=>b.loss-a.loss : ksmSort==='pct' ? (a,b)=>(b.total?b.luar/b.total:0)-(a.total?a.luar/a.total:0) : ksmSort==='total' ? (a,b)=>b.total-a.total : (a,b)=>a.name.localeCompare(b.name);
+            const q = ksmSearch.toLowerCase();
 
-            {/* Right: Group cards 2 col */}
-            <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-black text-slate-800 text-sm">24 Kelompok Layanan  <span className="text-slate-400 font-medium text-xs">(klik untuk detail)</span></h3>
-                <div className="relative">
-                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/>
-                  <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari kelompok..."
-                    className="pl-7 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-1 focus:ring-teal-400 outline-none w-44"/>
+            const renderTable = (items, type) => {
+              const filtered = q ? items.filter(d => d.name.toLowerCase().includes(q) || (d.dept||'').toLowerCase().includes(q) || (d.ksm||'').toLowerCase().includes(q)) : items;
+              const sorted = [...filtered].sort(sortFn);
+              const maxLoss = Math.max(...items.map(d=>d.loss), 1);
+
+              return (
+                <div style={{background:'white',borderRadius:16,border:'1.5px solid #e2e8f0',overflow:'hidden',boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
+                  <table style={{width:'100%',fontSize:11,borderCollapse:'collapse'}}>
+                    <thead style={{background:'#f8fafc',position:'sticky',top:0,zIndex:1}}>
+                      <tr>
+                        <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0',width:32}}>No</th>
+                        <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0'}}>{type==='dpjp'?'DPJP':type==='ksm'?'KSM':'Departemen'}</th>
+                        {type==='dpjp' && <th style={{padding:'10px 14px',textAlign:'left',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0'}}>KSM</th>}
+                        <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0',width:70}}>Total</th>
+                        <th style={{padding:'10px 14px',textAlign:'center',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0',width:130}}>Sesuai / Di Luar</th>
+                        <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0',width:60}}>% Luar</th>
+                        <th style={{padding:'10px 14px',textAlign:'right',fontWeight:800,color:'#64748b',textTransform:'uppercase',fontSize:9,letterSpacing:'0.06em',borderBottom:'1.5px solid #e2e8f0',width:130}}>Potensi Loss</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sorted.slice(0,100).map((d,i) => {
+                        const pct = d.total ? ((d.luar/d.total)*100) : 0;
+                        const isAlert = pct > 30;
+                        const isWarn = pct > 15 && pct <= 30;
+                        const displayName = type==='dpjp' ? maskName(d.name) : d.name;
+                        const barW = Math.max(2, (d.loss/maxLoss)*100);
+                        return (
+                          <tr key={i}
+                            onClick={() => setDrill({
+                              title: `${type==='dept'?'Dept':'KSM'}: ${type==='dpjp'?maskName(d.name):d.name}`,
+                              filterFn: type==='dept'
+                                ? row => { const r2=resolveKsmDept(row['DPJP']||'-',ksmOverrides||{}); return r2.dept===d.name; }
+                                : type==='ksm'
+                                ? row => { const r2=resolveKsmDept(row['DPJP']||'-',ksmOverrides||{}); return r2.ksm===d.name; }
+                                : row => (row['DPJP']||'-').trim()===d.name.trim()
+                            })}
+                            style={{borderBottom:'1px solid #f8fafc',background:isAlert?'#fff5f5':i%2===0?'white':'#fafafa',cursor:'pointer',transition:'all 0.15s'}}
+                            onMouseEnter={e=>{e.currentTarget.style.background='#f0fdfa';e.currentTarget.style.borderLeft='3px solid #14b8a6';}}
+                            onMouseLeave={e=>{e.currentTarget.style.background=isAlert?'#fff5f5':i%2===0?'white':'#fafafa';e.currentTarget.style.borderLeft='none';}}>
+                            <td style={{padding:'10px 14px',color:'#94a3b8',fontWeight:700}}>{i+1}</td>
+                            <td style={{padding:'10px 14px'}}>
+                              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                                <span style={{fontWeight:800,color:'#0f172a',fontSize:12}}>{displayName}</span>
+                                {isAlert && <span style={{fontSize:8,fontWeight:800,background:'#fee2e2',color:'#dc2626',padding:'2px 6px',borderRadius:999,whiteSpace:'nowrap'}}>🚨 ALERT</span>}
+                                {isWarn && <span style={{fontSize:8,fontWeight:800,background:'#fffbeb',color:'#d97706',padding:'2px 6px',borderRadius:999,whiteSpace:'nowrap'}}>⚠️ WARN</span>}
+                              </div>
+                            </td>
+                            {type==='dpjp' && <td style={{padding:'10px 14px',fontSize:10,color:'#64748b',maxWidth:160,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={d.ksm}>{d.ksm}</td>}
+                            <td style={{padding:'10px 14px',textAlign:'right',fontWeight:900,color:'#0f172a'}}>{fmt(d.total)}</td>
+                            <td style={{padding:'10px 14px'}}>
+                              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                                <div style={{flex:1,display:'flex',height:8,borderRadius:999,overflow:'hidden',background:'#f1f5f9'}}>
+                                  <div style={{width:`${d.total?(d.sesuai/d.total)*100:0}%`,background:'#10b981',borderRadius:'999px 0 0 999px',transition:'width 0.8s ease'}}/>
+                                  <div style={{width:`${d.total?(d.luar/d.total)*100:0}%`,background:'#ef4444',borderRadius:'0 999px 999px 0',transition:'width 0.8s ease'}}/>
+                                </div>
+                                <span style={{fontSize:9,color:'#64748b',fontWeight:700,whiteSpace:'nowrap'}}>{fmt(d.sesuai)}/{fmt(d.luar)}</span>
+                              </div>
+                            </td>
+                            <td style={{padding:'10px 14px',textAlign:'right'}}>
+                              <span style={{fontWeight:900,fontSize:12,color:isAlert?'#dc2626':isWarn?'#d97706':'#16a34a'}}>{pct.toFixed(1)}%</span>
+                            </td>
+                            <td style={{padding:'10px 14px',textAlign:'right'}}>
+                              <div style={{display:'flex',alignItems:'center',gap:6,justifyContent:'flex-end'}}>
+                                <div style={{width:60,height:6,borderRadius:999,background:'#f1f5f9',overflow:'hidden'}}>
+                                  <div style={{height:'100%',borderRadius:999,background:isAlert?'#ef4444':isWarn?'#f59e0b':'#94a3b8',width:`${barW}%`,transition:'width 0.8s ease'}}/>
+                                </div>
+                                <span style={{fontWeight:900,color:d.loss>0?'#dc2626':'#64748b',fontSize:11,whiteSpace:'nowrap'}}>{fmtRp(d.loss)}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {sorted.length===0 && <tr><td colSpan={type==='dpjp'?7:6} style={{padding:40,textAlign:'center',color:'#94a3b8'}}>Tidak ada data</td></tr>}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-5 overflow-y-auto pr-2 pb-4" style={{ maxHeight: 650 }}>
-                {filteredGroups.filter(r=>r.hasData || search).map(r => {
-                  let sesuai = 0;
-                  let tidakSesuai = 0;
-                  let rsLevel = 'Campuran/Tidak Spesifik';
-                  if (config) {
-                    if (config[r.name]) rsLevel = config[r.name];
-                    else {
-                      const noPrefix = r.name.replace(/Kelompok Layanan /i, '').trim();
-                      const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
-                      if (matchingKey) rsLevel = config[matchingKey];
-                    }
-                  }
-                  const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
-                  
-                  [...LEVEL_ORDER, 'unknown'].forEach(lv => {
-                     const kasus = (r.ranap[lv]?.kasus || 0) + (r.rajal[lv]?.kasus || 0);
-                     if (lv === 'unknown' || rsLevel === 'Campuran/Tidak Spesifik' || rsLevel === 'Belum Ada Mapping') {
-                         sesuai += kasus;
-                     } else {
-                         const lvIdx = LEVEL_ORDER.indexOf(lv);
-                         if (lvIdx <= rsIdx) sesuai += kasus;
-                         else tidakSesuai += kasus;
-                     }
-                  });
+              );
+            };
 
-                  const total = sesuai + tidakSesuai;
-                  const pctSesuai = total > 0 ? (sesuai / total) * 100 : 0;
-                  const pctLoss = total > 0 ? (tidakSesuai / total) * 100 : 0;
-
-                  return (
-                    <div key={r.name} onClick={() => setDrill(r.name)} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-xl hover:border-teal-300 transition-all duration-300 cursor-pointer group relative overflow-hidden flex flex-col justify-between h-[150px]">
-                      <div className="absolute -right-4 -bottom-4 opacity-[0.02] group-hover:opacity-[0.06] transition-opacity duration-500 group-hover:scale-110 group-hover:-rotate-12 pointer-events-none">
-                        <Activity size={120} />
-                      </div>
-                      
-                      <div className="relative z-10 flex justify-between items-start mb-2">
-                        <h4 className="text-[11px] font-extrabold text-slate-700 uppercase tracking-widest leading-relaxed line-clamp-2 pr-2" title={dn(r.name)}>
-                          {dn(r.name)}
-                        </h4>
-                        <div className="bg-slate-50 border border-slate-100 px-2 py-1 rounded-lg text-center min-w-[48px] shrink-0 shadow-sm group-hover:bg-teal-50 group-hover:border-teal-100 transition-colors">
-                          <p className="text-[9px] text-slate-400 font-bold mb-0.5 group-hover:text-teal-500 transition-colors">TOTAL</p>
-                          <p className="text-sm font-black text-slate-800 leading-none group-hover:text-teal-700 transition-colors">{fmt(total)}</p>
-                        </div>
-                      </div>
-
-                      <div className="relative z-10 space-y-2.5 mt-auto">
-                        <div>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-[10px] font-bold text-emerald-600 flex items-center gap-1.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]"></div>
-                              Sesuai
-                            </span>
-                            <span className="text-[10px] font-bold text-slate-600">{fmt(sesuai)} <span className="text-slate-400 font-medium ml-0.5">({pctSesuai.toFixed(0)}%)</span></span>
-                          </div>
-                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out" style={{width: `${pctSesuai}%`}}></div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-[10px] font-bold text-rose-500 flex items-center gap-1.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_4px_rgba(244,63,94,0.5)]"></div>
-                              Di Luar
-                            </span>
-                            <span className="text-[10px] font-bold text-slate-600">{fmt(tidakSesuai)} <span className="text-slate-400 font-medium ml-0.5">({pctLoss.toFixed(0)}%)</span></span>
-                          </div>
-                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                            <div className="h-full bg-gradient-to-r from-rose-400 to-rose-500 rounded-full transition-all duration-1000 ease-out" style={{width: `${pctLoss}%`}}></div>
-                          </div>
-                        </div>
-                      </div>
+            // Heatmap render
+            const renderHeatmap = () => {
+              if (!ksmData.heatGroupList.length) return null;
+              const topKsms = ksmData.ksms.filter(k => k.luar > 0).slice(0, 15);
+              if (!topKsms.length) return null;
+              const maxVal = Math.max(...topKsms.flatMap(k => ksmData.heatGroupList.map(g => ksmData.heatmap[k.name]?.[g] || 0)), 1);
+              const getColor = (val) => {
+                if (!val) return '#fafafa';
+                const intensity = Math.min(val / maxVal, 1);
+                if (intensity < 0.2) return '#fef2f2';
+                if (intensity < 0.4) return '#fecaca';
+                if (intensity < 0.6) return '#f87171';
+                if (intensity < 0.8) return '#ef4444';
+                return '#dc2626';
+              };
+              const getTextColor = (val) => {
+                if (!val) return '#e2e8f0';
+                const intensity = Math.min(val / maxVal, 1);
+                return intensity > 0.5 ? 'white' : '#1e293b';
+              };
+              return (
+                <div style={{background:'white',borderRadius:16,border:'1.5px solid #e2e8f0',padding:20,boxShadow:'0 2px 12px rgba(0,0,0,0.05)',overflow:'auto'}} className="komp-scrollbar">
+                  <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+                    <div style={{width:32,height:32,borderRadius:10,background:'linear-gradient(135deg,#fee2e2,#fecaca)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                      <Grid3X3 size={16} color="#dc2626"/>
                     </div>
-                  );
-                })}
-              </div>
-              <div className="mt-4">
-                {filteredGroups.filter(r=>!r.hasData).length>0 && (
-                  <div className="pt-3 border-t border-slate-100">
-                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1.5">Belum Ada Klaim</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {filteredGroups.filter(r=>!r.hasData).map(r=>(
-                        <span key={r.name} className="text-[10px] bg-slate-100 text-slate-400 px-2 py-1 rounded-lg font-medium">{dn(r.name)}</span>
-                      ))}
+                    <div>
+                      <h3 style={{fontWeight:900,fontSize:14,color:'#0f172a',margin:0}}>Heatmap KSM × Kelompok Layanan</h3>
+                      <p style={{fontSize:10,color:'#64748b',margin:0}}>Jumlah kasus <strong>di luar kompetensi</strong> per KSM per kelompok layanan · Klik sel untuk drilldown</p>
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
+                  <div style={{overflowX:'auto'}}>
+                    <table style={{fontSize:9,borderCollapse:'collapse',minWidth:ksmData.heatGroupList.length*45+200}}>
+                      <thead>
+                        <tr>
+                          <th style={{padding:'6px 8px',textAlign:'left',fontWeight:800,color:'#64748b',borderBottom:'1.5px solid #e2e8f0',position:'sticky',left:0,background:'white',zIndex:2,minWidth:180}}>KSM</th>
+                          {ksmData.heatGroupList.map(g => (
+                            <th key={g} style={{padding:'4px 3px',textAlign:'center',fontWeight:700,color:'#94a3b8',borderBottom:'1.5px solid #e2e8f0',writingMode:'vertical-lr',transform:'rotate(180deg)',height:100,maxWidth:30}} title={g}>
+                              {dn(g)}
+                            </th>
+                          ))}
+                          <th style={{padding:'6px 8px',textAlign:'right',fontWeight:800,color:'#64748b',borderBottom:'1.5px solid #e2e8f0',minWidth:50}}>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {topKsms.map((k,ki) => {
+                          const rowTotal = ksmData.heatGroupList.reduce((s,g) => s + (ksmData.heatmap[k.name]?.[g]||0), 0);
+                          return (
+                            <tr key={ki}>
+                              <td style={{padding:'5px 8px',fontWeight:700,color:'#334155',borderBottom:'1px solid #f8fafc',position:'sticky',left:0,background:'white',zIndex:1,maxWidth:180,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={k.name}>{k.name}</td>
+                              {ksmData.heatGroupList.map(g => {
+                                const val = ksmData.heatmap[k.name]?.[g] || 0;
+                                return (
+                                  <td key={g}
+                                    onClick={() => val > 0 && setDrill({
+                                      title: `${k.name} — ${dn(g)} (Di Luar)`,
+                                      filterFn: row => {
+                                        const r2 = resolveKsmDept(row['DPJP']||'-', ksmOverrides||{});
+                                        return r2.ksm === k.name && row._meta?.highestGroup === g && row._meta?.isOutsideOverall;
+                                      }
+                                    })}
+                                    style={{padding:'3px 2px',textAlign:'center',fontWeight:800,fontSize:9,
+                                      background:getColor(val),color:getTextColor(val),
+                                      borderBottom:'1px solid #f8fafc',borderRight:'1px solid rgba(255,255,255,0.5)',
+                                      cursor:val>0?'pointer':'default',transition:'all 0.15s',borderRadius:2,minWidth:30}}
+                                    title={`${k.name} × ${dn(g)}: ${val} kasus di luar`}>
+                                    {val || ''}
+                                  </td>
+                                );
+                              })}
+                              <td style={{padding:'5px 8px',textAlign:'right',fontWeight:900,color:'#dc2626',borderBottom:'1px solid #f8fafc',fontSize:10}}>{rowTotal}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div style={{display:'flex',alignItems:'center',gap:12,marginTop:12,paddingTop:10,borderTop:'1px solid #f1f5f9'}}>
+                    <span style={{fontSize:9,color:'#94a3b8',fontWeight:700}}>Intensitas:</span>
+                    {[{label:'0',bg:'#fafafa'},{label:'Rendah',bg:'#fef2f2'},{label:'Sedang',bg:'#fecaca'},{label:'Tinggi',bg:'#f87171'},{label:'Kritis',bg:'#dc2626'}].map(l => (
+                      <div key={l.label} style={{display:'flex',alignItems:'center',gap:4}}>
+                        <div style={{width:14,height:10,borderRadius:3,background:l.bg,border:'1px solid #e2e8f0'}}/>
+                        <span style={{fontSize:8,color:'#64748b',fontWeight:600}}>{l.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            };
 
-            {/* TOP 10 TABLES */}
-            <div className="mt-8 lg:col-span-3">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-black text-slate-800">Top 10 Diagnosa & Tindakan</h3>
-                <button onClick={handleExportTop10} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: 900 }}>
-                  <Download size={14} /> Download Excel
-                </button>
-              </div>
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                <Top10Table title="Top 10 Diagnosa Sesuai Kompetensi RS" data={data.top10?.diagSesuai} />
-                <Top10Table title="Top 10 Tindakan Sesuai Kompetensi RS" data={data.top10?.procSesuai} />
-                <Top10Table title="Top 10 Diagnosa Tidak Sesuai Kompetensi RS" data={data.top10?.diagTidakSesuai} />
-                <Top10Table title="Top 10 Tindakan Tidak Sesuai Kompetensi RS" data={data.top10?.procTidakSesuai} />
-              </div>
-            </div>
-          </div>
-        )}
+            return (
+              <div style={{display:'flex',flexDirection:'column',gap:20}} className="komp-fade-up">
+                {/* Sub-nav */}
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
+                  <div style={{display:'flex',gap:3,background:'#f8fafc',borderRadius:12,padding:4,border:'1.5px solid #e2e8f0'}}>
+                    {[{id:'dept',icon:<Building2 size={12}/>,label:'Departemen'},{id:'ksm',icon:<Users size={12}/>,label:'KSM'},{id:'dpjp',icon:<User size={12}/>,label:'DPJP'}].map(v => (
+                      <button key={v.id} onClick={() => {setKsmSubView(v.id);setKsmSearch('');}}
+                        style={{display:'flex',alignItems:'center',gap:5,padding:'6px 14px',borderRadius:9,border:'none',fontSize:11,fontWeight:700,cursor:'pointer',transition:'all 0.2s',
+                          background:ksmSubView===v.id?'linear-gradient(135deg,#0d9488,#0f766e)':'transparent',
+                          color:ksmSubView===v.id?'white':'#64748b',
+                          boxShadow:ksmSubView===v.id?'0 3px 10px rgba(13,148,136,0.25)':'none'}}>
+                        {v.icon}{v.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{display:'flex',gap:8,alignItems:'center'}}>
+                    <div style={{position:'relative'}}>
+                      <Search size={13} style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#94a3b8'}}/>
+                      <input value={ksmSearch} onChange={e=>setKsmSearch(e.target.value)}
+                        placeholder={`Cari ${ksmSubView==='dept'?'departemen':ksmSubView==='ksm'?'KSM':'DPJP'}...`}
+                        style={{padding:'7px 12px 7px 30',borderRadius:10,border:'1.5px solid #e2e8f0',fontSize:11,width:200,outline:'none',transition:'border 0.2s'}}/>
+                    </div>
+                    <select value={ksmSort} onChange={e=>setKsmSort(e.target.value)}
+                      style={{padding:'7px 12px',borderRadius:10,border:'1.5px solid #e2e8f0',fontSize:11,color:'#475569',fontWeight:700,outline:'none',cursor:'pointer',background:'white'}}>
+                      <option value="loss">Urutkan: Loss Tertinggi</option>
+                      <option value="pct">Urutkan: % Di Luar</option>
+                      <option value="total">Urutkan: Total Kasus</option>
+                      <option value="name">Urutkan: Nama A-Z</option>
+                    </select>
+                  </div>
+                </div>
 
-        {/* ══════════════ TABLE 1 TAB ══════════════ */}
-        {tab==='table1' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-5 border-b border-slate-100">
-              <h2 className="font-black text-slate-800">Distribusi Tingkat Tuntutan Layanan (ICD)</h2>
-              <p className="text-xs text-slate-400 mt-1">Kasus dikategorikan berdasarkan level ICD tertinggi dalam DIAGLIST</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs min-w-[820px]">
-                <thead>
-                  <tr className="bg-slate-50">
-                    <th rowSpan={2} className="px-4 py-3 text-left font-black text-slate-500 text-[10px] uppercase border-b-2 border-slate-200 border-r">Tingkat Tuntutan</th>
-                    <th colSpan={3} className="px-3 py-2 text-center font-black text-emerald-700 text-[10px] uppercase bg-emerald-50 border-b border-emerald-100 border-r">✓ Sesuai Kompetensi</th>
-                    <th colSpan={3} className="px-3 py-2 text-center font-black text-rose-700 text-[10px] uppercase bg-rose-50 border-b border-rose-100 border-r">✗ Potensi Loss</th>
-                    <th rowSpan={2} className="px-4 py-3 text-center font-black text-slate-500 text-[10px] uppercase border-b-2 border-slate-200">% Loss</th>
-                  </tr>
-                  <tr className="bg-slate-50 text-[10px]">
-                    {['Kasus','INA-CBG','iDRG'].map(h=><th key={`s${h}`} className="px-3 py-2 text-center font-black text-emerald-600 bg-emerald-50/70 border-b border-slate-200">{h}</th>)}
-                    {['Kasus','INA-CBG','iDRG'].map(h=><th key={`l${h}`} className={`px-3 py-2 text-center font-black text-rose-600 bg-rose-50/70 border-b border-slate-200 ${h==='iDRG'?'border-r':''}`}>{h}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {LEVEL_ORDER.map((lv,i)=>{
-                    const s=data.levelStats[lv]||{};
-                    const tot=(s.sesuaiKasus||0)+(s.lossKasus||0);
-                    const pct=tot>0?((s.lossKasus||0)/tot*100).toFixed(1):'0.0';
-                    const c=LC[lv]||LC['Belum Ada Mapping'];
-                    return (
-                      <tr key={lv} className={`border-b border-slate-100 ${i%2===0?'bg-white':'bg-slate-50/30'} hover:bg-teal-50/20 transition-colors`}>
-                        <td className="px-4 py-3 font-bold border-r border-slate-100">
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-black ${c.badge}`}>
-                            <span className="w-2 h-2 rounded-full" style={{background:c.dot}}/>
-                            {lv}
-                          </span>
-                        </td>
-                        <td onClick={()=>setDrill({ title:`Distribusi Level ${lv} (Sesuai)`, filterFn:r=>r._meta?.highestLevelName===lv && !r._meta?.isOutsideOverall })} className="cursor-pointer hover:bg-emerald-100/50 px-3 py-3 text-right font-black text-emerald-700">{fmt(s.sesuaiKasus)}</td>
-                        <td className="px-3 py-3 text-right text-emerald-600">{fmtRp(s.sesuaiIna)}</td>
-                        <td className="px-3 py-3 text-right text-emerald-600 border-r border-slate-100">{fmtRp(s.sesuaiIdrg)}</td>
-                        <td onClick={()=>setDrill({ title:`Distribusi Level ${lv} (Potensi Loss)`, filterFn:r=>r._meta?.highestLevelName===lv && r._meta?.isOutsideOverall })} className="cursor-pointer hover:bg-rose-100/50 px-3 py-3 text-right font-black text-rose-700">{fmt(s.lossKasus)}</td>
-                        <td className="px-3 py-3 text-right text-rose-600">{fmtRp(s.lossIna)}</td>
-                        <td className="px-3 py-3 text-right text-rose-600 border-r border-slate-100">{fmtRp(s.lossIdrg)}</td>
-                        <td className="px-3 py-3 text-center">
-                          <span className={`px-2 py-1 rounded-lg font-black text-[11px] ${parseFloat(pct)>30?'bg-rose-100 text-rose-700':parseFloat(pct)>10?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600'}`}>
-                            {pct}%
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="bg-gradient-to-r from-slate-800 to-slate-900 text-white text-[11px] font-black">
-                    <td className="px-4 py-3 border-r border-slate-600">TOTAL</td>
-                    <td className="px-3 py-3 text-right">{fmt(t1.sk)}</td>
-                    <td className="px-3 py-3 text-right">{fmtRp(t1.si)}</td>
-                    <td className="px-3 py-3 text-right border-r border-slate-600">{fmtRp(t1.sd)}</td>
-                    <td className="px-3 py-3 text-right text-rose-300">{fmt(t1.lk)}</td>
-                    <td className="px-3 py-3 text-right text-rose-300">{fmtRp(t1.li)}</td>
-                    <td className="px-3 py-3 text-right text-rose-300 border-r border-slate-600">{fmtRp(t1.ld)}</td>
-                    <td className="px-3 py-3 text-center text-amber-300">
-                      {(t1.sk+t1.lk)>0?((t1.lk/(t1.sk+t1.lk))*100).toFixed(1):0}%
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-
-            <DetailKelompokTable data={data.groupDetails} onDrillDown={setDrill} />
-          </div>
-        )}
-
-        {/* ══════════════ TABLE 2 TAB ══════════════ */}
-        {tab==='table2' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h2 className="font-black text-slate-800">Per Kelompok Layanan RS</h2>
-                <p className="text-xs text-slate-400 mt-1">Klik baris untuk melihat detail pasien & ICD · RI=Rawat Inap, RJ=Rawat Jalan</p>
-              </div>
-              <div className="relative">
-                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"/>
-                <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari kelompok..."
-                  className="pl-8 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:ring-1 focus:ring-teal-400 outline-none w-48"/>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs min-w-[900px]">
-                <thead>
-                  <tr className="bg-slate-50 text-slate-600 text-[10px] border-y border-slate-200">
-                    <th className="px-3 py-3 text-left font-black w-6 border-r border-slate-200">No</th>
-                    <th className="px-4 py-3 text-left font-black border-r border-slate-200">Kelompok Layanan</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200">Jumlah Kasus</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200 bg-blue-50/50">Tarif INA-CBG</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200 bg-violet-50/50">Tarif iDRG</th>
-                    <th colSpan={2} className="px-3 py-3 text-center font-black border-r border-slate-200">Selisih</th>
-                    <th className="px-3 py-3 text-center font-black border-r border-slate-200">Level Mix</th>
-                    <th className="px-3 py-3 text-center font-black">Detail</th>
-                  </tr>
-                  <tr className="bg-slate-100/50 text-slate-500 text-[10px] border-b border-slate-200">
-                    <th className="border-r border-slate-200"/><th className="border-r border-slate-200"/>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200">RI</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200">RJ</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-blue-600 bg-blue-50/30">RI</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-blue-600 bg-blue-50/30">RJ</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-violet-600 bg-violet-50/30">RI</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200 text-violet-600 bg-violet-50/30">RJ</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200">Rp</th>
-                    <th className="px-3 py-1.5 text-center border-r border-slate-200">%</th>
-                    <th className="border-r border-slate-200"/><th/>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredGroups.filter(r=>r.hasData).map((r,i)=>{
-                    const selPct=r.selisihPct;
-                    return (
-                      <tr key={r.name}
-                        onClick={()=>setDrill(r.name)}
-                        className={`border-b border-slate-100 cursor-pointer transition-colors ${i%2===0?'bg-white':'bg-slate-50/30'} hover:bg-teal-50/40 hover:border-teal-200`}>
-                        <td className="px-3 py-2.5 text-slate-400 text-center">{i+1}</td>
-                        <td className="px-4 py-2.5">
-                          <div className="font-bold text-slate-800">{dn(r.name)}</div>
-                          <div className="text-[10px] text-slate-500 mt-0.5 font-medium">
-                            Kompetensi RS: <span className="text-teal-600 font-black">{config[r.name] || 'Belum Mapping'}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-2.5">
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {LEVEL_ORDER.map(lv => {
-                              const k = (r.ranap[lv]?.kasus||0) + (r.rajal[lv]?.kasus||0);
-                              const idrg = (r.ranap[lv]?.idrg||0) + (r.rajal[lv]?.idrg||0);
-                              if (k === 0) return null;
-                              const pct = r.totalIdrg > 0 ? ((idrg / r.totalIdrg) * 100).toFixed(1) : 0;
-                              const rsLevel = config[r.name] || 'Tidak Melayani';
-                              const isOutside = LEVEL_ORDER.indexOf(lv) > LEVEL_ORDER.indexOf(rsLevel);
-                              const txtColor = isOutside ? 'text-rose-700' : 'text-slate-600';
-                              const bgClass = isOutside ? 'bg-rose-50 border-rose-200' : 'bg-slate-100 border-slate-200';
-                              return (
-                                <span key={lv} 
-                                      onClick={(e) => { e.stopPropagation(); setDrill({ group: r.name, level: lv }); }}
-                                      className={`cursor-pointer hover:ring-2 hover:ring-slate-300 transition-all text-[9px] px-1.5 py-0.5 rounded border ${bgClass} ${txtColor}`}>
-                                  <span className="font-black">{lv}</span>: {k} kss <span className="opacity-90 font-bold">({pct}%)</span>
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2.5 text-right font-bold text-slate-700 border-l border-slate-100">{fmt(r.totalKasusRI)}</td>
-                        <td className="px-3 py-2.5 text-right text-slate-600">{fmt(r.totalKasusRJ)}</td>
-                        <td className="px-3 py-2.5 text-right text-blue-600 border-l border-slate-100">{fmtRp(r.totalInaRI)}</td>
-                        <td className="px-3 py-2.5 text-right text-blue-500">{fmtRp(r.totalInaRJ)}</td>
-                        <td className="px-3 py-2.5 text-right text-violet-600 border-l border-slate-100">{fmtRp(r.totalIdrgRI)}</td>
-                        <td className="px-3 py-2.5 text-right text-violet-500">{fmtRp(r.totalIdrgRJ)}</td>
-                        <td className={`px-3 py-2.5 text-right font-black border-l border-slate-100 ${r.selisih>=0?'text-emerald-600':'text-rose-600'}`}>
-                          {r.selisih>=0?'+':''}{fmtRp(r.selisih)}
-                        </td>
-                        <td className="px-3 py-2.5 text-center">
-                          <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black ${selPct>=0?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700'}`}>
-                            {selPct>=0?'+':''}{selPct.toFixed(1)}%
-                          </span>
-                        </td>
-                        <td className="px-3 py-2.5 w-32">
-                          <MiniLevelBar ranap={r.ranap} rajal={r.rajal}/>
-                        </td>
-                        <td className="px-3 py-2.5 text-center">
-                          <span className="inline-flex items-center gap-1 text-[10px] text-teal-600 font-black bg-teal-50 px-2 py-1 rounded-lg">
-                            <Users size={11}/>Detail
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {/* Unknown groups */}
-                  {filteredGroups.filter(r=>!r.hasData).map((r,i)=>(
-                    <tr key={r.name} className="border-b border-slate-50 opacity-35">
-                      <td className="px-3 py-2 text-slate-400 text-center">–</td>
-                      <td className="px-4 py-2 text-slate-400 italic">{dn(r.name)}</td>
-                      <td colSpan={10} className="px-3 py-2 text-slate-300 text-center text-[10px]">Belum ada klaim terdaftar</td>
-                    </tr>
+                {/* KPI Summary */}
+                <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:12}}>
+                  {[
+                    {label:ksmSubView==='dept'?'Total Departemen':ksmSubView==='ksm'?'Total KSM':'Total DPJP', val:fmt(ksmSubView==='dept'?ksmData.depts.length:ksmSubView==='ksm'?ksmData.ksms.length:ksmData.dpjps.length), icon:<Building2 size={15}/>, bg:'#f8fafc', iconBg:'#f1f5f9', color:'#0f172a'},
+                    {label:'Dengan Alert (>30%)', val:fmt((ksmSubView==='dept'?ksmData.depts:ksmSubView==='ksm'?ksmData.ksms:ksmData.dpjps).filter(d=>d.total&&(d.luar/d.total)>0.3).length), icon:<AlertTriangle size={15}/>, bg:'#fff1f2', iconBg:'#fee2e2', color:'#dc2626'},
+                    {label:'Total Kasus Di Luar', val:fmt((ksmSubView==='dept'?ksmData.depts:ksmSubView==='ksm'?ksmData.ksms:ksmData.dpjps).reduce((s,d)=>s+d.luar,0)), icon:<AlertCircle size={15}/>, bg:'#fffbeb', iconBg:'#fef3c7', color:'#d97706'},
+                    {label:'Total Potensi Loss', val:fmtRp((ksmSubView==='dept'?ksmData.depts:ksmSubView==='ksm'?ksmData.ksms:ksmData.dpjps).reduce((s,d)=>s+d.loss,0)), icon:<TrendingDown size={15}/>, bg:'#fef2f2', iconBg:'#fee2e2', color:'#dc2626'},
+                  ].map((k,i) => (
+                    <div key={i} style={{background:k.bg,borderRadius:14,padding:'14px 16px',border:'1.5px solid #f1f5f9'}}>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}}>
+                        <p style={{fontSize:9,fontWeight:800,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.08em',margin:0}}>{k.label}</p>
+                        <div style={{width:26,height:26,borderRadius:8,background:k.iconBg,display:'flex',alignItems:'center',justifyContent:'center'}}>{k.icon}</div>
+                      </div>
+                      <p style={{fontSize:20,fontWeight:900,color:k.color,margin:0,letterSpacing:'-0.02em'}}>{k.val}</p>
+                    </div>
                   ))}
-                </tbody>
-                <tfoot>
-                  <tr className="bg-slate-50 text-slate-700 font-black text-[11px] border-t border-slate-200">
-                    <td colSpan={2} className="px-4 py-3 border-r border-slate-200 uppercase tracking-wider text-right">TOTAL</td>
-                    <td colSpan={2} className="px-3 py-3 text-center border-r border-slate-200">{fmt(gt.totalKasus)}</td>
-                    <td colSpan={2} className="px-3 py-3 text-right text-blue-700 border-r border-slate-200 bg-blue-50/50">{fmtRp(gt.totalIna)}</td>
-                    <td colSpan={2} className="px-3 py-3 text-right text-violet-700 border-r border-slate-200 bg-violet-50/50">{fmtRp(gt.totalIdrg)}</td>
-                    <td className={`px-3 py-3 text-right border-r border-slate-200 ${gt.selisih>=0?'text-emerald-600':'text-rose-600'}`}>{fmtRp(gt.selisih)}</td>
-                    <td className="px-3 py-3 text-center font-bold text-amber-600 border-r border-slate-200">
-                      {gt.totalIna>0?fmtPct(gt.selisih/gt.totalIna*100):'0%'}
-                    </td>
-                    <td colSpan={2}/>
-                  </tr>
-                </tfoot>
-              </table>
+                </div>
+
+                {/* Table */}
+                <div style={{maxHeight:480,overflowY:'auto',borderRadius:16}} className="komp-scrollbar">
+                  {renderTable(
+                    ksmSubView==='dept'?ksmData.depts:ksmSubView==='ksm'?ksmData.ksms:ksmData.dpjps,
+                    ksmSubView
+                  )}
+                </div>
+
+                {/* Heatmap */}
+                {ksmSubView !== 'dept' && renderHeatmap()}
+              </div>
+            );
+          })()}
+
+          {/* ── Overview Tab ── */}
+          {tab==='overview' && (
+            <div style={{display:'flex',flexDirection:'column',gap:24}} className="komp-fade-up">
+              <div style={{display:'grid',gridTemplateColumns:'280px 1fr',gap:20}}>
+
+                {/* Donut Chart */}
+                <div style={{background:'white',borderRadius:20,border:'1.5px solid #e2e8f0',padding:20,boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
+                  <h3 style={{fontWeight:800,fontSize:13,color:'#0f172a',margin:'0 0 16px 0'}}>Distribusi Level Kompetensi</h3>
+                  <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:16}}>
+                    <Ring data={donutData} total={data.totalPatients} size={180}/>
+                    <div style={{width:'100%',display:'flex',flexDirection:'column',gap:8}}>
+                      {donutData.map(d=>{
+                        const c=LC[d.name]||LC['Belum Ada Mapping'];
+                        const pct=(d.value/data.totalPatients*100).toFixed(1);
+                        return (
+                          <div key={d.name} style={{display:'flex',alignItems:'center',gap:8}}>
+                            <div style={{width:10,height:10,borderRadius:'50%',flexShrink:0,background:c.dot,boxShadow:`0 0 6px ${c.dot}88`}}/>
+                            <div style={{flex:1}}>
+                              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:3}}>
+                                <span style={{fontSize:11,fontWeight:700,color:'#475569'}}>{d.name}</span>
+                                <span style={{fontSize:11,fontWeight:900,color:'#0f172a'}}>{pct}%</span>
+                              </div>
+                              <div className="progress-bar">
+                                <div className="progress-fill" style={{width:`${pct}%`,background:c.dot}}/>
+                              </div>
+                            </div>
+                            <span style={{fontSize:10,color:'#94a3b8',width:44,textAlign:'right'}}>{fmt(d.value)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Group Cards */}
+                <div style={{background:'white',borderRadius:20,border:'1.5px solid #e2e8f0',padding:20,boxShadow:'0 2px 12px rgba(0,0,0,0.05)'}}>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16}}>
+                    <div>
+                      <h3 style={{fontWeight:800,fontSize:13,color:'#0f172a',margin:0}}>24 Kelompok Layanan</h3>
+                      <p style={{fontSize:11,color:'#94a3b8',margin:'3px 0 0 0'}}>Klik kartu untuk melihat detail pasien</p>
+                    </div>
+                    <div style={{position:'relative'}}>
+                      <Search size={12} style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#94a3b8'}}/>
+                      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari kelompok..."
+                        style={{paddingLeft:30,paddingRight:12,paddingTop:8,paddingBottom:8,fontSize:11,border:'1.5px solid #e2e8f0',borderRadius:10,outline:'none',width:180,color:'#334155',background:'#f8fafc',transition:'all 0.2s'}}
+                        onFocus={e=>{e.target.style.borderColor='#0d9488';e.target.style.background='white';}}
+                        onBlur={e=>{e.target.style.borderColor='#e2e8f0';e.target.style.background='#f8fafc';}}/>
+                    </div>
+                  </div>
+
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(170px,1fr))',gap:12,overflowY:'auto',maxHeight:560,paddingRight:4}} className="komp-scrollbar">
+                    {filteredGroups.filter(r=>r.hasData||search).map((r,idx) => {
+                      let sesuai = 0, tidakSesuai = 0;
+                      let rsLevel = 'Campuran/Tidak Spesifik';
+                      if (config) {
+                        if (config[r.name]) rsLevel = config[r.name];
+                        else {
+                          const noPrefix = r.name.replace(/Kelompok Layanan /i, '').trim();
+                          const matchingKey = Object.keys(config).find(k => k.replace(/Kelompok Layanan /i, '').trim().toLowerCase() === noPrefix.toLowerCase());
+                          if (matchingKey) rsLevel = config[matchingKey];
+                        }
+                      }
+                      const rsIdx = LEVEL_ORDER.indexOf(rsLevel);
+                      [...LEVEL_ORDER,'unknown'].forEach(lv => {
+                         const kasus = (r.ranap[lv]?.kasus||0) + (r.rajal[lv]?.kasus||0);
+                         if (lv==='unknown'||rsLevel==='Campuran/Tidak Spesifik'||rsLevel==='Belum Ada Mapping') sesuai += kasus;
+                         else {
+                             const lvIdx = LEVEL_ORDER.indexOf(lv);
+                             if (lvIdx <= rsIdx) sesuai += kasus; else tidakSesuai += kasus;
+                         }
+                      });
+                      const total = sesuai + tidakSesuai;
+                      const pctSesuai = total > 0 ? (sesuai / total) * 100 : 0;
+                      const pctLoss = total > 0 ? (tidakSesuai / total) * 100 : 0;
+                      const hasDanger = tidakSesuai > 0 && pctLoss > 20;
+
+                      return (
+                        <div key={r.name} onClick={() => setDrill(r.name)}
+                          className={`group-card ${hasDanger?'group-card-danger':''}`}
+                          style={{padding:'14px 14px 12px',height:158,display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+                          {/* Background watermark */}
+                          <div style={{position:'absolute',right:-8,bottom:-8,opacity:0.03,transition:'opacity 0.3s',pointerEvents:'none'}}>
+                            <Activity size={100}/>
+                          </div>
+
+                          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:6}}>
+                            <h4 style={{fontSize:10,fontWeight:800,color:'#334155',textTransform:'uppercase',letterSpacing:'0.04em',lineHeight:1.35,margin:0,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}} title={dn(r.name)}>
+                              {dn(r.name)}
+                            </h4>
+                            <div style={{background:'#f8fafc',border:'1px solid #e2e8f0',padding:'4px 8px',borderRadius:10,textAlign:'center',minWidth:44,flexShrink:0,transition:'all 0.2s'}}>
+                              <p style={{fontSize:8,color:'#94a3b8',fontWeight:700,margin:0}}>TOTAL</p>
+                              <p style={{fontSize:14,fontWeight:900,color:'#1e293b',margin:0,lineHeight:1.2}}>{fmt(total)}</p>
+                            </div>
+                          </div>
+
+                          {/* Level badge */}
+                          {rsLevel !== 'Campuran/Tidak Spesifik' && rsLevel !== 'Belum Ada Mapping' && (
+                            <div style={{marginTop:4}}>
+                              <span style={{fontSize:8,fontWeight:800,padding:'2px 6px',borderRadius:999,background:LC[rsLevel]?.badge.includes('emerald')?'#dcfce7':LC[rsLevel]?.badge.includes('blue')?'#dbeafe':LC[rsLevel]?.badge.includes('amber')?'#fef3c7':'#ede9fe',color:(LC[rsLevel]||LC['Belum Ada Mapping']).dot}}>
+                                {rsLevel}
+                              </span>
+                            </div>
+                          )}
+
+                          <div style={{display:'flex',flexDirection:'column',gap:6,marginTop:'auto'}}>
+                            {/* Sesuai bar */}
+                            <div>
+                              <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}>
+                                <span style={{fontSize:9,fontWeight:700,color:'#059669',display:'flex',alignItems:'center',gap:4}}>
+                                  <span style={{width:5,height:5,borderRadius:'50%',background:'#10b981',display:'inline-block'}}/>Sesuai
+                                </span>
+                                <span style={{fontSize:9,fontWeight:800,color:'#334155'}}>{fmt(sesuai)} <span style={{color:'#94a3b8',fontWeight:500}}>({pctSesuai.toFixed(0)}%)</span></span>
+                              </div>
+                              <div style={{height:5,borderRadius:999,overflow:'hidden',background:'rgba(0,0,0,0.05)'}}>
+                                <div style={{height:'100%',borderRadius:999,background:'linear-gradient(90deg,#34d399,#10b981)',width:`${pctSesuai}%`,transition:'width 1.2s ease'}}/>
+                              </div>
+                            </div>
+                            {/* Loss bar */}
+                            <div>
+                              <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}>
+                                <span style={{fontSize:9,fontWeight:700,color:'#e11d48',display:'flex',alignItems:'center',gap:4}}>
+                                  <span style={{width:5,height:5,borderRadius:'50%',background:'#f43f5e',display:'inline-block'}}/>Di Luar
+                                </span>
+                                <span style={{fontSize:9,fontWeight:800,color:'#334155'}}>{fmt(tidakSesuai)} <span style={{color:'#94a3b8',fontWeight:500}}>({pctLoss.toFixed(0)}%)</span></span>
+                              </div>
+                              <div style={{height:5,borderRadius:999,overflow:'hidden',background:'rgba(0,0,0,0.05)'}}>
+                                <div style={{height:'100%',borderRadius:999,background:'linear-gradient(90deg,#fb7185,#f43f5e)',width:`${pctLoss}%`,transition:'width 1.2s ease'}}/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Belum ada klaim */}
+                  {filteredGroups.filter(r=>!r.hasData).length>0 && (
+                    <div style={{marginTop:16,paddingTop:14,borderTop:'1px solid #f1f5f9'}}>
+                      <p style={{fontSize:9,color:'#94a3b8',fontWeight:800,textTransform:'uppercase',letterSpacing:'0.08em',marginBottom:8}}>Belum Ada Klaim</p>
+                      <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+                        {filteredGroups.filter(r=>!r.hasData).map(r=>(
+                          <span key={r.name} style={{fontSize:10,background:'#f8fafc',color:'#94a3b8',padding:'3px 10px',borderRadius:8,border:'1px solid #e2e8f0'}}>{dn(r.name)}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Top 10 Tables */}
+              <div style={{marginTop:4}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+                  <div>
+                    <h3 style={{fontWeight:900,fontSize:15,color:'#0f172a',margin:0}}>Top 10 Diagnosa & Tindakan</h3>
+                    <p style={{fontSize:11,color:'#64748b',margin:'4px 0 0 0'}}>Kode ICD dengan frekuensi dan nilai tarif tertinggi</p>
+                  </div>
+                  <button onClick={handleExportTop10}
+                    style={{display:'flex',alignItems:'center',gap:6,padding:'9px 18px',background:'linear-gradient(135deg,#0d9488,#059669)',color:'white',border:'none',borderRadius:12,fontSize:11,fontWeight:800,cursor:'pointer',boxShadow:'0 4px 12px rgba(13,148,136,0.3)',transition:'all 0.2s',letterSpacing:'0.04em',textTransform:'uppercase'}}
+                    onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 6px 20px rgba(13,148,136,0.45)';e.currentTarget.style.transform='translateY(-1px)';}}
+                    onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 4px 12px rgba(13,148,136,0.3)';e.currentTarget.style.transform='translateY(0)';}}>
+                    <Download size={14}/> Download Excel
+                  </button>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:16}}>
+                  <Top10Table title="Top 10 Diagnosa Sesuai Kompetensi RS" data={data.top10?.diagSesuai}/>
+                  <Top10Table title="Top 10 Tindakan Sesuai Kompetensi RS" data={data.top10?.procSesuai}/>
+                  <Top10Table title="Top 10 Diagnosa Tidak Sesuai Kompetensi RS" data={data.top10?.diagTidakSesuai}/>
+                  <Top10Table title="Top 10 Tindakan Tidak Sesuai Kompetensi RS" data={data.top10?.procTidakSesuai}/>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ══════════════ LAPORAN TAB ══════════════ */}
-        {tab==='laporan' && (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-             <KompetensiLaporan reports={data.reports} onDrillDown={setDrill} />
-          </div>
-        )}
+          {/* ── Table 1 Tab ── */}
+          {tab==='table1' && (
+            <div style={{background:'white',borderRadius:20,border:'1.5px solid #e2e8f0',overflow:'hidden',boxShadow:'0 4px 16px rgba(0,0,0,0.05)'}} className="komp-fade-up">
+              <div style={{padding:'20px 24px',borderBottom:'1px solid #f1f5f9',display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,#ede9fe,#ddd6fe)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <TableIcon size={18} color="#7c3aed"/>
+                </div>
+                <div>
+                  <h2 style={{fontWeight:900,fontSize:15,color:'#0f172a',margin:0}}>Distribusi Tingkat Tuntutan Layanan (ICD)</h2>
+                  <p style={{fontSize:11,color:'#64748b',margin:'3px 0 0 0'}}>Kasus dikategorikan berdasarkan level ICD tertinggi dalam DIAGLIST</p>
+                </div>
+              </div>
+              <div style={{overflowX:'auto'}}>
+                <table style={{width:'100%',fontSize:11,borderCollapse:'collapse',minWidth:820}}>
+                  <thead>
+                    <tr style={{background:'#f8fafc'}}>
+                      <th rowSpan={2} style={{padding:'12px 18px',textAlign:'left',fontWeight:800,color:'#475569',fontSize:10,textTransform:'uppercase',letterSpacing:'0.06em',borderBottom:'2px solid #e2e8f0',borderRight:'1px solid #e2e8f0',whiteSpace:'nowrap'}}>Tingkat Tuntutan</th>
+                      <th colSpan={3} style={{padding:'10px',textAlign:'center',fontWeight:800,color:'#166534',fontSize:10,textTransform:'uppercase',background:'#f0fdf4',borderBottom:'1px solid #dcfce7',borderRight:'1px solid #dcfce7'}}>✓ Sesuai Kompetensi</th>
+                      <th colSpan={3} style={{padding:'10px',textAlign:'center',fontWeight:800,color:'#991b1b',fontSize:10,textTransform:'uppercase',background:'#fff1f2',borderBottom:'1px solid #fecdd3',borderRight:'1px solid #fecdd3'}}>✗ Potensi Loss</th>
+                      <th rowSpan={2} style={{padding:'12px 14px',textAlign:'center',fontWeight:800,color:'#475569',fontSize:10,textTransform:'uppercase',borderBottom:'2px solid #e2e8f0',whiteSpace:'nowrap'}}>% Loss</th>
+                    </tr>
+                    <tr style={{background:'#f8fafc',fontSize:10}}>
+                      {['Kasus','INA-CBG','iDRG'].map(h=><th key={`s${h}`} style={{padding:'8px 12px',textAlign:'center',fontWeight:800,color:'#16a34a',background:'rgba(240,253,244,0.5)',borderBottom:'1px solid #e2e8f0'}}>{h}</th>)}
+                      {['Kasus','INA-CBG','iDRG'].map(h=><th key={`l${h}`} style={{padding:'8px 12px',textAlign:'center',fontWeight:800,color:'#dc2626',background:'rgba(255,241,242,0.5)',borderBottom:'1px solid #e2e8f0',borderRight:h==='iDRG'?'1px solid #e2e8f0':''}}>{h}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {LEVEL_ORDER.map((lv,i)=>{
+                      const s=data.levelStats[lv]||{};
+                      const tot=(s.sesuaiKasus||0)+(s.lossKasus||0);
+                      const pct=tot>0?((s.lossKasus||0)/tot*100).toFixed(1):'0.0';
+                      const c=LC[lv]||LC['Belum Ada Mapping'];
+                      return (
+                        <tr key={lv} style={{borderBottom:'1px solid #f1f5f9',background:i%2===0?'white':'#fafafa',transition:'background 0.15s'}}
+                          onMouseEnter={e=>e.currentTarget.style.background='#f0fdfa'}
+                          onMouseLeave={e=>e.currentTarget.style.background=i%2===0?'white':'#fafafa'}>
+                          <td style={{padding:'13px 18px',fontWeight:700,borderRight:'1px solid #f1f5f9'}}>
+                            <span style={{display:'inline-flex',alignItems:'center',gap:8,padding:'4px 12px',borderRadius:999,fontSize:11,fontWeight:800}} className={c.badge}>
+                              <span style={{width:8,height:8,borderRadius:'50%',background:c.dot,display:'inline-block',boxShadow:`0 0 6px ${c.dot}88`}}/>
+                              {lv}
+                            </span>
+                          </td>
+                          <td onClick={()=>setDrill({title:`Distribusi Level ${lv} (Sesuai)`, filterFn:r=>r._meta?.highestLevelName===lv&&!r._meta?.isOutsideOverall})}
+                            style={{padding:'13px 12px',textAlign:'right',fontWeight:900,color:'#059669',cursor:'pointer',background:'rgba(240,253,244,0.3)',transition:'background 0.15s'}}
+                            onMouseEnter={e=>e.currentTarget.style.background='rgba(188,240,204,0.4)'}
+                            onMouseLeave={e=>e.currentTarget.style.background='rgba(240,253,244,0.3)'}>{fmt(s.sesuaiKasus)}</td>
+                          <td style={{padding:'13px 12px',textAlign:'right',color:'#16a34a',background:'rgba(240,253,244,0.2)'}}>{fmtRp(s.sesuaiIna)}</td>
+                          <td style={{padding:'13px 12px',textAlign:'right',color:'#16a34a',background:'rgba(240,253,244,0.2)',borderRight:'1px solid #dcfce7'}}>{fmtRp(s.sesuaiIdrg)}</td>
+                          <td onClick={()=>setDrill({title:`Distribusi Level ${lv} (Potensi Loss)`, filterFn:r=>r._meta?.highestLevelName===lv&&r._meta?.isOutsideOverall})}
+                            style={{padding:'13px 12px',textAlign:'right',fontWeight:900,color:'#dc2626',cursor:'pointer',background:'rgba(255,241,242,0.3)',transition:'background 0.15s'}}
+                            onMouseEnter={e=>e.currentTarget.style.background='rgba(254,205,205,0.4)'}
+                            onMouseLeave={e=>e.currentTarget.style.background='rgba(255,241,242,0.3)'}>{fmt(s.lossKasus)}</td>
+                          <td style={{padding:'13px 12px',textAlign:'right',color:'#dc2626',background:'rgba(255,241,242,0.2)'}}>{fmtRp(s.lossIna)}</td>
+                          <td style={{padding:'13px 12px',textAlign:'right',color:'#dc2626',background:'rgba(255,241,242,0.2)',borderRight:'1px solid #fecdd3'}}>{fmtRp(s.lossIdrg)}</td>
+                          <td style={{padding:'13px 14px',textAlign:'center'}}>
+                            <span style={{padding:'4px 12px',borderRadius:999,fontWeight:800,fontSize:11,background:parseFloat(pct)>30?'#fee2e2':parseFloat(pct)>10?'#fef3c7':'#f1f5f9',color:parseFloat(pct)>30?'#991b1b':parseFloat(pct)>10?'#92400e':'#475569'}}>
+                              {pct}%
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{background:'linear-gradient(135deg,#0f172a,#1e293b)',color:'white',fontSize:11,fontWeight:900}}>
+                      <td style={{padding:'14px 18px',borderRight:'1px solid rgba(255,255,255,0.1)'}}>TOTAL</td>
+                      <td style={{padding:'14px 12px',textAlign:'right'}}>{fmt(t1.sk)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'right'}}>{fmtRp(t1.si)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'right',borderRight:'1px solid rgba(255,255,255,0.1)'}}>{fmtRp(t1.sd)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'right',color:'#fca5a5'}}>{fmt(t1.lk)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'right',color:'#fca5a5'}}>{fmtRp(t1.li)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'right',color:'#fca5a5',borderRight:'1px solid rgba(255,255,255,0.1)'}}>{fmtRp(t1.ld)}</td>
+                      <td style={{padding:'14px 14px',textAlign:'center',color:'#fcd34d'}}>
+                        {(t1.sk+t1.lk)>0?((t1.lk/(t1.sk+t1.lk))*100).toFixed(1):0}%
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <DetailKelompokTable data={data.groupDetails} onDrillDown={setDrill}/>
+            </div>
+          )}
 
+          {/* ── Table 2 Tab ── */}
+          {tab==='table2' && (
+            <div style={{background:'white',borderRadius:20,border:'1.5px solid #e2e8f0',overflow:'hidden',boxShadow:'0 4px 16px rgba(0,0,0,0.05)'}} className="komp-fade-up">
+              <div style={{padding:'20px 24px',borderBottom:'1px solid #f1f5f9',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:40,height:40,borderRadius:12,background:'linear-gradient(135deg,#e0f2fe,#bae6fd)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                    <Grid3X3 size={18} color="#0284c7"/>
+                  </div>
+                  <div>
+                    <h2 style={{fontWeight:900,fontSize:15,color:'#0f172a',margin:0}}>Per Kelompok Layanan RS</h2>
+                    <p style={{fontSize:11,color:'#64748b',margin:'3px 0 0 0'}}>Klik baris untuk melihat detail pasien & ICD · RI=Rawat Inap, RJ=Rawat Jalan</p>
+                  </div>
+                </div>
+                <div style={{position:'relative'}}>
+                  <Search size={12} style={{position:'absolute',left:10,top:'50%',transform:'translateY(-50%)',color:'#94a3b8'}}/>
+                  <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari kelompok..."
+                    style={{paddingLeft:30,paddingRight:12,paddingTop:8,paddingBottom:8,fontSize:11,border:'1.5px solid #e2e8f0',borderRadius:10,outline:'none',width:200,color:'#334155',transition:'all 0.2s'}}
+                    onFocus={e=>{e.target.style.borderColor='#0d9488';}}
+                    onBlur={e=>{e.target.style.borderColor='#e2e8f0';}}/>
+                </div>
+              </div>
+              <div style={{overflowX:'auto'}}>
+                <table style={{width:'100%',fontSize:11,borderCollapse:'collapse',minWidth:900}}>
+                  <thead>
+                    <tr style={{background:'#f8fafc',color:'#64748b',fontSize:9,textTransform:'uppercase',letterSpacing:'0.05em'}}>
+                      <th style={{padding:'11px 12px',textAlign:'left',fontWeight:800,width:28,borderRight:'1px solid #e2e8f0'}}>No</th>
+                      <th style={{padding:'11px 16px',textAlign:'left',fontWeight:800,borderRight:'1px solid #e2e8f0'}}>Kelompok Layanan</th>
+                      <th colSpan={2} style={{padding:'11px 12px',textAlign:'center',fontWeight:800,borderRight:'1px solid #e2e8f0'}}>Jumlah Kasus</th>
+                      <th colSpan={2} style={{padding:'11px 12px',textAlign:'center',fontWeight:800,borderRight:'1px solid #e2e8f0',background:'#eff6ff',color:'#1d4ed8'}}>Tarif INA-CBG</th>
+                      <th colSpan={2} style={{padding:'11px 12px',textAlign:'center',fontWeight:800,borderRight:'1px solid #e2e8f0',background:'#f5f3ff',color:'#6d28d9'}}>Tarif iDRG</th>
+                      <th colSpan={2} style={{padding:'11px 12px',textAlign:'center',fontWeight:800,borderRight:'1px solid #e2e8f0'}}>Selisih</th>
+                      <th style={{padding:'11px 12px',textAlign:'center',fontWeight:800,borderRight:'1px solid #e2e8f0'}}>Level Mix</th>
+                      <th style={{padding:'11px 12px',textAlign:'center',fontWeight:800}}>Detail</th>
+                    </tr>
+                    <tr style={{background:'rgba(248,250,252,0.8)',color:'#94a3b8',fontSize:9,borderBottom:'1.5px solid #e2e8f0',textTransform:'uppercase'}}>
+                      <th style={{borderRight:'1px solid #e2e8f0'}}/><th style={{borderRight:'1px solid #e2e8f0'}}/>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',fontWeight:700}}>RI</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',fontWeight:700}}>RJ</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',color:'#3b82f6',fontWeight:700,background:'rgba(239,246,255,0.5)'}}>RI</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',color:'#3b82f6',fontWeight:700,background:'rgba(239,246,255,0.5)'}}>RJ</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',color:'#7c3aed',fontWeight:700,background:'rgba(245,243,255,0.5)'}}>RI</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',color:'#7c3aed',fontWeight:700,background:'rgba(245,243,255,0.5)'}}>RJ</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',fontWeight:700}}>Rp</th>
+                      <th style={{padding:'7px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0',fontWeight:700}}>%</th>
+                      <th style={{borderRight:'1px solid #e2e8f0'}}/><th/>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredGroups.filter(r=>r.hasData).map((r,i)=>{
+                      const selPct=r.selisihPct;
+                      return (
+                        <tr key={r.name} onClick={()=>setDrill(r.name)}
+                          style={{borderBottom:'1px solid #f1f5f9',cursor:'pointer',background:i%2===0?'white':'#fafafa',transition:'all 0.15s'}}
+                          onMouseEnter={e=>{e.currentTarget.style.background='#f0fdfa';e.currentTarget.style.boxShadow='inset 3px 0 0 #14b8a6';}}
+                          onMouseLeave={e=>{e.currentTarget.style.background=i%2===0?'white':'#fafafa';e.currentTarget.style.boxShadow='none';}}>
+                          <td style={{padding:'11px 12px',color:'#94a3b8',textAlign:'center',borderRight:'1px solid #f1f5f9'}}>{i+1}</td>
+                          <td style={{padding:'11px 16px',borderRight:'1px solid #f1f5f9'}}>
+                            <div style={{fontWeight:800,color:'#1e293b',fontSize:12}}>{dn(r.name)}</div>
+                            <div style={{fontSize:10,color:'#94a3b8',marginTop:2}}>
+                              Kompetensi RS: <span style={{color:'#0d9488',fontWeight:800}}>{config[r.name]||'Belum Mapping'}</span>
+                            </div>
+                            <div style={{display:'flex',flexWrap:'wrap',gap:3,marginTop:4}}>
+                              {LEVEL_ORDER.map(lv => {
+                                const k = (r.ranap[lv]?.kasus||0) + (r.rajal[lv]?.kasus||0);
+                                const idrg = (r.ranap[lv]?.idrg||0) + (r.rajal[lv]?.idrg||0);
+                                if (k === 0) return null;
+                                const pct = r.totalIdrg > 0 ? ((idrg / r.totalIdrg) * 100).toFixed(0) : 0;
+                                const rsLevel = config[r.name] || 'Tidak Melayani';
+                                const isOutside = LEVEL_ORDER.indexOf(lv) > LEVEL_ORDER.indexOf(rsLevel);
+                                return (
+                                  <span key={lv} onClick={(e) => { e.stopPropagation(); setDrill({ group: r.name, level: lv }); }}
+                                    style={{fontSize:9,padding:'2px 6px',borderRadius:999,border:`1px solid ${isOutside?'#fecdd3':'#e2e8f0'}`,background:isOutside?'#fff1f2':'#f8fafc',color:isOutside?'#be123c':'#64748b',cursor:'pointer',fontWeight:700,transition:'all 0.15s'}}
+                                    onMouseEnter={e=>{e.currentTarget.style.background=isOutside?'#fecdd3':'#e2e8f0';}}
+                                    onMouseLeave={e=>{e.currentTarget.style.background=isOutside?'#fff1f2':'#f8fafc';}}>
+                                    <span style={{fontWeight:900}}>{lv}</span>: {k} <span style={{opacity:0.7}}>({pct}%)</span>
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </td>
+                          <td style={{padding:'11px 12px',textAlign:'right',fontWeight:700,color:'#334155',borderLeft:'1px solid #f1f5f9'}}>{fmt(r.totalKasusRI)}</td>
+                          <td style={{padding:'11px 12px',textAlign:'right',color:'#64748b',borderRight:'1px solid #f1f5f9'}}>{fmt(r.totalKasusRJ)}</td>
+                          <td style={{padding:'11px 12px',textAlign:'right',color:'#2563eb',fontWeight:600,borderLeft:'1px solid #f1f5f9',background:'rgba(239,246,255,0.3)'}}>{fmtRp(r.totalInaRI)}</td>
+                          <td style={{padding:'11px 12px',textAlign:'right',color:'#3b82f6',background:'rgba(239,246,255,0.3)',borderRight:'1px solid #dbeafe'}}>{fmtRp(r.totalInaRJ)}</td>
+                          <td style={{padding:'11px 12px',textAlign:'right',color:'#6d28d9',fontWeight:600,borderLeft:'1px solid #f1f5f9',background:'rgba(245,243,255,0.3)'}}>{fmtRp(r.totalIdrgRI)}</td>
+                          <td style={{padding:'11px 12px',textAlign:'right',color:'#7c3aed',background:'rgba(245,243,255,0.3)',borderRight:'1px solid #ede9fe'}}>{fmtRp(r.totalIdrgRJ)}</td>
+                          <td style={{padding:'11px 12px',textAlign:'right',fontWeight:900,color:r.selisih>=0?'#059669':'#dc2626',borderLeft:'1px solid #f1f5f9'}}>
+                            {r.selisih>=0?'+':''}{fmtRp(r.selisih)}
+                          </td>
+                          <td style={{padding:'11px 12px',textAlign:'center',borderRight:'1px solid #f1f5f9'}}>
+                            <span style={{padding:'3px 10px',borderRadius:999,fontSize:10,fontWeight:800,background:selPct>=0?'#dcfce7':'#fee2e2',color:selPct>=0?'#166534':'#991b1b'}}>
+                              {selPct>=0?'+':''}{selPct.toFixed(1)}%
+                            </span>
+                          </td>
+                          <td style={{padding:'11px 12px',borderRight:'1px solid #f1f5f9',minWidth:100}}>
+                            <MiniLevelBar ranap={r.ranap} rajal={r.rajal}/>
+                          </td>
+                          <td style={{padding:'11px 12px',textAlign:'center'}}>
+                            <span style={{display:'inline-flex',alignItems:'center',gap:4,fontSize:10,color:'#0d9488',fontWeight:800,background:'#f0fdfa',padding:'5px 12px',borderRadius:999,border:'1px solid #99f6e4',transition:'all 0.2s'}}>
+                              <Users size={11}/>Detail
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {filteredGroups.filter(r=>!r.hasData).map((r,i)=>(
+                      <tr key={r.name} style={{borderBottom:'1px solid #f8fafc',opacity:0.35}}>
+                        <td style={{padding:'9px 12px',color:'#94a3b8',textAlign:'center'}}>–</td>
+                        <td style={{padding:'9px 16px',color:'#94a3b8',fontStyle:'italic'}}>{dn(r.name)}</td>
+                        <td colSpan={10} style={{padding:'9px 12px',color:'#cbd5e1',textAlign:'center',fontSize:10}}>Belum ada klaim terdaftar</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr style={{background:'linear-gradient(135deg,#f8fafc,#f1f5f9)',color:'#334155',fontWeight:900,fontSize:11,borderTop:'2px solid #e2e8f0'}}>
+                      <td colSpan={2} style={{padding:'14px 16px',textAlign:'right',borderRight:'1px solid #e2e8f0',textTransform:'uppercase',letterSpacing:'0.06em',color:'#475569'}}>GRAND TOTAL</td>
+                      <td colSpan={2} style={{padding:'14px 12px',textAlign:'center',borderRight:'1px solid #e2e8f0'}}>{fmt(gt.totalKasus)}</td>
+                      <td colSpan={2} style={{padding:'14px 12px',textAlign:'right',color:'#1d4ed8',borderRight:'1px solid #e2e8f0',background:'rgba(239,246,255,0.5)'}}>{fmtRp(gt.totalIna)}</td>
+                      <td colSpan={2} style={{padding:'14px 12px',textAlign:'right',color:'#6d28d9',borderRight:'1px solid #e2e8f0',background:'rgba(245,243,255,0.5)'}}>{fmtRp(gt.totalIdrg)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'right',color:gt.selisih>=0?'#059669':'#dc2626',borderRight:'1px solid #e2e8f0'}}>{fmtRp(gt.selisih)}</td>
+                      <td style={{padding:'14px 12px',textAlign:'center',color:'#d97706',borderRight:'1px solid #e2e8f0'}}>{gt.totalIna>0?fmtPct(gt.selisih/gt.totalIna*100):'0%'}</td>
+                      <td colSpan={2}/>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* ── Laporan Tab ── */}
+          {tab==='laporan' && (
+            <div style={{background:'white',borderRadius:20,border:'1.5px solid #e2e8f0',overflow:'hidden',boxShadow:'0 4px 16px rgba(0,0,0,0.05)'}} className="komp-fade-up">
+              <KompetensiLaporan reports={data.reports} onDrillDown={setDrill}/>
+            </div>
+          )}
+
+        </div>
       </div>
-      </div>
 
-      {/* Password Modal for Exports */}
+      {/* Password Modal */}
       {showPasswordModal && pendingExport && (
         <PasswordModal isOpen={true}
-          onClose={() => {
-            setShowPasswordModal(false);
-            setPendingExport(null);
-          }}
+          onClose={() => { setShowPasswordModal(false); setPendingExport(null); }}
           onSuccess={(password) => {
-            exportToExcel(
-              pendingExport.name,
-              pendingExport.sheets,
-              password
-            );
-            setShowPasswordModal(false);
-            setPendingExport(null);
+            exportToExcel(pendingExport.name, pendingExport.sheets, password);
+            setShowPasswordModal(false); setPendingExport(null);
           }}
         />
       )}
 
-      {/* ── Drill-Down Modal ── */}
+      {/* Drill-Down Modal */}
       {drill && icdMap && (
         <DrillDown
           group={drill}
@@ -1416,6 +1958,7 @@ export default function KompetensiDashboard({ rows, onBack }) {
           onExport={handleExportDrillDown}
         />
       )}
-    </div>, document.body);
+    </div>,
+    document.body
+  );
 }
-

@@ -5,6 +5,7 @@ import { generateExecutivePPTX, generateAuditPPTX, generatePendingPPTX, generate
 import KompetensiDashboard from './components/KompetensiDashboard.jsx';
 import MfaSettings from './components/MfaSettings.jsx';
 import KompetensiSettings from './components/KompetensiSettings.jsx';
+import GlobalLoader from './components/GlobalLoader.jsx';
 import PendingSaktiDashboard from './components/PendingSaktiDashboard.jsx';
 import { loadCompetencyCSV, getIcdDescMap, getIcdFallbackMap } from './utils/competencyAnalyzer';
 import * as XLSX from 'xlsx';
@@ -2407,11 +2408,10 @@ const InsightSosialisasiComponent = (props) => {
 
   if (!isReady) {
     return (
-      <div className="flex flex-col items-center justify-center p-20 min-h-[500px] animate-in fade-in duration-300">
-        <div className="w-16 h-16 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin mb-6 shadow-sm"></div>
-        <h2 className="text-2xl font-black text-slate-800 tracking-tight">Menyiapkan Insight Sosialisasi...</h2>
-        <p className="text-slate-500 mt-2 font-medium">Mohon tunggu sebentar, sistem sedang mengolah dan merangkum performa KSM.</p>
-      </div>
+      <GlobalLoader 
+        title="Menyiapkan Insight Sosialisasi..."
+        subtitle="Mohon tunggu sebentar, sistem sedang mengolah dan merangkum performa KSM."
+      />
     );
   }
 
@@ -3329,7 +3329,7 @@ export default function App() {
   const [icdDescIndex, setIcdDescIndex] = useState({});
 
   // Heavy tabs that need loading animation
-  const HEAVY_TABS = ['mapping', 'sl_cl_analysis', 'kompetensi', 'dept', 'ksm', 'dpjp', 'kpi_coder', 'naik_kelas', 'icu', 'readmisi', 'medsurg_valid'];
+  const HEAVY_TABS = ['mapping', 'sl_cl_analysis', 'kompetensi', 'dept', 'ksm', 'dpjp', 'kpi_coder', 'naik_kelas', 'icu', 'readmisi', 'medsurg_valid', 'rekap'];
   const switchSubTab = (tabId) => {
     if (HEAVY_TABS.includes(tabId) && tabId !== subTab) {
       setIsTabLoading(true);
@@ -5107,40 +5107,22 @@ export default function App() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {uploadProgress ? (
-            <Card className="p-8 text-center transition-all duration-300 relative group overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-transparent opacity-50 transition-opacity"></div>
-              <div className="relative z-10 py-4">
-                <div className="relative w-20 h-20 mx-auto mb-5">
-                  <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="34" fill="none" stroke="#e2e8f0" strokeWidth="6" />
-                    <circle cx="40" cy="40" r="34" fill="none" stroke={uploadProgress.status === 'error' ? '#ef4444' : (uploadProgress.status === 'complete' || uploadProgress.status === 'done') ? '#10b981' : '#14b8a6'} strokeWidth="6"
-                      strokeDasharray={`${2 * Math.PI * 34}`}
-                      strokeDashoffset={`${2 * Math.PI * 34 * (1 - uploadProgress.pct / 100)}`}
-                      strokeLinecap="round" style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className={`text-lg font-black ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-600'}`}>{uploadProgress.pct}%</span>
-                  </div>
-                </div>
-                <p className={`text-base font-black mb-1 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'text-emerald-600' : uploadProgress.status === 'error' ? 'text-rose-500' : 'text-teal-700'}`}>
-                  {uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '✔ Selesai!' : uploadProgress.status === 'error' ? '❌ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '📂 Membaca...' : uploadProgress.status === 'parsing' ? '⚙️ Memproses...' : '🔗 Menghubungkan...'}
-                </p>
-                <p className="text-xs text-slate-500 font-medium truncate max-w-[220px] mx-auto mb-4" title={uploadProgress.fileName}>{uploadProgress.fileName || 'Menyelesaikan...'}</p>
-                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden max-w-[200px] mx-auto">
-                  <div className={`h-full rounded-full transition-all duration-500 ${uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? 'bg-emerald-500' : uploadProgress.status === 'error' ? 'bg-rose-500' : 'bg-teal-500 animate-pulse'}`}
-                    style={{ width: `${uploadProgress.pct}%` }} />
-                </div>
-
+            <div className="transition-all duration-300">
+              <GlobalLoader 
+                title={uploadProgress.status === 'complete' || uploadProgress.status === 'done' ? '✔ Selesai!' : uploadProgress.status === 'error' ? '❌ Terjadi Kesalahan' : uploadProgress.status === 'reading' ? '📂 Membaca...' : uploadProgress.status === 'parsing' ? '⚙️ Memproses...' : '🔗 Menghubungkan...'}
+                subtitle={uploadProgress.fileName || 'Menyelesaikan...'}
+                percent={uploadProgress.pct}
+              >
                 {(uploadProgress.status === 'error' || uploadProgress.status === 'complete' || uploadProgress.status === 'done') && (
                   <button
                     onClick={() => { setUploadProgress(null); setError(''); }}
-                    className="mt-8 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-100 px-6 py-2.5 rounded-xl text-xs font-black transition-all hover:shadow-md uppercase tracking-wider"
+                    className="mt-4 bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-100 px-6 py-2.5 rounded-xl text-xs font-black transition-all hover:shadow-md uppercase tracking-wider relative z-20 cursor-pointer"
                   >
                     {uploadProgress.status === 'error' ? 'Coba Lagi' : 'Kembali'}
                   </button>
                 )}
-              </div>
-            </Card>
+              </GlobalLoader>
+            </div>
           ) : (
             <>
               {uploadSubTab === 'manual' ? (
@@ -10205,7 +10187,7 @@ export default function App() {
                 <div className="mt-3">
                   <button type="button" onClick={() => setShowRegister(true)} className="text-teal-500 hover:text-teal-600 text-[11px] font-bold transition-colors">Belum punya akun? Daftar Baru di sini</button>
                 </div>
-                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.7.6 (060620262220)</p>
+                <p className="text-slate-300 text-[9px] mt-2 font-medium">© 2026 iDRG Analytics Platform • Alpha v1.7.7 (070620260947)</p>
               </div>
             </div>
           </div>
@@ -10466,38 +10448,30 @@ export default function App() {
 
       {/* ANALYSIS PROCESSING OVERLAY */}
       {isAnalyzing && (
-        <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center" style={{ background: 'linear-gradient(135deg, #042f2e 0%, #0f172a 60%, #042f2e 100%)' }}>
-          {/* Animated rings */}
-          <div className="relative flex items-center justify-center mb-10">
-            <div className="absolute w-40 h-40 rounded-full border-4 border-teal-500/20 animate-ping" style={{ animationDuration: '1.5s' }} />
-            <div className="absolute w-32 h-32 rounded-full border-4 border-teal-400/30 animate-ping" style={{ animationDuration: '1.2s', animationDelay: '0.2s' }} />
-            <div className="absolute w-24 h-24 rounded-full border-4 border-teal-300/40 animate-ping" style={{ animationDuration: '0.9s', animationDelay: '0.4s' }} />
-            <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl shadow-teal-500/30" style={{ background: 'linear-gradient(135deg, #0d9488, #14b8a6)' }}>
-              <Activity className="text-white" size={40} strokeWidth={2} style={{ animation: 'spin 2s linear infinite' }} />
+        <GlobalLoader 
+          title="Menganalisis Data Klaim"
+          subtitle="Harap tunggu, sistem sedang memproses data Anda..."
+          fullScreen={true}
+        >
+          <div className="flex flex-col items-center gap-6 mt-4">
+            {/* Cycling step label */}
+            <div className="flex items-center gap-3 bg-white/70 border border-teal-100/60 px-6 py-3 rounded-2xl backdrop-blur-md shadow-sm min-w-[320px] justify-center">
+              <span className="text-2xl drop-shadow-sm">{analysisSteps[analysisStep].icon}</span>
+              <span className="text-sm font-black tracking-wide" style={{ color: analysisSteps[analysisStep].color, transition: 'color 0.3s ease' }}>
+                {analysisSteps[analysisStep].label}
+              </span>
+            </div>
+
+            {/* Shimmer progress bar */}
+            <div className="w-64 h-1.5 bg-slate-200/50 rounded-full overflow-hidden">
+              <div className="h-full rounded-full relative overflow-hidden bg-gradient-to-r from-teal-400 via-teal-300 to-teal-400" style={{ backgroundSize: '200% 100%', animation: 'shimmer 1.5s linear infinite' }} />
             </div>
           </div>
-
-          <h2 className="text-2xl font-black text-white tracking-tight mb-2">Menganalisis Data Klaim</h2>
-          <p className="text-teal-300 text-sm font-medium mb-8">Harap tunggu, sistem sedang memproses data Anda...</p>
-
-          {/* Cycling step label */}
-          <div className="flex items-center gap-3 mb-8 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl backdrop-blur-sm min-w-[320px] justify-center">
-            <span className="text-2xl" style={{ filter: 'drop-shadow(0 0 8px currentColor)' }}>{analysisSteps[analysisStep].icon}</span>
-            <span className="text-sm font-semibold" style={{ color: analysisSteps[analysisStep].color, transition: 'color 0.3s ease' }}>
-              {analysisSteps[analysisStep].label}
-            </span>
-          </div>
-
-          {/* Shimmer progress bar */}
-          <div className="w-64 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full rounded-full relative overflow-hidden" style={{ background: 'linear-gradient(90deg, #14b8a6, #2dd4bf, #0d9488, #14b8a6)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s linear infinite' }} />
-          </div>
-
+          
           <style>{`
             @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
           `}</style>
-        </div>
+        </GlobalLoader>
       )}
 
       {drilldown.isOpen && (
@@ -10936,7 +10910,7 @@ export default function App() {
                   <span className="text-[7px] text-slate-500 mt-0.5 tracking-wider font-extrabold uppercase leading-tight opacity-90" title="Analisis Klaim & Utilisasi Review Terpadu - Indonesian Diagnosis Related Group">
                     Analisis Klaim & Utilisasi Review Terpadu
                   </span>
-                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.7.6 (060620262220)</span>
+                  <span className="text-[7px] text-teal-400 font-black mt-0.5 tracking-[0.2em] uppercase leading-tight">Alpha v1.7.7 (070620260947)</span>
                 </div>
               )}
             </div>
@@ -11057,15 +11031,12 @@ export default function App() {
                   />
                 </div>
 
-                {subTab === 'kompetensi' ? (dashData && dashData.isLoaded ? <KompetensiDashboard rows={dashData.rawRows} onBack={() => setSubTab('executive')} /> : (
-                  <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50 animate-in zoom-in-95 duration-500">
-                    <div className="mb-10 animate-in fade-in zoom-in-75 duration-1000">
-                      <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="akurat.id Logo" className="w-72 mx-auto drop-shadow-[0_20px_50px_rgba(20,184,166,0.3)] transition-transform hover:scale-105 duration-700" />
-                    </div>
-                    <h2 className="text-2xl font-black mb-3 text-slate-800">Menunggu Dataset Utama...</h2>
-                    <p className="text-slate-500 font-medium leading-relaxed">
-                      Data kompetensi belum dapat ditampilkan. Silakan unggah file klaim RS terlebih dahulu di tab <strong>Integrasi Data</strong>.
-                    </p>
+                {subTab === 'kompetensi' ? (dashData && dashData.isLoaded ? <KompetensiDashboard rows={dashData.rawRows} onBack={() => setSubTab('executive')} resolveKsmDept={resolveKsmDept} ksmOverrides={ksmOverrides} /> : (
+                  <div className="mt-10 animate-in zoom-in-95 duration-500 max-w-3xl mx-auto">
+                    <GlobalLoader 
+                      title="Menunggu Dataset Utama..."
+                      subtitle={<>Data kompetensi belum dapat ditampilkan. Silakan unggah file klaim RS terlebih dahulu di tab <strong>Integrasi Data</strong>.</>}
+                    />
                   </div>
                 )) :
                  subTab === 'settings_kompetensi' ? <KompetensiSettings /> :
@@ -11102,21 +11073,11 @@ export default function App() {
 
                     {/* Tab Loading Overlay */}
                     {isTabLoading && (
-                      <div className="fixed inset-0 z-[8000] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-150">
-                        <div className="bg-white rounded-2xl shadow-2xl px-10 py-8 flex flex-col items-center gap-4 border border-slate-200/60">
-                          <div className="relative w-14 h-14">
-                            <div className="absolute inset-0 rounded-full border-4 border-teal-100"></div>
-                            <div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent animate-spin"></div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-4 h-4 rounded-full bg-teal-500 animate-pulse"></div>
-                            </div>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-slate-800 font-black text-base tracking-tight">Memuat Data...</p>
-                            <p className="text-slate-400 text-xs font-medium mt-1">Menyiapkan tampilan</p>
-                          </div>
-                        </div>
-                      </div>
+                      <GlobalLoader 
+                        title="Memuat Data..."
+                        subtitle="Menyiapkan tampilan"
+                        fullScreen={true}
+                      />
                     )}
 
                     {dashData.isEmptyAfterFilter ? (
@@ -11149,15 +11110,13 @@ export default function App() {
                     )}
                   </>
                 ) : (
-                  <div className="bg-white/50 backdrop-blur-sm border border-slate-200/60 p-20 rounded-[2.5rem] text-center mt-10 max-w-3xl mx-auto shadow-2xl shadow-slate-200/50 animate-in zoom-in-95 duration-500">
-                    <div className="mb-10 animate-in fade-in zoom-in-75 duration-1000">
-                      <img src="https://lh3.googleusercontent.com/d/1K9BUgDDRmF0d9Q9mCasC5KhDXVpVhJs5" alt="akurat.id Logo" className="w-72 mx-auto drop-shadow-[0_20px_50px_rgba(20,184,166,0.3)] transition-transform hover:scale-105 duration-700" />
-                    </div>
-                    <h2 className="text-3xl font-black mb-4 text-slate-800 tracking-tight">Menunggu Dataset Utama...</h2>
-                    <p className="text-slate-500 font-medium leading-relaxed">
-                      Dashboard analitik belum aktif. Silakan menuju tab <strong className="text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">Integrasi Data</strong> untuk mengunggah file TXT klaim RS agar sistem dapat memproses wawasan finansial Anda.
-                    </p>
-                    <button onClick={() => setActiveTab('upload')} className="mt-8 bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-teal-600/20 hover:-translate-y-1 uppercase tracking-widest">MULAI INTEGRASI SEKARANG</button>
+                  <div className="mt-10 animate-in zoom-in-95 duration-500 max-w-3xl mx-auto">
+                    <GlobalLoader 
+                      title="Menunggu Dataset Utama..."
+                      subtitle={<>Dashboard analitik belum aktif. Silakan menuju tab <strong className="text-teal-600 bg-teal-50 px-2 py-0.5 rounded-md">Integrasi Data</strong> untuk mengunggah file TXT klaim RS agar sistem dapat memproses wawasan finansial Anda.</>}
+                    >
+                      <button onClick={() => setActiveTab('upload')} className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-teal-600/20 hover:-translate-y-1 uppercase tracking-widest cursor-pointer">MULAI INTEGRASI SEKARANG</button>
+                    </GlobalLoader>
                   </div>
                 ))}
               </div>
@@ -11167,7 +11126,7 @@ export default function App() {
             <p className="text-slate-400 text-[10px] font-bold tracking-widest uppercase flex items-center justify-center gap-2 flex-wrap">
               <span>Copyright@RPP Analisis Klaim & Utilisasi Review Terpadu iDRG</span>
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500/50 hidden sm:inline" />
-              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.7.6</span>
+              <span className="bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full font-black border border-teal-100 shadow-sm shrink-0">Alpha v1.7.7</span>
             </p>
           </footer>
         </div>

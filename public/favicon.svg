@@ -1,46 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1a3a6b;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#0e2a52;stop-opacity:1" />
+    <linearGradient id="tealDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#0f766e" />
+      <stop offset="100%" stopColor="#042f2e" />
     </linearGradient>
-    <linearGradient id="aGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#00b4d8;stop-opacity:1" />
+    <linearGradient id="tealLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#2dd4bf" />
+      <stop offset="100%" stopColor="#0d9488" />
     </linearGradient>
-    <linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#a0e8ff;stop-opacity:1" />
+    <linearGradient id="tealGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#ccfbf1" />
+      <stop offset="100%" stopColor="#14b8a6" />
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="0.8" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
   </defs>
 
-  <!-- Background rounded square -->
-  <rect width="48" height="48" rx="10" ry="10" fill="url(#bgGrad)"/>
+  <g transform="translate(0, 5)">
+    <!-- Left Pillar -->
+    <polygon points="45,5 15,95 30,95" fill="url(#tealDark)" />
+    <polygon points="45,5 30,95 45,95" fill="url(#tealLight)" />
 
-  <!-- Subtle inner border glow -->
-  <rect width="48" height="48" rx="10" ry="10" fill="none" stroke="#00b4d8" stroke-width="0.8" stroke-opacity="0.4"/>
+    <!-- Right Pillar -->
+    <polygon points="65,40 55,95 70,95" fill="url(#tealDark)" />
+    <polygon points="65,40 70,95 85,95" fill="url(#tealLight)" />
 
-  <!-- Letter A (bold, geometric) -->
-  <!-- Left leg of A -->
-  <polygon points="7,38 15,10 19,10 11.5,38" fill="url(#aGrad)" filter="url(#glow)"/>
-  <!-- Right leg of A -->
-  <polygon points="33,10 37,10 29,38 25,38" fill="url(#aGrad)" filter="url(#glow)"/>
-  <!-- Top apex of A (connecting left and right) -->
-  <polygon points="15,10 33,10 31,16 17,16" fill="url(#aGrad)" filter="url(#glow)"/>
-  <!-- Crossbar of A -->
-  <rect x="13" y="25" width="22" height="4.5" rx="1" fill="url(#aGrad)" filter="url(#glow)"/>
-
-  <!-- Medical cross (small, top-right corner accent) -->
-  <rect x="35" y="6" width="7" height="2.5" rx="1" fill="url(#crossGrad)" opacity="0.9"/>
-  <rect x="37.75" y="3.5" width="2.5" height="7" rx="1" fill="url(#crossGrad)" opacity="0.9"/>
-
-  <!-- Bottom accent line (iDRG indicator) -->
-  <rect x="7" y="41" width="34" height="2" rx="1" fill="#00b4d8" opacity="0.6"/>
+    <!-- Swoosh Bottom Face -->
+    <path d="M 5,70 Q 50,55 95,25 Q 60,65 35,80 Z" fill="url(#tealDark)" />
+    <!-- Swoosh Top Face -->
+    <path d="M 5,70 Q 40,40 95,25 Q 50,55 5,70 Z" fill="url(#tealGlow)" />
+  </g>
 </svg>
