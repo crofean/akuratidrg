@@ -258,7 +258,7 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       else if (roman === 'II') severity = 2;
       else if (roman === 'III') severity = 3;
     }
-    const drgCode = String(row['IDRG_DRG_CODE'] || row['INACBG'] || row['inacbg'] || row['cbg'] || row['CBG'] || row['KODE_INACBG'] || '').trim();
+    const drgCode = String(row['IDRG_DRG_CODE'] || '').trim();
     const mdcNum = row['IDRG_MDC_NUMBER'] || row['MDC'] || '';
     const drgDesc = row['IDRG_DRG_DESCRIPTION'] || row['IDRG_DESKRIPSI'] || '';    const topUp = parseTariff(row['IDRG_TOP_UP']);
     const tarifRs = parseTariff(row['TARIF_RS']);
@@ -527,9 +527,11 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       // Determine exact reason for being unmapped
       const drgNotInMap = drgCode && (!mdcDcMap?.drg || !mdcDcMap.drg[String(drgCode).trim()]);
       const icdInfo = unmappedIcds.length > 0 ? ` (${unmappedIcds.join(', ')})` : '';
-      const alasanMapping = drgNotInMap
-        ? `DRG "${drgCode}" belum terdaftar di tabel referensi MDC/DC Mapping`
-        : `Kode ICD${icdInfo} tidak ditemukan di referensi kelompok kompetensi`;
+      const alasanMapping = !drgCode 
+        ? 'Data iDRG tidak ditemukan' 
+        : (drgNotInMap
+          ? `DRG "${drgCode}" belum terdaftar di tabel referensi MDC/DC Mapping`
+          : `Kode ICD${icdInfo} tidak ditemukan di referensi kelompok kompetensi`);
       if (reports.unmapped.length < 500) reports.unmapped.push({
         mrn, sep, nama: patientName,
         desc: drgDesc || '-',
@@ -556,7 +558,9 @@ export async function analyzeCompetency(rows, myCompetencies = {}) {
       reportDrg[drgCode].cases++; reportDrg[drgCode].tRs += tarifRs;
       reportDrg[drgCode].tIna += tIna; reportDrg[drgCode].tIdrg += tIdrg;
     } else if (isUngroupable) {
-      if (reports.ungroupable.length < 50) reports.ungroupable.push({ mrn, sep, nama: patientName, desc: drgDesc || '-', icd: diaglist.join('; ') || '-', type: isRanap ? 'RANAP' : 'RAJAL', ket: 'Ungroupable' });
+      let ketUngroup = 'Ungroupable';
+      if (!drgCode) ketUngroup = 'Data iDRG tidak ditemukan';
+      if (reports.ungroupable.length < 50) reports.ungroupable.push({ mrn, sep, nama: patientName, desc: drgDesc || '-', icd: diaglist.join('; ') || '-', type: isRanap ? 'RANAP' : 'RAJAL', ket: ketUngroup });
     }
 
     const gab = reports.gabungan[monthKey];
