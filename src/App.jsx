@@ -4236,6 +4236,7 @@ export default function App() {
     setPassword('');
     setLoginError('');
     setCaptchaVerified(false);
+    setUploadedFiles([]);
     localStorage.removeItem('sak_session_id');
     localStorage.removeItem('sak_isLoggedIn');
     localStorage.removeItem('sak_username');
