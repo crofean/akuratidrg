@@ -523,7 +523,7 @@ export default function KompetensiLaporan({ reports, onDrillDown }) {
                       </div>
                       {isDrgReason && (
                         <div style={{ fontSize: '0.65rem', color: '#9a3412', marginTop: 3, fontStyle: 'italic' }}>
-                          Perlu update file mdc_dc_mapping.json
+                          Grouping ulang iDRG untuk pasien tersebut
                         </div>
                       )}
                     </div>
